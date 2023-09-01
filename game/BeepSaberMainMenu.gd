@@ -38,8 +38,9 @@ func initialize(beepsaber_game):
 
 var path = "res://game/data/maps/";
 var dlpath = str(OS.get_system_dir(3))+"/";
-var bspath = "/sdcard/BeepSaber/";
-#var bspath = "user://BeepSaber/";
+#var bspath = "/sdcard/BeepSaber/";
+#var bspath = "/storage/emulated/0/";
+var bspath = "user://BeepSaber/";
 export(NodePath) var keyboard;
 
 var _playlists
@@ -191,7 +192,7 @@ func _load_song_info(load_path):
 		map_info = vr.load_json_file(load_path + "info.dat");
 		#because android is case sensitive and some maps have it lowercase, some not
 		if (!map_info):
-			#vr.log_error("Invalid info.dat found in " + load_path);
+			vr.log_error("Invalid info.dat found in " + load_path);
 			return false;
 		
 	if (map_info._difficultyBeatmapSets.size() == 0):

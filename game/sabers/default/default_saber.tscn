@@ -195,8 +195,8 @@ uniform int size;
 
 void fragment(){
 	ALPHA_SCISSOR = 0.5;
-	if (int((SCREEN_UV.x*1000f)+(SCREEN_UV.y*1000f))%size==0){
-		ALPHA = 0f;
+	if (int((SCREEN_UV.x*1000.0)+(SCREEN_UV.y*1000.0))%size==0){
+		ALPHA = 0.0;
 	}else{
 		ALBEDO = color.rgb;
 	}
@@ -214,7 +214,6 @@ script = ExtResource( 3 )
 transform = Transform( 1, 0, 0, 0, -8.9407e-08, 1, 0, -1, -8.9407e-08, 0, 0.65, 0 )
 material_override = ExtResource( 1 )
 mesh = SubResource( 1 )
-material/0 = null
 
 [node name="Hilt_Mesh" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0 )

@@ -21,6 +21,9 @@ signal saber_hit(cube,time_offset)
 signal cube_collide(cube)
 signal bomb_collide(bomb)
 
+export var offset_pos = Vector3()
+export var offset_rot = Vector3()
+
 func show():
 	if (!is_extended()):
 		_anim.play("Show");
@@ -83,7 +86,13 @@ func _ready():
 	# default to using SwingableRaycast collision detection
 	set_collision_mechanism(true)
 	
+	translation = offset_pos
+	rotation_degrees = offset_rot
+	
 func _process(delta):
+	
+	translation = offset_pos
+	rotation_degrees = offset_rot
 	if is_extended():
 		#check floor collision for burn mark
 		$RayCast.force_raycast_update()

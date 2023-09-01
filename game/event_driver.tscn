@@ -33,30 +33,30 @@ uniform sampler2D bg_1;
 uniform sampler2D bg_2;
 uniform sampler2D bg_3;
 uniform sampler2D bg_4;
-uniform lowp float bg_0_intensity = 0f;
-uniform lowp float bg_1_intensity = 0f;
-uniform lowp float bg_2_intensity = 0f;
-uniform lowp float bg_3_intensity = 0f;
-uniform lowp float bg_4_intensity = 0f;
+uniform lowp float bg_0_intensity = 0.0;
+uniform lowp float bg_1_intensity = 0.0;
+uniform lowp float bg_2_intensity = 0.0;
+uniform lowp float bg_3_intensity = 0.0;
+uniform lowp float bg_4_intensity = 0.0;
 uniform lowp vec4 bg_0_tint;
 uniform lowp vec4 bg_1_tint;
 uniform lowp vec4 bg_2_tint;
 uniform lowp vec4 bg_3_tint;
 uniform lowp vec4 bg_4_tint;
-uniform lowp float bg_0_intensity_mult = 1f;
-uniform lowp float bg_1_intensity_mult = 1f;
-uniform lowp float bg_2_intensity_mult = 1f;
-uniform lowp float bg_3_intensity_mult = 1f;
-uniform lowp float bg_4_intensity_mult = 1f;
+uniform lowp float bg_0_intensity_mult = 1.0;
+uniform lowp float bg_1_intensity_mult = 1.0;
+uniform lowp float bg_2_intensity_mult = 1.0;
+uniform lowp float bg_3_intensity_mult = 1.0;
+uniform lowp float bg_4_intensity_mult = 1.0;
 
 void fragment(){
 	ALBEDO = texture(bg_base,UV).rgb;
 	vec2 xinv_uv = vec2(-UV.x,UV.y);
-	if (bg_0_intensity>0f){ALBEDO += (texture(bg_0,xinv_uv).rgb*(bg_0_intensity*bg_0_intensity_mult))*bg_0_tint.rgb;}
-	if (bg_1_intensity>0f){ALBEDO += (texture(bg_1,xinv_uv).rgb*(bg_1_intensity*bg_1_intensity_mult))*bg_1_tint.rgb;}
-	if (bg_2_intensity>0f){ALBEDO += (texture(bg_2,xinv_uv).rgb*(bg_2_intensity*bg_2_intensity_mult))*bg_2_tint.rgb;}
-	if (bg_3_intensity>0f){ALBEDO += (texture(bg_3,xinv_uv).rgb*(bg_3_intensity*bg_3_intensity_mult))*bg_3_tint.rgb;}
-	if (bg_4_intensity>0f){ALBEDO += (texture(bg_4,xinv_uv).rgb*(bg_4_intensity*bg_4_intensity_mult))*bg_4_tint.rgb;}
+	if (bg_0_intensity>0.0){ALBEDO += (texture(bg_0,xinv_uv).rgb*(bg_0_intensity*bg_0_intensity_mult))*bg_0_tint.rgb;}
+	if (bg_1_intensity>0.0){ALBEDO += (texture(bg_1,xinv_uv).rgb*(bg_1_intensity*bg_1_intensity_mult))*bg_1_tint.rgb;}
+	if (bg_2_intensity>0.0){ALBEDO += (texture(bg_2,xinv_uv).rgb*(bg_2_intensity*bg_2_intensity_mult))*bg_2_tint.rgb;}
+	if (bg_3_intensity>0.0){ALBEDO += (texture(bg_3,xinv_uv).rgb*(bg_3_intensity*bg_3_intensity_mult))*bg_3_tint.rgb;}
+	if (bg_4_intensity>0.0){ALBEDO += (texture(bg_4,xinv_uv).rgb*(bg_4_intensity*bg_4_intensity_mult))*bg_4_tint.rgb;}
 }"
 
 [sub_resource type="ShaderMaterial" id=5]
@@ -569,7 +569,6 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 1, -61 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0 )
 material_override = SubResource( 1 )
 mesh = SubResource( 3 )
-material/0 = null
 
 [node name="Sphere" type="MeshInstance" parent="Level"]
 material_override = SubResource( 5 )
@@ -585,7 +584,6 @@ transform = Transform( 0.965926, -5.55139e-09, -0.776457, -0.258819, -4.21669e-0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 material_override = SubResource( 8 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser2" type="Spatial" parent="Level/t0"]
 transform = Transform( 0.965926, -5.55139e-09, -0.776457, -0.258819, -4.21669e-08, -2.89778, -5.55139e-09, 1, -1.26501e-07, 4.57081, -2.26002, -35 )
@@ -594,7 +592,6 @@ transform = Transform( 0.965926, -5.55139e-09, -0.776457, -0.258819, -4.21669e-0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 material_override = SubResource( 8 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser3" type="Spatial" parent="Level/t0"]
 transform = Transform( 0.965926, -5.55139e-09, -0.776457, -0.258819, -4.21669e-08, -2.89778, -5.55139e-09, 1, -1.26501e-07, 4.57081, -2.26002, -40 )
@@ -603,7 +600,6 @@ transform = Transform( 0.965926, -5.55139e-09, -0.776457, -0.258819, -4.21669e-0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 material_override = SubResource( 8 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser4" type="Spatial" parent="Level/t0"]
 transform = Transform( 0.965926, -5.55139e-09, -0.776457, -0.258819, -4.21669e-08, -2.89778, -5.55139e-09, 1, -1.26501e-07, 4.57081, -2.26002, -45 )
@@ -612,7 +608,6 @@ transform = Transform( 0.965926, -5.55139e-09, -0.776457, -0.258819, -4.21669e-0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 material_override = SubResource( 8 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser5" type="Spatial" parent="Level/t0"]
 transform = Transform( 0.965926, -5.55139e-09, -0.776457, -0.258819, -4.21669e-08, -2.89778, -5.55139e-09, 1, -1.26501e-07, 4.57081, -2.26002, -50 )
@@ -621,7 +616,6 @@ transform = Transform( 0.965926, -5.55139e-09, -0.776457, -0.258819, -4.21669e-0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 material_override = SubResource( 8 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser6" type="Spatial" parent="Level/t0"]
 transform = Transform( 0.965926, 5.55139e-09, 0.776457, 0.258819, -4.21669e-08, -2.89778, 5.55139e-09, 1, -1.26501e-07, -4.42919, -2.26002, -30 )
@@ -630,7 +624,6 @@ transform = Transform( 0.965926, 5.55139e-09, 0.776457, 0.258819, -4.21669e-08, 
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 material_override = SubResource( 8 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser7" type="Spatial" parent="Level/t0"]
 transform = Transform( 0.965926, 5.55139e-09, 0.776457, 0.258819, -4.21669e-08, -2.89778, 5.55139e-09, 1, -1.26501e-07, -4.42919, -2.26002, -35 )
@@ -639,7 +632,6 @@ transform = Transform( 0.965926, 5.55139e-09, 0.776457, 0.258819, -4.21669e-08, 
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 material_override = SubResource( 8 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser8" type="Spatial" parent="Level/t0"]
 transform = Transform( 0.965926, 5.55139e-09, 0.776457, 0.258819, -4.21669e-08, -2.89778, 5.55139e-09, 1, -1.26501e-07, -4.42919, -2.26002, -40 )
@@ -648,7 +640,6 @@ transform = Transform( 0.965926, 5.55139e-09, 0.776457, 0.258819, -4.21669e-08, 
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 material_override = SubResource( 8 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser9" type="Spatial" parent="Level/t0"]
 transform = Transform( 0.965926, 5.55139e-09, 0.776457, 0.258819, -4.21669e-08, -2.89778, 5.55139e-09, 1, -1.26501e-07, -4.42919, -2.26002, -45 )
@@ -657,7 +648,6 @@ transform = Transform( 0.965926, 5.55139e-09, 0.776457, 0.258819, -4.21669e-08, 
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 material_override = SubResource( 8 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser10" type="Spatial" parent="Level/t0"]
 transform = Transform( 0.965926, 5.55139e-09, 0.776457, 0.258819, -4.21669e-08, -2.89778, 5.55139e-09, 1, -1.26501e-07, -4.42919, -2.26002, -50 )
@@ -666,7 +656,6 @@ transform = Transform( 0.965926, 5.55139e-09, 0.776457, 0.258819, -4.21669e-08, 
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 material_override = SubResource( 8 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Tween" type="Tween" parent="Level/t0"]
 
@@ -677,37 +666,31 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15 )
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, 5 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar8" type="MeshInstance" parent="Level/t1"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -5 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar9" type="MeshInstance" parent="Level/t1"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -15 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar10" type="MeshInstance" parent="Level/t1"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -25 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar11" type="MeshInstance" parent="Level/t1"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -35 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar12" type="MeshInstance" parent="Level/t1"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -45 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="5" type="Spatial" parent="Level/t1"]
 transform = Transform( -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0, 0, 1, 0, 0, 0 )
@@ -716,37 +699,31 @@ transform = Transform( -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0, 0, 1, 0, 0, 0
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, 5 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar8" type="MeshInstance" parent="Level/t1/5"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -5 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar9" type="MeshInstance" parent="Level/t1/5"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -15 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar10" type="MeshInstance" parent="Level/t1/5"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -25 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar11" type="MeshInstance" parent="Level/t1/5"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -35 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar12" type="MeshInstance" parent="Level/t1/5"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -45 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="6" type="Spatial" parent="Level/t1"]
 transform = Transform( -1.62921e-07, 1, 0, -1, -1.62921e-07, 0, 0, 0, 1, 0, 0, 0 )
@@ -755,37 +732,31 @@ transform = Transform( -1.62921e-07, 1, 0, -1, -1.62921e-07, 0, 0, 0, 1, 0, 0, 0
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, 5 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar8" type="MeshInstance" parent="Level/t1/6"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -5 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar9" type="MeshInstance" parent="Level/t1/6"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -15 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar10" type="MeshInstance" parent="Level/t1/6"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -25 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar11" type="MeshInstance" parent="Level/t1/6"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -35 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar12" type="MeshInstance" parent="Level/t1/6"]
 transform = Transform( -1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, -45 )
 material_override = SubResource( 11 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Tween" type="Tween" parent="Level/t1"]
 
@@ -799,7 +770,6 @@ transform = Transform( 0.988014, -5.23933e-10, -0.154366, -0.154366, -6.74753e-0
 transform = Transform( 1, 0, -7.02255e-16, 0, 1, 0, 2.34085e-16, 0, 3, 0, 9.53674e-07, -9 )
 material_override = SubResource( 12 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser2" type="Spatial" parent="Level/t2"]
 transform = Transform( 0.915241, -3.70493e-09, 0.402906, 0.402906, 1.76116e-08, -0.915241, -3.70492e-09, 1, 1.76116e-08, -12.4292, -1.26002, -14 )
@@ -808,7 +778,6 @@ transform = Transform( 0.915241, -3.70493e-09, 0.402906, 0.402906, 1.76116e-08, 
 transform = Transform( 1, 0, -7.02255e-16, 0, 1, 0, 2.34085e-16, 0, 3, 0, 9.53674e-07, -9 )
 material_override = SubResource( 12 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser3" type="Spatial" parent="Level/t2"]
 transform = Transform( 0.880312, -5.23174e-09, -0.474396, -0.474396, -2.07365e-08, -0.880312, -5.23174e-09, 1, -2.07365e-08, -12.4292, -1.26002, -17 )
@@ -817,7 +786,6 @@ transform = Transform( 0.880312, -5.23174e-09, -0.474396, -0.474396, -2.07365e-0
 transform = Transform( 1, 0, -7.02255e-16, 0, 1, 0, 2.34085e-16, 0, 3, 0, 0, -9 )
 material_override = SubResource( 12 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser4" type="Spatial" parent="Level/t2"]
 transform = Transform( 0.866025, -5.85622e-09, -0.5, -0.5, -2.18557e-08, -0.866025, -5.85621e-09, 1, -2.18557e-08, -12.4292, -1.26002, -20 )
@@ -826,7 +794,6 @@ transform = Transform( 0.866025, -5.85622e-09, -0.5, -0.5, -2.18557e-08, -0.8660
 transform = Transform( 1, 0, -7.02255e-16, 0, 1, 0, 2.34085e-16, 0, 3, 0, 0, -9 )
 material_override = SubResource( 12 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Level/t2"]
 autoplay = "laser_anim"
@@ -845,7 +812,6 @@ transform = Transform( 0.988014, -5.23933e-10, -0.154366, -0.154366, -6.74753e-0
 transform = Transform( 1, 0, -7.02255e-16, 0, 1, 0, 2.34085e-16, 0, 3, 0, 9.53674e-07, -9 )
 material_override = SubResource( 14 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser2" type="Spatial" parent="Level/t3"]
 transform = Transform( 0.915241, -3.70493e-09, 0.402906, 0.402906, 1.76116e-08, -0.915241, -3.70492e-09, 1, 1.76116e-08, -12.4292, -1.26002, -14 )
@@ -854,7 +820,6 @@ transform = Transform( 0.915241, -3.70493e-09, 0.402906, 0.402906, 1.76116e-08, 
 transform = Transform( 1, 0, -7.02255e-16, 0, 1, 0, 2.34085e-16, 0, 3, 0, 9.53674e-07, -9 )
 material_override = SubResource( 14 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser3" type="Spatial" parent="Level/t3"]
 transform = Transform( 0.880312, -5.23174e-09, -0.474395, -0.474395, -2.07365e-08, -0.880312, -5.23174e-09, 1, -2.07365e-08, -12.4292, -1.26002, -17 )
@@ -863,7 +828,6 @@ transform = Transform( 0.880312, -5.23174e-09, -0.474395, -0.474395, -2.07365e-0
 transform = Transform( 1, 0, -7.02255e-16, 0, 1, 0, 2.34085e-16, 0, 3, 0, 0, -9 )
 material_override = SubResource( 14 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="laser4" type="Spatial" parent="Level/t3"]
 transform = Transform( 0.866025, -5.85622e-09, -0.5, -0.5, -2.18557e-08, -0.866025, -5.85621e-09, 1, -2.18557e-08, -12.4292, -1.26002, -20 )
@@ -872,7 +836,6 @@ transform = Transform( 0.866025, -5.85622e-09, -0.5, -0.5, -2.18557e-08, -0.8660
 transform = Transform( 1, 0, -7.02255e-16, 0, 1, 0, 2.34085e-16, 0, 3, 0, 0, -9 )
 material_override = SubResource( 14 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Level/t3"]
 autoplay = "laser_anim"
@@ -885,7 +848,6 @@ anims/laser_anim = SubResource( 15 )
 transform = Transform( -3.9101e-06, 0, 3, 0, 1, 0, -24, 0, -4.88762e-07, 0, 0, -24 )
 material_override = SubResource( 18 )
 mesh = SubResource( 19 )
-material/0 = null
 
 [node name="t4" type="Spatial" parent="Level"]
 
@@ -893,13 +855,11 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 2, 3, 0, -23 )
 material_override = SubResource( 1 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Bar2" type="MeshInstance" parent="Level/t4"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 2, -3, 0, -23 )
 material_override = SubResource( 1 )
 mesh = SubResource( 10 )
-material/0 = null
 
 [node name="Tween" type="Tween" parent="Level/t4"]
 
@@ -910,79 +870,66 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4 )
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -7 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring2" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -11 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring3" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -15 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring4" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -19 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring5" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -23 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring6" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -27 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring7" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -31 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring8" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -35 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring9" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -39 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring10" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -43 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring11" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -47 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring12" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -51 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="ring13" type="MeshInstance" parent="Level/rings"]
 transform = Transform( 1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -55 )
 material_override = SubResource( 20 )
 mesh = ExtResource( 3 )
-material/0 = null
 
 [node name="Tween" type="Tween" parent="Level/rings"]
 
@@ -994,6 +941,7 @@ anims/out = SubResource( 22 )
 
 [node name="wall_material_holder" type="MeshInstance" parent="."]
 material_override = ExtResource( 4 )
+
 [connection signal="tween_step" from="Level/t0/Tween" to="." method="_on_Tween_tween_step" binds= [ 0 ]]
 [connection signal="tween_step" from="Level/t1/Tween" to="." method="_on_Tween_tween_step" binds= [ 1 ]]
 [connection signal="tween_step" from="Level/t2/Tween" to="." method="_on_Tween_tween_step" binds= [ 2 ]]

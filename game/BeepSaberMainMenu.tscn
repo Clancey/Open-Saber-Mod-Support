@@ -192,9 +192,9 @@ margin_top = 64.0
 margin_right = 848.0
 margin_bottom = 560.0
 theme = SubResource( 7 )
-custom_styles/bg = SubResource( 8 )
 custom_colors/font_color_selected = Color( 1, 0.494118, 0.494118, 1 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_styles/bg = SubResource( 8 )
 fixed_icon_size = Vector2( 60, 60 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -220,15 +220,15 @@ margin_top = 64.0
 margin_right = 1040.0
 margin_bottom = 320.0
 theme = SubResource( 12 )
-custom_styles/bg = SubResource( 8 )
 custom_colors/font_color_selected = Color( 1, 0.494118, 0.494118, 1 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_styles/bg = SubResource( 8 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
-timeout = 4
+timeout = 4.0
 
 [node name="Songs_Label2" type="Label" parent="."]
 margin_left = 864.0
@@ -251,9 +251,6 @@ custom_styles/hover = SubResource( 2 )
 custom_styles/pressed = SubResource( 3 )
 custom_styles/normal = SubResource( 4 )
 text = "Refresh Songs/Playlists"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="song_prev" type="AudioStreamPlayer" parent="."]
 volume_db = -60.0
@@ -268,6 +265,7 @@ scroll_node = NodePath("../SongsMenu")
 
 [node name="diff_vr_slider" parent="." instance=ExtResource( 6 )]
 scroll_node = NodePath("../DifficultyMenu")
+
 [connection signal="pressed" from="Play_Button" to="." method="_on_Play_Button_pressed"]
 [connection signal="button_up" from="Delete_Button" to="." method="_on_Delete_Button_button_up"]
 [connection signal="pressed" from="Exit_Button" to="." method="_on_Exit_Button_pressed"]
