@@ -163,7 +163,6 @@ tracks/3/keys = {
 }
 
 [node name="LightSaber" type="Area" groups=["lightsaber"]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 collision_layer = 16
 collision_mask = 2147483665
 script = ExtResource( 2 )
@@ -181,12 +180,10 @@ anims/QuickHide = SubResource( 3 )
 anims/Show = SubResource( 4 )
 
 [node name="RayCast" type="RayCast" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 cast_to = Vector3( 0, 1.26, 0 )
 collision_mask = 8
 
 [node name="SwingableRayCast" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 enabled = true
 exclude_parent = false
 cast_to = Vector3( 0, 1.26, 0 )
@@ -195,7 +192,6 @@ collide_with_areas = true
 collide_with_bodies = false
 
 [node name="saber_holder" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="default_saber" parent="saber_holder" instance=ExtResource( 1 )]
 

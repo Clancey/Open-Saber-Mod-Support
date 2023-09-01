@@ -55,6 +55,7 @@ environment = SubResource( 1 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1 )
 
 [node name="OQ_ARVRCamera" parent="OQ_ARVROrigin" instance=ExtResource( 5 )]
+current = true
 far = 1024.0
 
 [node name="PlayerHead" type="Area" parent="OQ_ARVROrigin/OQ_ARVRCamera"]
