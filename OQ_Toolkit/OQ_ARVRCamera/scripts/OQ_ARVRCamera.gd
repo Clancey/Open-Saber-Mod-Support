@@ -1,6 +1,6 @@
-extends ARVRCamera
+extends XRCamera3D
 
-export var debug_information := false;
+@export var debug_information := false;
 
 
 # Sets up everything as it is expected by the helper scripts in the vr singleton

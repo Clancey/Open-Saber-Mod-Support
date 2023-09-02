@@ -1,34 +1,34 @@
-tool
-extends Spatial
+@tool
+extends Node3D
 class_name OQ_UI2DCanvas
 
 var ui_control : Control = null;
 
-onready var viewport = $Viewport;
-onready var ui_area = $UIArea;
+@onready var viewport = $SubViewport;
+@onready var ui_area = $UIArea;
 var ui_collisionshape = null;
 
-export var editor_live_update := false;
+@export var editor_live_update := false;
 
-export var transparent := false;
+@export var transparent := false;
 
 # set to true to prevent UIRayCast marker from colliding with canvas
-export var disable_collision := false;
+@export var disable_collision := false;
 
 var mesh_material = null;
-onready var mesh_instance : MeshInstance = $UIArea/UIMeshInstance
+@onready var mesh_instance : MeshInstance3D = $UIArea/UIMeshInstance
 
 
 var ui_size = Vector2();
 
-func _get_configuration_warning():
+func _get_configuration_warnings():
 	if (ui_control == null): return "Need a Control node as child."
 	return '';
 
 
 func _input(event):
 	if (event is InputEventKey):
-		viewport.input(event);
+		viewport.push_input(event);
 
 
 func find_child_control():
@@ -53,7 +53,7 @@ func _ready():
 	# only enable transparency when necessary as it is significantly slower than non-transparent rendering
 	mesh_material.flags_transparent = transparent;
 	
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		return;
 
 	find_child_control();
@@ -73,7 +73,7 @@ func _ready():
 	
 	
 func _editor_update_preview():
-	var preview_node = ui_control.duplicate(DUPLICATE_USE_INSTANCING);
+	var preview_node = ui_control.duplicate(DUPLICATE_USE_INSTANTIATION);
 	preview_node.visible = true;
 	
 	for c in viewport.get_children():
@@ -84,7 +84,7 @@ func _editor_update_preview():
 
 
 func _process(_dt):
-	if !Engine.editor_hint: # not in edtior
+	if !Engine.is_editor_hint(): # not in edtior
 		if disable_collision:
 			ui_collisionshape.disabled = true;
 		else:

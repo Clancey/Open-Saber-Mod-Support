@@ -1,8 +1,8 @@
 [gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" type="FontFile" id=1]
 [ext_resource path="res://game/settings_Panel.gd" type="Script" id=2]
-[ext_resource path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" type="FontFile" id=3]
 [ext_resource path="res://game/vr_slider.tscn" type="PackedScene" id=4]
 
 [sub_resource type="StyleBoxFlat" id=1]
@@ -13,21 +13,21 @@ border_width_right = 8
 border_width_bottom = 8
 border_color = Color( 1, 1, 1, 1 )
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="FontFile" id=2]
 size = 32
 font_data = ExtResource( 1 )
 
 [sub_resource type="Theme" id=3]
 default_font = SubResource( 2 )
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="FontFile" id=4]
 size = 30
 font_data = ExtResource( 3 )
 
 [sub_resource type="Theme" id=5]
 default_font = SubResource( 4 )
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="FontFile" id=6]
 size = 32
 font_data = ExtResource( 3 )
 
@@ -59,10 +59,10 @@ border_width_bottom = 5
 border_color = Color( 1, 1, 1, 1 )
 
 [node name="settings_Panel" type="Panel"]
-margin_right = 896.0
-margin_bottom = 576.0
+offset_right = 896.0
+offset_bottom = 576.0
 mouse_filter = 1
-custom_styles/panel = SubResource( 1 )
+theme_override_styles/panel = SubResource( 1 )
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -73,10 +73,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -432.0
-margin_top = -272.0
-margin_right = 429.0
-margin_bottom = -229.0
+offset_left = -432.0
+offset_top = -272.0
+offset_right = 429.0
+offset_bottom = -229.0
 theme = SubResource( 3 )
 text = "Settings"
 align = 1
@@ -85,18 +85,18 @@ __meta__ = {
 }
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
-margin_left = 27.0
-margin_top = 71.0
-margin_right = 867.0
-margin_bottom = 481.0
+offset_left = 27.0
+offset_top = 71.0
+offset_right = 867.0
+offset_bottom = 481.0
 scroll_horizontal_enabled = false
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBox" type="VBoxContainer" parent="ScrollContainer"]
-margin_right = 828.0
-margin_bottom = 569.0
+offset_right = 828.0
+offset_bottom = 569.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 __meta__ = {
@@ -104,8 +104,8 @@ __meta__ = {
 }
 
 [node name="d_background" type="CheckButton" parent="ScrollContainer/VBox"]
-margin_right = 828.0
-margin_bottom = 51.0
+offset_right = 828.0
+offset_bottom = 51.0
 theme = SubResource( 3 )
 pressed = true
 text = "Dynamic Background: "
@@ -114,9 +114,9 @@ __meta__ = {
 }
 
 [node name="cut_blocks" type="CheckButton" parent="ScrollContainer/VBox"]
-margin_top = 55.0
-margin_right = 828.0
-margin_bottom = 106.0
+offset_top = 55.0
+offset_right = 828.0
+offset_bottom = 106.0
 theme = SubResource( 3 )
 pressed = true
 text = "Cut Blocks: "
@@ -125,9 +125,9 @@ __meta__ = {
 }
 
 [node name="glare" type="CheckButton" parent="ScrollContainer/VBox"]
-margin_top = 110.0
-margin_right = 828.0
-margin_bottom = 161.0
+offset_top = 110.0
+offset_right = 828.0
+offset_bottom = 161.0
 theme = SubResource( 3 )
 pressed = true
 text = "Glow: "
@@ -136,9 +136,9 @@ __meta__ = {
 }
 
 [node name="saber_tail" type="CheckButton" parent="ScrollContainer/VBox"]
-margin_top = 165.0
-margin_right = 828.0
-margin_bottom = 216.0
+offset_top = 165.0
+offset_right = 828.0
+offset_bottom = 216.0
 theme = SubResource( 3 )
 pressed = true
 text = "Saber Tail: "
@@ -147,9 +147,9 @@ __meta__ = {
 }
 
 [node name="show_fps" type="CheckButton" parent="ScrollContainer/VBox"]
-margin_top = 220.0
-margin_right = 828.0
-margin_bottom = 271.0
+offset_top = 220.0
+offset_right = 828.0
+offset_bottom = 271.0
 theme = SubResource( 3 )
 text = "Show FPS:"
 __meta__ = {
@@ -157,9 +157,9 @@ __meta__ = {
 }
 
 [node name="show_collisions" type="CheckButton" parent="ScrollContainer/VBox"]
-margin_top = 275.0
-margin_right = 828.0
-margin_bottom = 326.0
+offset_top = 275.0
+offset_right = 828.0
+offset_bottom = 326.0
 theme = SubResource( 3 )
 text = "Show Collision Shapes:"
 __meta__ = {
@@ -167,9 +167,9 @@ __meta__ = {
 }
 
 [node name="bombs_enabled" type="CheckButton" parent="ScrollContainer/VBox"]
-margin_top = 330.0
-margin_right = 828.0
-margin_bottom = 381.0
+offset_top = 330.0
+offset_right = 828.0
+offset_bottom = 381.0
 theme = SubResource( 3 )
 pressed = true
 text = "Bombs Enabled:"
@@ -178,13 +178,13 @@ __meta__ = {
 }
 
 [node name="SaberThicknessRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
-margin_top = 385.0
-margin_right = 828.0
-margin_bottom = 428.0
+offset_top = 385.0
+offset_right = 828.0
+offset_bottom = 428.0
 
 [node name="saber_thickness_label" type="Label" parent="ScrollContainer/VBox/SaberThicknessRow"]
-margin_right = 323.0
-margin_bottom = 43.0
+offset_right = 323.0
+offset_bottom = 43.0
 theme = SubResource( 3 )
 text = "Saber Thickness: "
 __meta__ = {
@@ -192,9 +192,9 @@ __meta__ = {
 }
 
 [node name="saber_thickness" type="HSlider" parent="ScrollContainer/VBox/SaberThicknessRow"]
-margin_left = 327.0
-margin_right = 828.0
-margin_bottom = 43.0
+offset_left = 327.0
+offset_right = 828.0
+offset_bottom = 43.0
 size_flags_horizontal = 3
 size_flags_vertical = 1
 min_value = 10.0
@@ -204,13 +204,13 @@ __meta__ = {
 }
 
 [node name="SaberTypeRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
-margin_top = 432.0
-margin_right = 828.0
-margin_bottom = 475.0
+offset_top = 432.0
+offset_right = 828.0
+offset_bottom = 475.0
 
 [node name="saber_type_label" type="Label" parent="ScrollContainer/VBox/SaberTypeRow"]
-margin_right = 209.0
-margin_bottom = 43.0
+offset_right = 209.0
+offset_bottom = 43.0
 theme = SubResource( 3 )
 text = "Saber Type:"
 __meta__ = {
@@ -218,12 +218,12 @@ __meta__ = {
 }
 
 [node name="saber" type="OptionButton" parent="ScrollContainer/VBox/SaberTypeRow"]
-margin_left = 213.0
-margin_right = 828.0
-margin_bottom = 43.0
+offset_left = 213.0
+offset_right = 828.0
+offset_bottom = 43.0
 size_flags_horizontal = 3
 theme = SubResource( 5 )
-custom_fonts/font = SubResource( 4 )
+theme_override_fonts/font = SubResource( 4 )
 text = "Default saber"
 flat = true
 __meta__ = {
@@ -231,13 +231,13 @@ __meta__ = {
 }
 
 [node name="SaberColorsRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
-margin_top = 479.0
-margin_right = 828.0
-margin_bottom = 522.0
+offset_top = 479.0
+offset_right = 828.0
+offset_bottom = 522.0
 
 [node name="left_saber_col_label" type="Label" parent="ScrollContainer/VBox/SaberColorsRow"]
-margin_right = 266.0
-margin_bottom = 43.0
+offset_right = 266.0
+offset_bottom = 43.0
 theme = SubResource( 3 )
 text = "Saber Colors: "
 __meta__ = {
@@ -245,9 +245,9 @@ __meta__ = {
 }
 
 [node name="left_saber_col" type="ColorPickerButton" parent="ScrollContainer/VBox/SaberColorsRow"]
-margin_left = 270.0
-margin_right = 547.0
-margin_bottom = 43.0
+offset_left = 270.0
+offset_right = 547.0
+offset_bottom = 43.0
 size_flags_horizontal = 3
 text = "Left saber"
 flat = true
@@ -258,9 +258,9 @@ __meta__ = {
 }
 
 [node name="right_saber_col" type="ColorPickerButton" parent="ScrollContainer/VBox/SaberColorsRow"]
-margin_left = 551.0
-margin_right = 828.0
-margin_bottom = 43.0
+offset_left = 551.0
+offset_right = 828.0
+offset_bottom = 43.0
 size_flags_horizontal = 3
 text = "Right saber"
 flat = true
@@ -271,13 +271,13 @@ __meta__ = {
 }
 
 [node name="UI_VolumeRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
-margin_top = 526.0
-margin_right = 828.0
-margin_bottom = 569.0
+offset_top = 526.0
+offset_right = 828.0
+offset_bottom = 569.0
 
 [node name="ui_volume_label" type="Label" parent="ScrollContainer/VBox/UI_VolumeRow"]
-margin_right = 190.0
-margin_bottom = 43.0
+offset_right = 190.0
+offset_bottom = 43.0
 theme = SubResource( 3 )
 text = "UI Volume:"
 __meta__ = {
@@ -285,37 +285,37 @@ __meta__ = {
 }
 
 [node name="ui_volume_slider" type="HSlider" parent="ScrollContainer/VBox/UI_VolumeRow"]
-margin_left = 194.0
-margin_right = 828.0
-margin_bottom = 43.0
+offset_left = 194.0
+offset_right = 828.0
+offset_bottom = 43.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 max_value = 10.0
 value = 10.0
 
 [node name="defaults" type="Button" parent="."]
-margin_left = 546.283
-margin_top = 496.0
-margin_right = 692.283
-margin_bottom = 556.0
+offset_left = 546.283
+offset_top = 496.0
+offset_right = 692.283
+offset_bottom = 556.0
 theme = SubResource( 7 )
-custom_styles/hover = SubResource( 8 )
-custom_styles/pressed = SubResource( 9 )
-custom_styles/normal = SubResource( 10 )
+theme_override_styles/hover = SubResource( 8 )
+theme_override_styles/pressed = SubResource( 9 )
+theme_override_styles/normal = SubResource( 10 )
 text = "Default"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="apply" type="Button" parent="."]
-margin_left = 719.136
-margin_top = 496.0
-margin_right = 865.136
-margin_bottom = 556.0
+offset_left = 719.136
+offset_top = 496.0
+offset_right = 865.136
+offset_bottom = 556.0
 theme = SubResource( 7 )
-custom_styles/hover = SubResource( 8 )
-custom_styles/pressed = SubResource( 9 )
-custom_styles/normal = SubResource( 10 )
+theme_override_styles/hover = SubResource( 8 )
+theme_override_styles/pressed = SubResource( 9 )
+theme_override_styles/normal = SubResource( 10 )
 text = "Apply"
 __meta__ = {
 "_edit_use_anchors_": false

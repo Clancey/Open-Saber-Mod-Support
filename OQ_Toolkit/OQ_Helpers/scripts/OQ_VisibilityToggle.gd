@@ -1,11 +1,11 @@
 # Simple visibility toggle on button press
-extends Spatial
+extends Node3D
 
-export(vr.BUTTON) var toggle_button = vr.BUTTON.Y;
+@export var toggle_button = vr.BUTTON.Y; # (vr.BUTTON)
 
 # we have this separate to see it in the editor but
 # have it hidden on actual start
-export var invisible_on_start = false;
+@export var invisible_on_start = false;
 
 
 var cycle_through_children = false; #Not yet implemented

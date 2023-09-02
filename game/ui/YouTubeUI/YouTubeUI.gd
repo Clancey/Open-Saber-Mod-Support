@@ -3,14 +3,14 @@ extends Panel
 signal song_selected(video_metadata)
 
 # path to a Oculus Quest toolkit keyboard (search for searching youtube)
-export (NodePath) var keyboard
+@export (NodePath) var keyboard
 
-onready var api := $YouTubeAPI
-onready var search_line_edit := $SearchLineEdit
-onready var search_button := $SearchButton
-onready var results_list := $ResultsList
-onready var select_song_button := $SelectSongButton
-onready var thumbnail_request_pool := $ThumbnailRequestPool
+@onready var api := $YouTubeAPI
+@onready var search_line_edit := $SearchLineEdit
+@onready var search_button := $SearchButton
+@onready var results_list := $ResultsList
+@onready var select_song_button := $SelectSongButton
+@onready var thumbnail_request_pool := $ThumbnailRequestPool
 
 var _video_idx_by_id = {}
 
@@ -21,7 +21,7 @@ func _ready():
 	# setup keybaord reference and text input signal handler
 	keyboard = get_node(keyboard)
 	if is_instance_valid(keyboard):
-		keyboard.connect("text_input_enter",self,"_on_keybaord_text_input_enter")
+		keyboard.connect("text_input_enter", Callable(self, "_on_keybaord_text_input_enter"))
 
 # override hide() method to handle case where UI is inside a OQ_UI2DCanvas
 func hide():
@@ -110,7 +110,7 @@ func _on_ThumbnailRequestPool_request_complete(result, response_code, headers, b
 		img_tex.create_from_image(img)
 		var size = img.get_size()
 		size = size * 100.0 / img.get_height()# resize to max height of 100px
-		img_tex.set_size_override(size)
+		img_tex.set_size_2d_override(size)
 		
 		var item_idx = _video_idx_by_id[user_data['id']]
 		results_list.set_item_icon(item_idx, img_tex)

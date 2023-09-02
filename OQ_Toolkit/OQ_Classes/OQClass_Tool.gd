@@ -1,8 +1,8 @@
-extends Spatial
+extends Node3D
 
 class_name OQClass_Tool
 
-export(NodePath) var root_grabbable_part = null
+@export var root_grabbable_part: NodePath = null
 
 var isGrabbed: bool = false
 
@@ -12,7 +12,7 @@ var _controllers_grabbing = []
 var _controllers_to_parts = {}
 var _controller_grab_transforms = {}
 
-var _placeholder_rigidbody: RigidBody = null
+var _placeholder_rigidbody: RigidBody3D = null
 var _parts = []
 
 func _ready():
@@ -24,7 +24,7 @@ func _ready():
 		_parts.append(child)
 	# If we have a root tool part, store it too.
 	if _root_grabbable_part != null:
-		_root_grabbable_part = find_node(root_grabbable_part)
+		_root_grabbable_part = find_child(root_grabbable_part)
 
 # warning-ignore:unused_argument
 func _process(delta):
@@ -36,16 +36,16 @@ func grab_with_controller(controller, part):
 		return
 	_controllers_grabbing.append(controller)
 	_controllers_to_parts[controller] = part
-	var controller_xform: Transform = controller.global_transform
-	_controller_grab_transforms[controller] = controller_xform.xform_inv(global_transform.origin)
+	var controller_xform: Transform3D = controller.global_transform
+	_controller_grab_transforms[controller] = (global_transform.origin) * controller_xform
 	reparent_from_rigidbody()
 
 func release(controller):
 	if not controller in _controllers_grabbing:
 		return
 	if _controllers_to_parts[controller] == _root_grabbable_part:
-		_controllers_grabbing.empty()
-		_controllers_to_parts.empty()
+		_controllers_grabbing.is_empty()
+		_controllers_to_parts.is_empty()
 	else:
 		_controllers_grabbing.remove(_controllers_grabbing.find(controller))
 		_controllers_to_parts.erase(controller)
@@ -69,8 +69,8 @@ func pose_grabbed_parts():
 		return
 	var second_controller = _controllers_grabbing[1]
 	var part = _controllers_to_parts[second_controller]
-	var controller_xform: Transform = second_controller.global_transform
-	var relative_xform = controller_xform.xform_inv(global_transform.origin)
+	var controller_xform: Transform3D = second_controller.global_transform
+	var relative_xform = (global_transform.origin) * controller_xform
 	part.pose_part(_controller_grab_transforms[second_controller], relative_xform)
 
 func pose_root():
@@ -80,15 +80,15 @@ func pose_root():
 		if grab_transform_or_null == null:
 			global_transform = first_controller.global_transform
 		else:
-			global_transform = grab_transform_or_null.inverse().xform(first_controller.global_transform)
+			global_transform = grab_transform_or_null.inverse() * (first_controller.global_transform)
 
 func reparent_to_rigidbody(linear_velocity, angular_velocity):
 	var old_transform = global_transform
-	global_transform = Transform.IDENTITY
-	_placeholder_rigidbody = RigidBody.new()
+	global_transform = Transform3D.IDENTITY
+	_placeholder_rigidbody = RigidBody3D.new()
 	var children = get_children()
 	for child in children:
-		if not child is CollisionObject:
+		if not child is CollisionObject3D:
 			continue
 		for shape_owner_id in child.get_shape_owners():
 			var body_shape_owner_id = _placeholder_rigidbody.create_shape_owner(_placeholder_rigidbody)

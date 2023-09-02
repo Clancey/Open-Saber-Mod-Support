@@ -1,10 +1,10 @@
 # extend the RayCast node and add additional RayCasts that help detect
 # collisions with objects while swinging at high velocities.
-extends RayCast
+extends RayCast3D
 
 signal area_collided(area)
 
-export (int,2,10) var num_collision_raycasts = 8
+@export var num_collision_raycasts = 8
 
 const DEBUG = false
 const DEBUG_TRAIL_SEGMENTS = 5
@@ -25,14 +25,14 @@ var _prev_ray_positions = [];
 var _rays = [];
 var _debug_curr_balls = [];
 var _debug_raycast_trail := LinkedList.new();
-onready var _sw := StopwatchFactory.create(name, 10, true);
+@onready var _sw := StopwatchFactory.create(name, 10, true);
 
 func _ready():
-	yield(get_tree(),"physics_frame")
+	await get_tree().physics_frame
 	
 	# use discrete RayCasts for continuous collision detection between _physics_process()
 	for _i in range(num_collision_raycasts):
-		var new_ray := RayCast.new()
+		var new_ray := RayCast3D.new()
 		# inherit properties of parent
 		new_ray.collision_mask = collision_mask
 		new_ray.collide_with_areas = collide_with_areas
@@ -52,10 +52,10 @@ func _ready():
 	remove_child($debug_ball)
 
 # override so that we can update child segments too
-func set_collision_mask_bit(bit: int, value: bool):
+func _set_collision_mask_value(bit: int, value: bool):
 	collision_mask = collision_mask | (int(value) << bit)
 	for ray in _rays:
-		ray.set_collision_mask_bit(bit,value)
+		ray.set_collision_mask_value(bit,value)
 		
 func reset_counters():
 	core_ray_collision_count = 0
@@ -64,15 +64,15 @@ func reset_counters():
 func _update_element_positions():
 	# generate new locations for ray casters
 	var saber_base = transform.origin
-	var saber_tip = saber_base + cast_to
+	var saber_tip = saber_base + target_position
 	var step_dist = (saber_tip - saber_base) / (num_collision_raycasts - 1)
 	
 	var next_local_pos = transform.origin
 	for i in range(num_collision_raycasts):
-		var next_global_pos = global_transform.xform(next_local_pos)
+		var next_global_pos = global_transform * (next_local_pos)
 			
 		# update ray's newest location for next physics frame processing
-		var ray : RayCast = _rays[i]
+		var ray : RayCast3D = _rays[i]
 		ray.global_transform.origin = next_global_pos
 		if DEBUG:
 			_debug_curr_balls[i].global_transform.origin = next_global_pos
@@ -83,7 +83,7 @@ func _physics_process(_delta):
 	_sw.start()
 	# see if 'core' ray is colliding with anything
 	var coll = get_collider()
-	if coll is Area:
+	if coll is Area3D:
 		core_ray_collision_count += 1
 		emit_signal("area_collided",coll)
 	
@@ -94,14 +94,14 @@ func _physics_process(_delta):
 		_update_element_positions()
 	
 	for i in range(num_collision_raycasts):
-		var ray : RayCast = _rays[i]
+		var ray : RayCast3D = _rays[i]
 			
 		# cast a ray to the newest location and check for collisions
-		ray.cast_to = ray.to_local(_prev_ray_positions[i])
-		if ray.cast_to.length() > MIN_SWEPT_LENGTH_THRESHOLD:
+		ray.target_position = ray.to_local(_prev_ray_positions[i])
+		if ray.target_position.length() > MIN_SWEPT_LENGTH_THRESHOLD:
 			ray.force_raycast_update()
 			coll = ray.get_collider()
-			if coll is Area:
+			if coll is Area3D:
 				aux_ray_collision_count += 1
 				emit_signal("area_collided",coll)
 		
@@ -113,7 +113,7 @@ func _physics_process(_delta):
 		# update oldest slide with newest ray casts
 		for i in range(num_collision_raycasts):
 			old_slice[i].global_transform = _rays[i].global_transform
-			old_slice[i].cast_to = _rays[i].cast_to
+			old_slice[i].target_position = _rays[i].target_position
 
 		_debug_raycast_trail.push_front(old_slice)
 	_sw.stop()
@@ -125,7 +125,7 @@ func _on_SwingableRayCast_tree_entered():
 		for _t in range(DEBUG_TRAIL_SEGMENTS):
 			var trail_slice = []
 			for _i in range(num_collision_raycasts):
-				var new_ray := RayCast.new()
+				var new_ray := RayCast3D.new()
 				new_ray.enabled = true
 				new_ray.collision_mask = collision_mask
 				scene_root.add_child(new_ray)

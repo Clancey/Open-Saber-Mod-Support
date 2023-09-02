@@ -14,13 +14,13 @@ var list_modes = ["plays"]
 var search_word = ""
 var item_selected = -1
 var downloading = []#[["name","version_info"]]
-onready var httpreq = HTTPRequest.new()
-onready var httpdownload = HTTPRequest.new()
-onready var httpcoverdownload = HTTPRequest.new()
-onready var httppreviewdownload = HTTPRequest.new()
-onready var placeholder_cover = preload("res://game/data/beepsaber_logo.png")
-onready var goto_maps_by = $gotoMapsBy
-onready var v_scroll = $ItemList.get_v_scroll()
+@onready var httpreq = HTTPRequest.new()
+@onready var httpdownload = HTTPRequest.new()
+@onready var httpcoverdownload = HTTPRequest.new()
+@onready var httppreviewdownload = HTTPRequest.new()
+@onready var placeholder_cover = preload("res://game/data/beepsaber_logo.png")
+@onready var goto_maps_by = $gotoMapsBy
+@onready var v_scroll = $ItemList.get_v_scroll_bar()
 
 const MAX_BACK_STACK_DEPTH = 10
 # series of previous requests that you can go back to
@@ -42,41 +42,43 @@ var prev_request = {
 	# "uploader_id" = ""
 }
 
-export(NodePath) var game;
-export(NodePath) var keyboard;
+@export var game_path: NodePath;
+var game;
+@export var keyboard_path: NodePath;
+var keyboard;
 
 func _ready():
 	UI_AudioEngine.attach_children(self)
-	game = get_node(game);
-	keyboard = get_node(keyboard);
+	game = get_node(game_path);
+	keyboard = get_node(keyboard_path);
 	$back.visible = false
-	v_scroll.connect("value_changed",self,"_on_ListV_Scroll_value_changed")
+	v_scroll.connect("value_changed", Callable(self, "_on_ListV_Scroll_value_changed"))
 	
 	httpreq.use_threads = true
 	get_tree().get_root().add_child(httpreq)
-	httpreq.connect("request_completed",self,"_on_HTTPRequest_request_completed")
+	httpreq.connect("request_completed", Callable(self, "_on_HTTPRequest_request_completed"))
 	
 	httpdownload.use_threads = true
 	httpdownload.download_chunk_size = 65536
 	get_tree().get_root().add_child(httpdownload)
-	httpdownload.connect("request_completed",self,"_on_HTTPRequest_download_completed")
+	httpdownload.connect("request_completed", Callable(self, "_on_HTTPRequest_download_completed"))
 	
 	httpcoverdownload.use_threads = true
 	httpcoverdownload.download_chunk_size = 65536
 	get_tree().get_root().add_child(httpcoverdownload)
-	httpcoverdownload.connect("request_completed",self,"_update_cover")
+	httpcoverdownload.connect("request_completed", Callable(self, "_update_cover"))
 	
 	httppreviewdownload.use_threads = true
 	httppreviewdownload.download_chunk_size = 65536
 	get_tree().get_root().add_child(httppreviewdownload)
-	httppreviewdownload.connect("request_completed",self,"_on_preview_download_completed")
+	httppreviewdownload.connect("request_completed", Callable(self, "_on_preview_download_completed"))
 	
 	if keyboard != null:
-		keyboard.connect("text_input_enter",self,"_text_input_enter")
-		keyboard.connect("text_input_cancel",self,"_text_input_cancel")
+		keyboard.connect("text_input_enter", Callable(self, "_text_input_enter"))
+		keyboard.connect("text_input_cancel", Callable(self, "_text_input_cancel"))
 
 # override hide() method to handle case where UI is inside a OQ_UI2DCanvas
-func hide():
+func _hide():
 	var parent_canvas = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
@@ -89,7 +91,7 @@ func hide():
 		parent_canvas.hide()
 		
 # override show() method to handle case where UI is inside a OQ_UI2DCanvas
-func show():
+func _show():
 	var parent_canvas = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
@@ -107,9 +109,12 @@ func update_list(request):
 	if page == 0:
 		# brand new request, clear list to prep for reload
 		$ItemList.clear()
-		goto_maps_by.visible = false
+		if goto_maps_by:
+			goto_maps_by.visible = false
 		song_data = []
 		item_selected = -1
+	if not httpcoverdownload:
+		return
 	httpcoverdownload.cancel_request()
 	httpreq.cancel_request()
 	prev_page_available = page
@@ -123,7 +128,7 @@ func update_list(request):
 		"text_search":
 			var search_text = request.search_text
 			$mode.text = search_text
-			httpreq.request("https://beatsaver.com/api/search/text/%s?q=%s&sortOrder=Relevance&automapper=true" % [page,search_text.percent_encode()])
+			httpreq.request("https://beatsaver.com/api/search/text/%s?q=%s&sortOrder=Relevance&automapper=true" % [page,search_text.uri_encode()])
 		"uploader":
 			var uploader_id = request.uploader_id
 			$mode.text = "Uploader"
@@ -140,11 +145,13 @@ func _add_to_back_stack(request):
 func _get_selected_song():
 	if item_selected >= 0 && song_data.size():
 		return song_data[item_selected]
-	return null
+	return {}
 
 func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 	if result == 0:
-		var json_data = parse_json(body.get_string_from_utf8())
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(body.get_string_from_utf8())
+		var json_data = test_json_conv.get_data()
 		next_page_available = prev_page_available + 1
 			
 		if json_data.has("docs"):
@@ -203,7 +210,7 @@ Difficulties:%s
 		difficulties,
 		selected_data["description"],
 	]
-	$song_data.bbcode_text = text
+	$song_data.text = text
 	
 	$TextureRect.texture = $ItemList.get_item_icon(index)
 
@@ -228,9 +235,8 @@ func _on_HTTPRequest_download_completed(result, response_code, headers, body):
 #	$download.disabled = false
 	if result == 0:
 		var has_error = false
-		var dir = Directory.new()
 		var tempdir = game.menu.bspath+"temp"
-		var error = dir.make_dir_recursive(tempdir)
+		var error = DirAccess.make_dir_recursive_absolute(tempdir)
 		if error != OK: 
 			vr.log_error(
 				"_on_HTTPRequest_download_completed - " +
@@ -241,9 +247,9 @@ func _on_HTTPRequest_download_completed(result, response_code, headers, body):
 		var song_dir_name = downloading[0][0].replace('/','')
 		
 		var zippath = game.menu.bspath+"temp/%s.zip"%song_dir_name
-		var file = File.new()
 		if not has_error:
-			if file.open(zippath,File.WRITE) == OK:
+			var file = FileAccess.open(zippath,FileAccess.WRITE)
+			if file:
 				file.store_buffer(body)
 				file.close()
 			else:
@@ -254,7 +260,7 @@ func _on_HTTPRequest_download_completed(result, response_code, headers, body):
 		
 		var song_out_dir = game.menu.bspath+("Songs/%s/"%song_dir_name)
 		if not has_error:
-			error = dir.make_dir_recursive(song_out_dir)
+			error = DirAccess.make_dir_recursive_absolute(song_out_dir)
 			if error != OK: 
 				vr.log_error(
 					"_on_HTTPRequest_download_completed - " +
@@ -265,6 +271,7 @@ func _on_HTTPRequest_download_completed(result, response_code, headers, body):
 		if not has_error:
 			error = Unzip.unzip(zippath,song_out_dir)
 			
+		var dir = DirAccess.open(zippath)
 		dir.remove(zippath)
 		
 		downloading.remove(0)
@@ -372,7 +379,7 @@ func _on_ListV_Scroll_value_changed(new_value):
 		_scroll_page_request_pending = true
 
 func _on_back_pressed():
-	if back_stack.empty():
+	if back_stack.is_empty():
 		return
 		
 	# re-request latest entry

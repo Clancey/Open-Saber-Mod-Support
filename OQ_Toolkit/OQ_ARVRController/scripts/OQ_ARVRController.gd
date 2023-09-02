@@ -1,5 +1,5 @@
 # This script contains the button logic for the controller
-extends ARVRController
+extends XRController3D
 class_name OQ_ARVRController
 
 enum TOUCH_CONTROLLER_MODEL_TYPE {
@@ -9,14 +9,14 @@ enum TOUCH_CONTROLLER_MODEL_TYPE {
 }
 
 # When set to true it will try to detect and load a model
-export var autoload_model = true;
+@export var autoload_model = true;
 
 # override for the model used for the touch controller
-export (TOUCH_CONTROLLER_MODEL_TYPE) var controller_model_type = TOUCH_CONTROLLER_MODEL_TYPE.AUTO;
+#@export (TOUCH_CONTROLLER_MODEL_TYPE) var controller_model_type = TOUCH_CONTROLLER_MODEL_TYPE.AUTO;
 
 # if set to true it will propagate the hand pinch gestures as axis events
-export var hand_pinch_to_axis = false;
-export var hand_pinch_to_button = true;
+@export var hand_pinch_to_axis = false;
+@export var hand_pinch_to_button = true;
 
 var is_hand = false; # this will be updated in the autoload_model
 
@@ -29,7 +29,7 @@ var _buttons_just_released = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 var _simulation_joystick_axis = [0.0, 0.0, 0.0, 0.0];
 
-export var enable_gesture_to_button = false;
+@export var enable_gesture_to_button = false;
 
 signal signal_controller_type_changed;
 
@@ -39,62 +39,62 @@ func _enter_tree():
 	if (!vr):
 		vr.log_error(" in OQ_ARVRController._enter_tree(): no vr singleton");
 		return;
-	if (controller_id == 1):
+	if (tracker == "left_hand"):
 		if (vr.leftController != null):
 			vr.log_warning(" in OQ_ARVRController._enter_tree(): left controller already set; overwriting it");
 		vr.leftController = self;
-	elif (controller_id == 2):
+	elif (tracker == "right_hand"):
 		if (vr.rightController != null):
 			vr.log_warning(" in OQ_ARVRController._enter_tree(): right controller already set; overwriting it");
 		vr.rightController = self;
 	else:
-		vr.log_error(" in OQ_ARVRController._enter_tree(): unexpected controller id %d" % controller_id);
+		vr.log_error(" in OQ_ARVRController._enter_tree(): unexpected controller id %d" % tracker);
 
 # Reset when we exit the tree
 func _exit_tree():
 	if (!vr):
 		vr.log_error(" in OQ_ARVRController._exit_tree(): no vr singleton");
 		return;
-	if (controller_id == 1):
+	if (tracker == "left_hand"):
 		if (vr.leftController != self):
 			vr.log_warning(" in OQ_ARVRController._exit_tree(): left controller different");
 			return;
 		vr.leftController = null;
-	elif (controller_id == 2):
+	elif (tracker == "right_hand"):
 		if (vr.rightController != self):
 			vr.log_warning(" in OQ_ARVRController._exit_tree(): right controller different");
 			return;
 		vr.rightController = null;
 	else:
-		vr.log_error(" in OQ_ARVRController._exit_tree(): unexpected controller id %d" % controller_id);
+		vr.log_error(" in OQ_ARVRController._exit_tree(): unexpected controller id %d" % tracker);
 
 
 func get_angular_velocity():
-	return vr.get_controller_angular_velocity(controller_id);
+	return vr.get_controller_angular_velocity(tracker);
 
 func get_angular_acceleration():
-	return vr.get_controller_angular_acceleration(controller_id);
+	return vr.get_controller_angular_acceleration(tracker);
 
 func get_linear_velocity():
 	if (is_hand && _hand_model):
 		return _hand_model.average_velocity;
-	return vr.get_controller_linear_velocity(controller_id);
+	return vr.get_controller_linear_velocity(tracker);
 
 func get_linear_acceleration():
-	return vr.get_controller_linear_acceleration(controller_id);
+	return vr.get_controller_linear_acceleration(tracker);
 
 
 func _ready():
 	# check if we already have one of the models attached so autoload still works
-	_controller_model = find_node("Feature_*ControllerModel*", false, false);
-	_hand_model = find_node("Feature_HandModel*", false, false);
+	_controller_model = find_child("Feature_*ControllerModel*", false, false);
+	_hand_model = find_child("Feature_HandModel*", false, false);
 
 	# heuristic to detect if we want hand behaviour
 	if (_hand_model != null): is_hand = true;
 
 # this is a convenience funciton to know the palm orientation; it might be unnecessary
 # in the future
-func get_palm_transform() -> Transform:
+func get_palm_transform() -> Transform3D:
 	if (is_hand && _hand_model):
 		return _hand_model.palm_marker.global_transform;
 	elif (!is_hand && _controller_model):
@@ -105,7 +105,7 @@ func get_palm_transform() -> Transform:
 
 # this is another convenience function as sometimes you don't want to flip
 # based on the palm orientation
-func get_grab_transform() -> Transform:
+func get_grab_transform() -> Transform3D:
 	if (is_hand && _hand_model):
 		return _hand_model.grab_marker.global_transform;
 	elif (!is_hand && _controller_model):
@@ -114,7 +114,7 @@ func get_grab_transform() -> Transform:
 	#fallback if we don't have any information yet
 	return global_transform;
 
-func get_ui_transform() -> Transform:
+func get_ui_transform() -> Transform3D:
 	if (is_hand && _hand_model):
 		return _hand_model.ui_marker.global_transform;
 	elif (!is_hand && _controller_model):
@@ -127,8 +127,8 @@ func get_ui_transform() -> Transform:
 # this is the logic for controller/hand model switching
 # at the moment it is not configurable from the outside
 var _last_controller_name = null;
-var _controller_model : Spatial = null;
-var _hand_model : Spatial = null
+var _controller_model : Node3D = null;
+var _hand_model : Node3D = null
 var _last_controller_model_type = null;
 
 func get_hand_model():
@@ -144,28 +144,29 @@ func get_hand_model():
 func _get_touch_controller_model(type,is_left):
 	var lOrR = "Left" if is_left else "Right"
 	# default to Quest 1 controller
-	var model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_Quest1ControllerModel_%s.tscn" % lOrR).instance()
+	var model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_Quest1ControllerModel_%s.tscn" % lOrR).instantiate()
 	
 	match type:
 		TOUCH_CONTROLLER_MODEL_TYPE.AUTO:
 			if vr.is_oculus_quest_1_device():
 				vr.log_info("Loading quest 1 controller model")
-				model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_Quest1ControllerModel_%s.tscn" % lOrR).instance()
+				model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_Quest1ControllerModel_%s.tscn" % lOrR).instantiate()
 			elif vr.is_oculus_quest_2_device():
 				vr.log_info("Loading quest 1 controller model")
-				model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_Quest2ControllerModel_%s.tscn" % lOrR).instance()
+				model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_Quest2ControllerModel_%s.tscn" % lOrR).instantiate()
 			else:
 				vr.log_warning("Unable to automatically determine controller model type.")
 		TOUCH_CONTROLLER_MODEL_TYPE.QUEST1:
-			model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_Quest1ControllerModel_%s.tscn" % lOrR).instance()
+			model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_Quest1ControllerModel_%s.tscn" % lOrR).instantiate()
 		TOUCH_CONTROLLER_MODEL_TYPE.QUEST2:
-			model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_Quest2ControllerModel_%s.tscn" % lOrR).instance();
+			model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_Quest2ControllerModel_%s.tscn" % lOrR).instantiate();
 		_:
 			vr.log_warning("Unsupported controller model type in _get_touch_controller_model(): " + str(type))
 			
 	return model
 
 func _auto_update_controller_model():
+	"""
 	var controller_name = get_controller_name();
 	
 	# determine if we need to make any controller model changes
@@ -194,14 +195,14 @@ func _auto_update_controller_model():
 		is_hand = true;
 		if (_controller_model != null): _controller_model.visible = false;
 		if (autoload_model && _hand_model == null):
-			_hand_model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_HandModel_Left.tscn").instance();
+			_hand_model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_HandModel_Left.tscn").instantiate();
 			add_child(_hand_model);
 		if (_hand_model != null): _hand_model.visible = true;
 	elif (controller_name == "Oculus Tracked Right Hand"):
 		is_hand = true;
 		if (_controller_model != null): _controller_model.visible = false;
 		if (autoload_model && _hand_model == null):
-			_hand_model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_HandModel_Right.tscn").instance();
+			_hand_model = load(vr.oq_base_dir + "/OQ_ARVRController/Feature_HandModel_Right.tscn").instantiate();
 			add_child(_hand_model);
 		if (_hand_model != null): _hand_model.visible = true;
 
@@ -236,7 +237,7 @@ func _auto_update_controller_model():
 		vr.log_warning("Unknown/Unsupported controller id in _auto_update_controller_model()")
 
 	emit_signal("signal_controller_type_changed", self);
-
+	"""
 
 
 func _button_pressed(button_id):
@@ -279,7 +280,7 @@ func _sim_is_button_pressed(i):
 func _sim_get_joystick_axis(i):
 	if (vr.inVR):
 		if (is_hand && !hand_pinch_to_axis): return 0.0;
-		return get_joystick_axis(i);
+		return get_input(i);
 	else: return _simulation_joystick_axis[i];
 
 func _update_buttons_and_sticks():
@@ -308,11 +309,11 @@ func is_simple_rumbling():
 	
 func _update_rumble(dt):
 	if (_rumble_duration < - 100): return;
-	set_rumble(_rumble_intensity);
+	simple_rumble(_rumble_intensity, _rumble_duration)
 	_rumble_duration -= dt;
 	if (_rumble_duration <= 0.0):
 		_rumble_duration = -128.0;
-		set_rumble(0.0);
+		simple_rumble(0.0, _rumble_duration)
 
 var first_time = true;
 

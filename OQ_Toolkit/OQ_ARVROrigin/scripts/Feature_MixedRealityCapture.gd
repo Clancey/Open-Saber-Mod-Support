@@ -1,6 +1,6 @@
 # You can find some getting started documentation on the toolkit project
 # wiki: https://github.com/NeoSpark314/godot_oculus_quest_toolkit/wiki/Feature_MixedRealityCapture
-extends Spatial
+extends Node3D
 
 enum ovrmMediaMrcActivationMode {
   Automatic = 0,
@@ -35,11 +35,11 @@ enum mrcCameraExtrinsics {
 
 var ovr_mrc = null;
 
-onready var _viewport_background = $Background_Viewport;
-onready var _camera_background = $Background_Viewport/Background_Camera; 
+@onready var _viewport_background = $Background_Viewport;
+@onready var _camera_background = $Background_Viewport/Background_Camera; 
 
-onready var _viewport_foreground = $Foreground_Viewport;
-onready var _camera_foreground = $Foreground_Viewport/Foreground_Camera; 
+@onready var _viewport_foreground = $Foreground_Viewport;
+@onready var _camera_foreground = $Foreground_Viewport/Foreground_Camera; 
 
 func _mrc_update_capture_camera(mrc_camera_id, cam, vp, is_background):
 	var intrinsics = ovr_mrc.get_external_camera_intrinsics(mrc_camera_id);
@@ -49,9 +49,9 @@ func _mrc_update_capture_camera(mrc_camera_id, cam, vp, is_background):
 
 	var h_fov = intrinsics[mrcCameraIntrinsics.FOVPort_LeftTan] + intrinsics[mrcCameraIntrinsics.FOVPort_RightTan];
 
-	cam.keep_aspect = Camera.KEEP_HEIGHT;
+	cam.keep_aspect = Camera3D.KEEP_HEIGHT;
 
-	cam.fov = rad2deg(h_fov) * 0.5;
+	cam.fov = rad_to_deg(h_fov) * 0.5;
 
 	var tracking_space_transform = vr.locate_tracking_space(vr.ovrVrApiTypes.OvrTrackingSpace.VRAPI_TRACKING_SPACE_STAGE);
 	cam.transform = extrinsics[mrcCameraExtrinsics.RelativePose];
@@ -78,8 +78,8 @@ func _initialize():
 	if (initialized_once): return;
 
 	# VisualServer.viewport_get_color_texture_id
-	if (!VisualServer.has_method("viewport_get_color_texture_id")):
-		vr.log_error("MixedRealityCapture currently requries a special build with the method 'VisualServer.viewport_get_color_texture_id'");
+	if (!RenderingServer.has_method("viewport_get_color_texture_id")):
+		vr.log_error("MixedRealityCapture currently requries a special build with the method 'RenderingServer.viewport_get_color_texture_id'");
 
 	"""
 	ovr_mrc = load("res://addons/godot_ovrmobile/OvrMRC.gdns");
@@ -111,6 +111,7 @@ func _show_debug_info():
 
 func _process(_dt):
 	_initialize();
+	"""
 
 	#_show_debug_info();
 
@@ -124,16 +125,16 @@ func _process(_dt):
 				# render once
 				if (_mrc_render_toggle):
 					_mrc_update_capture_camera(0, _camera_background, _viewport_background, true);
-					_viewport_background.render_target_update_mode = Viewport.UPDATE_ONCE;
+					_viewport_background.render_target_update_mode = SubViewport.UPDATE_ONCE;
 				else:
 					_mrc_update_capture_camera(0, _camera_foreground, _viewport_foreground, false);
-					_viewport_foreground.render_target_update_mode = Viewport.UPDATE_ONCE;
+					_viewport_foreground.render_target_update_mode = SubViewport.UPDATE_ONCE;
 
 				if (_mrc_render_toggle):
-					var timestamp = OS.get_ticks_usec();
+					var timestamp = Time.get_ticks_usec();
 
-					var background_texture_id = VisualServer.viewport_get_color_texture_id(_viewport_background.get_viewport_rid());
-					var foreground_texture_id = VisualServer.viewport_get_color_texture_id(_viewport_foreground.get_viewport_rid());
+					var background_texture_id = RenderingServer.viewport_get_color_texture_id(_viewport_background.get_viewport_rid());
+					var foreground_texture_id = RenderingServer.viewport_get_color_texture_id(_viewport_foreground.get_viewport_rid());
 
 					_last_sync_id = ovr_mrc.encode_mrc_frame_with_dual_texture(background_texture_id, foreground_texture_id, timestamp);
 
@@ -153,8 +154,8 @@ func _process(_dt):
 				vr.log_info("    " + str(c));
 				vr.log_info("    ovr_mrc.get_external_camera_intrinsics(...) = " + str(ovr_mrc.get_external_camera_intrinsics(c)));
 				vr.log_info("    ovr_mrc.get_external_camera_extrinsics(...) = " + str(ovr_mrc.get_external_camera_extrinsics(c)));
-
+"""
 
 func _ready():
-	if (not get_parent() is ARVROrigin):
-		vr.log_error("Feature_MixedRealityCapture: parent is not ARVROrigin");
+	if (not get_parent() is XROrigin3D):
+		vr.log_error("Feature_MixedRealityCapture: parent is not XROrigin3D");

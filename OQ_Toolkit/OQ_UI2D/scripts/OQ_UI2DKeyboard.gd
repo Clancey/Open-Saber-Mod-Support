@@ -1,17 +1,17 @@
-extends Spatial
+extends Node3D
 
-export var show_text_input := true;
+@export var show_text_input := true;
 # if 'show_text_input' is enabled and this flag is set true, then
 # the text input box will aquire focus when then keyboard gains visibilty
-export var focus_on_visible := false;
-export var cancelable := true setget _set_cancelable
+@export var focus_on_visible := false;
+@export var cancelable := true: set = _set_cancelable
 # the minimum number of characters needed to be entered before the enter button
 # will be enabled
-export var min_chars_to_enable_enter := 0
+@export var min_chars_to_enable_enter := 0
 
 # if 'true' then the keyboard will make sure the first letter of each word is
 # capitalized
-export var is_name_input := false
+@export var is_name_input := false
 
 var _text_edit : TextEdit = null;
 var _keyboard = null;
@@ -31,8 +31,8 @@ func _on_enter():
 
 
 func _ready():
-	_text_edit = $OQ_UI2DCanvas_TextInput.find_node("TextEdit", true, false);
-	_keyboard = $OQ_UI2DCanvas_Keyboard.find_node("VirtualKeyboard", true, false);
+	_text_edit = $OQ_UI2DCanvas_TextInput.find_child("TextEdit", true, false);
+	_keyboard = $OQ_UI2DCanvas_Keyboard.find_child("VirtualKeyboard", true, false);
 	_keyboard.set_cancelable(cancelable)
 	
 	# force update of things that based on the text input
@@ -41,8 +41,8 @@ func _ready():
 	_on_TextEdit_text_changed()
 	
 	if (show_text_input):
-		_keyboard.connect("cancel_pressed", self, "_on_cancel");
-		_keyboard.connect("enter_pressed", self, "_on_enter");
+		_keyboard.connect("cancel_pressed", Callable(self, "_on_cancel"));
+		_keyboard.connect("enter_pressed", Callable(self, "_on_enter"));
 	
 	if (show_text_input):
 		$OQ_UI2DCanvas_TextInput.visible = true;

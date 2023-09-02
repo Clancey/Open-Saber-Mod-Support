@@ -1,6 +1,6 @@
-extends RigidBody
+extends RigidBody3D
 
-onready var _meshinstance : MeshInstance = null
+@onready var _meshinstance : MeshInstance3D = null
 
 const timer_length = 0.3
 const timer_rcp = 1.0/timer_length
@@ -8,11 +8,11 @@ var lifetime = 0.0
 
 func _ready():
 	for child in get_children():
-		if child is MeshInstance:
+		if child is MeshInstance3D:
 			_meshinstance = child
 			break
 	if _meshinstance == null:
-		print("WARN: could not find child MeshInstance")
+		print("WARN: could not find child MeshInstance3D")
 	reset()
 
 func reset():
@@ -36,7 +36,7 @@ func _process(delta):
 		reset()
 		return
 	var f = lifetime*timer_rcp
-	_meshinstance.material_override.set_shader_param("cut_vanish",ease(f,2)*0.5)
+	_meshinstance.material_override.set_shader_parameter("cut_vanish",ease(f,2)*0.5)
 	
 #	f = ease(f,0.1)
 #	_meshinstance.scale = Vector3(f, f, f)

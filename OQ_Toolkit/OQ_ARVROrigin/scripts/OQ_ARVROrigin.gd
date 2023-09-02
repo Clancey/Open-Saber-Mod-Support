@@ -1,6 +1,6 @@
-extends ARVROrigin
+extends XROrigin3D
 
-export var debug_information := false;
+@export var debug_information := false;
 
 var is_fixed = false;
 

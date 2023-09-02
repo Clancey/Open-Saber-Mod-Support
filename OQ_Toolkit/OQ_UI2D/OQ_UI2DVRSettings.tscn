@@ -4,22 +4,22 @@
 [ext_resource path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DCanvas.tscn" type="PackedScene" id=2]
 [ext_resource path="res://OQ_Toolkit/OQ_UI2D/scripts/OQ_UI2DVRSettings.gd" type="Script" id=3]
 
-[node name="OQ_UI2DVRSettings" type="Spatial"]
+[node name="OQ_UI2DVRSettings" type="Node3D"]
 script = ExtResource( 3 )
 
 [node name="OQ_UI2DCanvas" parent="." instance=ExtResource( 2 )]
 
 [node name="ReferenceRect" type="ReferenceRect" parent="OQ_UI2DCanvas"]
-margin_right = 512.0
-margin_bottom = 512.0
+offset_right = 512.0
+offset_bottom = 512.0
 theme = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Title_Label" type="Label" parent="OQ_UI2DCanvas/ReferenceRect"]
-margin_right = 512.0
-margin_bottom = 48.0
+offset_right = 512.0
+offset_bottom = 48.0
 text = "VR Settings"
 align = 1
 valign = 1
@@ -28,10 +28,10 @@ __meta__ = {
 }
 
 [node name="FoveationLevel_Label" type="Label" parent="OQ_UI2DCanvas/ReferenceRect"]
-margin_left = 16.0
-margin_top = 64.0
-margin_right = 240.0
-margin_bottom = 112.0
+offset_left = 16.0
+offset_top = 64.0
+offset_right = 240.0
+offset_bottom = 112.0
 text = "Foveation Level:"
 valign = 1
 __meta__ = {
@@ -39,18 +39,18 @@ __meta__ = {
 }
 
 [node name="FoveationLevel_OptionButton" type="OptionButton" parent="OQ_UI2DCanvas/ReferenceRect/FoveationLevel_Label"]
-margin_left = 240.0
-margin_right = 480.0
-margin_bottom = 48.0
+offset_left = 240.0
+offset_right = 480.0
+offset_bottom = 48.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="IPDInfo_Label" type="Label" parent="OQ_UI2DCanvas/ReferenceRect"]
-margin_left = 16.0
-margin_top = 320.0
-margin_right = 240.0
-margin_bottom = 368.0
+offset_left = 16.0
+offset_top = 320.0
+offset_right = 240.0
+offset_bottom = 368.0
 text = "Current IPD:"
 valign = 1
 __meta__ = {
@@ -58,10 +58,10 @@ __meta__ = {
 }
 
 [node name="ExtraLatency_Label" type="Label" parent="OQ_UI2DCanvas/ReferenceRect"]
-margin_left = 16.0
-margin_top = 128.0
-margin_right = 240.0
-margin_bottom = 176.0
+offset_left = 16.0
+offset_top = 128.0
+offset_right = 240.0
+offset_bottom = 176.0
 text = "Extra Latency"
 valign = 1
 __meta__ = {
@@ -69,18 +69,18 @@ __meta__ = {
 }
 
 [node name="ExtraLatency_OptionButton" type="OptionButton" parent="OQ_UI2DCanvas/ReferenceRect/ExtraLatency_Label"]
-margin_left = 240.0
-margin_right = 480.0
-margin_bottom = 48.0
+offset_left = 240.0
+offset_right = 480.0
+offset_bottom = 48.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="TrackingSpace_Label" type="Label" parent="OQ_UI2DCanvas/ReferenceRect"]
-margin_left = 16.0
-margin_top = 192.0
-margin_right = 240.0
-margin_bottom = 240.0
+offset_left = 16.0
+offset_top = 192.0
+offset_right = 240.0
+offset_bottom = 240.0
 text = "Tracking Space:"
 valign = 1
 __meta__ = {
@@ -88,18 +88,18 @@ __meta__ = {
 }
 
 [node name="TrackingSpace_OptionButton" type="OptionButton" parent="OQ_UI2DCanvas/ReferenceRect/TrackingSpace_Label"]
-margin_left = 240.0
-margin_right = 480.0
-margin_bottom = 48.0
+offset_left = 240.0
+offset_right = 480.0
+offset_bottom = 48.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="BoundaryVisible_Label" type="Label" parent="OQ_UI2DCanvas/ReferenceRect"]
-margin_left = 16.0
-margin_top = 256.0
-margin_right = 240.0
-margin_bottom = 304.0
+offset_left = 16.0
+offset_top = 256.0
+offset_right = 240.0
+offset_bottom = 304.0
 text = "Boundary Visible:"
 valign = 1
 __meta__ = {
@@ -107,18 +107,18 @@ __meta__ = {
 }
 
 [node name="BoundaryVisible_CheckButton" type="CheckButton" parent="OQ_UI2DCanvas/ReferenceRect/BoundaryVisible_Label"]
-margin_left = 240.0
-margin_right = 316.0
-margin_bottom = 48.0
+offset_left = 240.0
+offset_right = 316.0
+offset_bottom = 48.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="DeviceType_Label" type="Label" parent="OQ_UI2DCanvas/ReferenceRect"]
-margin_left = 16.0
-margin_top = 375.0
-margin_right = 188.0
-margin_bottom = 423.0
+offset_left = 16.0
+offset_top = 375.0
+offset_right = 188.0
+offset_bottom = 423.0
 text = "Device Type:"
 valign = 1
 __meta__ = {
@@ -126,26 +126,26 @@ __meta__ = {
 }
 
 [node name="DeviceType_LineEdit" type="LineEdit" parent="OQ_UI2DCanvas/ReferenceRect/DeviceType_Label"]
-margin_left = 240.0
-margin_right = 480.0
-margin_bottom = 48.0
+offset_left = 240.0
+offset_right = 480.0
+offset_bottom = 48.0
 editable = false
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ControllerOverride_Label" type="Label" parent="OQ_UI2DCanvas/ReferenceRect"]
-margin_left = 16.0
-margin_top = 432.0
-margin_right = 245.0
-margin_bottom = 501.0
+offset_left = 16.0
+offset_top = 432.0
+offset_right = 245.0
+offset_bottom = 501.0
 text = "Controller Model
 Override:"
 
 [node name="ControllerOverride_OptionButton" type="OptionButton" parent="OQ_UI2DCanvas/ReferenceRect/ControllerOverride_Label"]
-margin_left = 240.0
-margin_right = 480.0
-margin_bottom = 48.0
+offset_left = 240.0
+offset_right = 480.0
+offset_bottom = 48.0
 __meta__ = {
 "_edit_use_anchors_": false
 }

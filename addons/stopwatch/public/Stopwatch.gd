@@ -1,11 +1,11 @@
-extends Reference
+extends RefCounted
 class_name Stopwatch
 
 const MAX_INT : int = 2^63
 const MIN_INT : int = -2^63
 
 class Interval:
-	extends Reference
+	extends RefCounted
 	var start_time_us : int = 0
 	var duration_us : int = 0
 
@@ -48,7 +48,7 @@ func start():
 	elif ! _allow_wrap and _idx >= _max_intervals:
 		return
 	
-	_intervals[_idx].start_time_us = OS.get_ticks_usec()
+	_intervals[_idx].start_time_us = Time.get_ticks_usec()
 	
 func stop():
 	if ! enabled:
@@ -56,7 +56,7 @@ func stop():
 	elif ! _allow_wrap and _idx >= _max_intervals:
 		return
 		
-	var dur = (OS.get_ticks_usec() - _intervals[_idx].start_time_us)
+	var dur = (Time.get_ticks_usec() - _intervals[_idx].start_time_us)
 	_intervals[_idx].duration_us = dur
 	if dur > max_duration:
 		max_duration = dur

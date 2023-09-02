@@ -1,15 +1,15 @@
 # Feature_HandModel_[Left|Right]
 # This script contains the logic to update the hand model pose from the VrApi
 # and also contains some helper functions
-extends Spatial
+extends Node3D
 
-onready var palm_marker = $PalmMarker;
-onready var grab_marker = $GrabMarker;
-onready var ui_marker = $UIMarker;
+@onready var palm_marker = $PalmMarker;
+@onready var grab_marker = $GrabMarker;
+@onready var ui_marker = $UIMarker;
 
-var hand : ARVRController = null;
-var model : Spatial = null;
-var skel : Skeleton = null; 
+var hand : XRController3D = null;
+var model : Node3D = null;
+var skel : Skeleton3D = null; 
 
 var tracking_confidence = 1.0;
 const tracking_confidence_threshold = 1.0
@@ -122,31 +122,31 @@ const _hand2vrapi_bone_map = [0, 2, 3, 4, 5,19, 6, 7, 8, 20,  9, 10, 11, 21, 12,
 var _vrapi_inverse_neutral_pose = []; # this is filled when clearing the rest pose
 
 # This is a test pose for the left hand used only on desktop so the hand has a proper position
-const test_pose_left_ThumbsUp = [Quat(0, 0, 0, 1), Quat(0, 0, 0, 1), Quat(0.321311, 0.450518, -0.055395, 0.831098),
-Quat(0.263483, -0.092072, 0.093766, 0.955671), Quat(-0.082704, -0.076956, -0.083991, 0.990042),
-Quat(0.085132, 0.074532, -0.185419, 0.976124), Quat(0.010016, -0.068604, 0.563012, 0.823536),
-Quat(-0.019362, 0.016689, 0.8093, 0.586839), Quat(-0.01652, -0.01319, 0.535006, 0.844584),
-Quat(-0.072779, -0.078873, 0.665195, 0.738917), Quat(-0.0125, 0.004871, 0.707232, 0.706854),
-Quat(-0.092244, 0.02486, 0.57957, 0.809304), Quat(-0.10324, -0.040148, 0.705716, 0.699782),
-Quat(-0.041179, 0.022867, 0.741938, 0.668812), Quat(-0.030043, 0.026896, 0.558157, 0.828755),
-Quat(-0.207036, -0.140343, 0.018312, 0.968042), Quat(0.054699, -0.041463, 0.706765, 0.704111),
-Quat(-0.081241, -0.013242, 0.560496, 0.824056), Quat(0.00276, 0.037404, 0.637818, 0.769273),
+const test_pose_left_ThumbsUp = [Quaternion(0, 0, 0, 1), Quaternion(0, 0, 0, 1), Quaternion(0.321311, 0.450518, -0.055395, 0.831098),
+Quaternion(0.263483, -0.092072, 0.093766, 0.955671), Quaternion(-0.082704, -0.076956, -0.083991, 0.990042),
+Quaternion(0.085132, 0.074532, -0.185419, 0.976124), Quaternion(0.010016, -0.068604, 0.563012, 0.823536),
+Quaternion(-0.019362, 0.016689, 0.8093, 0.586839), Quaternion(-0.01652, -0.01319, 0.535006, 0.844584),
+Quaternion(-0.072779, -0.078873, 0.665195, 0.738917), Quaternion(-0.0125, 0.004871, 0.707232, 0.706854),
+Quaternion(-0.092244, 0.02486, 0.57957, 0.809304), Quaternion(-0.10324, -0.040148, 0.705716, 0.699782),
+Quaternion(-0.041179, 0.022867, 0.741938, 0.668812), Quaternion(-0.030043, 0.026896, 0.558157, 0.828755),
+Quaternion(-0.207036, -0.140343, 0.018312, 0.968042), Quaternion(0.054699, -0.041463, 0.706765, 0.704111),
+Quaternion(-0.081241, -0.013242, 0.560496, 0.824056), Quaternion(0.00276, 0.037404, 0.637818, 0.769273),
 ]
 
 func _ready():
 	hand = get_parent();
-	if (not hand is ARVRController):
-		vr.log_error(" in Feature_HandModel: parent not ARVRController.");
+	if (not hand is XRController3D):
+		vr.log_error(" in Feature_HandModel: parent not XRController3D.");
 		
 	model = get_child(0);
 	if (model == null):
 		vr.log_error(" in Feature_HandModel: expected hand model to be child 0");
 		
-	skel = model.get_child(0).get_child(0); # this is specific to the .gltf file that was exported
+	skel = model.get_child(0).get_child(0); # this is specific to the super.gltf file that was exported
 	if (skel == null):
 		vr.log_error(" in Feature_HandModel: could not get skeleton of hand");
 
-	handmeshnode = skel.find_node("?_handMeshNode")
+	handmeshnode = skel.find_child("?_handMeshNode")
 	
 	# for some reason handmeshnode.get_surface_material(0) returns null, and this 
 	# is my only work-around to access its material for transparency adjustment 
@@ -156,7 +156,7 @@ func _ready():
 	handmaterial_fading.flags_transparent = true
 	
 	# transparency glitches with back surfaces present
-	handmaterial_fading.params_cull_mode = SpatialMaterial.CULL_BACK
+	handmaterial_fading.params_cull_mode = StandardMaterial3D.CULL_BACK
 		
 	_vrapi_bone_orientations.resize(24);
 	_clear_bone_rest(skel);
@@ -169,7 +169,7 @@ func _ready():
 func _get_bone_angle_diff(ovrHandBone_id):
 	var quat_diff = _vrapi_bone_orientations[ovrHandBone_id] * _vrapi_inverse_neutral_pose[ovrHandBone_id];
 	var a = acos(clamp(quat_diff.w, -1.0, 1.0));
-	return rad2deg(a);
+	return rad_to_deg(a);
 
 # For simple gesture detection we can just look at the state of the fingers
 # and distinguish between bent and straight
@@ -260,18 +260,18 @@ func _process(_dt):
 		_update_hand_model(_dt, hand, model, skel);
 	_track_average_velocity(_dt);
 
-func _clear_bone_rest(skeleton : Skeleton):
+func _clear_bone_rest(skeleton : Skeleton3D):
 	_vrapi_inverse_neutral_pose.resize(skeleton.get_bone_count());
-	skeleton.set_bone_rest(0, Transform()); # only base pose needs to be reset
+	skeleton.set_bone_rest(0, Transform3D()); # only base pose needs to be reset
 	for i in range(0, skeleton.get_bone_count()):
 		var bone_rest = skeleton.get_bone_rest(i);
-		_vrapi_inverse_neutral_pose[_hand2vrapi_bone_map[i]] = bone_rest.basis.get_rotation_quat().inverse();
-		_vrapi_bone_orientations[_hand2vrapi_bone_map[i]]  = bone_rest.basis.get_rotation_quat();
+		_vrapi_inverse_neutral_pose[_hand2vrapi_bone_map[i]] = bone_rest.basis.get_rotation_quaternion().inverse();
+		_vrapi_bone_orientations[_hand2vrapi_bone_map[i]]  = bone_rest.basis.get_rotation_quaternion();
 
 
 
 # Query the VrApi hand pose state and update the hand model bone pose
-func _update_hand_model(_dt, param_hand: ARVRController, param_model : Spatial, skeleton: Skeleton):
+func _update_hand_model(_dt, param_hand: XRController3D, param_model : Node3D, skeleton: Skeleton3D):
 	# function arguments redundant, should use hand, model, skel, ... as we are accessing class variable anyway
 	
 	# we check to level visibility here for the node to not update
@@ -286,8 +286,8 @@ func _update_hand_model(_dt, param_hand: ARVRController, param_model : Spatial, 
 		hand_tracking_valid = (tracking_confidence >= tracking_confidence_threshold)
 		if hand_tracking_valid:
 			for i in range(0, _vrapi2hand_bone_map.size()):
-				skeleton.set_bone_pose(_vrapi2hand_bone_map[i], Transform(_vrapi_inverse_neutral_pose[i]*_vrapi_bone_orientations[i]));
-			transform = Transform()
+				skeleton.set_bone_pose(_vrapi2hand_bone_map[i], Transform3D(_vrapi_inverse_neutral_pose[i]*_vrapi_bone_orientations[i]));
+			transform = Transform3D()
 			if translucentvalidity == 0.0:
 				handmeshnode.material_override = handmaterial_fading
 				param_model.visible = true;

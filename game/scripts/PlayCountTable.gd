@@ -71,11 +71,13 @@ func get_total_play_count(map_info):
 
 # restores play count table from filesystem
 func load_table():
-	var file = File.new()
-	if file.open(PLAY_COUNT_FILEPATH,File.READ) == OK:
+	var file = FileAccess.open(PLAY_COUNT_FILEPATH,FileAccess.READ)
+	if file:
 		var text = file.get_as_text()
 		file.close()
-		var json_res = JSON.parse(text)
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(text)
+		var json_res = test_json_conv.get_data()
 		if json_res.error == OK:
 			_pc_table = json_res.result
 	else:
@@ -83,9 +85,9 @@ func load_table():
 
 # saves play count table to filesystem
 func save_table():
-	var file = File.new()
-	if file.open(PLAY_COUNT_FILEPATH,File.WRITE) == OK:
-		file.store_string(JSON.print(_pc_table,"   ",true))
+	var file = FileAccess.open(PLAY_COUNT_FILEPATH,FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(_pc_table,"   ",true))
 		file.close()
 	else:
 		print("ERROR: Failed to open %s" % PLAY_COUNT_FILEPATH)

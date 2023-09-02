@@ -1,4 +1,4 @@
-tool
+@tool
 extends MarginContainer
 
 const GRID_COL_ENABLED = 0
@@ -9,12 +9,12 @@ const GRID_COL_MAX = 4
 const GRID_COL_MEAN = 5
 const GRID_COL_INTERVALS = 6
 
-onready var _client := $Client
-onready var _collect_timer := $CollectionTimer
-onready var _connection_label := $VBox/TopBar/connection_label
-onready var _hostname_edit := $VBox/TopBar/hostname_edit
-onready var _connect_button := $VBox/TopBar/connect_button
-onready var _grid := $VBox/HSplit/GridScroll/Grid
+@onready var _client := $Client
+@onready var _collect_timer := $CollectionTimer
+@onready var _connection_label := $VBox/TopBar/connection_label
+@onready var _hostname_edit := $VBox/TopBar/hostname_edit
+@onready var _connect_button := $VBox/TopBar/connect_button
+@onready var _grid := $VBox/HSplit/GridScroll/Grid
 
 var _sw_rows = {}
 
@@ -27,11 +27,11 @@ func _add_sw_to_grid(sw_id, sw_summary):
 		return
 		
 	var new_row = _create_new_row()
-	new_row[GRID_COL_ENABLED].pressed = sw_summary['enabled']
-	new_row[GRID_COL_ENABLED].connect("toggled",self,"_on_sw_checkbox_toggled",[sw_id])
-	new_row[GRID_COL_RESET].connect("pressed",self,"_on_sw_reset_pressed",[sw_id])
+	new_row[GRID_COL_ENABLED].button_pressed = sw_summary['enabled']
+	new_row[GRID_COL_ENABLED].connect("toggled", Callable(self, "_on_sw_checkbox_toggled").bind(sw_id))
+	new_row[GRID_COL_RESET].connect("pressed", Callable(self, "_on_sw_reset_pressed").bind(sw_id))
 	new_row[GRID_COL_NAME].text = sw_summary['name']
-	new_row[GRID_COL_NAME].hint_tooltip = sw_summary['name']
+	new_row[GRID_COL_NAME].tooltip_text = sw_summary['name']
 	_sw_rows[sw_id] = new_row
 	for ctrl in new_row:
 		_grid.add_child(ctrl)
@@ -39,11 +39,11 @@ func _add_sw_to_grid(sw_id, sw_summary):
 func _create_new_row():
 	var new_row = []
 	var enable_checkbox = CheckBox.new()
-	enable_checkbox.hint_tooltip = "enables the stopwatch on the remote side"
+	enable_checkbox.tooltip_text = "enables the stopwatch on the remote side"
 	new_row.append(enable_checkbox)# enable
 	var reset_button := Button.new()
 	reset_button.text = "Reset"
-	reset_button.hint_tooltip = "resets the stopwatch on the remote side"
+	reset_button.tooltip_text = "resets the stopwatch on the remote side"
 	new_row.append(reset_button)
 	var name_label := Label.new()
 	name_label.mouse_filter = Control.MOUSE_FILTER_PASS

@@ -1,7 +1,7 @@
 extends Node
 
 class StopwatchFactoryEntry:
-	extends Reference
+	extends RefCounted
 	var name : String = ''
 	var sw : Stopwatch = null
 	
@@ -16,14 +16,14 @@ var _next_sw_id = 0
 var _server := UDPServer.new()
 var _unique_id = ''
 var _peer : PacketPeerUDP = null
-onready var _heartbeat_timer := Timer.new()
+@onready var _heartbeat_timer := Timer.new()
 
 func _ready():
 	_server.listen(DEFAULT_PORT)
 	_unique_id = str(randi()).sha256_text()
 	add_child(_heartbeat_timer)
-	connect("tree_exited",self,"_on_tree_exited")
-	_heartbeat_timer.connect("timeout",self,"_on_heartbeat_timeout")
+	connect("tree_exited", Callable(self, "_on_tree_exited"))
+	_heartbeat_timer.connect("timeout", Callable(self, "_on_heartbeat_timeout"))
 
 func _process(delta):
 	_server.poll()
@@ -34,7 +34,9 @@ func _process(delta):
 			return
 			
 		var packet_str = _peer.get_packet().get_string_from_utf8()
-		var json_res = JSON.parse(packet_str)
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(packet_str)
+		var json_res = test_json_conv.get_data()
 		if json_res.error != OK:
 			print("SERVER: json_res.error = %d; packet_str = %s" % [json_res.error,packet_str])
 			return
@@ -64,7 +66,7 @@ func _try_connect():
 		_peer = _server.take_connection()
 		print("SERVER: accepted peer: %s:%s" % [_peer.get_packet_ip(), _peer.get_packet_port()])
 		var hello = HELLO_PACKET % _unique_id
-		_peer.put_packet(hello.to_utf8())
+		_peer.put_packet(hello.to_utf8_buffer())
 		_heartbeat_timer.one_shot = false
 		_heartbeat_timer.start(1)
 
@@ -86,7 +88,7 @@ func _respond_to_list():
 			'enabled' : _stopwatches[sw_id].sw.enabled
 		}
 	
-	var packet = JSON.print(data).to_utf8()
+	var packet = JSON.stringify(data).to_utf8_buffer()
 	_peer.put_packet(packet)
 	
 func _respond_to_summary_data():
@@ -107,7 +109,7 @@ func _respond_to_summary_data():
 			'intervals' : sw.total_intervals
 		}
 	
-	var packet = JSON.print(data).to_utf8()
+	var packet = JSON.stringify(data).to_utf8_buffer()
 	_peer.put_packet(packet)
 
 func _handle_enable_sw(sw_id : int, enabled : bool):
@@ -118,12 +120,12 @@ func _handle_reset_sw(sw_id : int):
 	if _stopwatches.has(sw_id):
 		_stopwatches[sw_id].sw.reset()
 
-var GOODBYE_PACKET = '{"type":"goodbye"}'.to_utf8()
+var GOODBYE_PACKET = '{"type":"goodbye"}'.to_utf8_buffer()
 func _on_tree_exited():
 	if _peer != null:
 		_peer.put_packet(GOODBYE_PACKET)
 
-var HEARTBEAT_PACKET = '{"type":"heartbeat"}'.to_utf8()
+var HEARTBEAT_PACKET = '{"type":"heartbeat"}'.to_utf8_buffer()
 func _on_heartbeat_timeout():
 	if _peer != null:
 #		print("SERVER: heartbeat")

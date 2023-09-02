@@ -1,8 +1,8 @@
-extends Spatial
+extends Node3D
 class_name BeepCubeSliceParticles
 
-onready var c1 := $CPUParticles
-onready var c2 := $CPUParticles2
+@onready var c1 := $CPUParticles3D
+@onready var c2 := $CPUParticles2
 
 func _ready():
 	c1.one_shot = true

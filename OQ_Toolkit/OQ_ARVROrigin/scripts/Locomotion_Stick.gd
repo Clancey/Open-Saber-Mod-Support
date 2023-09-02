@@ -1,29 +1,29 @@
-extends Spatial
+extends Node3D
 
-export var active = true;
-export var debug_information := false;
+@export var active = true;
+@export var debug_information := false;
 
-export var dead_zone = 0.125;
+@export var dead_zone = 0.125;
 
-export var move_speed = 1.0;
+@export var move_speed = 1.0;
 
-export var enable_vignette = false;
-export var vignette_radius_0 = 0.5;
-export var vignette_radius_1 = 0.8;
-export var vignette_color = Color(0.0,0.0,0.0,1.0);
+@export var enable_vignette = false;
+@export var vignette_radius_0 = 0.5;
+@export var vignette_radius_1 = 0.8;
+@export var vignette_color = Color(0.0,0.0,0.0,1.0);
 
-onready var movement_vignette_rect = $MovementVignette_ColorRect;
+@onready var movement_vignette_rect = $MovementVignette_ColorRect;
 
-export(vr.AXIS) var move_left_right = vr.AXIS.LEFT_JOYSTICK_X;
-export(vr.AXIS) var move_forward_back = vr.AXIS.LEFT_JOYSTICK_Y;
+@export var move_left_right = vr.AXIS.LEFT_JOYSTICK_X; # (vr.AXIS)
+@export var move_forward_back = vr.AXIS.LEFT_JOYSTICK_Y; # (vr.AXIS)
 
 enum MovementOrientation { HEAD, HAND_LEFT, HAND_RIGHT }
-export(MovementOrientation) var movement_orientation := MovementOrientation.HEAD
+@export var movement_orientation := MovementOrientation.HEAD
 
-export(vr.LocomotionStickTurnType) var turn_type = vr.LocomotionStickTurnType.CLICK
-export var smooth_turn_speed := 90.0;
-export var click_turn_angle := 45.0; 
-export(vr.AXIS) var turn_left_right = vr.AXIS.RIGHT_JOYSTICK_X;
+@export var turn_type = vr.LocomotionStickTurnType.CLICK # (vr.LocomotionStickTurnType)
+@export var smooth_turn_speed := 90.0;
+@export var click_turn_angle := 45.0; 
+@export var turn_left_right = vr.AXIS.RIGHT_JOYSTICK_X; # (vr.AXIS)
 
 
 # this is a basic solution to get some control over movement into the
@@ -40,16 +40,16 @@ func _show_debug_information():
 	vr.show_dbg_info(name, "move_checker=%s" % [mcname]);
 
 func _ready():
-	if (not get_parent() is ARVROrigin):
-		vr.log_error("Locomotion_Stick: parent is not ARVROrigin");
+	if (not get_parent() is XROrigin3D):
+		vr.log_error("Locomotion_Stick: parent is not XROrigin3D");
 
-	movement_vignette_rect.material.set_shader_param("r0", vignette_radius_0);
-	movement_vignette_rect.material.set_shader_param("r1", vignette_radius_1);
-	movement_vignette_rect.material.set_shader_param("color", vignette_color);
+	movement_vignette_rect.material.set_shader_parameter("r0", vignette_radius_0);
+	movement_vignette_rect.material.set_shader_parameter("r1", vignette_radius_1);
+	movement_vignette_rect.material.set_shader_parameter("color", vignette_color);
 	
 	movement_vignette_rect.visible = false;
 	
-	var player_collision = get_parent().find_node("Feature_PlayerCollision", false, false);
+	var player_collision = get_parent().find_child("Feature_PlayerCollision", false, false);
 	if (player_collision != null):
 		vr.log_info("Locomotion_Stick: found Feature_PlayerCollision: using it as move_checker");
 		move_checker = player_collision;
@@ -96,7 +96,7 @@ func move(dt):
 	if (move_checker):
 		actual_velocity = move_checker.oq_locomotion_stick_check_move(actual_velocity, dt);
 
-	vr.vrOrigin.translation += actual_velocity * dt;
+	vr.vrOrigin.position += actual_velocity * dt;
 	
 	is_moving = actual_velocity.length_squared() > 0.0;
 
@@ -120,12 +120,12 @@ func turn(dt):
 	if (turn_type == vr.LocomotionStickTurnType.CLICK && !last_click_rotate):
 		last_click_rotate = true;
 		var dsign = sign(dlr);
-		vr.vrOrigin.rotate_y(dsign * deg2rad(click_turn_angle));
+		vr.vrOrigin.rotate_y(dsign * deg_to_rad(click_turn_angle));
 			
 	# smooth turning
 	elif (turn_type == vr.LocomotionStickTurnType.SMOOTH):
 		if (enable_vignette) : movement_vignette_rect.visible = true;
-		vr.vrOrigin.rotate_y(deg2rad(dlr * smooth_turn_speed * dt));
+		vr.vrOrigin.rotate_y(deg_to_rad(dlr * smooth_turn_speed * dt));
 
 	# reposition vrOrigin for in place rotation
 	vr.vrOrigin.global_transform.origin +=  origHeadPos - vr.vrCamera.global_transform.origin;

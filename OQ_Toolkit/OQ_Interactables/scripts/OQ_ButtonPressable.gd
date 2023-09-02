@@ -1,7 +1,7 @@
 # This is a first draft of a pressable toggle button
 # At the moment it interacts with any area that enters it
 
-extends Spatial
+extends Node3D
 
 signal button_pressed
 
@@ -9,7 +9,7 @@ var touching := false
 var at_default_pos := true
 var triggering := false
 var is_on := false
-var hand_area: Area
+var hand_area: Area3D
 var button_half_length_vector
 var hand_pos: Vector3
 var prev_hand_pos: Vector3
@@ -18,22 +18,22 @@ var lerp_weight: float
 var start_time := 0.0
 var speed := 2.0
 
-onready var initial_pos_local: = get_transform().origin
-onready var initial_pos_global: = get_global_transform().origin
-onready var button_forward_vector_norm = get_transform().basis.z.normalized()
-onready var z_scale = scale.z
-onready var button_mesh := $MeshInstance
+@onready var initial_pos_local: = get_transform().origin
+@onready var initial_pos_global: = get_global_transform().origin
+@onready var button_forward_vector_norm = get_transform().basis.z.normalized()
+@onready var z_scale = scale.z
+@onready var button_mesh := $MeshInstance3D
 
-export var press_distance := 0.008
-export(Material) var off_material
-export(Material) var on_material
-export var on_on_start := false
+@export var press_distance := 0.008
+@export var off_material: Material
+@export var on_material: Material
+@export var on_on_start := false
 
 
 func _ready():
 	# connect to signals
-	$ButtonArea.connect("area_entered", self, "_on_ButtonArea_area_entered")
-	$ButtonArea.connect("area_exited", self, "_on_ButtonArea_area_exited")
+	$ButtonArea.connect("area_entered", Callable(self, "_on_ButtonArea_area_entered"))
+	$ButtonArea.connect("area_exited", Callable(self, "_on_ButtonArea_area_exited"))
 	
 	button_half_length_vector = initial_pos_local + button_forward_vector_norm * z_scale / 2
 	
@@ -97,7 +97,7 @@ func _on_ButtonArea_area_exited(_area):
 	touching = false
 
 
-func button_press(_other_area: Area):
+func button_press(_other_area: Area3D):
 	is_on = !is_on
 	switch_mat(is_on)
 	emit_signal("button_pressed")

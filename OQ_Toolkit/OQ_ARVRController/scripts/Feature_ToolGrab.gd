@@ -1,28 +1,28 @@
 # TODO:
 # create the hingejoint and kinematic body maybe only when needed
 #   and not as part of the scene always
-extends Spatial
+extends Node3D
 class_name Feature_ToolGrab
 
-var controller : ARVRController = null;
-var grab_area : Area = null;
+var controller : XRController3D = null;
+var grab_area : Area3D = null;
 var held_object = null;
 var held_object_data = {};
-var grab_mesh : MeshInstance = null;
+var grab_mesh : MeshInstance3D = null;
 var held_object_initial_parent : Node
 
-export var collision_body_active := false;
+@export var collision_body_active := false;
 
-onready var _hinge_joint : HingeJoint = $HingeJoint;
+@onready var _hinge_joint : HingeJoint3D = $HingeJoint3D;
 
-export var reparent_mesh = false;
+@export var reparent_mesh = false;
 
-export var hide_model_on_grab := false;
+@export var hide_model_on_grab := false;
 
 func _ready():
 	controller = get_parent();
-	if (not controller is ARVRController):
-		vr.log_error(" in Feature_RigidBodyGrab: parent not ARVRController.");
+	if (not controller is XRController3D):
+		vr.log_error(" in Feature_RigidBodyGrab: parent not XRController3D.");
 	grab_area = $GrabArea;
 	
 	

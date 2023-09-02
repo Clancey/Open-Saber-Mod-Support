@@ -1,6 +1,6 @@
-extends Camera
+extends Camera3D
 
-export(float) var speed = 8
+@export var speed: float = 8
 
 func _process(_dt):
 	var basis = self.global_transform.basis;
@@ -22,5 +22,5 @@ func _input(event):
 	if (event is InputEventMouseMotion && Input.is_mouse_button_pressed(2)):
 		var yaw = event.relative.x;
 		var pitch = event.relative.y;
-		self.rotate_y(deg2rad(-yaw));
-		self.rotate_object_local(Vector3(1,0,0), deg2rad(-pitch));
+		self.rotate_y(deg_to_rad(-yaw));
+		self.rotate_object_local(Vector3(1,0,0), deg_to_rad(-pitch));

@@ -1,15 +1,15 @@
 # The lightsaber logic is mostly contained in the BeepSaber_Game.gd
 # here I only track the extended/sheethed state and provide helper functions to
 # trigger the necessary animations
-extends Area
+extends Area3D
 
 # the type of note this saber can cut (0 -> left, 1 -> right)
-export(int, 0, 1) var type = 0
+@export var type = 0 # (int, 0, 1)
 
 # store the saber material in a variable so the main game can set the color on initialize
-onready var _anim := $AnimationPlayer;
-onready var _swing_cast := $SwingableRayCast
-onready var _main_game = null;
+@onready var _anim := $AnimationPlayer;
+@onready var _swing_cast := $SwingableRayCast
+@onready var _main_game = null;
 
 signal saber_show()
 signal saber_hide()
@@ -21,10 +21,10 @@ signal saber_hit(cube,time_offset)
 signal cube_collide(cube)
 signal bomb_collide(bomb)
 
-export var offset_pos = Vector3()
-export var offset_rot = Vector3()
+@export var offset_pos = Vector3()
+@export var offset_rot = Vector3()
 
-func show():
+func _show():
 	if (!is_extended()):
 		_anim.play("Show");
 		emit_signal("saber_show")
@@ -39,7 +39,7 @@ func is_extended():
 	return false
 
 
-func hide():
+func _hide():
 	# This check makes sure that we are not already in the hidden state
 	# (where we translated the light saber to the hilt) to avoid playing it back
 	# again from the fully extended light saber position
@@ -68,13 +68,13 @@ func set_collision_mechanism(use_swingable_raycast: bool):
 	_swing_cast.set_process(use_swingable_raycast)
 	_swing_cast.set_physics_process(use_swingable_raycast)
 	
-	yield(get_tree(),"physics_frame")
+	await get_tree().physics_frame
 	if type == 0:
-		_swing_cast.set_collision_mask_bit(CollisionLayerConstants.LeftNote_bit, use_swingable_raycast)
-		set_collision_mask_bit(CollisionLayerConstants.LeftNote_bit, ! use_swingable_raycast)
+		_swing_cast._set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, use_swingable_raycast)
+		set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, ! use_swingable_raycast)
 	else:
-		_swing_cast.set_collision_mask_bit(CollisionLayerConstants.RightNote_bit, use_swingable_raycast)
-		set_collision_mask_bit(CollisionLayerConstants.RightNote_bit, ! use_swingable_raycast)
+		_swing_cast._set_collision_mask_value(CollisionLayerConstants.RightNote_bit, use_swingable_raycast)
+		set_collision_mask_value(CollisionLayerConstants.RightNote_bit, ! use_swingable_raycast)
 
 func _ready():
 #	set_saber("res://game/sabers/particles/particles_saber.tscn")
@@ -86,24 +86,24 @@ func _ready():
 	# default to using SwingableRaycast collision detection
 	set_collision_mechanism(true)
 	
-	translation = offset_pos
+	position = offset_pos
 	rotation_degrees = offset_rot
 	
 func _process(delta):
 	
-	translation = offset_pos
+	position = offset_pos
 	rotation_degrees = offset_rot
 	if is_extended():
 		#check floor collision for burn mark
-		$RayCast.force_raycast_update()
-		var raycoli = $RayCast.get_collider()
+		$RayCast3D.force_raycast_update()
+		var raycoli = $RayCast3D.get_collider()
 		if raycoli != null and (raycoli.collision_layer & CollisionLayerConstants.Floor_mask):
-			var colipoint = $RayCast.get_collision_point()
+			var colipoint = $RayCast3D.get_collision_point()
 			raycoli.burn_mark(colipoint,type)
 				
 func set_saber(saber_path):
 	var prenewsaber = load(saber_path)
-	var newsaber = prenewsaber.instance()
+	var newsaber = prenewsaber.instantiate()
 	for i in $saber_holder.get_children():
 		i.queue_free()
 	$saber_holder.add_child(newsaber)

@@ -1,30 +1,30 @@
-tool
-extends Spatial
+@tool
+extends Node3D
 
-export var text := "I am a Label\nWith a new line"
-export var margin := 16;
-export var billboard := false;
-export var depth_test := true;
+@export var text := "I am a Label\nWith a new line"
+@export var margin := 16;
+@export var billboard := false;
+@export var depth_test := true;
 
 enum ResizeModes {AUTO_RESIZE, FIXED}
-export (ResizeModes) var resize_mode := ResizeModes.AUTO_RESIZE
+@export (ResizeModes) var resize_mode := ResizeModes.AUTO_RESIZE
 
-export var font_size_multiplier := 1.0
-export (Color) var font_color := Color(1,1,1,1);
-export (Color) var background_color := Color(0,0,0,1);
+@export var font_size_multiplier := 1.0
+@export (Color) var font_color := Color(1,1,1,1);
+@export (Color) var background_color := Color(0,0,0,1);
 #export var line_to_parent = false;
 
-export var transparent := false setget set_transparent;
+@export var transparent := false: set = set_transparent
 func set_transparent(value: bool):
 	transparent = value
 	update_transparency()
 
 
-onready var ui_label : Label = $Viewport/ColorRect/CenterContainer/Label
-onready var ui_container : CenterContainer = $Viewport/ColorRect/CenterContainer
-onready var ui_color_rect : ColorRect = $Viewport/ColorRect
-onready var ui_viewport : Viewport = $Viewport
-onready var mesh_instance : MeshInstance = $MeshInstance
+@onready var ui_label : Label = $SubViewport/ColorRect/CenterContainer/Label
+@onready var ui_container : CenterContainer = $SubViewport/ColorRect/CenterContainer
+@onready var ui_color_rect : ColorRect = $SubViewport/ColorRect
+@onready var ui_viewport : SubViewport = $SubViewport
+@onready var mesh_instance : MeshInstance3D = $MeshInstance3D
 var ui_mesh : QuadMesh = null;
 
 var mesh_material = null;
@@ -36,13 +36,13 @@ func _ready():
 	mesh_material = mesh_instance.material_override
 	
 	if (billboard):
-		mesh_material.params_billboard_mode = SpatialMaterial.BILLBOARD_FIXED_Y;
+		mesh_material.params_billboard_mode = StandardMaterial3D.BILLBOARD_FIXED_Y;
 	mesh_material.flags_no_depth_test = !depth_test;
 	
 	# only enable transparency when necessary as it is significantly slower than non-transparent rendering
 	update_transparency()
 	
-	ui_label.add_color_override("font_color", font_color)
+	ui_label.add_theme_color_override("font_color", font_color)
 	ui_color_rect.color = background_color
 	
 	#if (line_to_parent):
@@ -103,6 +103,6 @@ func set_label_text(t: String):
 			resize_fixed();
 			
 func _process(_dt):
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		set_label_text(text);
 			

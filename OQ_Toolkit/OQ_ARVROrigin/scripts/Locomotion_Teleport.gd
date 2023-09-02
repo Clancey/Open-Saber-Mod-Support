@@ -7,34 +7,34 @@
 #  - add export feature to configure the arc_mesh visualization from the outside
 #  - blink-teleport mode
 
-extends Spatial
+extends Node3D
 
-export var active = true;
-export var debug_information := false;
+@export var active = true;
+@export var debug_information := false;
 
-export var valid_angle_cos := 0.9;
-export var valid_color := Color(0.5,1.0,0.5, 1.0);
-export var invalid_color := Color(1.0, 0.5, 0.5, 1.0);
+@export var valid_angle_cos := 0.9;
+@export var valid_color := Color(0.5,1.0,0.5, 1.0);
+@export var invalid_color := Color(1.0, 0.5, 0.5, 1.0);
 
-export var distance_mult := 1.5;
-export var num_steps := 20;
+@export var distance_mult := 1.5;
+@export var num_steps := 20;
 
-export (int, FLAGS) var collision_mask = 1 setget set_collision_mask, get_collision_mask;
+@export (int, FLAGS) var collision_mask = 1: get = get_collision_mask, set = set_collision_mask;
 
 
-export(vr.BUTTON) var show_teleport_button = vr.BUTTON.RIGHT_TOUCH_INDEX_TRIGGER;
-export(vr.BUTTON) var perform_teleport_button = vr.BUTTON.RIGHT_INDEX_TRIGGER;
+@export var show_teleport_button = vr.BUTTON.RIGHT_TOUCH_INDEX_TRIGGER; # (vr.BUTTON)
+@export var perform_teleport_button = vr.BUTTON.RIGHT_INDEX_TRIGGER; # (vr.BUTTON)
 
-var controller : ARVRController = null;
+var controller : XRController3D = null;
 
 var teleport_valid := false;
 var teleport_normal := Vector3(0.0, 1.0, 0.0);
 var teleport_position := Vector3(0.0, 0.0, 0.0);
 
-onready var arc_mesh = $arc_mesh;
-onready var arc_material = $arc_mesh.get_surface_material(0);
+@onready var arc_mesh = $arc_mesh;
+@onready var arc_material = $arc_mesh.get_surface_override_material(0);
 
-onready var arc_ray = $arc_raycast;
+@onready var arc_ray = $arc_raycast;
 
 func _show_debug_information():
 	vr.show_dbg_info("teleport_position", teleport_position);
@@ -48,8 +48,8 @@ func get_collision_mask():
 	return collision_mask
 
 func _ready():
-	if (not get_parent() is ARVROrigin):
-		vr.log_error("Locomotion_Teleport: parent is not ARVROrigin");
+	if (not get_parent() is XROrigin3D):
+		vr.log_error("Locomotion_Teleport: parent is not XROrigin3D");
 		
 	controller = vr.rightController;
 	
@@ -79,7 +79,7 @@ func _update_arc():
 		var p1 = start_position + t * direction - t*t*Vector3(0,1,0);
 
 		arc_ray.global_transform.origin = p0;
-		arc_ray.cast_to = p1 - p0;
+		arc_ray.target_position = p1 - p0;
 		arc_ray.force_raycast_update();
 
 		p0 = p1;
@@ -104,16 +104,16 @@ func _update_arc():
 	
 	
 	var arc_length = t;
-	arc_material.set_shader_param("start_position", start_position);
-	arc_material.set_shader_param("direction", direction);
-	arc_material.set_shader_param("arc_length", arc_length);
+	arc_material.set_shader_parameter("start_position", start_position);
+	arc_material.set_shader_parameter("direction", direction);
+	arc_material.set_shader_parameter("arc_length", arc_length);
 	if (teleport_valid):
-		arc_material.set_shader_param("color", valid_color);
+		arc_material.set_shader_parameter("color", valid_color);
 		direction.y = 0.0;
 		$target_marker.look_at_from_position(teleport_position, teleport_position + direction, Vector3(0,1,0));
 		$target_marker.visible = true;
 	else:
-		arc_material.set_shader_param("color", invalid_color);
+		arc_material.set_shader_parameter("color", invalid_color);
 		$target_marker.visible = false;
 
 

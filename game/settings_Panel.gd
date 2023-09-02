@@ -2,8 +2,8 @@ extends Panel
 
 signal apply()
 
-export(NodePath) var game;
-onready var file = File.new()
+@export var game_path: NodePath;
+var game;
 var savedata = {
 	thickness=100,
 	cube_cuts_falloff=true,
@@ -20,18 +20,18 @@ var savedata = {
 var defaults
 const config_path = "user://config.dat"
 
-onready var saber = $ScrollContainer/VBox/SaberTypeRow/saber
-onready var glare = $ScrollContainer/VBox/glare
-onready var sabe_tail = $ScrollContainer/VBox/saber_tail
-onready var saber_thickness = $ScrollContainer/VBox/SaberThicknessRow/saber_thickness
-onready var cut_blocks = $ScrollContainer/VBox/cut_blocks
-onready var d_background = $ScrollContainer/VBox/d_background
-onready var left_saber_col = $ScrollContainer/VBox/SaberColorsRow/left_saber_col
-onready var right_saber_col = $ScrollContainer/VBox/SaberColorsRow/right_saber_col
-onready var show_fps = $ScrollContainer/VBox/show_fps
-onready var show_collisions = $ScrollContainer/VBox/show_collisions
-onready var bombs_enabled = $ScrollContainer/VBox/bombs_enabled
-onready var ui_volume_slider = $ScrollContainer/VBox/UI_VolumeRow/ui_volume_slider
+@onready var saber = $ScrollContainer/VBox/SaberTypeRow/saber
+@onready var glare = $ScrollContainer/VBox/glare
+@onready var sabe_tail = $ScrollContainer/VBox/saber_tail
+@onready var saber_thickness = $ScrollContainer/VBox/SaberThicknessRow/saber_thickness
+@onready var cut_blocks = $ScrollContainer/VBox/cut_blocks
+@onready var d_background = $ScrollContainer/VBox/d_background
+@onready var left_saber_col = $ScrollContainer/VBox/SaberColorsRow/left_saber_col
+@onready var right_saber_col = $ScrollContainer/VBox/SaberColorsRow/right_saber_col
+@onready var show_fps = $ScrollContainer/VBox/show_fps
+@onready var show_collisions = $ScrollContainer/VBox/show_collisions
+@onready var bombs_enabled = $ScrollContainer/VBox/bombs_enabled
+@onready var ui_volume_slider = $ScrollContainer/VBox/UI_VolumeRow/ui_volume_slider
 
 var sabers = [
 	["Default saber","res://game/sabers/default/default_saber.tscn"],
@@ -41,11 +41,11 @@ var _play_ui_sound_demo = false
 
 func _ready():
 	UI_AudioEngine.attach_children(self)
-	if game is NodePath:
-		game = get_node(game);
+	if not game:
+		game = get_node(game_path);
 	defaults = savedata.duplicate()
-	if file.file_exists(config_path):
-		file.open(config_path,File.READ)
+	if FileAccess.file_exists(config_path):
+		var file = FileAccess.open(config_path,FileAccess.READ)
 		savedata = file.get_var(true)
 		file.close()
 	
@@ -53,11 +53,11 @@ func _ready():
 	for s in sabers:
 		saber.add_item(s[0])
 	
-	show_collisions.pressed = get_tree().debug_collisions_hint
+	show_collisions.button_pressed = get_tree().debug_collisions_hint
 	show_collisions.visible = OS.is_debug_build()
 	
 	#correct controls
-	yield(get_tree(),"idle_frame")
+	await get_tree().process_frame
 	_on_HSlider_value_changed(savedata.thickness,false)
 	_on_cut_blocks_toggled(savedata.cube_cuts_falloff,false)
 	_on_left_saber_col_color_changed(savedata.COLOR_LEFT,false)
@@ -79,7 +79,7 @@ func _ready():
 	_play_ui_sound_demo = true
 
 func save_current_settings():
-	file.open(config_path,File.WRITE)
+	var file = FileAccess.open(config_path,FileAccess.WRITE)
 	file.store_var(savedata,true)
 	file.close()
 	
@@ -111,7 +111,7 @@ func _on_cut_blocks_toggled(button_pressed,overwrite=true):
 		savedata.cube_cuts_falloff = button_pressed
 		save_current_settings()
 	else:
-		cut_blocks.pressed = button_pressed
+		cut_blocks.button_pressed = button_pressed
 
 
 func _on_left_saber_col_color_changed(color,overwrite=true):
@@ -146,7 +146,7 @@ func _on_saber_tail_toggled(button_pressed,overwrite=true):
 		savedata.saber_tail = button_pressed
 		save_current_settings()
 	else:
-		sabe_tail.pressed = button_pressed
+		sabe_tail.button_pressed = button_pressed
 
 
 func _on_glare_toggled(button_pressed,overwrite=true):
@@ -158,7 +158,7 @@ func _on_glare_toggled(button_pressed,overwrite=true):
 		savedata.glare = button_pressed
 		save_current_settings()
 	else:
-		glare.pressed = button_pressed
+		glare.button_pressed = button_pressed
 
 
 func _on_d_background_toggled(button_pressed,overwrite=true):
@@ -169,12 +169,12 @@ func _on_d_background_toggled(button_pressed,overwrite=true):
 		savedata.events = button_pressed
 		save_current_settings()
 	else:
-		d_background.pressed = button_pressed
+		d_background.button_pressed = button_pressed
 
 func _on_saber_item_selected(index,overwrite=true):
 	for ls in get_tree().get_nodes_in_group("lightsaber"):
 		ls.set_saber(sabers[index][1])
-	yield(get_tree(),"idle_frame")
+	await get_tree().process_frame
 	if game != null:
 		game.update_saber_colors()
 	_on_saber_tail_toggled(savedata.saber_tail,false)
@@ -193,7 +193,7 @@ func _on_show_fps_toggled(button_pressed,overwrite=true):
 		savedata.show_fps = button_pressed
 		save_current_settings()
 	else:
-		show_fps.pressed = button_pressed
+		show_fps.button_pressed = button_pressed
 
 
 func _on_bombs_enabled_toggled(button_pressed,overwrite=true):
@@ -204,10 +204,10 @@ func _on_bombs_enabled_toggled(button_pressed,overwrite=true):
 		savedata.bombs_enabled = button_pressed
 		save_current_settings()
 	else:
-		bombs_enabled.pressed = button_pressed
+		bombs_enabled.button_pressed = button_pressed
 
 func _on_ui_volume_slider_value_changed(value,overwrite=true):
-	UI_AudioEngine.set_volume(linear2db(float(value)/10.0))
+	UI_AudioEngine.set_volume(linear_to_db(float(value)/10.0))
 	if _play_ui_sound_demo:
 		UI_AudioEngine.play_click()
 	
@@ -219,11 +219,11 @@ func _on_ui_volume_slider_value_changed(value,overwrite=true):
 
 func _force_update_show_coll_shapes(node):
 	# toggle enable to make engine show collision shapes
-	if node is CollisionShape:
+	if node is CollisionShape3D:
 		node.disabled = ! node.disabled
 		node.disabled = ! node.disabled
 			
-	elif node is RayCast:
+	elif node is RayCast3D:
 		node.enabled = ! node.enabled
 		node.enabled = ! node.enabled
 		
@@ -246,9 +246,9 @@ func _on_wipe_check_timeout():
 		and vr.button_pressed(vr.BUTTON.RIGHT_THUMBSTICK) 
 		or Input.is_action_pressed("ui_page_up") and Input.is_action_pressed("ui_page_down")))
 		):
-			var dir = Directory.new()
+			var dir = DirAccess.open(config_path)
 			dir.remove(config_path)
-			get_tree().change_scene("res://GameMain.tscn")
+			get_tree().change_scene_to_file("res://GameMain.tscn")
 
 func _on_apply_pressed():
 	emit_signal("apply")

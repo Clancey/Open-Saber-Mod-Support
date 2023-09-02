@@ -1,7 +1,7 @@
-extends Reference
+extends RefCounted
 
 class LinkedListItem:
-	extends Reference
+	extends RefCounted
 	
 	var next = null
 	var previous = null

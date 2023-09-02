@@ -6,153 +6,18 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
-
-_global_script_classes=[ {
-"base": "Note",
-"class": "BeepCube",
-"language": "GDScript",
-"path": "res://game/BeepCube.gd"
-}, {
-"base": "Spatial",
-"class": "BeepCubeSliceParticles",
-"language": "GDScript",
-"path": "res://game/BeepCube_SliceParticles.gd"
-}, {
-"base": "Object",
-"class": "CollisionLayerConstants",
-"language": "GDScript",
-"path": "res://game/scripts/CollisionLayerConstants.gd"
-}, {
-"base": "Panel",
-"class": "EndScorePanel",
-"language": "GDScript",
-"path": "res://game/EndScore_panel.gd"
-}, {
-"base": "Spatial",
-"class": "Feature_RigidBodyGrab",
-"language": "GDScript",
-"path": "res://OQ_Toolkit/OQ_ARVRController/scripts/Feature_RigidBodyGrab.gd"
-}, {
-"base": "Spatial",
-"class": "Feature_ToolGrab",
-"language": "GDScript",
-"path": "res://OQ_Toolkit/OQ_ARVRController/scripts/Feature_ToolGrab.gd"
-}, {
-"base": "Panel",
-"class": "HighscorePanel",
-"language": "GDScript",
-"path": "res://game/HighscorePanel.gd"
-}, {
-"base": "Node",
-"class": "HighscoreTable",
-"language": "GDScript",
-"path": "res://game/scripts/HighscoreTable/HighscoreTable.gd"
-}, {
-"base": "Object",
-"class": "ImageUtils",
-"language": "GDScript",
-"path": "res://game/scripts/ImageUtils.gd"
-}, {
-"base": "Control",
-"class": "NameSelector",
-"language": "GDScript",
-"path": "res://game/ui/NameSelector/NameSelector.gd"
-}, {
-"base": "Spatial",
-"class": "Note",
-"language": "GDScript",
-"path": "res://game/Note.gd"
-}, {
-"base": "RigidBody",
-"class": "OQClass_GrabbableRigidBody",
-"language": "GDScript",
-"path": "res://OQ_Toolkit/OQ_Classes/OQClass_GrabbableRigidBody.gd"
-}, {
-"base": "Area",
-"class": "OQClass_GrabbableToolPart",
-"language": "GDScript",
-"path": "res://OQ_Toolkit/OQ_Classes/OQClass_GrabbableToolPart.gd"
-}, {
-"base": "Spatial",
-"class": "OQClass_Tool",
-"language": "GDScript",
-"path": "res://OQ_Toolkit/OQ_Classes/OQClass_Tool.gd"
-}, {
-"base": "Spatial",
-"class": "OQClass_ToolGrabController",
-"language": "GDScript",
-"path": "res://OQ_Toolkit/OQ_Classes/OQClass_ToolGrabController.gd"
-}, {
-"base": "OQClass_ToolGrabController",
-"class": "OQClass_ToolGrabLinearController",
-"language": "GDScript",
-"path": "res://OQ_Toolkit/OQ_Classes/OQClass_ToolGrabLinearController.gd"
-}, {
-"base": "ARVRController",
-"class": "OQ_ARVRController",
-"language": "GDScript",
-"path": "res://OQ_Toolkit/OQ_ARVRController/scripts/OQ_ARVRController.gd"
-}, {
-"base": "Spatial",
-"class": "OQ_UI2DCanvas",
-"language": "GDScript",
-"path": "res://OQ_Toolkit/OQ_UI2D/scripts/OQ_UI2DCanvas.gd"
-}, {
-"base": "Node",
-"class": "PlayCountTable",
-"language": "GDScript",
-"path": "res://game/scripts/PlayCountTable.gd"
-}, {
-"base": "Node",
-"class": "SongUtils",
-"language": "GDScript",
-"path": "res://game/scripts/SongUtils.gd"
-}, {
-"base": "Reference",
-"class": "Stopwatch",
-"language": "GDScript",
-"path": "res://addons/stopwatch/public/Stopwatch.gd"
-}, {
-"base": "Spatial",
-"class": "Wall",
-"language": "GDScript",
-"path": "res://game/Wall/Wall.gd"
-} ]
-_global_script_class_icons={
-"BeepCube": "",
-"BeepCubeSliceParticles": "",
-"CollisionLayerConstants": "",
-"EndScorePanel": "",
-"Feature_RigidBodyGrab": "",
-"Feature_ToolGrab": "",
-"HighscorePanel": "",
-"HighscoreTable": "",
-"ImageUtils": "",
-"NameSelector": "",
-"Note": "",
-"OQClass_GrabbableRigidBody": "",
-"OQClass_GrabbableToolPart": "",
-"OQClass_Tool": "",
-"OQClass_ToolGrabController": "",
-"OQClass_ToolGrabLinearController": "",
-"OQ_ARVRController": "",
-"OQ_UI2DCanvas": "",
-"PlayCountTable": "",
-"SongUtils": "",
-"Stopwatch": "",
-"Wall": ""
-}
+config_version=5
 
 [application]
 
 config/name="Beep Saber"
 run/main_scene="res://GameMain.tscn"
+config/features=PackedStringArray("4.1")
 config/icon="res://icon.png"
 
 [audio]
 
-default_bus_layout="res://audiobuslayout.tres"
+buses/default_bus_layout="res://audiobuslayout.tres"
 
 [autoload]
 
@@ -164,17 +29,17 @@ UI_AudioEngine="*res://game/ui/UI_AudioEngine/UI_AudioEngine.tscn"
 
 [display]
 
-window/size/width=960
-window/size/height=540
-window/vsync/use_vsync=false
+window/size/viewport_width=960
+window/size/viewport_height=540
+window/vsync/vsync_mode=false
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/godot-openxr/plugin.cfg", "res://addons/stopwatch/plugin.cfg" )
+enabled=PackedStringArray("res://addons/godot-openxr/plugin.cfg", "res://addons/stopwatch/plugin.cfg")
 
 [gdnative]
 
-singletons=[ "res://addons/godot-openxr/config/godot_openxr.gdnlib" ]
+singletons=["res://addons/godot-openxr/config/godot_openxr.gdnlib"]
 
 [importer_defaults]
 
@@ -203,28 +68,28 @@ texture={
 
 ui_left={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777231,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
- ]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194319,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
 }
 ui_right={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777233,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
- ]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194321,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
 }
 ui_up={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777232,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
- ]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194320,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
 }
 ui_down={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777234,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
- ]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194322,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
 }
 ui_end={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777230,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
- ]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194318,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
 }
 
 [layer_names]
@@ -239,23 +104,30 @@ ui_end={
 
 [physics]
 
-common/physics_fps=72
 common/physics_jitter_fix=0.0
 3d/physics_engine="Bullet"
+common/physics_fps=72
 
 [rendering]
 
+renderer/rendering_method="mobile"
+shading/overrides/force_vertex_shading.mobile=false
+shading/overrides/force_lambert_over_burley=true
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)
+environment/defaults/default_environment="res://default_env.tres"
 quality/driver/driver_name="GLES2"
 quality/intended_usage/framebuffer_allocation=3
 vram_compression/import_etc=true
-quality/shadow_atlas/size=2048
+lights_and_shadows/shadow_atlas/size=2048
 quality/shadows/filter_mode=0
 quality/reflections/texture_array_reflections=false
 quality/reflections/high_quality_ggx=false
-quality/shading/force_vertex_shading.mobile=false
-quality/shading/force_lambert_over_burley=true
-quality/shading/force_blinn_over_ggx.mobile=false
-environment/default_clear_color=Color( 0, 0, 0, 1 )
+shading/overrides/force_blinn_over_ggx.mobile=false
 quality/filters/msaa=6
 quality/depth/hdr=false
-environment/default_environment="res://default_env.tres"
+
+[xr]
+
+openxr/enabled=true
+openxr/startup_alert=false
+shaders/enabled=true

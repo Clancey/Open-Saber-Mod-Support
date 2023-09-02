@@ -2,5 +2,5 @@
 
 [ext_resource path="res://OQ_Toolkit/OQ_ARVROrigin/scripts/Locomotion_WalkInPlace.gd" type="Script" id=1]
 
-[node name="Locomotion_WalkInPlace" type="Spatial"]
+[node name="Locomotion_WalkInPlace" type="Node3D"]
 script = ExtResource( 1 )

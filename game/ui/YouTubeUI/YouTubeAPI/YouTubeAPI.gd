@@ -3,7 +3,7 @@ extends Node
 signal failed_request()
 signal search_complete(videos)
 
-onready var search_request_ = $SearchRequest
+@onready var search_request_ = $SearchRequest
 
 const DEBUG_SEARCH = false
 func search(search_text: String):
@@ -26,7 +26,9 @@ func _get_videos_from_search_file():
 	var file = File.new()
 	var videos = []
 	if file.open('youtube_search.json', File.READ) == OK:
-		var json = JSON.parse(file.get_as_text())
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(file.get_as_text())
+		var json = test_json_conv.get_data()
 		if json.error == OK:
 			videos = _get_videos_from_search_result(json.result)
 		else:
@@ -72,7 +74,9 @@ func _get_search_result_data_from_html(html_text: String):
 		result_str = result_str.replace('\\"','\"')
 		result_str = result_str.replace('\/','/')
 	
-	var json = JSON.parse(result_str)
+	var test_json_conv = JSON.new()
+	test_json_conv.parse(result_str)
+	var json = test_json_conv.get_data()
 	if json.error == OK:
 		search_results = json.result
 	else:

@@ -3,22 +3,22 @@ extends OQClass_ToolGrabController
 class_name OQClass_ToolGrabLinearController
 
 # The axis along which this part slides, in the OQClass_Tool's coordinate space.
-export(Vector3) var slide_axis = Vector3(1, 0, 0)
+@export var slide_axis: Vector3 = Vector3(1, 0, 0)
 
 # The lower limit of the sliding motion.
-export(float) var lower_limit = 0
+@export var lower_limit: float = 0
 
 # The upper limit of the sliding motion.
-export(float) var upper_limit = 0.05
+@export var upper_limit: float = 0.05
 
 # How far beyond the object's range of motion a controller can get before it slips off.
-export(float) var slip_threshold = 0.05
+@export var slip_threshold: float = 0.05
 
 # Whether or not this part should snap back to its rest position when released.
-export(bool) var should_snap_back = true
+@export var should_snap_back: bool = true
 
 # The rest position of this part, along the slide axis
-export(float) var rest_position = 0
+@export var rest_position: float = 0
 
 var _distance = 0.0
 var _slide_extension = 0.0
@@ -37,13 +37,13 @@ func pose_part(start_grab_pos: Vector3, new_grab_pos: Vector3):
 	var slide_start_pos = start_grab_pos.slide(slide_axis)
 	var slide_end_pos = new_grab_pos.slide(slide_axis)
 	if slide_start_pos.distance_to(slide_end_pos) > slip_threshold or abs(desired_extension - actual_extension) > slip_threshold:
-		.hand_slipped()
+		super.hand_slipped()
 		return
 	# Actually pose the part.
 	var new_pos = slide_axis.normalized() * actual_extension
 	get_parent().transform.origin = _original_part_posiiton + new_pos
 
-func process_release(part: Spatial):
+func process_release(part: Node3D):
 	if not should_snap_back:
 		return
 	var new_pos = slide_axis.normalized() * rest_position

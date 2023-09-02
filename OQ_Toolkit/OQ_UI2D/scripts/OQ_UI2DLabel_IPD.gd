@@ -1,6 +1,6 @@
-extends Spatial
+extends Node3D
 
-onready var label = $OQ_UILabel;
+@onready var label = $OQ_UILabel;
 
 func _ready():
 	label.set_label_text("IPD: %.1fmm" % 60.0);

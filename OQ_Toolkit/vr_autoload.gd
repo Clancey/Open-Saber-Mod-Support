@@ -11,7 +11,7 @@ var active_arvr_interface_name = "Unknown";
 
 # we use this to be position indepented of the OQ_Toolkit directory
 # so make sure to always use this if instancing nodes/features via code
-onready var oq_base_dir = self.get_script().get_path().get_base_dir();
+@onready var oq_base_dir = self.get_script().get_path().get_base_dir();
 
 # a global counter for frames; incremented in the process of vr
 # usefule for remembering time-stamps when sth. happened
@@ -64,7 +64,7 @@ func _reorder_dbg_labels():
 	# reorder all available labels
 	var offset = 0.0;
 	for labels in _dbg_labels.values():
-		labels.translation = Vector3(0.2, 0.25 - offset, -0.75);
+		labels.position = Vector3(0.2, 0.25 - offset, -0.75);
 		offset += 0.08;
 
 # this funciton attaches a UI label to the camera to show debug information
@@ -73,7 +73,7 @@ func show_dbg_info(key, value):
 		# we could not preload the scene as it depends on the vr. singleton which
 		# somehow prevented parsing...
 		if (_label_scene == null): _label_scene = load(oq_base_dir + "/OQ_UI2D/OQ_UI2DLabel.tscn");
-		var l = _label_scene.instance();
+		var l = _label_scene.instantiate();
 		l.depth_test = false;
 		_dbg_labels[key] = l;
 		vrCamera.add_child(l);
@@ -92,7 +92,7 @@ var _notification_scene = null;
 
 func show_notification(title, text = ""):
 	if (_notification_scene == null): _notification_scene = load(oq_base_dir + "/OQ_UI2D/OQ_UI2DNotificationWindow.tscn");
-	var nw = _notification_scene.instance();
+	var nw = _notification_scene.instantiate();
 	
 	nw.set_notificaiton_text(title, text);
 
@@ -125,10 +125,9 @@ func randomArrayElement(rng, array):
 #       need to make sure they are exported by including *.json in the 
 #       ExportSettings->Resources->Filters options
 func load_json_file(filename):
-	var save = File.new();
-	var err = save.open(filename, File.READ)
-	if (err == OK):
-		var r = JSON.parse(save.get_as_text()).result;
+	var save = FileAccess.open(filename, FileAccess.READ);
+	if save:
+		var r = JSON.parse_string(save.get_as_text())
 		save.close();
 		return r;
 	else:
@@ -141,15 +140,15 @@ func load_json_file(filename):
 
 # Global accessors to the tracked vr objects; they will be set by the scripts attached
 # to the OQ_ objects
-var leftController : ARVRController = null;
-var rightController : ARVRController = null;
-var vrOrigin : ARVROrigin = null;
-var vrCamera : ARVRCamera = null;
+var leftController : XRController3D = null;
+var rightController : XRController3D = null;
+var vrOrigin : XROrigin3D = null;
+var vrCamera : XRCamera3D = null;
 
 # these two variable point to leftController/rightController
 # and are swapped when calling
-var dominantController : ARVRController = rightController;
-var nonDominantController : ARVRController = leftController;
+var dominantController : XRController3D = rightController;
+var nonDominantController : XRController3D = leftController;
 
 func set_dominant_controller_left(is_left_handed):
 	if (is_left_handed):
@@ -246,7 +245,7 @@ enum CONTROLLER_BUTTON {
 }
 
 func remap_controller_axis_and_buttons(controller_type = VR_CONTROLLER_TYPE.OCULUS_TOUCH):
-	
+	"""
 	if (controller_type == VR_CONTROLLER_TYPE.OCULUS_TOUCH):
 		# for now nothing to do here as this is the default when the dictionary 
 		# variables are created above
@@ -303,7 +302,7 @@ func remap_controller_axis_and_buttons(controller_type = VR_CONTROLLER_TYPE.OCUL
 
 	if (CONTROLLER_BUTTON.THUMBSTICK!=-1): BUTTON.RIGHT_THUMBSTICK = CONTROLLER_BUTTON.THUMBSTICK + 16;
 	if (CONTROLLER_BUTTON.INDEX_TRIGGER!=-1): BUTTON.RIGHT_INDEX_TRIGGER = CONTROLLER_BUTTON.INDEX_TRIGGER + 16;
-	
+	"""
 	log_info("Current Controller Mapping: ");
 	for k in CONTROLLER_AXIS:
 		log_info(" Axis " + k + " = " + str(CONTROLLER_AXIS[k]));
@@ -426,9 +425,9 @@ func _refresh_settings():
 
 
 func _notification(what):
-	if (what == NOTIFICATION_APP_PAUSED):
+	if (what == NOTIFICATION_APPLICATION_PAUSED):
 		pass;
-	if (what == NOTIFICATION_APP_RESUMED):
+	if (what == NOTIFICATION_APPLICATION_RESUMED):
 		_need_settings_refresh = true;
 		pass;
 
@@ -467,12 +466,12 @@ func set_display_refresh_rate(value):
 func get_boundary_oriented_bounding_box():
 	if (!ovrBaseAPI):
 		log_error("get_boundary_oriented_bounding_box(): no ovrBaseAPI object.");
-		return [Transform(), Vector3(1.93, 2.5, 2.25)]; # return a default value
+		return [Transform3D(), Vector3(1.93, 2.5, 2.25)]; # return a default value
 	else:
 		var ret = ovrBaseAPI.get_boundary_oriented_bounding_box();
 		if ((ret == null) || !(ret is Array) || (ret.size() != 2)):
 			log_error(str("get_boundary_oriented_bounding_box(): invalid return value: ", ret));
-			return [Transform(), Vector3(0, 0, 0)]; # return a default value
+			return [Transform3D(), Vector3(0, 0, 0)]; # return a default value
 		return ret;
 		
 func request_boundary_visible(val):
@@ -508,7 +507,7 @@ func set_tracking_space(tracking_space):
 func locate_tracking_space(target_tracking_space):
 	if (!ovrBaseAPI):
 		log_error("set_tracking_space(): no ovrBaseAPI object.");
-		return Transform();
+		return Transform3D();
 	else:
 		return ovrBaseAPI.locate_tracking_space(target_tracking_space);
 
@@ -699,14 +698,14 @@ func _perform_switch_scene(scene_path):
 		var next_scene_resource = load(scene_path);
 		if (next_scene_resource):
 			_active_scene_path = scene_path;
-			var next_scene = next_scene_resource.instance();
+			var next_scene = next_scene_resource.instantiate();
 			log_info("    switching to scene '%s'" % scene_path)
 			scene_switch_root.add_child(next_scene);
 			if (next_scene.has_method("scene_enter")): next_scene.scene_enter();
 		else:
 			log_error("could not load scene '%s'" % scene_path)
 	else:
-		get_tree().change_scene(scene_path)
+		get_tree().change_scene_to_file(scene_path)
 	
 
 
@@ -721,7 +720,7 @@ var switch_scene_in_progress := false;
 
 func switch_scene(scene_path, fade_time = 0.1, wait_time = 0.0):
 	if (wait_time > 0.0 && _active_scene_path != null):
-		yield(get_tree().create_timer(wait_time), "timeout")
+		await get_tree().create_timer(wait_time).timeout
 
 	if (scene_switch_root == null):
 		log_error("vr.switch_scene(...) called but no scene_switch_root configured. Will use default scene change.");
@@ -803,7 +802,7 @@ func _webxr_initialize(enable_vr):
 		
 	if (arvr_webxr_interface.initialize()):
 		get_viewport().arvr = true;
-		OS.vsync_enabled = false;
+		#DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if (false;) else DisplayServer.VSYNC_DISABLED)
 		inVR = true;
 		log_info("  Success initializing WebXR Interface.");
 		emit_signal("signal_webxr_started")
@@ -832,12 +831,12 @@ func _webxr_create_entervr_buttons():
 	vbox.add_child(simulate_vr_button);
 	var centercontainer = CenterContainer.new();
 	centercontainer.theme = load("res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme")
-	centercontainer.rect_size = OS.get_real_window_size();
+	centercontainer.size = get_window().get_size_with_decorations();
 	centercontainer.add_child(vbox);
 	get_tree().get_current_scene().add_child(centercontainer);
 
-	enter_vr_button.connect("pressed", self, "_webxr_initialize", [true]);
-	simulate_vr_button.connect("pressed", self, "_webxr_initialize", [false]);
+	enter_vr_button.connect("pressed", Callable(self, "_webxr_initialize").bind(true));
+	simulate_vr_button.connect("pressed", Callable(self, "_webxr_initialize").bind(false));
 
 var arvr_ovr_mobile_interface = null;
 var arvr_oculus_interface = null;
@@ -845,94 +844,23 @@ var arvr_open_vr_interface = null;
 var arvr_webxr_interface = null;
 var arvr_openxr_interface = null;
 
+var xr_interface: XRInterface
+
 func initialize(initialize_vr = true, refresh_rate = 90):
 	_init_vr_log();
 	
-	var available_interfaces = ARVRServer.get_interfaces();
-	
-	log_info("Initializing VR (Toolkit version %s)" % toolkit_version);
-	log_info("  Available Interfaces are %s: " % str(available_interfaces));
-	
-	inVR = false;
-	if (!initialize_vr): return true;
-	
-	for interface in available_interfaces:
-		match interface.name:
-			"OVRMobile":
-				arvr_ovr_mobile_interface = ARVRServer.find_interface("OVRMobile");
-			"Oculus":
-				arvr_oculus_interface = ARVRServer.find_interface("Oculus");
-			"OpenVR":
-				arvr_open_vr_interface = ARVRServer.find_interface("OpenVR");
-			"WebXR":
-				arvr_webxr_interface = ARVRServer.find_interface("WebXR");
-			"OpenXR":
-				arvr_openxr_interface = ARVRServer.find_interface("OpenXR");
-	
-	if arvr_openxr_interface:
-		log_info("  Found OpenXR Interface.");
-		if arvr_openxr_interface.initialize():
-			active_arvr_interface_name = "OpenVR"
-			get_viewport().arvr = true;
-			get_viewport().keep_3d_linear = false;
-			Engine.target_fps = refresh_rate
-			OS.vsync_enabled = false;
-			inVR = true;
-			log_info("  Success initializing OpenXR Interface.");
-	elif arvr_ovr_mobile_interface:
-		log_info("  Found OVRMobile Interface.");
-		if arvr_ovr_mobile_interface.initialize():
-			active_arvr_interface_name = "OVRMobile";
-			get_viewport().arvr = true;
-			Engine.target_fps = refresh_rate; # TODO: only true for Oculus Quest; query the info here
-			inVR = true;
-			_initialize_OVR_API();
-			# this will initialize the default
-			_refresh_settings();
-			log_info("  Success initializing OVRMobile Interface.");
-			remap_controller_axis_and_buttons(VR_CONTROLLER_TYPE.OCULUS_TOUCH);
-			# TODO: set physics FPS here too instead of in the project settings
-			return true;
-	elif arvr_oculus_interface:
-		log_info("  Found Oculus Interface.");
-		if arvr_oculus_interface.initialize():
-			active_arvr_interface_name = "Oculus";
-			get_viewport().arvr = true;
-			# Oculus on PC appears to select the correct refresh rate automatically.
-			# Rift and Quest 2 via Link can handle 90 Hz, but Quest 1 via link and Rift S will run at 72 and 80 respectively.
-			# Setting this below 90 will cap Q2 and Rift to what ever that is set to which is not ideal.
-			Engine.target_fps = refresh_rate
-			OS.vsync_enabled = false;
-			inVR = true;
-			log_info("  Success initializing Oculus Interface.");
-			remap_controller_axis_and_buttons(VR_CONTROLLER_TYPE.OCULUS_TOUCH);
-	elif arvr_open_vr_interface:
-		log_info("  Found OpenVR Interface.");
-		if arvr_open_vr_interface.initialize():
-			active_arvr_interface_name = "OpenVR"
-			get_viewport().arvr = true;
-			get_viewport().keep_3d_linear = true
-			Engine.target_fps = refresh_rate # TODO: this is headset dependent => figure out how to get this info at runtime
-			OS.vsync_enabled = false;
-			inVR = true;
-			log_info("  Success initializing OpenVR Interface.");
-	elif arvr_webxr_interface:
-		log_info("  Found WebXR Interface.");
-		active_arvr_interface_name = "WebXR"
-		arvr_webxr_interface.connect("session_supported", self, "_webxr_cb_session_supported")
-		arvr_webxr_interface.connect("session_started", self, "_webxr_cb_session_started")
-		arvr_webxr_interface.session_mode = 'immersive-vr'
-		arvr_webxr_interface.required_features = 'local-floor'
-		arvr_webxr_interface.optional_features = 'bounded-floor'
-		arvr_webxr_interface.requested_reference_space_types = 'bounded-floor, local-floor, local'
-		arvr_webxr_interface.is_session_supported("immersive-vr")
-		remap_controller_axis_and_buttons(VR_CONTROLLER_TYPE.WEBXR);
-		_webxr_create_entervr_buttons();
+	xr_interface = XRServer.find_interface("OpenXR")
+	if xr_interface and xr_interface.is_initialized():
+		log_info("OpenXR initialised successfully")
 
+		# Turn off v-sync!
+		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+
+		# Change our main viewport to output to the HMD
+		get_viewport().use_xr = true
+		inVR = true;
 	else:
+		log_info("OpenXR not initialized, please check if your headset is connected")
 		inVR = false;
-		log_warning("No compatible ARVR Interface could be found.");
-		# Simulator uses Oculus Touch
-		remap_controller_axis_and_buttons(VR_CONTROLLER_TYPE.OCULUS_TOUCH);
-		return false;
+		return false
 

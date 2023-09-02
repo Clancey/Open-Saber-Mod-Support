@@ -24,7 +24,7 @@ void vertex() {
 	pos += side * mesh_pos.x;
 	
 	// final step is to 
-	VERTEX = (INV_CAMERA_MATRIX * vec4(pos, 1.0)).xyz;
+	VERTEX = (VIEW_MATRIX * vec4(pos, 1.0)).xyz;
 	UV = vec2(sign(mesh_pos.x), t - TIME * 0.125);
 }
 

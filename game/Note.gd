@@ -1,4 +1,4 @@
-extends Spatial
+extends Node3D
 class_name Note
 
 # strucutre of information sourced from the map file for this note instance

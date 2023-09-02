@@ -1,4 +1,4 @@
-tool
+@tool
 extends Node
 
 signal connected()
@@ -17,8 +17,8 @@ var _unqiue_id = 0
 var _dropped_heartbeats = 0
 var _heartbeat_count = 0
 var retry_count = 0
-onready var _reconnect_timer := $ReconnectTimer
-onready var _watchdog_timer := $WatchdogTimer
+@onready var _reconnect_timer := $ReconnectTimer
+@onready var _watchdog_timer := $WatchdogTimer
 
 func _ready():
 	_unqiue_id = str(randi()).sha256_text()
@@ -26,7 +26,9 @@ func _ready():
 func _process(delta):
 	if _udp.get_available_packet_count() > 0:
 		var packet_str = _udp.get_packet().get_string_from_utf8()
-		var json_res = JSON.parse(packet_str)
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(packet_str)
+		var json_res = test_json_conv.get_data()
 		if json_res.error != OK:
 			print("CLIENT: json_res.error = %d; packet_str = %s" % [json_res.error,packet_str])
 			return
@@ -83,14 +85,14 @@ func reset():
 	_port = DEFAULT_PORT
 	_connected = false
 	
-var LIST_PACKET = '{"type":"list"}'.to_utf8()
+var LIST_PACKET = '{"type":"list"}'.to_utf8_buffer()
 func request_stopwatch_list():
 	if ! connected():
 		print('CLIENT: [WARN] cant request stopwatch list while disconnected')
 		return
 	_udp.put_packet(LIST_PACKET)
 
-var SUMMARY_DATA_PACKET = '{"type":"summary_data"}'.to_utf8()
+var SUMMARY_DATA_PACKET = '{"type":"summary_data"}'.to_utf8_buffer()
 func request_summary_data():
 	if ! connected():
 		print('CLIENT: [WARN] cant request summary_data while disconnected')
@@ -103,14 +105,14 @@ func enable_stopwatch(sw_id, enabled):
 		print('CLIENT: [WARN] cant enable stopwatch while disconnected')
 		return
 	var enabled_str = ENABLE_PACKET % [int(sw_id),"true" if enabled else "false"]
-	_udp.put_packet(enabled_str.to_utf8())
+	_udp.put_packet(enabled_str.to_utf8_buffer())
 
 var RESET_PACKET = '{"type":"reset_sw","sw_id":%d}'
 func reset_stopwatch(sw_id):
 	if ! connected():
 		print('CLIENT: [WARN] cant reset stopwatch while disconnected')
 		return
-	_udp.put_packet((RESET_PACKET % [int(sw_id)]).to_utf8())
+	_udp.put_packet((RESET_PACKET % [int(sw_id)]).to_utf8_buffer())
 
 var HELLO_PACKET = '{"type":"hello","id":"%s"}'
 func _on_ReconnectTimer_timeout():
@@ -118,7 +120,7 @@ func _on_ReconnectTimer_timeout():
 	if ! connected():
 		print('CLIENT: retry host connection...')
 		var hello = HELLO_PACKET % _unqiue_id
-		_udp.put_packet(hello.to_utf8())
+		_udp.put_packet(hello.to_utf8_buffer())
 
 func _on_WatchdogTimer_timeout():
 	print("CLIENT: watchdog engaged!")

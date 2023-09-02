@@ -8,7 +8,7 @@
 
 [sub_resource type="Environment" id=1]
 
-[node name="GodotSplash" type="Spatial"]
+[node name="GodotSplash" type="Node3D"]
 
 [node name="OQ_ARVROrigin" parent="." instance=ExtResource( 1 )]
 

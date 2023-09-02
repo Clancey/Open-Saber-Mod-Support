@@ -3,11 +3,11 @@ extends Node
 # emitted when the pool intances a scene for the first time
 signal scene_instanced(scene)
 
-export (PackedScene) var Scene = null
-export (int) var pool_size = 10
+@export (PackedScene) var Scene = null
+@export (int) var pool_size = 10
 
-onready var LinkedList := preload("res://game/scripts/LinkedList.gd")
-onready var _free_list := LinkedList.new()
+@onready var LinkedList := preload("res://game/scripts/LinkedList.gd")
+@onready var _free_list := LinkedList.new()
 
 func _ready():
 	if Scene == null:
@@ -15,8 +15,8 @@ func _ready():
 		return
 	
 	for _i in range(pool_size):
-		var new_scene = Scene.instance()
-		if new_scene.connect("scene_released",self,"_on_scene_released",[new_scene]) != OK:
+		var new_scene = Scene.instantiate()
+		if new_scene.connect("scene_released", Callable(self, "_on_scene_released").bind(new_scene)) != OK:
 			push_error("failed to connect 'scene_released' signal. Scene's must emit this signal for the ScenePool to function properly.")
 			return
 		emit_signal("scene_instanced",new_scene)

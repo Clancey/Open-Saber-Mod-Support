@@ -1,10 +1,10 @@
 extends Panel
 
-export (NodePath) var beat_saver_canvas_path
-export (NodePath) var beat_sage_canvas_path
+@export (NodePath) var beat_saver_canvas_path
+@export (NodePath) var beat_sage_canvas_path
 
-onready var beat_saver_button := $Margin/VBox/Grid/BeatSaverButton
-onready var beat_sage_button := $Margin/VBox/Grid/BeatSageButton
+@onready var beat_saver_button := $Margin/VBox/Grid/BeatSaverButton
+@onready var beat_sage_button := $Margin/VBox/Grid/BeatSageButton
 
 var _beat_saver_canvas = null
 var _beat_sage_canvas = null

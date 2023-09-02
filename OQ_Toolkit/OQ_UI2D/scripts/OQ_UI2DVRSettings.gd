@@ -1,4 +1,4 @@
-extends Spatial
+extends Node3D
 
 
 var foveation_level_option_button : OptionButton = null;
@@ -12,7 +12,7 @@ var controller_model_override_option_button : OptionButton = null;
 
 func _setup_ui_elements():
 	var r = $OQ_UI2DCanvas;
-	foveation_level_option_button = r.find_node("FoveationLevel_OptionButton", true, false);
+	foveation_level_option_button = r.find_child("FoveationLevel_OptionButton", true, false);
 	
 	foveation_level_option_button.add_item("Off");
 	foveation_level_option_button.add_item("Low");
@@ -21,13 +21,13 @@ func _setup_ui_elements():
 	foveation_level_option_button.add_item("HighTop");
 	foveation_level_option_button.select(vr.oculus_mobile_settings_cache["foveation_level"]);
 	
-	extra_latency_option_button = r.find_node("ExtraLatency_OptionButton", true, false);
+	extra_latency_option_button = r.find_child("ExtraLatency_OptionButton", true, false);
 	extra_latency_option_button.add_item("Off");
 	extra_latency_option_button.add_item("On");
 	extra_latency_option_button.add_item("Dynamic");
 	extra_latency_option_button.select(vr.oculus_mobile_settings_cache["extra_latency_mode"]);
 	
-	tracking_space_option_button = r.find_node("TrackingSpace_OptionButton", true, false);
+	tracking_space_option_button = r.find_child("TrackingSpace_OptionButton", true, false);
 	tracking_space_option_button.add_item("LOCAL", vr.ovrVrApiTypes.OvrTrackingSpace.VRAPI_TRACKING_SPACE_LOCAL);
 	tracking_space_option_button.add_item("LOCAL_FLOOR", vr.ovrVrApiTypes.OvrTrackingSpace.VRAPI_TRACKING_SPACE_LOCAL_FLOOR);
 	tracking_space_option_button.add_item("LOCAL_TILTED", vr.ovrVrApiTypes.OvrTrackingSpace.VRAPI_TRACKING_SPACE_LOCAL_TILTED);
@@ -35,14 +35,14 @@ func _setup_ui_elements():
 	tracking_space_option_button.add_item("LOCAL_FIXED_YAW", vr.ovrVrApiTypes.OvrTrackingSpace.VRAPI_TRACKING_SPACE_LOCAL_FIXED_YAW);
 	tracking_space_option_button.select(vr.oculus_mobile_settings_cache["tracking_space"]);
 	
-	boundary_visible_check_button = r.find_node("BoundaryVisible_CheckButton", true, false);
-	boundary_visible_check_button.pressed = vr.oculus_mobile_settings_cache["boundary_visible"]
+	boundary_visible_check_button = r.find_child("BoundaryVisible_CheckButton", true, false);
+	boundary_visible_check_button.button_pressed = vr.oculus_mobile_settings_cache["boundary_visible"]
 	
-	ipd_info_label = r.find_node("IPDInfo_Label", true, false);
+	ipd_info_label = r.find_child("IPDInfo_Label", true, false);
 	
-	device_type_line_edit = r.find_node("DeviceType_LineEdit", true, false);
+	device_type_line_edit = r.find_child("DeviceType_LineEdit", true, false);
 	
-	controller_model_override_option_button = r.find_node("ControllerOverride_OptionButton", true, false);
+	controller_model_override_option_button = r.find_child("ControllerOverride_OptionButton", true, false);
 	controller_model_override_option_button.add_item("Auto");
 	controller_model_override_option_button.add_item("Quest 1");
 	controller_model_override_option_button.add_item("Quest 2");

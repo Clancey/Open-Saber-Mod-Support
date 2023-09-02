@@ -2,5 +2,5 @@
 
 [ext_resource path="res://OQ_Toolkit/OQ_ARVROrigin/scripts/Feature_VRRecorder.gd" type="Script" id=1]
 
-[node name="Feature_VRRecorder" type="Spatial"]
+[node name="Feature_VRRecorder" type="Node3D"]
 script = ExtResource( 1 )

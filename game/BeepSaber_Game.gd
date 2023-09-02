@@ -1,6 +1,6 @@
 # This file contains the main game logic for the BeepSaber demo implementation
 #
-extends Spatial
+extends Node3D
 
 enum GameState {
 	Bootup,
@@ -15,36 +15,36 @@ enum GameState {
 }
 
 
-onready var left_controller := $OQ_ARVROrigin/OQ_LeftController;
-onready var right_controller := $OQ_ARVROrigin/OQ_RightController;
+@onready var left_controller := $OQ_ARVROrigin/OQ_LeftController;
+@onready var right_controller := $OQ_ARVROrigin/OQ_RightController;
 
-onready var left_saber := $OQ_ARVROrigin/OQ_LeftController/LeftLightSaber;
-onready var right_saber := $OQ_ARVROrigin/OQ_RightController/RightLightSaber;
+@onready var left_saber := $OQ_ARVROrigin/OQ_LeftController/LeftLightSaber;
+@onready var right_saber := $OQ_ARVROrigin/OQ_RightController/RightLightSaber;
 
-onready var right_ui_raycast := $OQ_ARVROrigin/OQ_RightController/Feature_UIRayCast;
-onready var left_ui_raycast := $OQ_ARVROrigin/OQ_LeftController/Feature_UIRayCast;
+@onready var right_ui_raycast := $OQ_ARVROrigin/OQ_RightController/Feature_UIRayCast;
+@onready var left_ui_raycast := $OQ_ARVROrigin/OQ_LeftController/Feature_UIRayCast;
 
-onready var highscore_canvas := $Highscores_Canvas
-onready var name_selector_canvas := $NameSelector_Canvas
-onready var highscore_keyboard := $Keyboard_highscore
+@onready var highscore_canvas := $Highscores_Canvas
+@onready var name_selector_canvas := $NameSelector_Canvas
+@onready var highscore_keyboard := $Keyboard_highscore
 
-onready var map_source_dialogs := $MapSourceDialogs
-onready var online_search_keyboard := $Keyboard_online_search
+@onready var map_source_dialogs := $MapSourceDialogs
+@onready var online_search_keyboard := $Keyboard_online_search
 
-onready var fps_label = $OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead/FPS_Label
+@onready var fps_label = $OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead/FPS_Label
 
-onready var cube_template = preload("res://game/BeepCube.tscn").instance();
-onready var wall_template = preload("res://game/Wall/Wall.tscn").instance();
-onready var LinkedList := preload("res://game/scripts/LinkedList.gd")
-export(PackedScene) var bomb_template : PackedScene
+@onready var cube_template = preload("res://game/BeepCube.tscn").instantiate();
+@onready var wall_template = preload("res://game/Wall/Wall.tscn").instantiate();
+@onready var LinkedList := preload("res://game/scripts/LinkedList.gd")
+@export var bomb_template: PackedScene
 
-onready var _cube_pool := $BeepCubePool
+@onready var _cube_pool := $BeepCubePool
 
-onready var track = $Track;
+@onready var track = $Track;
 
-onready var song_player := $SongPlayer;
+@onready var song_player := $SongPlayer;
 
-onready var menu = $MainMenu_OQ_UI2DCanvas.ui_control
+@onready var menu = $MainMenu_OQ_UI2DCanvas.ui_control
 
 var COLOR_LEFT := Color(1.0, 0.1, 0.1, 1.0);
 var COLOR_RIGHT := Color(0.1, 0.1, 1.0, 1.0);
@@ -102,11 +102,11 @@ var bombs_enabled = true
 
 # structure of nodes that represent a cut piece of a cube (ie. one half)
 class CutPieceNodes:
-	extends Reference
+	extends RefCounted
 	
-	var rigid_body := RigidBody.new()
-	var mesh := MeshInstance.new()
-	var coll := CollisionShape.new()
+	var rigid_body := RigidBody3D.new()
+	var mesh := MeshInstance3D.new()
+	var coll := CollisionShape3D.new()
 	
 	func _init():
 		rigid_body.add_to_group("cutted_cube")
@@ -116,7 +116,7 @@ class CutPieceNodes:
 		# set a phyiscs material for some more bouncy behaviour
 		rigid_body.physics_material_override = preload("res://game/BeepCube_Cut.phymat")
 		
-		coll.shape = BoxShape.new()
+		coll.shape = BoxShape3D.new()
 		
 		rigid_body.add_child(coll)
 		rigid_body.add_child(mesh)
@@ -125,17 +125,17 @@ class CutPieceNodes:
 
 # structure of nodes that are used to produce effects when cutting a cube
 class CutCubeResources:
-	extends Reference
+	extends RefCounted
 	
 	var particles : BeepCubeSliceParticles = null
 	var piece1 := CutPieceNodes.new()
 	var piece2 := CutPieceNodes.new()
 	
 	func _init():
-		particles = preload("res://game/BeepCube_SliceParticles.tscn").instance()
+		particles = preload("res://game/BeepCube_SliceParticles.tscn").instantiate()
 
 const MAX_CUT_CUBE_RESOURCES = 32
-onready var _cut_cube_resources := LinkedList.new()
+@onready var _cut_cube_resources := LinkedList.new()
 
 func restart_map():
 	_audio_synced_after_restart = false
@@ -167,10 +167,9 @@ func restart_map():
 func start_map(info, map_data):
 	_current_map = map_data;
 	_current_info = info;
-	var snd_file = File.new()
-	snd_file.open(info._path + info._songFilename, File.READ) #works whether it's a resource or a file
-	var stream = AudioStreamOGGVorbis.new()
-	stream.data = snd_file.get_buffer(snd_file.get_len())
+	var snd_file = FileAccess.open(info._path + info._songFilename, FileAccess.READ) #works whether it's a resource or a file
+	var stream = AudioStreamOggVorbis.new()
+	stream.data = snd_file.get_buffer(snd_file.get_length())
 	snd_file.close()
 	song_player.stream = stream;
 	restart_map();
@@ -213,8 +212,8 @@ func _on_game_state_entered(state):
 			$PauseMenu_canvas.visible = false;
 			highscore_canvas.visible = false;
 			name_selector_canvas.visible = false;
-			left_saber.hide();
-			right_saber.hide();
+			left_saber._hide();
+			right_saber._hide();
 			$Multiplier_Label.visible = false;
 			$Point_Label.visible = false;
 			$Percent.visible = false;
@@ -231,8 +230,8 @@ func _on_game_state_entered(state):
 			$PauseMenu_canvas.visible = false;
 			highscore_canvas.visible = false;
 			name_selector_canvas.visible = false;
-#			left_saber.hide();
-#			right_saber.hide();
+#			left_saber._hide();
+#			right_saber._hide();
 			$Multiplier_Label.visible = false;
 			$Point_Label.visible = false;
 			$Percent.visible = false;
@@ -290,8 +289,8 @@ func _on_game_state_entered(state):
 			$PauseMenu_canvas.visible = false;
 			highscore_canvas.visible = false;
 			name_selector_canvas.visible = false;
-			left_saber.hide();
-			right_saber.hide();
+			left_saber._hide();
+			right_saber._hide();
 			$Multiplier_Label.visible = false;
 			$Point_Label.visible = false;
 			$Percent.visible = false;
@@ -324,8 +323,8 @@ func _on_game_state_entered(state):
 			$PauseMenu_canvas.visible = false;
 			highscore_canvas.visible = true;
 			name_selector_canvas.visible = true;
-			left_saber.hide();
-			right_saber.hide();
+			left_saber._hide();
+			right_saber._hide();
 			$Multiplier_Label.visible = false;
 			$Point_Label.visible = false;
 			$Percent.visible = false;
@@ -404,7 +403,7 @@ func _spawn_note(note, current_beat):
 		_instance_cube_sw.stop()
 	elif (note._type == 3) and bombs_enabled:
 		is_cube = false
-		note_node = bomb_template.instance()
+		note_node = bomb_template.instantiate()
 	else:
 		return;
 	
@@ -421,7 +420,7 @@ func _spawn_note(note, current_beat):
 	var line = -(CUBE_DISTANCE * 3.0 / 2.0) + note._lineIndex * CUBE_DISTANCE;
 	var layer = CUBE_DISTANCE + note._lineLayer * CUBE_DISTANCE;
 
-	var rotation_z = deg2rad(CUBE_ROTATIONS[note._cutDirection]);
+	var rotation_z = deg_to_rad(CUBE_ROTATIONS[note._cutDirection]);
 
 	var distance = note._time - current_beat;
 
@@ -552,13 +551,13 @@ var _controller_movement_aabb = [
 	AABB(), AABB(), AABB()
 ]
 
-func _update_controller_movement_aabb(controller : ARVRController):
+func _update_controller_movement_aabb(controller : XRController3D):
 	var id = controller.controller_id
 	var aabb = _controller_movement_aabb[id].expand(controller.global_transform.origin);
 	_controller_movement_aabb[id] = aabb;
 
 
-func _check_and_update_saber(controller : ARVRController, saber: Area):
+func _check_and_update_saber(controller : XRController3D, saber: Area3D):
 	# to allow extending/sheething the saber while not playing a song
 	if (!song_player.playing):
 		if (controller._button_just_pressed(vr.CONTROLLER_BUTTON.XA) ||
@@ -574,12 +573,12 @@ func _check_and_update_saber(controller : ARVRController, saber: Area):
 	if (!controller.is_simple_rumbling()): 
 		if (_in_wall):
 			# weak rumble on both controllers when player is inside wall
-			controller.set_rumble(0.1);
+			controller.simple_rumble(0.1, 0.1);
 		elif (saber.get_overlapping_areas().size() > 0 || saber.get_overlapping_bodies().size() > 0):
 			# strong rumble when saber is cutting into wall or other saber
-			controller.set_rumble(0.5);
+			controller.simple_rumble(0.5, 0.1);
 		else:
-			controller.set_rumble(0.0);
+			controller.simple_rumble(0.0, 0.1);
 
 
 var left_saber_end = Vector3()
@@ -628,7 +627,7 @@ var _main_menu = null;
 var _lpf = null;
 
 func _ready():
-	_main_menu = $MainMenu_OQ_UI2DCanvas.find_node("BeepSaberMainMenu", true, false);
+	_main_menu = $MainMenu_OQ_UI2DCanvas.find_child("BeepSaberMainMenu", true, false);
 	_main_menu.initialize(self);
 	$MapSourceDialogs/BeatSaver_Canvas.ui_control.main_menu_node = _main_menu
 
@@ -671,7 +670,7 @@ func disable_events(disabled):
 
 # cut the cube by creating two rigid bodies and using a CSGBox to create
 # the cut plane
-func _create_cut_rigid_body(_sign, cube : Spatial, cutplane : Plane, cut_distance, controller_speed, saber_ends, cut_res: CutCubeResources):
+func _create_cut_rigid_body(_sign, cube : Node3D, cutplane : Plane, cut_distance, controller_speed, saber_ends, cut_res: CutCubeResources):
 	if not cube_cuts_falloff: 
 		return
 	
@@ -689,17 +688,17 @@ func _create_cut_rigid_body(_sign, cube : Spatial, cutplane : Plane, cut_distanc
 	piece.mesh.material_override = cube._mat.duplicate()
 	
 	# calculate angle and position of the cut
-	piece.mesh.material_override.set_shader_param("cutted",true)
-	piece.mesh.material_override.set_shader_param("inverted_cut",!bool((_sign+1)/2))
+	piece.mesh.material_override.set_shader_parameter("cutted",true)
+	piece.mesh.material_override.set_shader_parameter("inverted_cut",!bool((_sign+1)/2))
 	# TODO: cutplane is unused and replaced by this? what
 	var saber_end_mov = saber_ends[0]-saber_ends[1]
-	var saber_end_angle = rad2deg(Vector2(saber_end_mov.x,saber_end_mov.y).angle())
+	var saber_end_angle = rad_to_deg(Vector2(saber_end_mov.x,saber_end_mov.y).angle())
 	var saber_end_angle_rel = (int(((saber_end_angle+90)+(360-piece.mesh.rotation_degrees.z))+180)%360)-180
 	
 	var rot_dir = saber_end_angle_rel > 90 or saber_end_angle_rel < -90
 	var rot_dir_flt = (float(rot_dir)*2)-1
-	piece.mesh.material_override.set_shader_param("cut_pos",cut_distance*rot_dir_flt)
-	piece.mesh.material_override.set_shader_param("cut_angle",deg2rad(saber_end_angle_rel))
+	piece.mesh.material_override.set_shader_parameter("cut_pos",cut_distance*rot_dir_flt)
+	piece.mesh.material_override.set_shader_parameter("cut_angle",deg_to_rad(saber_end_angle_rel))
 
 	# transform the normal into the orientation of the actual cube mesh
 	var normal = piece.mesh.transform.basis.inverse() * cutplane.normal;
@@ -707,7 +706,7 @@ func _create_cut_rigid_body(_sign, cube : Spatial, cutplane : Plane, cut_distanc
 	# Next we are adding a simple collision cube to the rigid body. Note that
 	# his is really just a very crude approximation of the actual cut geometry
 	# but for now it's enough to give them some physics behaviour
-	piece.coll.shape.extents = Vector3(0.25, 0.25, 0.125)
+	piece.coll.shape.size = Vector3(0.25, 0.25, 0.125)
 	piece.coll.look_at_from_position(-cutplane.normal*_sign*0.125, cutplane.normal, Vector3(0,1,0))
 
 	piece.rigid_body.global_transform = cube.global_transform
@@ -794,7 +793,7 @@ func _display_points():
 	$Multiplier_Label.set_label_text("x %d\nCombo %d" %[_current_multiplier, _current_combo])
 
 # perform the necessay computations to cut a cube with the saber
-func _cut_cube(controller : ARVRController, saber : Area, cube : Spatial):
+func _cut_cube(controller : XRController3D, saber : Area3D, cube : Node3D):
 	_cut_cube_sw.start()
 	
 	# perform haptic feedback for the cut
@@ -899,11 +898,11 @@ func _on_Pause_Panel_continue_button():
 	$Pause_countdown.visible = true
 	track.visible = true
 	$Pause_countdown.set_label_text("3")
-	yield(get_tree().create_timer(0.5),"timeout")
+	await get_tree().create_timer(0.5).timeout
 	$Pause_countdown.set_label_text("2")
-	yield(get_tree().create_timer(0.5),"timeout")
+	await get_tree().create_timer(0.5).timeout
 	$Pause_countdown.set_label_text("1")
-	yield(get_tree().create_timer(0.5),"timeout")
+	await get_tree().create_timer(0.5).timeout
 	$Pause_countdown.visible = false
 	
 	# continue game play
@@ -916,7 +915,7 @@ func _on_BeepSaberMainMenu_difficulty_changed(map_info, diff_name, diff_rank):
 	
 	# menu loads playlist in _ready(), must yield until scene is loaded
 	if not highscore_canvas:
-		yield(self,"ready")
+		await self.ready
 	
 	highscore_canvas.show()
 	_highscore_panel().load_highscores(map_info,diff_rank)

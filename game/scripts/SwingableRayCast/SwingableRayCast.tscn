@@ -4,12 +4,12 @@
 
 [sub_resource type="SphereMesh" id=1]
 
-[node name="SwingableRayCast" type="RayCast"]
+[node name="SwingableRayCast" type="RayCast3D"]
 collision_mask = 0
 script = ExtResource( 1 )
 
-[node name="debug_ball" type="MeshInstance" parent="."]
-transform = Transform( 0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, 0, 0 )
+[node name="debug_ball" type="MeshInstance3D" parent="."]
+transform = Transform3D( 0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, 0, 0 )
 visible = false
 mesh = SubResource( 1 )
 material/0 = null

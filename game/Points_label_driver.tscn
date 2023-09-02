@@ -2,5 +2,5 @@
 
 [ext_resource path="res://game/Points_label_driver.gd" type="Script" id=1]
 
-[node name="Points_label_driver" type="Spatial"]
+[node name="Points_label_driver" type="Node3D"]
 script = ExtResource( 1 )

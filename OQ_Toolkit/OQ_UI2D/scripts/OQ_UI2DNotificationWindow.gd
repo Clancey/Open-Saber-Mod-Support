@@ -1,10 +1,10 @@
-extends Spatial
+extends Node3D
 
-export var autoremove_distance := 2.0;
+@export var autoremove_distance := 2.0;
 
 func set_notificaiton_text(title, text):
-	var text_label = $OQ_UI2DCanvas.find_node("NotificationText_Label", true, false);
-	var title_label = $OQ_UI2DCanvas.find_node("Title_Label", true, false);
+	var text_label = $OQ_UI2DCanvas.find_child("NotificationText_Label", true, false);
+	var title_label = $OQ_UI2DCanvas.find_child("Title_Label", true, false);
 	text_label.set_text(text);
 	title_label.set_text(title);
 	

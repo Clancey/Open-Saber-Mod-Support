@@ -7,8 +7,8 @@
 bg_color = Color( 0.0980392, 0.443137, 0.882353, 1 )
 
 [node name="VirtualKeyboard" type="Panel"]
-margin_right = 576.0
-margin_bottom = 240.0
+offset_right = 576.0
+offset_bottom = 240.0
 theme = ExtResource( 2 )
 script = ExtResource( 1 )
 __meta__ = {
@@ -16,27 +16,27 @@ __meta__ = {
 }
 
 [node name="ReferenceButton" type="Button" parent="."]
-margin_right = 48.0
-margin_bottom = 48.0
+offset_right = 48.0
+offset_bottom = 48.0
 focus_mode = 0
-custom_styles/hover = SubResource( 1 )
-enabled_focus_mode = 0
+theme_override_styles/hover = SubResource( 1 )
+focus_mode = 0
 text = "A"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Container_Letters" type="Container" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+offset_right = 40.0
+offset_bottom = 40.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Container_Symbols" type="Container" parent="."]
 visible = false
-margin_right = 40.0
-margin_bottom = 40.0
+offset_right = 40.0
+offset_bottom = 40.0
 __meta__ = {
 "_edit_use_anchors_": false
 }

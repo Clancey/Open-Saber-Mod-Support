@@ -1,6 +1,6 @@
 # Attach this script to any rigid body you want to be grabbable
 # by the Feature_RigidBodyGrab
-extends RigidBody
+extends RigidBody3D
 
 class_name OQClass_GrabbableRigidBody
 
@@ -22,9 +22,9 @@ var delta_position = Vector3();
 var is_grabbed := false
 
 # set to false to prevent the object from being grabbable
-export var grab_enabled := true
+@export var grab_enabled := true
 # set to true to allow grab to be transferable between hands
-export var is_transferable := true
+@export var is_transferable := true
 
 var last_reported_collision_pos : Vector3 = Vector3(0,0,0);
 
@@ -67,7 +67,7 @@ func grab_release() -> void:
 func orientation_follow(state, current_basis : Basis, target_basis : Basis) -> void:
 	var delta : Basis = target_basis * current_basis.inverse();
 	
-	var q = Quat(delta);
+	var q = Quaternion(delta);
 	var axis = Vector3(q.x, q.y, q.z);
 
 	if (axis.length_squared() > 0.0001):  # bullet fuzzyzero() is < FLT_EPSILON (1E-5)
@@ -118,6 +118,6 @@ func _integrate_forces(state):
 	if (_grab_type == vr.GrabTypes.VELOCITY):
 		if (!feature_grab_node): return;
 		var target_basis =  feature_grab_node.get_global_transform().basis * delta_orientation;
-		var target_position = feature_grab_node.get_global_transform().origin# + target_basis.xform(delta_position);
+		var target_position = feature_grab_node.get_global_transform().origin# + target_basis * (delta_position);
 		position_follow(state, get_global_transform().origin, target_position);
 		orientation_follow(state, get_global_transform().basis, target_basis);

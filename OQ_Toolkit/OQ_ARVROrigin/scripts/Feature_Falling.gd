@@ -1,4 +1,4 @@
-extends Spatial
+extends Node3D
 
 enum CollisionType {
 	AUTOMATIC,
@@ -9,28 +9,28 @@ enum CollisionType {
 }
 
 
-export var active := true;
-export var debug_information := false;
+@export var active := true;
+@export var debug_information := false;
 
-export var ground_height := 0.0;
-export var gravity := 9.81;
-export var epsilon := 0.001;
+@export var ground_height := 0.0;
+@export var gravity := 9.81;
+@export var epsilon := 0.001;
 
-export var height_offset := 0.0; # you can make the player taller with this
+@export var height_offset := 0.0; # you can make the player taller with this
 
 
-export var force_move_up : bool = false;
-export var move_up_speed : float = 0.0; # 0.0 == instance move up
-export var max_raycast_distance : float = 128.0; 
-export (int, LAYERS_3D_PHYSICS) var ray_collision_mask = 2147483647;
-export var fall_without_hit : bool = false;
-export var fall_raycast_radius = 0.0;
+@export var force_move_up : bool = false;
+@export var move_up_speed : float = 0.0; # 0.0 == instance move up
+@export var max_raycast_distance : float = 128.0; 
+@export (int, LAYERS_3D_PHYSICS) var ray_collision_mask = 2147483647;
+@export var fall_without_hit : bool = false;
+@export var fall_raycast_radius = 0.0;
 
-export(CollisionType) var collision_type = CollisionType.AUTOMATIC;
+@export var collision_type: CollisionType = CollisionType.AUTOMATIC;
 
 var move_checker = null;
 
-var feature_player_collision : KinematicBody = null;
+var feature_player_collision : CharacterBody3D = null;
 
 
 var on_ground = true;
@@ -41,12 +41,12 @@ func _show_debug_information():
 	% [str(on_ground), mcn, str(collision_type)]);
 
 func _ready():
-	if (not get_parent() is ARVROrigin):
-		vr.log_error("Feature_Falling: parent is not ARVROrigin");
+	if (not get_parent() is XROrigin3D):
+		vr.log_error("Feature_Falling: parent is not XROrigin3D");
 		
 	if (collision_type == CollisionType.AUTOMATIC):
-		var pc = get_parent().find_node("Feature_PlayerCollision", false, false);
-		if (pc is KinematicBody):
+		var pc = get_parent().find_child("Feature_PlayerCollision", false, false);
+		if (pc is CharacterBody3D):
 			feature_player_collision = pc;
 			
 			collision_type = CollisionType.RAYCAST;
@@ -128,7 +128,7 @@ func _physics_process(dt):
 #		max_fall_distance = -delta_move.y;
 		
 	elif (collision_type == CollisionType.RAYCAST):
-		var space_state = get_world().direct_space_state
+		var space_state = get_world_3d().direct_space_state
 		var from = head_position;
 		var to = from - Vector3(0.0, max_raycast_distance, 0.0);
 		var hit_result = _get_raycast_hit_center(space_state, from, to);
@@ -171,7 +171,7 @@ func _physics_process(dt):
 					if (move_checker):
 						move = move_checker.oq_feature_falling_check_move_up(move);
 					
-					vr.vrOrigin.translation += move;
+					vr.vrOrigin.position += move;
 					
 		else:
 			#vr.show_dbg_info("dbgFalling", "fallingNoHit: player_height = %f" % [player_height]);
@@ -179,7 +179,7 @@ func _physics_process(dt):
 
 	if (!on_ground):
 		fall_speed += gravity * dt;
-		vr.vrOrigin.translation.y -= min(max_fall_distance, fall_speed * dt);
+		vr.vrOrigin.position.y -= min(max_fall_distance, fall_speed * dt);
 	else:
 		fall_speed = 0.0;
 		

@@ -1,17 +1,18 @@
-extends Spatial
+extends Node3D
 
 var _spectrum = null;
 var _spectrum_nodes = [];
-export(NodePath) var game;
+@export var game_path: NodePath;
+var game;
 
 var ring_rot_speed = 0.0;
 var ring_rot_inv_dir = false;
 
-export var disabled = false
+@export var disabled = false
 
 func _ready():
-	if game is NodePath:
-		game = get_node(game);
+	if not game:
+		game = get_node(game_path);
 	_setup_level();
 
 func _process(delta):
@@ -27,19 +28,19 @@ func _update_level(dt):
 	for i in range(1,VU_COUNT+1):
 		var hz = i * FREQ_MAX / VU_COUNT;
 		var f = _spectrum.get_magnitude_for_frequency_range(prev_hz,hz)
-		var energy = clamp((MIN_DB + linear2db(f.length()))/MIN_DB,0,1)
+		var energy = clamp((MIN_DB + linear_to_db(f.length()))/MIN_DB,0,1)
 		
-		if _spectrum_nodes[i-1].translation.y < energy * 10.0:
-			_spectrum_nodes[i-1].translation.y = min(_spectrum_nodes[i-1].translation.y+0.2,energy * 10.0);
+		if _spectrum_nodes[i-1].position.y < energy * 10.0:
+			_spectrum_nodes[i-1].position.y = min(_spectrum_nodes[i-1].position.y+0.2,energy * 10.0);
 		else:
-			_spectrum_nodes[i-1].translation.y -= 0.08;
+			_spectrum_nodes[i-1].position.y -= 0.08;
 
 		prev_hz = hz
 		
 	#procces ring rotations
 	if ring_rot_speed > 0:
 		for ring in $Level/rings.get_children():
-			if ring is Spatial:
+			if ring is Node3D:
 				var rot = ring_rot_speed
 				if ring_rot_inv_dir: rot *= -1
 				ring.rotate_z((rot * dt) * (float(ring.get_index()+1)/5))
@@ -56,7 +57,7 @@ func _setup_level():
 	for  i in range(0, 7):
 		s = s.duplicate()
 		$Level.add_child(s);
-		s.translation.x += 2.0;
+		s.position.x += 2.0;
 		_spectrum_nodes.push_back(s);
 		
 	update_colors()
@@ -117,14 +118,14 @@ func procces_event(data,beat):
 			12:
 				var val = float(data._value)/8
 				$Level/t2/AnimationPlayer.playback_speed = val
-				$Level/t2/AnimationPlayer.seek(rand_range(0,$Level/t2/AnimationPlayer.current_animation_length),true)
+				$Level/t2/AnimationPlayer.seek(randf_range(0,$Level/t2/AnimationPlayer.current_animation_length),true)
 			13:
 				var val = float(data._value)/8
 				$Level/t3/AnimationPlayer.playback_speed = val
-				$Level/t3/AnimationPlayer.seek(rand_range(0,$Level/t3/AnimationPlayer.current_animation_length),true)
+				$Level/t3/AnimationPlayer.seek(randf_range(0,$Level/t3/AnimationPlayer.current_animation_length),true)
 	
 func change_light_color(type,color=-1,transition_mode=0):
-	var group : Spatial
+	var group : Node3D
 	var material = []
 	var shader = []
 	var tween : Tween
@@ -132,42 +133,42 @@ func change_light_color(type,color=-1,transition_mode=0):
 		0:
 			group = $Level/t0
 			material = [$Level/t0/laser1/Bar7.material_override]
-			tween = $Level/t0/Tween
+			tween = $Level/t0.create_tween()
 		1:
 			group = $Level/t1
 			material = [$Level/t1/Bar7.material_override]
-			tween = $Level/t1/Tween
+			tween = $Level/t1.create_tween()
 		2:
 			group = $Level/t2
 			material = [$Level/t2/laser1/Bar7.material_override]
-			tween = $Level/t2/Tween
+			tween = $Level/t2.create_tween()
 		3:
 			group = $Level/t3
 			material = [$Level/t3/laser1/Bar7.material_override]
-			tween = $Level/t3/Tween
+			tween = $Level/t3.create_tween()
 		4:
 			group = $Level/t4
 			material = [$Level/t4/Bar1.material_override, $Level/floor.material_override]
 			shader = [$wall_material_holder.material_override]
-			tween = $Level/t4/Tween
+			tween = $Level/t4.create_tween()
 	
 	if not color is Color:
 		for m in material:
-			m.albedo_color = Color.black
+			m.albedo_color = Color.BLACK
 		tween.stop_all()
-		$Level/Sphere.material_override.set_shader_param("bg_%d_intensity"%int(type),0.0)
+		$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%int(type),0.0)
 		group.visible = false
 		return
 	else:
 		for m in shader:
-			m.set_shader_param("albedo_color",color)
-		$Level/Sphere.material_override.set_shader_param("bg_%d_tint"%int(type),color)
+			m.set_shader_parameter("albedo_color",color)
+		$Level/Sphere.material_override.set_shader_parameter("bg_%d_tint"%int(type),color)
 	
 	match transition_mode:
 		0:
 			for m in material:
 				m.albedo_color = color
-			$Level/Sphere.material_override.set_shader_param("bg_%d_intensity"%int(type),color.v)
+			$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%int(type),color.v)
 			group.visible = true
 		1:
 			tween.stop_all()
@@ -181,14 +182,14 @@ func change_light_color(type,color=-1,transition_mode=0):
 				tween.interpolate_property(m,"albedo_color",color*3,Color(0,0,0),1,Tween.TRANS_QUAD,Tween.EASE_IN)
 			tween.start()
 			group.visible = true
-			yield(tween,"tween_completed")
+			await tween.tween_completed
 			if material[0].albedo_color == Color(0,0,0):
 				group.visible = false
 			
 
 func _on_Tween_tween_step(object, key, elapsed, value : Color, id):
 	if id == null: return
-	$Level/Sphere.material_override.set_shader_param("bg_%d_intensity"%id,value.v)
+	$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%id,value.v)
 
 
 

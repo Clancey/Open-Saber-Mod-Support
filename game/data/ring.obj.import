@@ -1,20 +1,21 @@
 [remap]
 
 importer="wavefront_obj"
+importer_version=1
 type="Mesh"
-path="res://.import/ring.obj-b2d39a2e120e29c2a1da2ba07e399a4a.mesh"
+uid="uid://cy814avk383k"
+path="res://.godot/imported/ring.obj-b2d39a2e120e29c2a1da2ba07e399a4a.mesh"
 
 [deps]
 
-files=[ "res://.import/ring.obj-b2d39a2e120e29c2a1da2ba07e399a4a.mesh" ]
+files=["res://.godot/imported/ring.obj-b2d39a2e120e29c2a1da2ba07e399a4a.mesh"]
 
 source_file="res://game/data/ring.obj"
-dest_files=[ "res://.import/ring.obj-b2d39a2e120e29c2a1da2ba07e399a4a.mesh", "res://.import/ring.obj-b2d39a2e120e29c2a1da2ba07e399a4a.mesh" ]
+dest_files=["res://.godot/imported/ring.obj-b2d39a2e120e29c2a1da2ba07e399a4a.mesh", "res://.godot/imported/ring.obj-b2d39a2e120e29c2a1da2ba07e399a4a.mesh"]
 
 [params]
 
 generate_tangents=true
-scale_mesh=Vector3( 1, 1, 1 )
-offset_mesh=Vector3( 0, 0, 0 )
-octahedral_compression=true
-optimize_mesh_flags=4286
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

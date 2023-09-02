@@ -1,6 +1,6 @@
-extends Spatial
+extends Node3D
 
-export var active = true;
+@export var active = true;
 
 var grab_left = null;
 var grab_right = null;
@@ -11,11 +11,11 @@ var last_grab = null;
 var start_position = Vector3();
 
 func _ready():
-	if (not get_parent() is ARVROrigin):
-		vr.log_error(" in Feature_Climbing: parent not ARVROrigin.");
+	if (not get_parent() is XROrigin3D):
+		vr.log_error(" in Feature_Climbing: parent not XROrigin3D.");
 
-	grab_left = vr.leftController.find_node("Feature_StaticGrab");
-	grab_right = vr.rightController.find_node("Feature_StaticGrab");
+	grab_left = vr.leftController.find_child("Feature_StaticGrab");
+	grab_right = vr.rightController.find_child("Feature_StaticGrab");
 	
 	if (grab_left == null || grab_right == null):
 		vr.log_error(" in Feature_Climbing; both controllers need the Feature_StaticGrab");

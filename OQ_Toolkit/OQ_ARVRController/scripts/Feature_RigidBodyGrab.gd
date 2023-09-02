@@ -1,20 +1,20 @@
 # TODO:
 # create the hingejoint and kinematic body maybe only when needed
 #   and not as part of the scene always
-extends Spatial
+extends Node3D
 class_name Feature_RigidBodyGrab
 
 # The controller that this grab feature is bound to
-var controller : ARVRController = null;
+var controller : XRController3D = null;
 # The other controller's grab feature. null if it doesn't exist, or isn't found.
 # This is needed so that we can release the object from the other controller
 # prior to transferring grab ownership to this controller. If the release isn't
 # performed correctly, strange node reparenting behavior can occur.
 var other_grab_feature : Feature_RigidBodyGrab = null
-var grab_area : Area = null;
+var grab_area : Area3D = null;
 var held_object = null;
 var held_object_data = {};
-var grab_mesh : MeshInstance = null;
+var grab_mesh : MeshInstance3D = null;
 var held_object_initial_parent : Node
 var last_gesture := "";
 # A list of grabbable objects that are within the controller's grab distance.
@@ -22,23 +22,23 @@ var last_gesture := "";
 # initiated, the object at the front of the list will be grabbed.
 var grabbable_candidates = []
 
-export(vr.CONTROLLER_BUTTON) var grab_button = vr.CONTROLLER_BUTTON.GRIP_TRIGGER;
-export(String) var grab_gesture := "Fist"
-export(int, LAYERS_3D_PHYSICS) var grab_layer := 1
-export (vr.GrabTypes) var grab_type := vr.GrabTypes.HINGEJOINT;
-export var collision_body_active := false;
-export(int, LAYERS_3D_PHYSICS) var collision_body_layer := 1
-onready var _hinge_joint : HingeJoint = $HingeJoint;
-export var reparent_mesh = false;
-export var hide_model_on_grab := false;
+@export var grab_button = vr.CONTROLLER_BUTTON.GRIP_TRIGGER; # (vr.CONTROLLER_BUTTON)
+@export var grab_gesture := "Fist"
+@export var grab_layer := 1 # (int, LAYERS_3D_PHYSICS)
+@export (vr.GrabTypes) var grab_type := vr.GrabTypes.HINGEJOINT;
+@export var collision_body_active := false;
+@export var collision_body_layer := 1 # (int, LAYERS_3D_PHYSICS)
+@onready var _hinge_joint : HingeJoint3D = $HingeJoint3D;
+@export var reparent_mesh = false;
+@export var hide_model_on_grab := false;
 # set to true to vibrate controller when object is grabbed
-export var rumble_on_grab := false;
+@export var rumble_on_grab := false;
 # control the intesity of vibration when player grabs an object
-export(float,0,1,0.01) var rumble_on_grab_intensity = 0.4
+@export var rumble_on_grab_intensity = 0.4 # (float,0,1,0.01)
 # set to true to vibrate controller when object becomes grabbable
-export var rumble_on_grabbable := false;
+@export var rumble_on_grabbable := false;
 # control the intesity of vibration when an object becomes grabbable
-export(float,0,1,0.01) var rumble_on_grabbable_intensity = 0.2
+@export var rumble_on_grabbable_intensity = 0.2 # (float,0,1,0.01)
 
 # Returns true if controller's grab button was pressed, or hand's grab gesture
 # was detected.
@@ -70,8 +70,8 @@ func not_grabbing() -> bool:
 
 func _ready():
 	controller = get_parent();
-	if (not controller is ARVRController):
-		vr.log_error(" in Feature_RigidBodyGrab: parent not ARVRController.");
+	if (not controller is XRController3D):
+		vr.log_error(" in Feature_RigidBodyGrab: parent not XRController3D.");
 	grab_area = $GrabArea;
 	grab_area.collision_mask = grab_layer;
 	
@@ -201,7 +201,7 @@ func start_grab_kinematic(grabbable_rigid_body):
 	add_child(held_object)
 	
 	held_object.global_transform = initial_transform
-	held_object.set_mode(RigidBody.MODE_KINEMATIC)
+	held_object.set_mode(RigidBody3D.FREEZE_MODE_KINEMATIC)
 	
 	held_object.grab_init(self, grab_type)
 
@@ -215,7 +215,7 @@ func release_grab_kinematic():
 	held_object_initial_parent.add_child(held_object)
 	
 	held_object.global_transform = initial_transform
-	held_object.set_mode(RigidBody.MODE_RIGID)
+	held_object.set_mode(RigidBody3D.MODE_RIGID)
 	
 	held_object.grab_release()
 	
@@ -227,13 +227,13 @@ func _release_reparent_mesh():
 	if (grab_mesh):
 		remove_child(grab_mesh);
 		held_object.add_child(grab_mesh);
-		grab_mesh.transform = Transform();
+		grab_mesh.transform = Transform3D();
 		grab_mesh = null;
 
 
 func _reparent_mesh():
 	for c in held_object.get_children():
-		if (c is MeshInstance):
+		if (c is MeshInstance3D):
 			grab_mesh = c;
 			break;
 	if (grab_mesh):
@@ -244,7 +244,7 @@ func _reparent_mesh():
 		
 		if (grab_type == vr.GrabTypes.VELOCITY):
 			# now set the mesh transform to be the same as used for the rigid body
-			grab_mesh.transform = Transform();
+			grab_mesh.transform = Transform3D();
 			grab_mesh.transform.basis = held_object.delta_orientation;
 		elif (grab_type == vr.GrabTypes.HINGEJOINT):
 			grab_mesh.global_transform = mesh_global_trafo;

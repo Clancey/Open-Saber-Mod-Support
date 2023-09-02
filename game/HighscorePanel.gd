@@ -3,16 +3,16 @@ class_name HighscorePanel
 
 signal close()
 
-export var show_close_button = true
-export var show_song_info = true
+@export var show_close_button = true
+@export var show_song_info = true
 
 # keep a copy of the base row for regeneration later
-onready var _base_row = $Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow.duplicate()
-onready var _highscore_list = $Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList
-onready var _title = $Margin/VBox/Title
-onready var _song_info = $Margin/VBox/LeftRight/VBox/SongInfo_Label
-onready var _exit_button = $Margin/VBox/Exit_Button
-onready var _song_info_panel = $Margin/VBox/LeftRight/VBox
+@onready var _base_row = $Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow.duplicate()
+@onready var _highscore_list = $Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList
+@onready var _title = $Margin/VBox/Title
+@onready var _song_info = $Margin/VBox/LeftRight/VBox/SongInfo_Label
+@onready var _exit_button = $Margin/VBox/Exit_Button
+@onready var _song_info_panel = $Margin/VBox/LeftRight/VBox
 
 func _ready():
 	_clear_list()

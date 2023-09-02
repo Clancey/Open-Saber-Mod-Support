@@ -3,8 +3,8 @@ class_name NameSelector
 
 signal name_selected(name)
 
-onready var _base_button = $NameRow/BaseButton.duplicate()
-onready var _name_row = $NameRow
+@onready var _base_button = $NameRow/BaseButton.duplicate()
+@onready var _name_row = $NameRow
 
 func _ready():
 	clear_names()
@@ -14,7 +14,7 @@ func _ready():
 func add_name(name):
 	var new_button = _base_button.duplicate()
 	new_button.text = name
-	new_button.connect("pressed",self,"_on_NameButton_pressed",[name])
+	new_button.connect("pressed", Callable(self, "_on_NameButton_pressed").bind(name))
 	_name_row.add_child(new_button)
 
 func clear_names():

@@ -14,10 +14,10 @@
 #  - walk speed should maybe not be constant but depend on step frequency and other values?
 
 
-extends Spatial
+extends Node3D
 
-export var active := true;
-export var active_in_desktop := false; # turn this on if you work for example with the VRRecorder feature
+@export var active := true;
+@export var active_in_desktop := false; # turn this on if you work for example with the VRRecorder feature
 
 const _height_ringbuffer_size := 15; # full ring buffer; lower latency can be achieved by accessing only a subset
 var _height_ringbuffer_pos := 0;
@@ -58,8 +58,8 @@ signal step_high;
 
 
 func _ready():
-	if (not get_parent() is ARVROrigin):
-		vr.log_error("Feature_StickMovement: parent is not ARVROrigin");
+	if (not get_parent() is XROrigin3D):
+		vr.log_error("Feature_StickMovement: parent is not XROrigin3D");
 	
 	
 	_height_ringbuffer.resize(_height_ringbuffer_size);
@@ -201,7 +201,7 @@ func _move(dt):
 	if (move_checker):
 		actual_translation = move_checker.oq_walk_in_place_check_move(actual_translation, speed);
 	
-	vr.vrOrigin.translation += actual_translation;
+	vr.vrOrigin.position += actual_translation;
 
 # NOTE: this needs to be in the _process as all the values are tied to the actual display framerate of 72hz
 #       at the moment

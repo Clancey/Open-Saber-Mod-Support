@@ -1,7 +1,7 @@
 extends Object
 
 class ImgLoadRequest:
-	extends Reference
+	extends RefCounted
 	
 	var filepath : String = ""
 	var callback_obj : Object = null
@@ -36,17 +36,17 @@ func _start_next_img_load():
 		var next_req : ImgLoadRequest = _img_load_request_queue.pop_front()
 		
 		_img_load_mutex.lock()
-		if next_req.thread.start(self,"_load_img_threaded",next_req) == OK:
+		if next_req.thread.start(Callable(self, "_load_img_threaded").bind(next_req)) == OK:
 			_running_img_load_threads += 1
 		_img_load_mutex.unlock()
 
 func _load_img_threaded(req: ImgLoadRequest):
 	# read cover image data from file into a buffer
-	var file = File.new()
+	var file = FileAccess.open(req.filepath, FileAccess.READ)
 	var img_data = null
 	var tex : ImageTexture = null
-	if file.open(req.filepath, File.READ) == OK:
-		img_data = file.get_buffer(file.get_len())
+	if file:
+		img_data = file.get_buffer(file.get_length())
 		file.close()
 		
 		# parse buffer into an ImageTexture

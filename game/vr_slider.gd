@@ -1,7 +1,8 @@
 extends Node
 
-export(NodePath) var scroll_node
-export var enable_joystick_scrolling = true
+@export var scroll_node_path: NodePath
+var scroll_node
+@export var enable_joystick_scrolling = true
 var v_scroll : VScrollBar = null
 var is_mouse_in = false
 var relpos = 0.0
@@ -30,7 +31,7 @@ const JOYSTICK_FAST_SCROLL_SPEED = 2000
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	scroll_node = get_node(scroll_node)
+	scroll_node = get_node(scroll_node_path)
 	if scroll_node == null:
 		vr.log_error("vr_slider._ready() scroll_node must be set to a valid node")
 		set_process(false)
@@ -39,14 +40,14 @@ func _ready():
 	if scroll_node is ItemList:
 		v_scroll = scroll_node.get_v_scroll()
 	elif scroll_node is ScrollContainer:
-		v_scroll = scroll_node.get_v_scrollbar()
+		v_scroll = scroll_node.get_v_scroll_bar()
 	else:
 		vr.log_error("vr_slider._ready() scroll_node must be set ScrollContainer or ItemList")
 		set_process(false)
 		return
 	
-	scroll_node.connect("mouse_entered",self,"_mouse_entered")
-	scroll_node.connect("mouse_exited",self,"_mouse_exited")
+	scroll_node.connect("mouse_entered", Callable(self, "_mouse_entered"))
+	scroll_node.connect("mouse_exited", Callable(self, "_mouse_exited"))
 		
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

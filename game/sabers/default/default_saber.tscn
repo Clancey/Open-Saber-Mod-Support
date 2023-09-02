@@ -1,192 +1,237 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=14 format=3 uid="uid://bw3rjal5qlu0p"]
 
-[ext_resource path="res://game/LightSaber.material" type="Material" id=1]
-[ext_resource path="res://game/data/lightsaber.ogg" type="AudioStream" id=2]
-[ext_resource path="res://game/sabers/default/default_saber.gd" type="Script" id=3]
-[ext_resource path="res://game/data/beepcube_cut.ogg" type="AudioStream" id=4]
+[ext_resource type="Material" uid="uid://chqutrqmle57g" path="res://game/LightSaber.material" id="1"]
+[ext_resource type="AudioStream" uid="uid://bkuquwclng0k" path="res://game/data/lightsaber.ogg" id="2"]
+[ext_resource type="Script" path="res://game/sabers/default/default_saber.gd" id="3"]
+[ext_resource type="AudioStream" uid="uid://db2atyh66c0qv" path="res://game/data/beepcube_cut.ogg" id="4"]
 
-[sub_resource type="CapsuleMesh" id=1]
+[sub_resource type="CapsuleMesh" id="1"]
 resource_local_to_scene = true
-radius = 0.015
-mid_height = 1.2
+radius = 0.0005
+height = 1.2
 
-[sub_resource type="CylinderMesh" id=2]
+[sub_resource type="CylinderMesh" id="2"]
 top_radius = 0.015
 bottom_radius = 0.015
 height = 0.15
 
-[sub_resource type="SpatialMaterial" id=3]
-albedo_color = Color( 0.435294, 0, 0.427451, 1 )
-
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id="4"]
 resource_name = "Hide"
 tracks/0/type = "value"
-tracks/0/path = NodePath("LightSaber_Mesh:mesh:mid_height")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
+tracks/0/path = NodePath("LightSaber_Mesh:mesh:height")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [ 1.2, 0.001 ]
+"values": [1.2, 0.001]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("LightSaber_Mesh:translation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
+tracks/1/path = NodePath("LightSaber_Mesh:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [ Vector3( 0, 0.65, 0 ), Vector3( 0, 0.05, 0 ) ]
+"values": [Vector3(0, 0.65, 0), Vector3(0, 0.05, 0)]
 }
 tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
 tracks/2/path = NodePath(".:visible")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [ true, true ]
+"values": [true, true]
 }
 tracks/3/type = "value"
-tracks/3/path = NodePath("tip:translation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
 tracks/3/imported = false
 tracks/3/enabled = true
+tracks/3/path = NodePath("tip:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
 tracks/3/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [ Vector3( 0, 1.255, 0 ), Vector3( 0, 0.051752, 0 ) ]
+"values": [Vector3(0, 1.255, 0), Vector3(0, 0.051752, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("LightSaber_Mesh:mesh:radius")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.01]
 }
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id="5"]
 resource_name = "QuickHide"
 length = 0.001
 tracks/0/type = "value"
-tracks/0/path = NodePath("LightSaber_Mesh:mesh:mid_height")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
+tracks/0/path = NodePath("LightSaber_Mesh:mesh:height")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [ 0.001 ]
+"values": [0.001]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("LightSaber_Mesh:translation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
+tracks/1/path = NodePath("LightSaber_Mesh:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [ Vector3( 0, 0.05, 0 ) ]
+"values": [Vector3(0, 0.05, 0)]
 }
 tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
 tracks/2/path = NodePath(".:visible")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ true ]
+"values": [true]
 }
 tracks/3/type = "value"
-tracks/3/path = NodePath("tip:translation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
 tracks/3/imported = false
 tracks/3/enabled = true
+tracks/3/path = NodePath("tip:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
 tracks/3/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [ Vector3( 0, 0.051752, 0 ) ]
+"values": [Vector3(0, 0.051752, 0)]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id="6"]
 length = 1.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("LightSaber_Mesh:mesh:mid_height")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
+tracks/0/path = NodePath("LightSaber_Mesh:mesh:height")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [ 0.001, 1.2 ]
+"values": [0.001, 1.2]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("LightSaber_Mesh:translation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
+tracks/1/path = NodePath("LightSaber_Mesh:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [ Vector3( 0, 0.05, 0 ), Vector3( 0, 0.65, 0 ) ]
+"values": [Vector3(0, 0.05, 0), Vector3(0, 0.65, 0)]
 }
 tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
 tracks/2/path = NodePath(".:visible")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [ true, true ]
+"values": [true, true]
 }
 tracks/3/type = "audio"
+tracks/3/imported = false
+tracks/3/enabled = true
 tracks/3/path = NodePath("AudioStreamPlayer3D")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
-tracks/3/imported = false
-tracks/3/enabled = true
 tracks/3/keys = {
-"clips": [ {
+"clips": [{
 "end_offset": 0.0,
 "start_offset": 0.0,
-"stream": ExtResource( 2 )
-} ],
-"times": PoolRealArray( 0 )
+"stream": ExtResource("2")
+}],
+"times": PackedFloat32Array(0)
 }
+tracks/3/use_blend = true
 tracks/4/type = "value"
-tracks/4/path = NodePath("tip:translation")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
 tracks/4/imported = false
 tracks/4/enabled = true
+tracks/4/path = NodePath("tip:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
 tracks/4/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [ Vector3( 0, 0.051752, 0 ), Vector3( 0, 1.2554, 0 ) ]
+"values": [Vector3(0, 0.051752, 0), Vector3(0, 1.2554, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("LightSaber_Mesh:mesh:radius")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.012]
 }
 
-[sub_resource type="Shader" id=7]
+[sub_resource type="Animation" id="Animation_ddgay"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LightSaber_Mesh:mesh:radius")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0005]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ox0xw"]
+_data = {
+"Hide": SubResource("4"),
+"QuickHide": SubResource("5"),
+"RESET": SubResource("Animation_ddgay"),
+"Show": SubResource("6")
+}
+
+[sub_resource type="Shader" id="7"]
 code = "shader_type spatial;
 render_mode cull_disabled, unshaded;
 
@@ -194,7 +239,7 @@ uniform vec4 color;
 uniform int size;
 
 void fragment(){
-	ALPHA_SCISSOR = 0.5;
+	ALPHA_SCISSOR_THRESHOLD = 0.5;
 	if (int((SCREEN_UV.x*1000.0)+(SCREEN_UV.y*1000.0))%size==0){
 		ALPHA = 0.0;
 	}else{
@@ -202,43 +247,51 @@ void fragment(){
 	}
 }"
 
-[sub_resource type="ShaderMaterial" id=8]
-shader = SubResource( 7 )
-shader_param/color = Vector3( 1, 1, 1 )
-shader_param/size = 2
+[sub_resource type="ShaderMaterial" id="8"]
+render_priority = 0
+shader = SubResource("7")
+shader_parameter/color = null
+shader_parameter/size = 2
 
-[node name="default_saber" type="Spatial"]
-script = ExtResource( 3 )
+[node name="default_saber" type="Node3D"]
+script = ExtResource("3")
 
-[node name="LightSaber_Mesh" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, -8.9407e-08, 1, 0, -1, -8.9407e-08, 0, 0.65, 0 )
-material_override = ExtResource( 1 )
-mesh = SubResource( 1 )
+[node name="LightSaber_Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -1, -1.33118e-07, 0, 1.33118e-07, -1, 0, 0.65, 0)
+material_override = ExtResource("1")
+mesh = SubResource("1")
 
-[node name="Hilt_Mesh" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0 )
-mesh = SubResource( 2 )
-material/0 = SubResource( 3 )
+[node name="Hilt_Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+mesh = SubResource("2")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-stream = ExtResource( 2 )
-unit_db = -6.0
+stream = ExtResource("2")
+volume_db = -6.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/Hide = SubResource( 4 )
-anims/QuickHide = SubResource( 5 )
-anims/Show = SubResource( 6 )
+libraries = {
+"": SubResource("AnimationLibrary_ox0xw")
+}
 
-[node name="ImmediateGeometry" type="ImmediateGeometry" parent="."]
-material_override = SubResource( 8 )
+[node name="ImmediateMesh" type="ImmediateMesh" parent="."]
+_import_path = NodePath("")
+unique_name_in_owner = false
+process_mode = 0
+process_priority = 0
+process_physics_priority = 0
+process_thread_group = 0
+editor_description = ""
+material_override = SubResource("8")
+script = null
 
-[node name="base" type="Position3D" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0492174, 0 )
+[node name="base" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0492174, 0)
 
-[node name="tip" type="Position3D" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2554, 0 )
+[node name="tip" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2554, 0)
 
 [node name="hitsound" type="AudioStreamPlayer3D" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.759516, 0 )
-stream = ExtResource( 4 )
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.759516, 0)
+stream = ExtResource("4")
 attenuation_model = 3

@@ -1,4 +1,4 @@
-extends Spatial
+extends Node3D
 
 class_name OQClass_ToolGrabController
 
@@ -8,5 +8,5 @@ func pose_part(start_grab_pos: Vector3, new_grab_pos: Vector3):
 func hand_slipped():
 	get_parent().notify_hand_slipped()
 
-func process_release(part: Spatial):
+func process_release(part: Node3D):
 	pass

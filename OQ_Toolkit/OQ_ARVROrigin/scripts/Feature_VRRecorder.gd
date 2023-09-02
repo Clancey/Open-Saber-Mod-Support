@@ -5,35 +5,35 @@
 # 
 # Note: For Button Preses this requries to disable a Feature_VRSimulator if it is part of the scene
 #       because else it will overwrite the button presses on playback
-extends Spatial
+extends Node3D
 
-export var active = true;
+@export var active = true;
 
-export var auto_play_desktop = true;
-export var loop_playback = true;
-export(String, FILE) var playback_filename = "recording.oqrec";
-export var playback_start_frame = 0;
-export var playback_end_frame = -1;
+@export var auto_play_desktop = true;
+@export var loop_playback = true;
+@export var playback_filename = "recording.oqrec"; # (String, FILE)
+@export var playback_start_frame = 0;
+@export var playback_end_frame = -1;
 
-export var auto_record_device = false;
-export(String, FILE) var rec_filename = "recording";
-export var append_number = true;
-export var append_date = false;
-export var start_rec_via_key = true;
+@export var auto_record_device = false;
+@export var rec_filename = "recording"; # (String, FILE)
+@export var append_number = true;
+@export var append_date = false;
+@export var start_rec_via_key = true;
 
-export(vr.BUTTON) var start_first_button = vr.BUTTON.A;
-export(vr.BUTTON) var start_second_button = vr.BUTTON.X;
+@export var start_first_button = vr.BUTTON.A; # (vr.BUTTON)
+@export var start_second_button = vr.BUTTON.X; # (vr.BUTTON)
 
-export var rec_head_position = true;
-export var rec_head_orientation = true;
-export var rec_head_velocity = false;
-export var rec_head_acceleration = false;
-export var rec_controller_position = true;
-export var rec_controller_orientation = true;
-export var rec_controller_buttons = true;
-export var rec_controller_axis = true;
-export var rec_controller_velocity = false;
-export var rec_controller_acceleration = false;
+@export var rec_head_position = true;
+@export var rec_head_orientation = true;
+@export var rec_head_velocity = false;
+@export var rec_head_acceleration = false;
+@export var rec_controller_position = true;
+@export var rec_controller_orientation = true;
+@export var rec_controller_buttons = true;
+@export var rec_controller_axis = true;
+@export var rec_controller_velocity = false;
+@export var rec_controller_acceleration = false;
 
 var _r = null; # this is the actual recording dictionary (either during recording or during playback)
 var _record_active = false; # actively recording
@@ -149,7 +149,7 @@ func start_recording(rec_template = null):
 			_r["right_controller_angular_acceleration"] = [];
 	
 	# remember the start time of the recording
-	var d = OS.get_datetime();
+	var d = Time.get_datetime_dict_from_system();
 	_r["start_time"] = 	"%d.%02d.%02d_%02d.%02d.%02d"  % [d.year, d.month, d.day, d.hour, d.minute, d.second];
 	_r["target_fps"] = Engine.target_fps;
 	_num_recorded_frames = 0;
@@ -234,14 +234,14 @@ func _record():
 		_rec_vector3(_r.right_controller_angular_acceleration, vr.get_controller_angular_acceleration(vr.rightController.controller_id));
 
 
-func _set_pos(t : Spatial, key):
+func _set_pos(t : Node3D, key):
 	if (!_r.has(key)): return;
 	var p = _r[key];
 	var i = _playback_frame * 3;
 	var pos = Vector3(p[i+0],p[i+1],p[i+2]);
 	t.transform.origin = pos;
 
-func _set_orientation(t : Spatial, key):
+func _set_orientation(t : Node3D, key):
 	if (!_r.has(key)): return;
 	var o = _r[key];
 	var i = _playback_frame * 3;
@@ -328,7 +328,7 @@ func stop_and_save_recording(filename = null):
 	
 	_r["num_frames"] = _num_recorded_frames;
 	
-	var d = OS.get_datetime();
+	var d = Time.get_datetime_dict_from_system();
 	if (filename == null || filename == ""):
 		filename = "recording_%d.%02d.%02d_%02d.%02d.%02d.oqrec"  % [d.year, d.month, d.day, d.hour, d.minute, d.second];
 	else:
@@ -345,7 +345,7 @@ func stop_and_save_recording(filename = null):
 	var save_rec = File.new()
 	var err = save_rec.open("user://" + filename, File.WRITE)
 	if (err == OK):
-		save_rec.store_line(to_json(_r))
+		save_rec.store_line(JSON.new().stringify(_r))
 		save_rec.close()
 		vr.log_info("Saved recording to " + OS.get_user_data_dir() + "/" + filename);
 	else:
@@ -360,7 +360,9 @@ func load_and_play_recording(recording_file_name):
 	if (err != OK):
 		err = file.open("user://" + recording_file_name, file.READ);
 	if (err == OK):
-		_r = JSON.parse(file.get_as_text()).result;
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(file.get_as_text()).result;
+		_r = test_json_conv.get_data()
 		_r.num_frames = int(_r.num_frames);
 		var num_frames = _r.num_frames;
 			

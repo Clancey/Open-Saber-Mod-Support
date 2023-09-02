@@ -1,7 +1,7 @@
 shader_type spatial;
 render_mode depth_test_disable;
 
-uniform vec4 color : hint_color = vec4(1.0, 1.0, 1.0, 0.25);
+uniform vec4 color : source_color = vec4(1.0, 1.0, 1.0, 0.25);
 uniform vec3 scale = vec3(2.0, 2.0, 2.0);
 
 varying vec3 v;

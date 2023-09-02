@@ -1,5 +1,5 @@
 # A Helper to make UIs work on a Area object
-extends Area
+extends Area3D
 
 # Member variables
 var prev_pos = null
@@ -21,26 +21,26 @@ func ui_raycast_hit_event(position, click, release):
 	if (click || release):
 		var e = InputEventMouseButton.new();
 		e.pressed = click;
-		e.button_index = BUTTON_LEFT;
+		e.button_index = MOUSE_BUTTON_LEFT;
 		e.position = pos2d;
 		e.global_position = pos2d;
 		
 		#if (click): print("Click");
 		#if (release): print("Release");
 
-		viewport.input(e);
+		viewport.push_input(e);
 		
 	elif (last_pos2d != null && last_pos2d != pos2d):
 		var e = InputEventMouseMotion.new();
 		e.relative = pos2d - last_pos2d;
-		e.speed = (pos2d - last_pos2d) / 16.0; #?? chose an arbitrary scale here for now
+		e.velocity = (pos2d - last_pos2d) / 16.0; #?? chose an arbitrary scale here for now
 		e.global_position = pos2d;
 		e.position = pos2d;
 		
-		viewport.input(e);
+		viewport.push_input(e);
 	last_pos2d = pos2d;
 
 
 func _ready():
-	viewport = get_parent().get_node("Viewport");
+	viewport = get_parent().get_node("SubViewport");
 

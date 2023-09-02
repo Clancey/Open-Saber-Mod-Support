@@ -17,8 +17,8 @@ var _beepsaber = null;
 var _cover_file_load_sw := StopwatchFactory.create("cover_file_load",10,true)
 var _cover_texture_create_sw := StopwatchFactory.create("cover_texture_create",10,true)
 
-onready var playlist_selector := $PlaylistSelector
-onready var _bg_img_loader := preload("res://game/scripts/BackgroundImgLoader.gd").new()
+@onready var playlist_selector := $PlaylistSelector
+@onready var _bg_img_loader := preload("res://game/scripts/BackgroundImgLoader.gd").new()
 
 enum PlaylistOptions {
 	AllSongs,
@@ -41,7 +41,8 @@ var dlpath = str(OS.get_system_dir(3))+"/";
 #var bspath = "/sdcard/BeepSaber/";
 #var bspath = "/storage/emulated/0/";
 var bspath = "user://BeepSaber/";
-export(NodePath) var keyboard;
+@export var keyboard_path: NodePath;
+var keyboard;
 
 var _playlists
 
@@ -59,21 +60,18 @@ func _load_playlists():
 	_playlists = [];
 	
 	#copy sample songs to main playlist folder on first run
-	var file = File.new()
 	var config_path = "user://config.dat"
-	if not file.file_exists(config_path):
-		var dir = Directory.new()
-		var copy = Directory.new()
-		dir.make_dir_recursive(bspath+"Songs/")
-		dir.open(path+"Songs/")
-		dir.list_dir_begin(true,true)
+	if not FileAccess.file_exists(config_path):
+		DirAccess.make_dir_recursive_absolute(bspath+"Songs/")
+		var dir = DirAccess.open(path+"Songs/")
+		dir.list_dir_begin() # TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 		var file_name = dir.get_next()
 		while file_name != "":
 			if dir.current_is_dir():
 				var new_dir = path+"Songs/"+file_name;
-				copy.make_dir_recursive(bspath+"Songs/"+file_name)
-				copy.open(new_dir)
-				copy.list_dir_begin(true,true)
+				DirAccess.make_dir_recursive_absolute(bspath+"Songs/"+file_name)
+				var copy = DirAccess.open(new_dir)
+				copy.list_dir_begin() # TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 				var copy_file_name = copy.get_next()
 				while copy_file_name != "":
 					var copy_new_dir = new_dir+"/"+copy_file_name;
@@ -88,14 +86,14 @@ func _load_playlists():
 	for song in _all_songs:
 		var song_path = _song_path(song)
 		var song_info = _load_song_info(song_path)
-		var modified_time = file.get_modified_time(song_path)
+		var modified_time = FileAccess.get_modified_time(song_path)
 		var play_count = PlayCount.get_total_play_count(song_info)
 		songs_with_modify_times.append([modified_time,song])
 		songs_with_play_count.append([play_count,song])
 	
 	var tuple_compare = TupleCompare.new(0,false)
-	songs_with_modify_times.sort_custom(tuple_compare,"compare")
-	songs_with_play_count.sort_custom(tuple_compare,"compare")
+	songs_with_modify_times.sort_custom(Callable(tuple_compare, "compare"))
+	songs_with_play_count.sort_custom(Callable(tuple_compare, "compare"))
 	_recently_added_songs = []
 	_most_played_songs = []
 	for tuple in songs_with_modify_times:
@@ -123,11 +121,10 @@ class TupleCompare:
 		
 func _discover_all_songs(seek_path):
 	var songlist = [];
-	var dir = Directory.new();
-	var err = dir.open(seek_path);
-	if err == OK:
+	var dir = DirAccess.open(seek_path);
+	if dir:
 		#$Label.text+="\nOpen:"+path;
-		dir.list_dir_begin(true,true);
+		dir.list_dir_begin() ;# TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 		var file_name = dir.get_next()
 		while file_name != "":
 			if dir.current_is_dir(): #or file_name.ends_with(".zip"):
@@ -186,7 +183,7 @@ func _song_path(dat):
 		return path + "Songs/" + dat.id + "/";
 	
 func _load_song_info(load_path):
-	var dir = Directory.new();
+	#var dir = DirAccess.new();
 	var map_info = vr.load_json_file(load_path + "Info.dat");
 	if (!map_info):
 		map_info = vr.load_json_file(load_path + "info.dat");
@@ -213,10 +210,10 @@ func _on_cover_loaded(img_tex, filepath, is_main_cover, list_idx):
 func _load_cover(cover_path, filename):
 	# read cover image data from file into a buffer
 	_cover_file_load_sw.start()
-	var file = File.new()
+	var file = FileAccess.open(cover_path+filename, FileAccess.READ)
 	var img_data = null
-	if file.open(cover_path+filename, File.READ) == OK:
-		img_data = file.get_buffer(file.get_len())
+	if file:
+		img_data = file.get_buffer(file.get_length())
 		file.close()
 		_cover_file_load_sw.stop()
 	else:
@@ -232,16 +229,15 @@ func _load_cover(cover_path, filename):
 	return tex;
 
 func play_preview(filepath_or_buffer, start_time = 0, duration = -1, buffer_data_type_hint = 'ogg'):
-	var data := PoolByteArray()
+	var data := PackedByteArray()
 	
 	if filepath_or_buffer is String:
 		# get song preview data from file
-		var snd_file = File.new()
-		snd_file.open(filepath_or_buffer, File.READ)
-		data = snd_file.get_buffer(snd_file.get_len())
+		var snd_file = FileAccess.open(filepath_or_buffer, FileAccess.READ)
+		data = snd_file.get_buffer(snd_file.get_length())
 		snd_file.close()
 		buffer_data_type_hint = filepath_or_buffer.get_extension()
-	elif filepath_or_buffer is PoolByteArray:
+	elif filepath_or_buffer is PackedByteArray:
 		# take song preview data from buffer as-is. trust passed type hint
 		data = filepath_or_buffer
 	else:
@@ -251,7 +247,7 @@ func play_preview(filepath_or_buffer, start_time = 0, duration = -1, buffer_data
 	# load song data into audio stream based on type hint
 	var stream = null
 	if buffer_data_type_hint == 'ogg' or buffer_data_type_hint == 'egg':
-		stream = AudioStreamOGGVorbis.new()
+		stream = AudioStreamOggVorbis.new()
 	elif buffer_data_type_hint == 'mp3':
 		stream = AudioStreamMP3.new()
 	else:
@@ -269,7 +265,7 @@ func play_preview(filepath_or_buffer, start_time = 0, duration = -1, buffer_data
 		song_prev_Tween.interpolate_property(song_prev,"volume_db",
 			song_prev.volume_db, -50, song_prev_transition_time, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 		song_prev_Tween.start()
-		yield(get_tree().create_timer(song_prev_transition_time),"timeout")
+		await get_tree().create_timer(song_prev_transition_time).timeout
 		song_prev.stop()
 	
 	# start the requested preview
@@ -290,8 +286,8 @@ var _map_id = null;
 var _map_info = null;
 var _map_path = null;
 
-onready var song_prev = $song_prev
-onready var song_prev_Tween = $song_prev/Tween
+@onready var song_prev = $song_prev
+@onready var song_prev_Tween = $song_prev/Tween
 var song_prev_lastid = -1
 var song_prev_transition_time = 1.0
 
@@ -339,7 +335,7 @@ func _on_stop_prev_timeout():
 	song_prev_Tween.interpolate_property(song_prev,"volume_db",
 		song_prev.volume_db, -50, song_prev_transition_time, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	song_prev_Tween.start()
-	yield(get_tree().create_timer(song_prev_transition_time),"timeout")
+	await get_tree().create_timer(song_prev_transition_time).timeout
 	song_prev.stop()
 
 
@@ -387,7 +383,7 @@ func _load_map_and_start():
 func _on_Delete_Button_button_up():
 	if $Delete_Button.text != "Sure?":
 		$Delete_Button.text = "Sure?";
-		yield(get_tree().create_timer(5),"timeout");
+		await get_tree().create_timer(5).timeout;
 		$Delete_Button.text = "Delete";
 	else:
 		$Delete_Button.text = "Delete";
@@ -399,9 +395,9 @@ func _delete_map():
 		PlayCount.remove_map(_map_info)
 		
 	if _map_path:
-		var dir = Directory.new();
-		if dir.open(_map_path) == 0:
-			dir.list_dir_begin();
+		var dir = DirAccess.open(_map_path);
+		if dir:
+			dir.list_dir_begin() ;# TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 			var current_file = dir.get_next();
 			while current_file != "":
 				dir.remove(_map_path+current_file);
@@ -424,17 +420,17 @@ func _ready():
 	for option in PLAYLIST_ITEMS.keys():
 		playlist_selector.add_item(PLAYLIST_ITEMS[option],option)
 	
-	keyboard = get_node(keyboard);
+	keyboard = get_node(keyboard_path);
 	if keyboard:
-		keyboard.connect("text_input_enter",self,"_text_input_enter")
-		keyboard.connect("text_input_cancel",self,"_text_input_cancel")
+		keyboard.connect("text_input_enter", Callable(self, "_text_input_enter"))
+		keyboard.connect("text_input_cancel", Callable(self, "_text_input_cancel"))
 
 	_load_playlists();
 	
-	yield(get_tree(),"physics_frame")
+	await get_tree().physics_frame
 	if keyboard:
-		keyboard._text_edit.connect("text_changed",self,"_text_input_changed")
-		keyboard._text_edit.connect("focus_exited",self,"_text_input_enter")
+		keyboard._text_edit.connect("text_changed", Callable(self, "_text_input_changed"))
+		keyboard._text_edit.connect("focus_exited", Callable(self, "_text_input_enter"))
 
 
 func _on_Play_Button_pressed():

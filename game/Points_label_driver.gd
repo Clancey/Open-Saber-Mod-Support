@@ -1,16 +1,16 @@
-extends Spatial
+extends Node3D
 
 
 var points_label=[]
-export var points_label_amount = 4
-onready var points_label_ref = preload("res://game/points_label.tscn")
+@export var points_label_amount = 4
+@onready var points_label_ref = preload("res://game/points_label.tscn")
 var current_point_label = 0
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	for i in range(0,points_label_amount):
-		points_label.insert(0,points_label_ref.instance())
+		points_label.insert(0,points_label_ref.instantiate())
 		add_child(points_label[0])
 
 

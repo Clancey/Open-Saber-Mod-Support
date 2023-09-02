@@ -1,10 +1,10 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://game/data/UI/ring.png" type="Texture" id=3]
+[ext_resource path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" type="FontFile" id=2]
+[ext_resource path="res://game/data/UI/ring.png" type="Texture2D" id=3]
 [ext_resource path="res://game/PercentIndicator.gd" type="Script" id=4]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="FontFile" id=1]
 size = 128
 font_data = ExtResource( 2 )
 
@@ -14,23 +14,23 @@ default_font = SubResource( 1 )
 [sub_resource type="Animation" id=3]
 resource_name = "change"
 tracks/0/type = "value"
-tracks/0/path = NodePath(".:rect_scale")
+tracks/0/path = NodePath(".:scale")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 0.183011, 1 ),
+"times": PackedFloat32Array( 0, 1 ),
+"transitions": PackedFloat32Array( 0.183011, 1 ),
 "update": 0,
 "values": [ Vector2( 1, 1 ), Vector2( 0.85, 0.85 ) ]
 }
 
-[node name="percent_indicator" type="TextureProgress"]
-margin_right = 512.0
-margin_bottom = 512.0
-rect_scale = Vector2( 0.85, 0.85 )
-rect_pivot_offset = Vector2( 256, 256 )
+[node name="percent_indicator" type="TextureProgressBar"]
+offset_right = 512.0
+offset_bottom = 512.0
+scale = Vector2( 0.85, 0.85 )
+pivot_offset = Vector2( 256, 256 )
 step = 0.1
 value = 75.0
 texture_progress = ExtResource( 3 )
@@ -45,10 +45,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -247.5
-margin_top = -75.5
-margin_right = 247.5
-margin_bottom = 75.5
+offset_left = -247.5
+offset_top = -75.5
+offset_right = 247.5
+offset_bottom = 75.5
 theme = SubResource( 2 )
 text = "100%"
 align = 1

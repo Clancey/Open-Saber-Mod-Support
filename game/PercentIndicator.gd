@@ -1,4 +1,4 @@
-extends TextureProgress
+extends TextureProgressBar
 
 
 func set_percent(val,anim=true):

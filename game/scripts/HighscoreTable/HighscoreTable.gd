@@ -59,7 +59,7 @@ func add_highscore(map_info,diff_rank,player_name,score):
 	# construct a new record and resort the list
 	var record = _make_record(score,player_name)
 	records.append(record)
-	records.sort_custom(self,"_highest_and_oldest")
+	records.sort_custom(Callable(self, "_highest_and_oldest"))
 	
 	# remove the lowest ranking score
 	if records.size() > MAX_RECORDS_PER_KEY:
@@ -101,11 +101,13 @@ func get_all_player_names():
 	
 # restores highscore table from filesystem
 func load_hs_table():
-	var file = File.new()
-	if file.open(HIGHSCORES_FILEPATH,File.READ) == OK:
+	var file = FileAccess.open(HIGHSCORES_FILEPATH,FileAccess.READ)
+	if file:
 		var text = file.get_as_text()
 		file.close()
-		var json_res = JSON.parse(text)
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(text)
+		var json_res = test_json_conv.get_data()
 		if json_res.error == OK:
 			_hs_table = json_res.result
 	else:
@@ -113,9 +115,9 @@ func load_hs_table():
 
 # saves highscore table to filesystem
 func save_hs_table():
-	var file = File.new()
-	if file.open(HIGHSCORES_FILEPATH,File.WRITE) == OK:
-		file.store_string(JSON.print(_hs_table,"   ",true))
+	var file = FileAccess.open(HIGHSCORES_FILEPATH,FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(_hs_table,"   ",true))
 		file.close()
 	else:
 		print("ERROR: Failed to open %s" % HIGHSCORES_FILEPATH)
@@ -143,7 +145,7 @@ func _make_record(score,player_name):
 	return {
 		"score" : score,
 		"player_name" : player_name,
-		"epoch_time" : OS.get_unix_time()
+		"epoch_time" : Time.get_unix_time_from_system()
 	}
 
 # records: the list of records for a given (song + diff_rank)

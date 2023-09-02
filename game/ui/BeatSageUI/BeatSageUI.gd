@@ -1,32 +1,32 @@
 extends Panel
 
-export (NodePath) var youtube_ui
+@export (NodePath) var youtube_ui
 
-onready var beatsage_request_ := $BeatSageRequest
-onready var song_url := $SongURL
+@onready var beatsage_request_ := $BeatSageRequest
+@onready var song_url := $SongURL
 
-onready var song_artist := $SongArtist
-onready var song_name := $SongName
-onready var song_cover := $SongCover
+@onready var song_artist := $SongArtist
+@onready var song_name := $SongName
+@onready var song_cover := $SongCover
 
-onready var difficulty_normal := $DifficultyNormal
-onready var difficulty_hard := $DifficultyHard
-onready var difficulty_expert := $DifficultyExpert
-onready var difficulty_expert_plus := $DifficultyExpertPlus
+@onready var difficulty_normal := $DifficultyNormal
+@onready var difficulty_hard := $DifficultyHard
+@onready var difficulty_expert := $DifficultyExpert
+@onready var difficulty_expert_plus := $DifficultyExpertPlus
 
-onready var mode_standard := $ModeStandard
-onready var mode_no_arrows := $ModeNoArrows
-onready var mode_one_saber := $ModeOneSaber
+@onready var mode_standard := $ModeStandard
+@onready var mode_no_arrows := $ModeNoArrows
+@onready var mode_one_saber := $ModeOneSaber
 
-onready var events_bombs := $EventsBombs
-onready var events_dot_block := $EventsDotBlocks
-onready var events_obstacles := $EventsObstacles
+@onready var events_bombs := $EventsBombs
+@onready var events_dot_block := $EventsDotBlocks
+@onready var events_obstacles := $EventsObstacles
 
-onready var model_select := $ModelButton
+@onready var model_select := $ModelButton
 
-onready var progress_screen := $ProgressScreen
-onready var progress_bar := $ProgressScreen/ProgressBar
-onready var submit_button := $SubmitButton
+@onready var progress_screen := $ProgressScreen
+@onready var progress_bar := $ProgressScreen/ProgressBar
+@onready var submit_button := $SubmitButton
 
 const MODELS = {
 	"V2" : "v2",
@@ -44,7 +44,7 @@ func _ready():
 	# setup youtube search UI and connect signal handlers
 	youtube_ui = get_node(youtube_ui)
 	if is_instance_valid(youtube_ui):
-		youtube_ui.connect("song_selected",self,"_on_youtube_song_selected")
+		youtube_ui.connect("song_selected", Callable(self, "_on_youtube_song_selected"))
 	
 	model_select.clear()
 	for key in MODELS.keys():
@@ -132,7 +132,7 @@ func _on_BeatSageRequest_download_complete(filepath):
 	submit_button.disabled = false
 	progress_screen.hide()
 	
-	var dir = Directory.new()
+	var dir = DirAccess.new()
 	var song_dir_name = filepath.get_basename().get_file()
 	var song_out_dir = BS_SONG_DIR + song_dir_name + '/'
 	var error = dir.make_dir_recursive(song_out_dir)
@@ -162,7 +162,7 @@ func _on_BeatSageRequest_youtube_metadata_available(metadata):
 	if SAVE_YOUTUBE_METADATA:
 		var file = File.new()
 		file.open("youtube_metadata.json",File.WRITE)
-		file.store_string(JSON.print(metadata,'  '))
+		file.store_string(JSON.stringify(metadata,'  '))
 		file.close()
 	
 	var artist = 'Unknown Artist'

@@ -34,7 +34,7 @@ func show_score(score,record,percent,song_string="",is_full_combo=false,is_new_r
 	else:
 		letter_score = "F"
 	
-	$char.bbcode_text = "[center]"+letter_score
+	$char.text = "[center]"+letter_score
 	
 	$Tween.interpolate_property(self,"animated_percent",0,percent,3,Tween.TRANS_QUAD,Tween.EASE_OUT)
 	$Tween.start()

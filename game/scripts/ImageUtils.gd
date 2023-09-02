@@ -7,7 +7,7 @@ enum ImgType {
 
 # determines image file type based on contents of data buffer
 # this can be used in conjuction with Godot Image.load_*_from_buffer()
-static func get_img_type_from_buffer(data: PoolByteArray):
+static func get_img_type_from_buffer(data: PackedByteArray):
 	# detect jpeg first since it's probably most common
 	if data.size() >= 2 and data[0] == 0xff and data[1] == 0xd8:
 		return ImgType.JPG
@@ -28,7 +28,7 @@ static func get_img_type_from_buffer(data: PoolByteArray):
 	return ImgType.Unknown
 	
 # returns a parsed Image object or null if parsing failed
-static func get_img_from_buffer(data: PoolByteArray):
+static func get_img_from_buffer(data: PackedByteArray):
 	var img = Image.new()
 	
 	match get_img_type_from_buffer(data):

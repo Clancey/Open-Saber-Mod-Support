@@ -1,4 +1,4 @@
-extends Spatial
+extends Node3D
 
 var last_log_pos = 0;
 var log_label : Label = null;
@@ -6,12 +6,12 @@ var scroll : ScrollContainer = null;
 
 func _ready():
 	
-	$OQ_UI2DCanvas.find_node("ReferenceRect", true, false).visible = true;
+	$OQ_UI2DCanvas.find_child("ReferenceRect", true, false).visible = true;
 
 	# we need to use find_node here since the OQ_UI2DCanvas will reparent the UI to the
 	# Viewport needed to render the UI to a texture;
-	log_label = $OQ_UI2DCanvas.find_node("LogLabel", true, false);
-	scroll = $OQ_UI2DCanvas.find_node("ScrollContainer", true, false);
+	log_label = $OQ_UI2DCanvas.find_child("LogLabel", true, false);
+	scroll = $OQ_UI2DCanvas.find_child("ScrollContainer", true, false);
 
 
 func update_log():
@@ -25,7 +25,7 @@ func update_log():
 		if (msg[2] > 1): log_label.text += " [%d]" % msg[2];
 		log_label.text += "\n";
 		
-	var sb = scroll.get_v_scrollbar();
+	var sb = scroll.get_v_scroll_bar();
 	sb.value = sb.max_value; # autoscroll to the last line of the log buffer
 
 func _process(_dt):

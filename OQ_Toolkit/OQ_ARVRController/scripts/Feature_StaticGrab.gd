@@ -1,18 +1,18 @@
-extends Spatial
+extends Node3D
 
-var grab_area : Area = null;
-var controller : ARVRController = null;
+var grab_area : Area3D = null;
+var controller : XRController3D = null;
 
 # if true the body is checked if it has a method "oq_can_static_grab" and calls it
 # to check if it actually can be grabbed. All other objects are ignored
-export var check_parent_can_static_grab = false;
+@export var check_parent_can_static_grab = false;
 
 signal oq_static_grab_started;
 signal oq_static_grab_ended;
 
-export(vr.CONTROLLER_BUTTON) var grab_button = vr.CONTROLLER_BUTTON.GRIP_TRIGGER;
-export(String) var grab_gesture := "Fist"
-export(int, LAYERS_3D_PHYSICS) var grab_layer := 1
+@export var grab_button = vr.CONTROLLER_BUTTON.GRIP_TRIGGER; # (vr.CONTROLLER_BUTTON)
+@export var grab_gesture := "Fist"
+@export var grab_layer := 1 # (int, LAYERS_3D_PHYSICS)
 
 var is_grabbing = false;
 var is_just_grabbing = false;
@@ -26,8 +26,8 @@ var _additional_grab_checker = null;
 
 func _ready():
 	controller = get_parent();
-	if (not controller is ARVRController):
-		vr.log_error(" in Feature_StaticGrab: parent not ARVRController.");
+	if (not controller is XRController3D):
+		vr.log_error(" in Feature_StaticGrab: parent not XRController3D.");
 	grab_area = $GrabArea;
 	grab_area.collision_mask = grab_layer;
 
@@ -79,7 +79,7 @@ func _physics_process(_dt):
 		if (grabbed_object):
 			is_grabbing = true;
 			is_just_grabbing = true;
-			grab_position = controller.translation; # we need the local translation here as we will move the origin
+			grab_position = controller.position; # we need the local position here as we will move the origin
 			emit_signal("oq_static_grab_started", grabbed_object, controller)
 
 	else:
@@ -91,6 +91,6 @@ func _physics_process(_dt):
 			grabbed_object = null;
 			is_grabbing = false;
 	elif (is_grabbing):
-		delta_position = vr.vrOrigin.global_transform.basis.xform(controller.translation - grab_position);
+		delta_position = vr.vrOrigin.global_transform.basis * (controller.position - grab_position);
 
 

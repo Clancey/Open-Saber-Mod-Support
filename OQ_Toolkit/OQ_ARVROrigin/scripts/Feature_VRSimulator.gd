@@ -1,16 +1,16 @@
 # The Feature_VRSimulator provides some basic functionality to control the ARVRNodes
 # via keyboard for desktop debugging and basic tests
-extends Spatial
+extends Node3D
 
-export var active = true;
+@export var active = true;
 
-export var walk_speed = 1.0;
+@export var walk_speed = 1.0;
 
 
-export var controller_move_speed = 0.002;
+@export var controller_move_speed = 0.002;
 
-export var player_height = 1.8;
-export var duck_multiply = 0.4;
+@export var player_height = 1.8;
+@export var duck_multiply = 0.4;
 
 var _current_player_height = 1.8;
 
@@ -20,7 +20,7 @@ var right_controller_node = null;
 
 var _fly_mode = false;
 
-export var info_label_visible = true;
+@export var info_label_visible = true;
 
 var info_label = null;
 var info_rect = null;
@@ -58,10 +58,10 @@ func initialize():
 		vr.log_error(" in Feature_VRSimulator: no rightController.");
 
 	# set up everything for simulation
-	left_controller_node = Spatial.new();
+	left_controller_node = Node3D.new();
 	vr.vrCamera.add_child(left_controller_node);
 
-	right_controller_node = Spatial.new();
+	right_controller_node = Node3D.new();
 	vr.vrCamera.add_child(right_controller_node);
 
 
@@ -69,26 +69,26 @@ func initialize():
 	info_label = Label.new();
 	info_label.text = info_text;
 	var m = 8;
-	info_label.margin_left = m;
-	info_label.margin_right = m;
-	info_label.margin_top = m;
-	info_label.margin_bottom = m;
+	info_label.offset_left = m;
+	info_label.offset_right = m;
+	info_label.offset_top = m;
+	info_label.offset_bottom = m;
 	info_rect = ColorRect.new();
 	
 	info_rect.color = Color(0, 0, 0, 0.7);
-	info_rect.rect_size = info_label.get_minimum_size(); #Vector2(128, 128);
+	info_rect.size = info_label.get_minimum_size(); #Vector2(128, 128);
 	info_rect.add_child(info_label);
 	add_child(info_rect);
 
 	_current_player_height = player_height;
-	vr.vrCamera.translation.y = _current_player_height;
+	vr.vrCamera.position.y = _current_player_height;
 	_reset_controller_position();
 	initialized = true;
 
 
 func _reset_controller_position():
-	left_controller_node.translation = Vector3(-0.2, -0.1, -0.4);
-	right_controller_node.translation = Vector3( 0.2, -0.1, -0.4);
+	left_controller_node.position = Vector3(-0.2, -0.1, -0.4);
+	right_controller_node.position = Vector3( 0.2, -0.1, -0.4);
 	_update_virtual_controller_position();
 
 # moves the ARVRController nodes to the simulated position
@@ -100,7 +100,7 @@ func _update_virtual_controller_position():
 
 
 func _is_interact_left():
-	return Input.is_key_pressed(KEY_CONTROL);
+	return Input.is_key_pressed(KEY_CTRL);
 
 func _is_interact_right():
 	return Input.is_key_pressed(KEY_ALT);
@@ -111,12 +111,12 @@ func _interact_move_controller(dir, rotate):
 		if (left_controller_node): 
 			left_controller_node.rotate_x(rotate.x);
 			left_controller_node.rotate_y(rotate.y);
-			left_controller_node.translation += dir;
+			left_controller_node.position += dir;
 	if (_is_interact_right()):
 		if (right_controller_node): 
 			right_controller_node.rotate_x(rotate.x);
 			right_controller_node.rotate_y(rotate.y);
-			right_controller_node.translation += dir;
+			right_controller_node.position += dir;
 	_update_virtual_controller_position();
 
 
@@ -144,13 +144,13 @@ func _update_keyboard(dt):
 		if (dir.length_squared() > 0.01):
 			_interact_move_controller(Vector3(0.0, 0.0, dir.z * dt), Vector3(dir.y, dir.x, 0.0) * 8.0 * dt);
 	else:
-		dir = vr.vrCamera.transform.basis.xform((dir));
+		dir = vr.vrCamera.transform.basis * ((dir));
 		if (_fly_mode): 
-			vr.vrOrigin.translation = vr.vrOrigin.translation + dir.normalized() * dt  * walk_speed;
+			vr.vrOrigin.position = vr.vrOrigin.position + dir.normalized() * dt  * walk_speed;
 		else:
 			dir.y = 0.0;
 			if (dir.length_squared() > 0.01):
-				vr.vrCamera.translation = vr.vrCamera.translation + dir.normalized() * dt  * walk_speed;
+				vr.vrCamera.position = vr.vrCamera.position + dir.normalized() * dt  * walk_speed;
 				_update_virtual_controller_position();
 			
 	# Num pad for controller keys:
@@ -211,14 +211,14 @@ func _input(event):
 
 	# basic keyboard events
 	if (event is InputEventKey && event.pressed):
-		if (event.scancode == KEY_R):
+		if (event.keycode == KEY_R):
 			_reset_controller_position();
 			
 	_current_player_height = player_height;
 	if (Input.is_key_pressed(KEY_SPACE)):
 		_current_player_height = player_height * duck_multiply;
 
-	vr.vrCamera.translation.y = _current_player_height;
+	vr.vrCamera.position.y = _current_player_height;
 
 
 	# camera movement on mouse movement
@@ -229,8 +229,8 @@ func _input(event):
 		else:
 			var yaw = event.relative.x;
 			var pitch = event.relative.y;
-			vr.vrCamera.rotate_y(deg2rad(-yaw));
-			vr.vrCamera.rotate_object_local(Vector3(1,0,0), deg2rad(-pitch));
+			vr.vrCamera.rotate_y(deg_to_rad(-yaw));
+			vr.vrCamera.rotate_object_local(Vector3(1,0,0), deg_to_rad(-pitch));
 
 	_update_virtual_controller_position();
 

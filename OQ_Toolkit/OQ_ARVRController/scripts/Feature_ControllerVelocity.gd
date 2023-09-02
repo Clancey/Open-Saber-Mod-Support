@@ -1,19 +1,19 @@
 # Note: this is not needed on oculus quest as there we can query
 # the controller velocity directly from the API which is exposed via
 # vr.get_controller_linear_velocity(controller_id)
-extends Spatial
+extends Node3D
 
 var controller_velocity = Vector3(0, 0, 0)
 
 var prior_controller_position = Vector3(0, 0, 0)
 var prior_controller_velocities = []
 
-var controller : ARVRController = null;
+var controller : XRController3D = null;
 
 func _ready():
 	controller = get_parent();
-	if (not controller is ARVRController):
-		vr.log_error(" in Feature_RigidBodyGrab: parent not ARVRController.");
+	if (not controller is XRController3D):
+		vr.log_error(" in Feature_RigidBodyGrab: parent not XRController3D.");
 		
 func update_controller_velocity(dt):
 	controller_velocity = Vector3(0, 0, 0)

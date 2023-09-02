@@ -14,7 +14,7 @@ void fragment() {
 	vec3 dir = vec3(0.0, 0.0, 1.0);
 	dir.x = ((-uv_interp.x - asym_proj.x)) / asym_proj.y;
 	dir.y = ((-uv_interp.y - asym_proj.z)) / asym_proj.a;
-	dir = mat3(CAMERA_MATRIX) * normalize(-dir);
+	dir = mat3(INV_VIEW_MATRIX) * normalize(-dir);
 	
 	// from the view dir we now compute the lat-long uv coordinates for env lookup
 	float x = (atan(dir.z, dir.x) + M_PI)  / (2.0 * M_PI);

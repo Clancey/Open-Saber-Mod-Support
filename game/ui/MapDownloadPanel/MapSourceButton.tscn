@@ -4,8 +4,8 @@
 [ext_resource path="res://game/BlackWhiteThem.tres" type="Theme" id=3]
 
 [node name="Button" type="Button"]
-margin_right = 494.0
-margin_bottom = 857.0
+offset_right = 494.0
+offset_bottom = 857.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource( 3 )
@@ -18,26 +18,26 @@ __meta__ = {
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 1
-custom_constants/margin_right = 10
-custom_constants/margin_top = 10
-custom_constants/margin_left = 10
-custom_constants/margin_bottom = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_bottom = 10
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBox" type="VBoxContainer" parent="MarginContainer"]
-margin_left = 10.0
-margin_top = 10.0
-margin_right = 484.0
-margin_bottom = 847.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 484.0
+offset_bottom = 847.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ColorRect" type="ColorRect" parent="MarginContainer/VBox"]
-margin_right = 474.0
-margin_bottom = 416.0
+offset_right = 474.0
+offset_bottom = 416.0
 mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -53,8 +53,8 @@ __meta__ = {
 }
 
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/VBox/ColorRect/ImageMargin"]
-margin_right = 474.0
-margin_bottom = 416.0
+offset_right = 474.0
+offset_bottom = 416.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 expand = true
@@ -64,9 +64,9 @@ __meta__ = {
 }
 
 [node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBox"]
-margin_top = 420.0
-margin_right = 474.0
-margin_bottom = 837.0
+offset_top = 420.0
+offset_right = 474.0
+offset_bottom = 837.0
 mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3

@@ -24,11 +24,11 @@ enum State {
 	eDownloading
 }
 
-onready var create_request_ := $CreateRequest
-onready var heartbeat_request_ := $HeartbeatRequest
-onready var download_request_ := $DownloadRequest
-onready var youtube_metadata_request_ := $YouTubeMetadataRequest
-onready var heartbeat_timer_ := $HeartbeatTimer
+@onready var create_request_ := $CreateRequest
+@onready var heartbeat_request_ := $HeartbeatRequest
+@onready var download_request_ := $DownloadRequest
+@onready var youtube_metadata_request_ := $YouTubeMetadataRequest
+@onready var heartbeat_timer_ := $HeartbeatTimer
 
 # request heartbeat from BeatSage every couple seconds when song is processing
 # Note: BeatSage website itself seems to use ~3s request rate so we will too
@@ -181,7 +181,9 @@ func _on_CreateRequest_request_completed(result, response_code, headers, body):
 	
 	if response_code == HTTPClient.RESPONSE_OK:
 		var res_str = body.get_string_from_utf8()
-		var json = JSON.parse(res_str)
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(res_str)
+		var json = test_json_conv.get_data()
 		if json.error == OK:
 			var json_res = json.result
 			if json_res.has('id'):
@@ -217,7 +219,9 @@ func _on_HeartbeatRequest_request_completed(result, response_code, headers, body
 	# handle results
 	if response_code == HTTPClient.RESPONSE_OK:
 		var res_str = body.get_string_from_utf8()
-		var json = JSON.parse(res_str)
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(res_str)
+		var json = test_json_conv.get_data()
 		if json.error == OK:
 			var json_res = json.result
 			if json_res.has('status'):
@@ -273,8 +277,8 @@ func _on_DownloadRequest_request_completed(result, response_code, headers, body)
 	if response_code == HTTPClient.RESPONSE_OK:
 		# store downloaded song data
 		var zippath = download_dir + _zip_filename
-		var file = File.new()
-		if file.open(zippath,File.WRITE) == OK:
+		var file = FileAccess.open(zippath,FileAccess.WRITE)
+		if file:
 			file.store_buffer(body)
 			file.close()
 			emit_signal("download_complete",zippath)
@@ -302,7 +306,9 @@ func _on_YouTubeMetadataRequest_request_completed(result, response_code, headers
 	# handle results
 	if response_code == HTTPClient.RESPONSE_OK:
 		var res_str = body.get_string_from_utf8()
-		var json = JSON.parse(res_str)
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(res_str)
+		var json = test_json_conv.get_data()
 		if json.error == OK:
 			var json_res = json.result
 			emit_signal("youtube_metadata_available", json_res)
