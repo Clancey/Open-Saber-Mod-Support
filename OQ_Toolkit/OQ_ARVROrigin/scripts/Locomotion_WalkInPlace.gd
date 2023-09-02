@@ -194,7 +194,7 @@ func _move(dt):
 	var speed = speed_walking;
 	
 	if (is_jogging()):
-		 speed = speed_jogging;
+		speed = speed_jogging;
 	
 	
 	var actual_translation = view_dir * speed * dt;

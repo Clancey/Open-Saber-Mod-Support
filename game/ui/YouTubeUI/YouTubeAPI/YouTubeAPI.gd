@@ -23,12 +23,10 @@ func search(search_text: String):
 		emit_signal("failed_request")
 
 func _get_videos_from_search_file():
-	var file = File.new()
+	var file = FileAccess.open('youtube_search.json', FileAccess.READ)
 	var videos = []
-	if file.open('youtube_search.json', File.READ) == OK:
-		var test_json_conv = JSON.new()
-		test_json_conv.parse(file.get_as_text())
-		var json = test_json_conv.get_data()
+	if file:
+		var json = JSON.parse_string(file.get_as_text())
 		if json.error == OK:
 			videos = _get_videos_from_search_result(json.result)
 		else:
@@ -40,9 +38,9 @@ func _get_videos_from_search_file():
 	return videos
 	
 func _get_search_result_data_from_html_file():
-	var file = File.new()
+	var file = FileAccess.open('youtube_search.html', FileAccess.READ)
 	var search_results = {}
-	if file.open('youtube_search.html', File.READ) == OK:
+	if file:
 		var html_text = file.get_as_text()
 		search_results = _get_search_result_data_from_html(html_text)
 		
@@ -72,7 +70,7 @@ func _get_search_result_data_from_html(html_text: String):
 		result_str = result_str.replace('\\x5b','[')
 		result_str = result_str.replace('\\x5d',']')
 		result_str = result_str.replace('\\"','\"')
-		result_str = result_str.replace('\/','/')
+		#result_str = result_str.replace('\/','/')
 	
 	var test_json_conv = JSON.new()
 	test_json_conv.parse(result_str)

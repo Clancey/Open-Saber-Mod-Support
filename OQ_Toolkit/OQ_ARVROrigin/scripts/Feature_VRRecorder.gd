@@ -49,8 +49,8 @@ var _recording_number = 0; # to count if we save multiple recordings from a sing
 
 func _notification(what):
 	if (!active): return;
-	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST || what == MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST:
-		if (auto_record_device && vr.inVR): stop_and_save_recording(rec_filename);
+#	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST || what == MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST:
+#		if (auto_record_device && vr.inVR): stop_and_save_recording(rec_filename);
 
 
 func _ready():
@@ -151,7 +151,7 @@ func start_recording(rec_template = null):
 	# remember the start time of the recording
 	var d = Time.get_datetime_dict_from_system();
 	_r["start_time"] = 	"%d.%02d.%02d_%02d.%02d.%02d"  % [d.year, d.month, d.day, d.hour, d.minute, d.second];
-	_r["target_fps"] = Engine.target_fps;
+	_r["target_fps"] = Engine.max_fps;
 	_num_recorded_frames = 0;
 	
 	vr.log_info("Started recording into: " + str(_r));
@@ -245,7 +245,7 @@ func _set_orientation(t : Node3D, key):
 	if (!_r.has(key)): return;
 	var o = _r[key];
 	var i = _playback_frame * 3;
-	var orientation = Basis(Vector3(o[i+0],o[i+1],o[i+2]));
+	var orientation = Basis()#Basis(Vector3(o[i+0],o[i+1],o[i+2]));
 	t.transform.basis = orientation;
 	
 func _set_buttons(controller, key):
@@ -342,27 +342,23 @@ func stop_and_save_recording(filename = null):
 		if (filename.right(filename.length() - 6) != ".oqrec"):
 			filename += ".oqrec";
 	
-	var save_rec = File.new()
-	var err = save_rec.open("user://" + filename, File.WRITE)
-	if (err == OK):
+	var save_rec = FileAccess.open("user://" + filename, FileAccess.WRITE)
+	if save_rec:
 		save_rec.store_line(JSON.new().stringify(_r))
 		save_rec.close()
 		vr.log_info("Saved recording to " + OS.get_user_data_dir() + "/" + filename);
 	else:
-		vr.log_error("Failed to save recording to "+ OS.get_user_data_dir() + "/" + filename + " ERR=" + str(err));
+		vr.log_error("Failed to save recording to "+ OS.get_user_data_dir() + "/" + filename);
 	
 func load_and_play_recording(recording_file_name):
 	if (recording_file_name.right(recording_file_name.length() - 6) != ".oqrec"):
 		recording_file_name += ".oqrec";
 		
-	var file = File.new();
-	var err = file.open(recording_file_name, file.READ);
-	if (err != OK):
-		err = file.open("user://" + recording_file_name, file.READ);
-	if (err == OK):
-		var test_json_conv = JSON.new()
-		test_json_conv.parse(file.get_as_text()).result;
-		_r = test_json_conv.get_data()
+	var file = FileAccess.open(recording_file_name, FileAccess.READ);
+	if !file:
+		file = FileAccess.open("user://" + recording_file_name, FileAccess.READ);
+	if file:
+		_r = JSON.parse_string(file.get_as_text())
 		_r.num_frames = int(_r.num_frames);
 		var num_frames = _r.num_frames;
 			
@@ -377,4 +373,4 @@ func load_and_play_recording(recording_file_name):
 		start_playback();
 		file.close();
 	else:
-		vr.log_error("Failed to load_and_playback_recording " + recording_file_name + ": " + str(err));
+		vr.log_error("Failed to load_and_playback_recording " + recording_file_name);

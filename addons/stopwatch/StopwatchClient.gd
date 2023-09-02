@@ -63,11 +63,11 @@ func _process(delta):
 			_:
 				print("CLIENT: unsupported packet type! %s" % packet)
 
-func connected():
+func _is_connected():
 	return _connected
 
 func connect_to_host(hostname, port = DEFAULT_PORT):
-	if connected():
+	if _is_connected():
 		print('CLIENT: [WARN] already connected to server')
 	else:
 		_hostname = hostname
@@ -87,21 +87,21 @@ func reset():
 	
 var LIST_PACKET = '{"type":"list"}'.to_utf8_buffer()
 func request_stopwatch_list():
-	if ! connected():
+	if ! _is_connected():
 		print('CLIENT: [WARN] cant request stopwatch list while disconnected')
 		return
 	_udp.put_packet(LIST_PACKET)
 
 var SUMMARY_DATA_PACKET = '{"type":"summary_data"}'.to_utf8_buffer()
 func request_summary_data():
-	if ! connected():
+	if ! _is_connected():
 		print('CLIENT: [WARN] cant request summary_data while disconnected')
 		return
 	_udp.put_packet(SUMMARY_DATA_PACKET)
 
 var ENABLE_PACKET = '{"type":"enable_sw","sw_id":%d,"enabled":%s}'
 func enable_stopwatch(sw_id, enabled):
-	if ! connected():
+	if ! _is_connected():
 		print('CLIENT: [WARN] cant enable stopwatch while disconnected')
 		return
 	var enabled_str = ENABLE_PACKET % [int(sw_id),"true" if enabled else "false"]
@@ -109,7 +109,7 @@ func enable_stopwatch(sw_id, enabled):
 
 var RESET_PACKET = '{"type":"reset_sw","sw_id":%d}'
 func reset_stopwatch(sw_id):
-	if ! connected():
+	if ! _is_connected():
 		print('CLIENT: [WARN] cant reset stopwatch while disconnected')
 		return
 	_udp.put_packet((RESET_PACKET % [int(sw_id)]).to_utf8_buffer())
@@ -117,7 +117,7 @@ func reset_stopwatch(sw_id):
 var HELLO_PACKET = '{"type":"hello","id":"%s"}'
 func _on_ReconnectTimer_timeout():
 	retry_count += 1
-	if ! connected():
+	if ! _is_connected():
 		print('CLIENT: retry host connection...')
 		var hello = HELLO_PACKET % _unqiue_id
 		_udp.put_packet(hello.to_utf8_buffer())

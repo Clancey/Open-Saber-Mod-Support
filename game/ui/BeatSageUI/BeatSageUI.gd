@@ -1,6 +1,6 @@
 extends Panel
 
-@export (NodePath) var youtube_ui
+@export_node_path var youtube_ui
 
 @onready var beatsage_request_ := $BeatSageRequest
 @onready var song_url := $SongURL
@@ -51,7 +51,7 @@ func _ready():
 		model_select.add_item(key)
 
 # override hide() method to handle case where UI is inside a OQ_UI2DCanvas
-func hide():
+func _hide():
 	var parent_canvas = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
@@ -64,7 +64,7 @@ func hide():
 		parent_canvas.hide()
 		
 # override show() method to handle case where UI is inside a OQ_UI2DCanvas
-func show():
+func _show():
 	var parent_canvas = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
@@ -125,18 +125,17 @@ func _on_SubmitButton_pressed():
 	if beatsage_request_.request_custom_level(request_data):
 		submit_button.disabled = true
 		progress_bar.value = 0
-		progress_screen.show()
+		progress_screen._show()
 
 func _on_BeatSageRequest_download_complete(filepath):
 	var okay = true
 	submit_button.disabled = false
-	progress_screen.hide()
+	progress_screen._hide()
 	
-	var dir = DirAccess.new()
 	var song_dir_name = filepath.get_basename().get_file()
 	var song_out_dir = BS_SONG_DIR + song_dir_name + '/'
-	var error = dir.make_dir_recursive(song_out_dir)
-	if error != OK: 
+	var dir = DirAccess.make_dir_recursive_absolute(song_out_dir)
+	if !dir: 
 		vr.log_error(
 			"_on_BeatSageRequest_download_complete - " +
 			"Failed to create song output dir '%s'" % song_out_dir)
@@ -144,14 +143,15 @@ func _on_BeatSageRequest_download_complete(filepath):
 	
 	var Unzip = load('res://addons/gdunzip/unzip.gd').new()
 	if okay:
-		error = Unzip.unzip(filepath,song_out_dir)
-		
-	dir.remove(filepath)
+		var error = Unzip.unzip(filepath,song_out_dir)
+	
+	var dirrem = DirAccess.open(filepath)
+	dirrem.remove(filepath)
 
 func _on_BeatSageRequest_request_failed():
 	vr.log_error("BeatSage request failed!")
 	submit_button.disabled = false
-	progress_screen.hide()
+	progress_screen._hide()
 
 func _on_BeatSageRequest_progress_update(progress, max_progress):
 	progress_bar.value = progress
@@ -160,8 +160,7 @@ func _on_BeatSageRequest_progress_update(progress, max_progress):
 const SAVE_YOUTUBE_METADATA = false # for debugging purposes
 func _on_BeatSageRequest_youtube_metadata_available(metadata):
 	if SAVE_YOUTUBE_METADATA:
-		var file = File.new()
-		file.open("youtube_metadata.json",File.WRITE)
+		var file = FileAccess.open("youtube_metadata.json",FileAccess.WRITE)
 		file.store_string(JSON.stringify(metadata,'  '))
 		file.close()
 	

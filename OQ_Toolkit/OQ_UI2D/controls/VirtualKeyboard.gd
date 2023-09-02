@@ -82,7 +82,7 @@ func _create_input_event(b, pressed):
 	var ev = InputEventKey.new();
 	ev.keycode = keycode;
 	ev.unicode = unicode;
-	ev.button_pressed = pressed;
+	ev.pressed = pressed;
 
 	return ev;
 

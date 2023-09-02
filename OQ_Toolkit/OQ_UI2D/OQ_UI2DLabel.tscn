@@ -1,57 +1,49 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://d04fmtjhjx4oy"]
 
-[ext_resource path="res://OQ_Toolkit/OQ_UI2D/scripts/OQ_UI2DLabel.gd" type="Script" id=1]
-[ext_resource path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme" type="Theme" id=2]
+[ext_resource type="Script" path="res://OQ_Toolkit/OQ_UI2D/scripts/OQ_UI2DLabel.gd" id="1"]
+[ext_resource type="Theme" path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme" id="2"]
 
-[sub_resource type="ViewportTexture" id=1]
-flags = 4
+[sub_resource type="ViewportTexture" id="1"]
 viewport_path = NodePath("SubViewport")
 
-[sub_resource type="StandardMaterial3D" id=2]
+[sub_resource type="StandardMaterial3D" id="2"]
 resource_local_to_scene = true
-flags_unshaded = true
-params_cull_mode = 2
-albedo_texture = SubResource( 1 )
+cull_mode = 2
+shading_mode = 0
+albedo_texture = SubResource("1")
 
-[sub_resource type="QuadMesh" id=3]
+[sub_resource type="QuadMesh" id="3"]
 resource_local_to_scene = true
-size = Vector2( 0.199219, 0.0634766 )
+size = Vector2(0.199219, 0.0634766)
 
 [node name="OQ_UILabel" type="Node3D"]
-script = ExtResource( 1 )
+script = ExtResource("1")
 text = "I am a Label..."
 
 [node name="SubViewport" type="SubViewport" parent="."]
-size = Vector2( 204, 65 )
-transparent_bg = true
-hdr = false
 disable_3d = true
-keep_3d_linear = true
-usage = 0
-render_target_v_flip = true
+transparent_bg = true
+size = Vector2i(204, 65)
 
 [node name="ColorRect" type="ColorRect" parent="SubViewport"]
 offset_right = 204.0
 offset_bottom = 65.0
-theme = ExtResource( 2 )
-color = Color( 0, 0, 0, 1 )
+theme = ExtResource("2")
+color = Color(0, 0, 0, 1)
 
 [node name="CenterContainer" type="CenterContainer" parent="SubViewport/ColorRect"]
+layout_mode = 0
 offset_right = 204.0
 offset_bottom = 65.0
-theme = ExtResource( 2 )
+theme = ExtResource("2")
 
 [node name="Label" type="Label" parent="SubViewport/ColorRect/CenterContainer"]
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 188.0
-offset_bottom = 49.0
-theme = ExtResource( 2 )
-theme_override_colors/font_color = Color( 1, 1, 1, 1 )
+layout_mode = 2
+theme = ExtResource("2")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "I am a Label..."
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-material_override = SubResource( 2 )
+material_override = SubResource("2")
 cast_shadow = 0
-mesh = SubResource( 3 )
-material/0 = null
+mesh = SubResource("3")

@@ -17,15 +17,12 @@ func unzip(sourceFile,destination):
 		unzip_file(f)
 		
 func unzip_file(fileName):
-	var readFile = File.new()
-	if readFile.file_exists("res://"+fileName):
-		readFile.open(("res://"+fileName), File.READ)
+	if FileAccess.file_exists("res://"+fileName):
+		var readFile = FileAccess.open(("res://"+fileName), FileAccess.READ)
 		var content = readFile.get_buffer(readFile.get_length())
 		readFile.close()
 		var base_dir = storage_path + fileName.get_base_dir()
-		var dir = DirAccess.new()
-		dir.make_dir(base_dir)
-		var writeFile = File.new()
-		writeFile.open(storage_path + fileName, File.WRITE)
+		DirAccess.make_dir_absolute(base_dir)
+		var writeFile = FileAccess.open(storage_path + fileName, FileAccess.WRITE)
 		writeFile.store_buffer(content)
 		writeFile.close()

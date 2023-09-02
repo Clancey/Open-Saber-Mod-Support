@@ -19,7 +19,7 @@ extends Node3D
 @export var distance_mult := 1.5;
 @export var num_steps := 20;
 
-@export (int, FLAGS) var collision_mask = 1: get = get_collision_mask, set = set_collision_mask;
+@export var collision_mask = 1: get = get_collision_mask, set = set_collision_mask;
 
 
 @export var show_teleport_button = vr.BUTTON.RIGHT_TOUCH_INDEX_TRIGGER; # (vr.BUTTON)

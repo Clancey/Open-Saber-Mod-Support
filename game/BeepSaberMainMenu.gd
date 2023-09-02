@@ -229,6 +229,7 @@ func _load_cover(cover_path, filename):
 	return tex;
 
 func play_preview(filepath_or_buffer, start_time = 0, duration = -1, buffer_data_type_hint = 'ogg'):
+	return #needs to be fixed
 	var data := PackedByteArray()
 	
 	if filepath_or_buffer is String:

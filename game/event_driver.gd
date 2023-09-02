@@ -102,12 +102,12 @@ func procces_event(data,beat):
 				change_light_color(data._type,game.COLOR_LEFT,2)
 	else:
 		match int(data._type):
-			8:
-				if not $Level/rings/Tween.is_active():
-					ring_rot_inv_dir = bool(randi()%2)
-				$Level/rings/Tween.stop(self,"ring_rot_speed")
-				$Level/rings/Tween.interpolate_property(self,"ring_rot_speed",3.0,0.0,2,Tween.TRANS_QUAD,Tween.EASE_OUT)
-				$Level/rings/Tween.start()
+#			8:
+#				if not $Level/rings/Tween.is_active():
+#					ring_rot_inv_dir = bool(randi()%2)
+#				$Level/rings/Tween.stop(self,"ring_rot_speed")
+#				$Level/rings/Tween.interpolate_property(self,"ring_rot_speed",3.0,0.0,2,Tween.TRANS_QUAD,Tween.EASE_OUT)
+#				$Level/rings/Tween.start()
 			9:
 				$Level/rings/AnimationPlayer.stop(false)
 				if $Level/rings/AnimationPlayer.current_animation == "out":
@@ -155,7 +155,7 @@ func change_light_color(type,color=-1,transition_mode=0):
 	if not color is Color:
 		for m in material:
 			m.albedo_color = Color.BLACK
-		tween.stop_all()
+		#tween.stop_all() ###
 		$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%int(type),0.0)
 		group.visible = false
 		return
@@ -171,18 +171,18 @@ func change_light_color(type,color=-1,transition_mode=0):
 			$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%int(type),color.v)
 			group.visible = true
 		1:
-			tween.stop_all()
-			for m in material:
-				tween.interpolate_property(m,"albedo_color",color*3,color,0.3,Tween.TRANS_LINEAR,Tween.EASE_OUT)
-			tween.start()
+#			tween.stop_all()
+#			for m in material:
+#				tween.interpolate_property(m,"albedo_color",color*3,color,0.3,Tween.TRANS_LINEAR,Tween.EASE_OUT)
+#			tween.start()
 			group.visible = true
 		2:
-			tween.stop_all()
-			for m in material:
-				tween.interpolate_property(m,"albedo_color",color*3,Color(0,0,0),1,Tween.TRANS_QUAD,Tween.EASE_IN)
-			tween.start()
+#			tween.stop_all()
+#			for m in material:
+#				tween.interpolate_property(m,"albedo_color",color*3,Color(0,0,0),1,Tween.TRANS_QUAD,Tween.EASE_IN)
+#			tween.start()
 			group.visible = true
-			await tween.tween_completed
+#			await tween.tween_completed
 			if material[0].albedo_color == Color(0,0,0):
 				group.visible = false
 			

@@ -3,8 +3,8 @@ extends Node
 # emitted when the pool intances a scene for the first time
 signal scene_instanced(scene)
 
-@export (PackedScene) var Scene = null
-@export (int) var pool_size = 10
+@export var Scene : PackedScene
+@export var pool_size = 10
 
 @onready var LinkedList := preload("res://game/scripts/LinkedList.gd")
 @onready var _free_list := LinkedList.new()

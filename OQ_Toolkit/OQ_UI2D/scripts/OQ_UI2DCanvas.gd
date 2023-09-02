@@ -46,6 +46,10 @@ func update_size():
 	if (viewport != null):
 		viewport.set_size(ui_size);
 
+func _hide():
+	hide()
+func _show():
+	show()
 
 func _ready():
 	

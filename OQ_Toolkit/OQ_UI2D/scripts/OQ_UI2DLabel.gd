@@ -7,11 +7,11 @@ extends Node3D
 @export var depth_test := true;
 
 enum ResizeModes {AUTO_RESIZE, FIXED}
-@export (ResizeModes) var resize_mode := ResizeModes.AUTO_RESIZE
+@export var resize_mode := ResizeModes.AUTO_RESIZE
 
 @export var font_size_multiplier := 1.0
-@export (Color) var font_color := Color(1,1,1,1);
-@export (Color) var background_color := Color(0,0,0,1);
+@export var font_color := Color(1,1,1,1);
+@export var background_color := Color(0,0,0,1);
 #export var line_to_parent = false;
 
 @export var transparent := false: set = set_transparent

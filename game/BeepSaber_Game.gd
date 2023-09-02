@@ -167,10 +167,12 @@ func restart_map():
 func start_map(info, map_data):
 	_current_map = map_data;
 	_current_info = info;
-	var snd_file = FileAccess.open(info._path + info._songFilename, FileAccess.READ) #works whether it's a resource or a file
-	var stream = AudioStreamOggVorbis.new()
-	stream.data = snd_file.get_buffer(snd_file.get_length())
-	snd_file.close()
+#	var snd_file = FileAccess.open(info._path + info._songFilename, FileAccess.READ) #works whether it's a resource or a file
+	var stream = load(info._path + info._songFilename)
+#	var seq = OggPacketSequence.new()
+#	seq.packet_data = snd_file.get_buffer(snd_file.get_length())
+#	stream.packet_sequence = seq
+#	snd_file.close()
 	song_player.stream = stream;
 	restart_map();
 	

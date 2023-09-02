@@ -92,7 +92,7 @@ func _on_Client_summary_data(data):
 		sw_row[GRID_COL_INTERVALS].text = str(sw_data['intervals'])
 
 func _on_connect_button_pressed():
-	if _client.connected():
+	if _client._is_connected():
 		_client.reset()
 	else:
 		_client.connect_to_host(_hostname_edit.text)
@@ -104,5 +104,5 @@ func _on_sw_reset_pressed(sw_id):
 	_client.reset_stopwatch(sw_id)
 
 func _on_CollectionTimer_timeout():
-	if _client.connected():
+	if _client._is_connected():
 		_client.request_summary_data()

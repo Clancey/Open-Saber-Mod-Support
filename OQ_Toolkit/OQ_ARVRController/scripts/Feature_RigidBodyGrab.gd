@@ -25,7 +25,7 @@ var grabbable_candidates = []
 @export var grab_button = vr.CONTROLLER_BUTTON.GRIP_TRIGGER; # (vr.CONTROLLER_BUTTON)
 @export var grab_gesture := "Fist"
 @export var grab_layer := 1 # (int, LAYERS_3D_PHYSICS)
-@export (vr.GrabTypes) var grab_type := vr.GrabTypes.HINGEJOINT;
+@export var grab_type := vr.GrabTypes.HINGEJOINT;
 @export var collision_body_active := false;
 @export var collision_body_layer := 1 # (int, LAYERS_3D_PHYSICS)
 @onready var _hinge_joint : HingeJoint3D = $HingeJoint3D;
@@ -87,14 +87,14 @@ func _ready():
 			if vr.rightController:
 				for c in vr.rightController.get_children():
 					# can't use "is" because of cyclical dependency issue
-					if c.get_class() == "Feature_RigidBodyGrab":
+					if c is Feature_RigidBodyGrab:
 						other_grab_feature = c
 						break
 		else:# right
 			if vr.leftController:
 				for c in vr.leftController.get_children():
 					# can't use "is" because of cyclical dependency issue
-					if c.get_class() == "Feature_RigidBodyGrab":
+					if c is Feature_RigidBodyGrab:
 						other_grab_feature = c
 						break
 						
@@ -105,8 +105,8 @@ func _ready():
 # Godot's get_class() method only return native class names
 # we need this because we can't use "is" to test against a class_name within
 # the class itself, Godot complains about a weird cyclical dependency...
-func get_class():
-	return "Feature_RigidBodyGrab"
+#func get_class():
+#	return "Feature_RigidBodyGrab"
 
 func _physics_process(_dt):
 	# TODO: we will re-implement signals later on when we have compatability with the OQ simulator and recorder
@@ -215,7 +215,7 @@ func release_grab_kinematic():
 	held_object_initial_parent.add_child(held_object)
 	
 	held_object.global_transform = initial_transform
-	held_object.set_mode(RigidBody3D.MODE_RIGID)
+	held_object.set_mode(0)
 	
 	held_object.grab_release()
 	

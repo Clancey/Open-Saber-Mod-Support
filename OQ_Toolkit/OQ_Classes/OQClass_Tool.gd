@@ -2,7 +2,7 @@ extends Node3D
 
 class_name OQClass_Tool
 
-@export var root_grabbable_part: NodePath = null
+@export var root_grabbable_part: NodePath
 
 var isGrabbed: bool = false
 

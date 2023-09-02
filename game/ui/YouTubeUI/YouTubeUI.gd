@@ -3,7 +3,7 @@ extends Panel
 signal song_selected(video_metadata)
 
 # path to a Oculus Quest toolkit keyboard (search for searching youtube)
-@export (NodePath) var keyboard
+@export_node_path() var keyboard
 
 @onready var api := $YouTubeAPI
 @onready var search_line_edit := $SearchLineEdit
@@ -24,7 +24,7 @@ func _ready():
 		keyboard.connect("text_input_enter", Callable(self, "_on_keybaord_text_input_enter"))
 
 # override hide() method to handle case where UI is inside a OQ_UI2DCanvas
-func hide():
+func _hide():
 	var parent_canvas = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
@@ -37,7 +37,7 @@ func hide():
 		parent_canvas.hide()
 
 # override show() method to handle case where UI is inside a OQ_UI2DCanvas
-func show():
+func _show():
 	var parent_canvas = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
