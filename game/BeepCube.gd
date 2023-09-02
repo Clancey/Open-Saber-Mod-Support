@@ -50,7 +50,7 @@ func spawn(note_type: int, color: Color):
 	visible = true
 	
 	# play the spawn animation when this cube enters the scene
-	_anim.playback_speed = max(min_speed,speed)
+	_anim.speed_scale = max(min_speed,speed)
 	_anim.play("Spawn")
 
 func release():

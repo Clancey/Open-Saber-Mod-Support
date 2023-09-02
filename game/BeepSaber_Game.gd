@@ -167,9 +167,11 @@ func restart_map():
 func start_map(info, map_data):
 	_current_map = map_data;
 	_current_info = info;
-#	var snd_file = FileAccess.open(info._path + info._songFilename, FileAccess.READ) #works whether it's a resource or a file
-	var stream = load(info._path + info._songFilename)
-#	var seq = OggPacketSequence.new()
+	print("loading: ",info._path + info._songFilename)
+	print(info._songFilename)
+	var stream = AudioStreamOggVorbis.load_from_file(info._path + info._songFilename)
+	#var seq = OggPacketSequence.new()
+	
 #	seq.packet_data = snd_file.get_buffer(snd_file.get_length())
 #	stream.packet_sequence = seq
 #	snd_file.close()
@@ -232,8 +234,8 @@ func _on_game_state_entered(state):
 			$PauseMenu_canvas.visible = false;
 			highscore_canvas.visible = false;
 			name_selector_canvas.visible = false;
-#			left_saber._hide();
-#			right_saber._hide();
+			left_saber._hide();
+			right_saber._hide();
 			$Multiplier_Label.visible = false;
 			$Point_Label.visible = false;
 			$Percent.visible = false;
@@ -250,8 +252,8 @@ func _on_game_state_entered(state):
 			$PauseMenu_canvas.visible = false;
 			highscore_canvas.visible = false;
 			name_selector_canvas.visible = false;
-			left_saber.show();
-			right_saber.show();
+			left_saber._show();
+			right_saber._show();
 			$Multiplier_Label.visible = true;
 			$Point_Label.visible = true;
 			$Percent.visible = true;
@@ -268,8 +270,8 @@ func _on_game_state_entered(state):
 			$PauseMenu_canvas.visible = true;
 			highscore_canvas.visible = false;
 			name_selector_canvas.visible = false;
-#			left_saber.show();
-#			right_saber.show();
+#			left_saber._show();
+#			right_saber._show();
 			$Multiplier_Label.visible = true;
 			$Point_Label.visible = true;
 			$Percent.visible = true;
@@ -395,12 +397,12 @@ func _spawn_note(note, current_beat):
 	var color := COLOR_LEFT
 	if (note._type == 0):
 		_instance_cube_sw.start()
-		note_node = _cube_pool.acquire()
+		note_node = _cube_pool.acquire(track)
 		color = COLOR_LEFT
 		_instance_cube_sw.stop()
 	elif (note._type == 1):
 		_instance_cube_sw.start()
-		note_node = _cube_pool.acquire()
+		note_node = _cube_pool.acquire(track)
 		color = COLOR_RIGHT
 		_instance_cube_sw.stop()
 	elif (note._type == 3) and bombs_enabled:
@@ -549,12 +551,16 @@ func _spawn_event(data,beat):
 
 # with this variable we track the movement volume of the controller
 # since the last cut (used to give a higher score when moved a lot)
-var _controller_movement_aabb = [
-	AABB(), AABB(), AABB()
-]
+#var _controller_movement_aabb = [
+	#AABB(), AABB(), AABB()
+#]
+var _controller_movement_aabb = {
+	"left_hand" = AABB(),
+	"right_hand" = AABB(),
+}
 
 func _update_controller_movement_aabb(controller : XRController3D):
-	var id = controller.controller_id
+	var id = controller.tracker
 	var aabb = _controller_movement_aabb[id].expand(controller.global_transform.origin);
 	_controller_movement_aabb[id] = aabb;
 
@@ -566,7 +572,7 @@ func _check_and_update_saber(controller : XRController3D, saber: Area3D):
 			controller._button_just_pressed(vr.CONTROLLER_BUTTON.YB)):
 				if (!saber._anim.is_playing()):
 					if (saber.is_extended()): saber.hide();
-					else: saber.show();
+					else: saber._show();
 					
 	
 	# check for saber rumble (only when extended and not already rumbling)
@@ -919,7 +925,7 @@ func _on_BeepSaberMainMenu_difficulty_changed(map_info, diff_name, diff_rank):
 	if not highscore_canvas:
 		await self.ready
 	
-	highscore_canvas.show()
+	highscore_canvas._show()
 	_highscore_panel().load_highscores(map_info,diff_rank)
 
 func _on_BeepSaberMainMenu_settings_requested():
@@ -971,3 +977,5 @@ func _on_RightLightSaber_bomb_collide(bomb):
 func _on_BeepCubePool_scene_instanced(cube):
 	cube.visible = false
 	$Track.add_child(cube)
+
+

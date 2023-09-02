@@ -14,7 +14,7 @@ albedo_texture = SubResource("1")
 
 [sub_resource type="QuadMesh" id="3"]
 resource_local_to_scene = true
-size = Vector2(0.199219, 0.0634766)
+size = Vector2(0.129883, 0.0498047)
 
 [node name="OQ_UILabel" type="Node3D"]
 script = ExtResource("1")
@@ -23,18 +23,18 @@ text = "I am a Label..."
 [node name="SubViewport" type="SubViewport" parent="."]
 disable_3d = true
 transparent_bg = true
-size = Vector2i(204, 65)
+size = Vector2i(133, 51)
 
 [node name="ColorRect" type="ColorRect" parent="SubViewport"]
-offset_right = 204.0
-offset_bottom = 65.0
+offset_right = 133.0
+offset_bottom = 51.0
 theme = ExtResource("2")
 color = Color(0, 0, 0, 1)
 
 [node name="CenterContainer" type="CenterContainer" parent="SubViewport/ColorRect"]
 layout_mode = 0
-offset_right = 204.0
-offset_bottom = 65.0
+offset_right = 133.0
+offset_bottom = 51.0
 theme = ExtResource("2")
 
 [node name="Label" type="Label" parent="SubViewport/ColorRect/CenterContainer"]

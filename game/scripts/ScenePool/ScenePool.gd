@@ -14,16 +14,29 @@ func _ready():
 		push_error("Scene is null ('%s' ScenePool)" % name)
 		return
 	
-	for _i in range(pool_size):
+	#for _i in range(pool_size):
+		#var new_scene = Scene.instantiate()
+		#if new_scene.connect("scene_released", _on_scene_released.bind(new_scene)) != OK:
+			#push_error("failed to connect 'scene_released' signal. Scene's must emit this signal for the ScenePool to function properly.")
+			#return
+		#emit_signal("scene_instanced",new_scene)
+		#_free_list.push_back(new_scene)
+		#print("a",_free_list)
+	#print("pool: ",_free_list)
+
+func acquire(parent: Node = self):
+	var cube = _free_list.pop_front()
+	if not cube:
 		var new_scene = Scene.instantiate()
-		if new_scene.connect("scene_released", Callable(self, "_on_scene_released").bind(new_scene)) != OK:
+		parent.add_child(new_scene)
+		if new_scene.connect("scene_released", _on_scene_released.bind(new_scene)) != OK:
 			push_error("failed to connect 'scene_released' signal. Scene's must emit this signal for the ScenePool to function properly.")
 			return
 		emit_signal("scene_instanced",new_scene)
 		_free_list.push_back(new_scene)
-
-func acquire():
-	return _free_list.pop_front()
+		cube = new_scene
+	return cube
 
 func _on_scene_released(scene):
 	_free_list.push_back(scene)
+	print("pool size: ",_free_list._len)

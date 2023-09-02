@@ -117,11 +117,11 @@ func procces_event(data,beat):
 					
 			12:
 				var val = float(data._value)/8
-				$Level/t2/AnimationPlayer.playback_speed = val
+				$Level/t2/AnimationPlayer.speed_scale = val
 				$Level/t2/AnimationPlayer.seek(randf_range(0,$Level/t2/AnimationPlayer.current_animation_length),true)
 			13:
 				var val = float(data._value)/8
-				$Level/t3/AnimationPlayer.playback_speed = val
+				$Level/t3/AnimationPlayer.speed_scale = val
 				$Level/t3/AnimationPlayer.seek(randf_range(0,$Level/t3/AnimationPlayer.current_animation_length),true)
 	
 func change_light_color(type,color=-1,transition_mode=0):

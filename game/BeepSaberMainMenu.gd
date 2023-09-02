@@ -20,6 +20,9 @@ var _cover_texture_create_sw := StopwatchFactory.create("cover_texture_create",1
 @onready var playlist_selector := $PlaylistSelector
 @onready var _bg_img_loader := preload("res://game/scripts/BackgroundImgLoader.gd").new()
 
+@onready var cover = $cover
+@onready var songs_menu = $SongsMenu
+
 enum PlaylistOptions {
 	AllSongs,
 	RecentlyAdded,
@@ -203,9 +206,9 @@ func _load_song_info(load_path):
 func _on_cover_loaded(img_tex, filepath, is_main_cover, list_idx):
 	if img_tex != null:
 		if is_main_cover:
-			$cover.texture = img_tex
+			cover.texture = img_tex
 		else:
-			$SongsMenu.set_item_icon(list_idx,img_tex)
+			songs_menu.set_item_icon(list_idx,img_tex)
 
 func _load_cover(cover_path, filename):
 	# read cover image data from file into a buffer
