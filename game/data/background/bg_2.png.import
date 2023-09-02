@@ -3,16 +3,17 @@
 importer="texture"
 type="StreamTexture"
 path.s3tc="res://.import/bg_2.png-9dda0b53afd33a6be9e4055307805ca5.s3tc.stex"
+path.etc2="res://.import/bg_2.png-9dda0b53afd33a6be9e4055307805ca5.etc2.stex"
 path.etc="res://.import/bg_2.png-9dda0b53afd33a6be9e4055307805ca5.etc.stex"
 metadata={
-"imported_formats": [ "s3tc", "etc" ],
+"imported_formats": [ "s3tc", "etc2", "etc" ],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://game/data/background/bg_2.png"
-dest_files=[ "res://.import/bg_2.png-9dda0b53afd33a6be9e4055307805ca5.s3tc.stex", "res://.import/bg_2.png-9dda0b53afd33a6be9e4055307805ca5.etc.stex" ]
+dest_files=[ "res://.import/bg_2.png-9dda0b53afd33a6be9e4055307805ca5.s3tc.stex", "res://.import/bg_2.png-9dda0b53afd33a6be9e4055307805ca5.etc2.stex", "res://.import/bg_2.png-9dda0b53afd33a6be9e4055307805ca5.etc.stex" ]
 
 [params]
 

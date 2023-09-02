@@ -3,16 +3,17 @@
 importer="texture"
 type="StreamTexture"
 path.s3tc="res://.import/default_thumbnail.png-b93e19d20652b37b0660c7cd9e144b53.s3tc.stex"
+path.etc2="res://.import/default_thumbnail.png-b93e19d20652b37b0660c7cd9e144b53.etc2.stex"
 path.etc="res://.import/default_thumbnail.png-b93e19d20652b37b0660c7cd9e144b53.etc.stex"
 metadata={
-"imported_formats": [ "s3tc", "etc" ],
+"imported_formats": [ "s3tc", "etc2", "etc" ],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://game/ui/YouTubeUI/default_thumbnail.png"
-dest_files=[ "res://.import/default_thumbnail.png-b93e19d20652b37b0660c7cd9e144b53.s3tc.stex", "res://.import/default_thumbnail.png-b93e19d20652b37b0660c7cd9e144b53.etc.stex" ]
+dest_files=[ "res://.import/default_thumbnail.png-b93e19d20652b37b0660c7cd9e144b53.s3tc.stex", "res://.import/default_thumbnail.png-b93e19d20652b37b0660c7cd9e144b53.etc2.stex", "res://.import/default_thumbnail.png-b93e19d20652b37b0660c7cd9e144b53.etc.stex" ]
 
 [params]
 

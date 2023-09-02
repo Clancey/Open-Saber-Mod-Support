@@ -81,8 +81,8 @@ margin_top = 80.0
 margin_right = 880.0
 margin_bottom = -112.0
 theme = SubResource( 3 )
-custom_styles/bg = SubResource( 4 )
 custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_styles/bg = SubResource( 4 )
 items = [ "Ítem 0", ExtResource( 5 ), false, "Ítem 1", ExtResource( 5 ), false, "Ítem 2", ExtResource( 5 ), false ]
 fixed_icon_size = Vector2( 80, 80 )
 __meta__ = {
@@ -100,9 +100,6 @@ custom_styles/disabled = SubResource( 6 )
 custom_styles/normal = SubResource( 7 )
 text = "Plays"
 clip_text = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="download" type="Button" parent="."]
 anchor_top = 1.0

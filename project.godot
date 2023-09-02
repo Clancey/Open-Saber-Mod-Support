@@ -89,6 +89,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://OQ_Toolkit/OQ_Classes/OQClass_ToolGrabLinearController.gd"
 }, {
+"base": "ARVRController",
+"class": "OQ_ARVRController",
+"language": "GDScript",
+"path": "res://OQ_Toolkit/OQ_ARVRController/scripts/OQ_ARVRController.gd"
+}, {
 "base": "Spatial",
 "class": "OQ_UI2DCanvas",
 "language": "GDScript",
@@ -131,6 +136,7 @@ _global_script_class_icons={
 "OQClass_Tool": "",
 "OQClass_ToolGrabController": "",
 "OQClass_ToolGrabLinearController": "",
+"OQ_ARVRController": "",
 "OQ_UI2DCanvas": "",
 "PlayCountTable": "",
 "SongUtils": "",
@@ -160,6 +166,7 @@ UI_AudioEngine="*res://game/ui/UI_AudioEngine/UI_AudioEngine.tscn"
 
 window/size/width=960
 window/size/height=540
+window/vsync/use_vsync=false
 
 [editor_plugins]
 
@@ -241,7 +248,6 @@ common/physics_jitter_fix=0.0
 quality/driver/driver_name="GLES2"
 quality/intended_usage/framebuffer_allocation=3
 vram_compression/import_etc=true
-vram_compression/import_etc2=false
 quality/shadow_atlas/size=2048
 quality/shadows/filter_mode=0
 quality/reflections/texture_array_reflections=false

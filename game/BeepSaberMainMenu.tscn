@@ -83,9 +83,6 @@ margin_bottom = 640.0
 theme = ExtResource( 1 )
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Play_Button" type="Button" parent="."]
 margin_left = 448.0

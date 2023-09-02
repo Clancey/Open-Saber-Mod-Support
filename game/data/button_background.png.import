@@ -3,16 +3,17 @@
 importer="texture"
 type="StreamTexture"
 path.s3tc="res://.import/button_background.png-4ae5b26794e9563de0ad8d5df2fd923d.s3tc.stex"
+path.etc2="res://.import/button_background.png-4ae5b26794e9563de0ad8d5df2fd923d.etc2.stex"
 path.etc="res://.import/button_background.png-4ae5b26794e9563de0ad8d5df2fd923d.etc.stex"
 metadata={
-"imported_formats": [ "s3tc", "etc" ],
+"imported_formats": [ "s3tc", "etc2", "etc" ],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://game/data/button_background.png"
-dest_files=[ "res://.import/button_background.png-4ae5b26794e9563de0ad8d5df2fd923d.s3tc.stex", "res://.import/button_background.png-4ae5b26794e9563de0ad8d5df2fd923d.etc.stex" ]
+dest_files=[ "res://.import/button_background.png-4ae5b26794e9563de0ad8d5df2fd923d.s3tc.stex", "res://.import/button_background.png-4ae5b26794e9563de0ad8d5df2fd923d.etc2.stex", "res://.import/button_background.png-4ae5b26794e9563de0ad8d5df2fd923d.etc.stex" ]
 
 [params]
 

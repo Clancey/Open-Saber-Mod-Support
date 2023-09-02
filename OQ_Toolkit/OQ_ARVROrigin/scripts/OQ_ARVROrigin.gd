@@ -12,6 +12,7 @@ func _enter_tree():
 	if (vr.vrOrigin != null):
 		vr.log_warning("in OQ_ARVROrigin._enter_tree(): origin already set; overwrting it");
 	vr.vrOrigin = self;
+	
 
 
 func _exit_tree():

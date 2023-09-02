@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=2]
+[gd_scene load_steps=34 format=2]
 
 [ext_resource path="res://game/floor.tscn" type="PackedScene" id=1]
 [ext_resource path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" type="PackedScene" id=2]
@@ -30,14 +30,16 @@
 [ext_resource path="res://game/ui/MapDownloadPanel/MapDownloadPanel.tscn" type="PackedScene" id=28]
 [ext_resource path="res://game/ui/BeatSageUI/BeatSageUI.tscn" type="PackedScene" id=29]
 [ext_resource path="res://game/BeepCube.tscn" type="PackedScene" id=30]
+[ext_resource path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLogWindow.tscn" type="PackedScene" id=31]
 
 [sub_resource type="Environment" id=1]
 background_mode = 3
 background_sky = ExtResource( 14 )
 glow_enabled = true
-glow_intensity = 0.22
-glow_strength = 1.41
-glow_blend_mode = 0
+glow_intensity = 0.28
+glow_strength = 1.38
+glow_bloom = 0.03
+glow_hdr_threshold = 1.04
 
 [sub_resource type="SphereShape" id=2]
 radius = 0.07
@@ -75,6 +77,12 @@ shape = SubResource( 2 )
 autoload_model = false
 
 [node name="LeftLightSaber" parent="OQ_ARVROrigin/OQ_LeftController" instance=ExtResource( 10 )]
+
+[node name="Feature_UIRayCast" parent="OQ_ARVROrigin/OQ_LeftController" instance=ExtResource( 12 )]
+transform = Transform( 1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0 )
+ui_raycast_length = 5.0
+adjust_left_right = false
+ui_raycast_visible_button = -1
 
 [node name="OQ_RightController" parent="OQ_ARVROrigin" instance=ExtResource( 8 )]
 autoload_model = false
@@ -149,6 +157,9 @@ visible = false
 
 [node name="settings_Panel" parent="Settings_canvas" instance=ExtResource( 19 )]
 game = NodePath("../..")
+
+[node name="OQ_UI2DLogWindow" parent="Settings_canvas" instance=ExtResource( 31 )]
+transform = Transform( 0.373265, 0, 0, 0, 0.323257, 0.186633, 0, -0.186633, 0.323257, 0, -0.407229, 0.0410669 )
 
 [node name="MapSourceDialogs" type="Spatial" parent="."]
 transform = Transform( 0.346575, 0, -0.938022, 0, 1, 0, 0.938022, 0, 0.346575, 2.43, 1.498, 0.468 )

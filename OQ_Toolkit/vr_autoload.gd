@@ -436,7 +436,7 @@ func _notification(what):
 # the settings cache used to refresh the settings after an app pause; these are also the default settings
 # make sure to update _refresh_settings() and the respective setter wrapper methods when this needs to be changed
 var oculus_mobile_settings_cache = {
-	"display_refresh_rate" : 72,
+	"display_refresh_rate" : 90,
 	"boundary_visible" : false,
 	"tracking_space" : 0,#ovrVrApiTypes.OvrTrackingSpace.VRAPI_TRACKING_SPACE_LOCAL_FLOOR,
 	"default_layer_color_scale" : Color(1.0, 1.0, 1.0, 1.0),
@@ -845,7 +845,7 @@ var arvr_open_vr_interface = null;
 var arvr_webxr_interface = null;
 var arvr_openxr_interface = null;
 
-func initialize(initialize_vr = true):
+func initialize(initialize_vr = true, refresh_rate = 90):
 	_init_vr_log();
 	
 	var available_interfaces = ARVRServer.get_interfaces();
@@ -875,7 +875,7 @@ func initialize(initialize_vr = true):
 			active_arvr_interface_name = "OpenVR"
 			get_viewport().arvr = true;
 			get_viewport().keep_3d_linear = false;
-			Engine.target_fps = 72 
+			Engine.target_fps = refresh_rate
 			OS.vsync_enabled = false;
 			inVR = true;
 			log_info("  Success initializing OpenXR Interface.");
@@ -884,7 +884,7 @@ func initialize(initialize_vr = true):
 		if arvr_ovr_mobile_interface.initialize():
 			active_arvr_interface_name = "OVRMobile";
 			get_viewport().arvr = true;
-			Engine.target_fps = 72; # TODO: only true for Oculus Quest; query the info here
+			Engine.target_fps = refresh_rate; # TODO: only true for Oculus Quest; query the info here
 			inVR = true;
 			_initialize_OVR_API();
 			# this will initialize the default
@@ -901,7 +901,7 @@ func initialize(initialize_vr = true):
 			# Oculus on PC appears to select the correct refresh rate automatically.
 			# Rift and Quest 2 via Link can handle 90 Hz, but Quest 1 via link and Rift S will run at 72 and 80 respectively.
 			# Setting this below 90 will cap Q2 and Rift to what ever that is set to which is not ideal.
-			Engine.target_fps = 90
+			Engine.target_fps = refresh_rate
 			OS.vsync_enabled = false;
 			inVR = true;
 			log_info("  Success initializing Oculus Interface.");
@@ -912,7 +912,7 @@ func initialize(initialize_vr = true):
 			active_arvr_interface_name = "OpenVR"
 			get_viewport().arvr = true;
 			get_viewport().keep_3d_linear = true
-			Engine.target_fps = 90 # TODO: this is headset dependent => figure out how to get this info at runtime
+			Engine.target_fps = refresh_rate # TODO: this is headset dependent => figure out how to get this info at runtime
 			OS.vsync_enabled = false;
 			inVR = true;
 			log_info("  Success initializing OpenVR Interface.");

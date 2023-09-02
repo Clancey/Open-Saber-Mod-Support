@@ -21,7 +21,8 @@ onready var right_controller := $OQ_ARVROrigin/OQ_RightController;
 onready var left_saber := $OQ_ARVROrigin/OQ_LeftController/LeftLightSaber;
 onready var right_saber := $OQ_ARVROrigin/OQ_RightController/RightLightSaber;
 
-onready var ui_raycast := $OQ_ARVROrigin/OQ_RightController/Feature_UIRayCast;
+onready var right_ui_raycast := $OQ_ARVROrigin/OQ_RightController/Feature_UIRayCast;
+onready var left_ui_raycast := $OQ_ARVROrigin/OQ_LeftController/Feature_UIRayCast;
 
 onready var highscore_canvas := $Highscores_Canvas
 onready var name_selector_canvas := $NameSelector_Canvas
@@ -218,7 +219,8 @@ func _on_game_state_entered(state):
 			$Point_Label.visible = false;
 			$Percent.visible = false;
 			track.visible = false;
-			ui_raycast.visible = true;
+			left_ui_raycast.visible = true;
+			right_ui_raycast.visible = true;
 			highscore_keyboard.visible = false;
 			online_search_keyboard.visible = false;
 		GameState.Settings:
@@ -235,7 +237,8 @@ func _on_game_state_entered(state):
 			$Point_Label.visible = false;
 			$Percent.visible = false;
 			track.visible = false;
-			ui_raycast.visible = true;
+			left_ui_raycast.visible = true;
+			right_ui_raycast.visible = true;
 			highscore_keyboard.visible = false;
 			online_search_keyboard.visible = false;
 		GameState.Playing:
@@ -252,7 +255,8 @@ func _on_game_state_entered(state):
 			$Point_Label.visible = true;
 			$Percent.visible = true;
 			track.visible = true;
-			ui_raycast.visible = false;
+			left_ui_raycast.visible = false;
+			right_ui_raycast.visible = false;
 			highscore_keyboard.visible = false;
 			online_search_keyboard.visible = false;
 		GameState.Paused:
@@ -269,7 +273,8 @@ func _on_game_state_entered(state):
 			$Point_Label.visible = true;
 			$Percent.visible = true;
 			track.visible = false;
-			ui_raycast.visible = true;
+			left_ui_raycast.visible = true;
+			right_ui_raycast.visible = true;
 			highscore_keyboard.visible = false;
 			online_search_keyboard.visible = false;
 			
@@ -291,7 +296,8 @@ func _on_game_state_entered(state):
 			$Point_Label.visible = false;
 			$Percent.visible = false;
 			track.visible = false;
-			ui_raycast.visible = true;
+			left_ui_raycast.visible = true;
+			right_ui_raycast.visible = true;
 			highscore_keyboard.visible = false;
 			online_search_keyboard.visible = false;
 		GameState.NewHighscore:
@@ -324,7 +330,8 @@ func _on_game_state_entered(state):
 			$Point_Label.visible = false;
 			$Percent.visible = false;
 			track.visible = false;
-			ui_raycast.visible = true;
+			left_ui_raycast.visible = true;
+			right_ui_raycast.visible = true;
 			highscore_keyboard.visible = true;
 			online_search_keyboard.visible = false;
 		_:
@@ -631,7 +638,8 @@ func _ready():
 	if (vr.active_arvr_interface_name == "OpenVR"):
 		left_saber.rotation_degrees.x = -90;
 		right_saber.rotation_degrees.x = -90;
-		ui_raycast.rotation_degrees.x = 0;
+		left_ui_raycast.rotation_degrees.x = 0;
+		right_ui_raycast.rotation_degrees.x = 0;
 
 	# initialize list of cut cube resources
 	for _i in range(MAX_CUT_CUBE_RESOURCES):
