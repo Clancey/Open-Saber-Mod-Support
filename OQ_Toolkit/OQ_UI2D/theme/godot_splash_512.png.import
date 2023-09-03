@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b5s50pauu6qn0"
 path.s3tc="res://.godot/imported/godot_splash_512.png-13f9fa0a27fba044c612778c1d2a33ae.s3tc.ctex"
+path.etc2="res://.godot/imported/godot_splash_512.png-13f9fa0a27fba044c612778c1d2a33ae.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://OQ_Toolkit/OQ_UI2D/theme/godot_splash_512.png"
-dest_files=["res://.godot/imported/godot_splash_512.png-13f9fa0a27fba044c612778c1d2a33ae.s3tc.ctex"]
+dest_files=["res://.godot/imported/godot_splash_512.png-13f9fa0a27fba044c612778c1d2a33ae.s3tc.ctex", "res://.godot/imported/godot_splash_512.png-13f9fa0a27fba044c612778c1d2a33ae.etc2.ctex"]
 
 [params]
 

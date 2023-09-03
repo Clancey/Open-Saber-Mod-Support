@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cviyxvrpvyr0g"
 path.s3tc="res://.godot/imported/beepsaber_logo.png-13130700089e6a561f233df12ecc3d23.s3tc.ctex"
+path.etc2="res://.godot/imported/beepsaber_logo.png-13130700089e6a561f233df12ecc3d23.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://game/data/beepsaber_logo.png"
-dest_files=["res://.godot/imported/beepsaber_logo.png-13130700089e6a561f233df12ecc3d23.s3tc.ctex"]
+dest_files=["res://.godot/imported/beepsaber_logo.png-13130700089e6a561f233df12ecc3d23.s3tc.ctex", "res://.godot/imported/beepsaber_logo.png-13130700089e6a561f233df12ecc3d23.etc2.ctex"]
 
 [params]
 

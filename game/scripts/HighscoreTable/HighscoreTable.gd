@@ -151,7 +151,7 @@ func _make_record(score,player_name):
 # records: the list of records for a given (song + diff_rank)
 # record: the score record to request the insertion index for
 func _get_insert_index(records,record):
-	return records.bsearch_custom(record,self,"_highest_and_oldest",false)
+	return records.bsearch_custom(record,_highest_and_oldest,false)
 
 static func _highest_and_oldest(lhs, rhs):
 	if lhs.score > rhs.score:

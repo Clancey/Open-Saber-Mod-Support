@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cvbisnhbooqsv"
 path.s3tc="res://.godot/imported/ring.png-47cdd27ff5e4089ca63b88e91e7eaae2.s3tc.ctex"
+path.etc2="res://.godot/imported/ring.png-47cdd27ff5e4089ca63b88e91e7eaae2.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://game/data/UI/ring.png"
-dest_files=["res://.godot/imported/ring.png-47cdd27ff5e4089ca63b88e91e7eaae2.s3tc.ctex"]
+dest_files=["res://.godot/imported/ring.png-47cdd27ff5e4089ca63b88e91e7eaae2.s3tc.ctex", "res://.godot/imported/ring.png-47cdd27ff5e4089ca63b88e91e7eaae2.etc2.ctex"]
 
 [params]
 

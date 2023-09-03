@@ -116,7 +116,8 @@ func hit(cube):
 	emit_signal("saber_hit",cube,time_offset)
 	
 func _handle_area_collided(area):
-	if area.collision_layer & CollisionLayerConstants.AllNotes_mask:
+	#i dont know why this works :/
+	if (area.collision_layer*2) & CollisionLayerConstants.AllNotes_mask:
 		emit_signal("cube_collide",area.get_parent().get_parent())
 	elif area.collision_layer & CollisionLayerConstants.Bombs_mask:
 		emit_signal("bomb_collide",area.get_parent().get_parent())

@@ -232,54 +232,33 @@ func _load_cover(cover_path, filename):
 	return tex;
 
 func play_preview(filepath_or_buffer, start_time = 0, duration = -1, buffer_data_type_hint = 'ogg'):
-	return #needs to be fixed
-	var data := PackedByteArray()
-	
+	var stream = null
 	if filepath_or_buffer is String:
 		# get song preview data from file
-		var snd_file = FileAccess.open(filepath_or_buffer, FileAccess.READ)
-		data = snd_file.get_buffer(snd_file.get_length())
-		snd_file.close()
-		buffer_data_type_hint = filepath_or_buffer.get_extension()
+		stream = AudioStreamOggVorbis.load_from_file(filepath_or_buffer)
 	elif filepath_or_buffer is PackedByteArray:
 		# take song preview data from buffer as-is. trust passed type hint
-		data = filepath_or_buffer
+		stream = AudioStreamOggVorbis.load_from_buffer(filepath_or_buffer)
 	else:
 		vr.log_error('_play_preview() - Unsupported song preview data type %s' % typeof(filepath_or_buffer))
 		return
-		
-	# load song data into audio stream based on type hint
-	var stream = null
-	if buffer_data_type_hint == 'ogg' or buffer_data_type_hint == 'egg':
-		stream = AudioStreamOggVorbis.new()
-	elif buffer_data_type_hint == 'mp3':
-		stream = AudioStreamMP3.new()
-	else:
-		vr.log_error('_play_preview() - Unsupported buffer_data_type_hint %s' % buffer_data_type_hint)
-		return
 	
-	stream.data = data
 	if duration == -1:
 		# assume preview duration based on parsed audio length
 		duration = stream.get_length()
 	
 	# fade out preview if ones already running
 	if song_prev.playing:
-		song_prev_Tween.stop_all()
-		song_prev_Tween.interpolate_property(song_prev,"volume_db",
-			song_prev.volume_db, -50, song_prev_transition_time, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-		song_prev_Tween.start()
-		await get_tree().create_timer(song_prev_transition_time).timeout
-		song_prev.stop()
+		await _on_stop_prev_timeout()
 	
 	# start the requested preview
 	if not _beepsaber.song_player.playing:
 		song_prev.stream = stream;
-		
-		song_prev_Tween.stop_all()
-		song_prev_Tween.interpolate_property(song_prev,"volume_db",
-			song_prev.volume_db, 0, song_prev_transition_time, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-		song_prev_Tween.start()
+		var song_prev_Tween = song_prev.create_tween()
+		song_prev_Tween.set_trans(Tween.TRANS_LINEAR)
+		song_prev_Tween.set_ease(Tween.EASE_IN_OUT)
+		song_prev_Tween.tween_property(song_prev, "volume_db", 0, song_prev_transition_time)
+		song_prev_Tween.play()
 		
 		song_prev.play(float(start_time))
 		$song_prev/stop_prev.start(float(duration))
@@ -291,7 +270,6 @@ var _map_info = null;
 var _map_path = null;
 
 @onready var song_prev = $song_prev
-@onready var song_prev_Tween = $song_prev/Tween
 var song_prev_lastid = -1
 var song_prev_transition_time = 1.0
 
@@ -335,10 +313,11 @@ func _select_song(id):
 	play_preview(song_filepath,_map_info._previewStartTime,_map_info._previewDuration)
 
 func _on_stop_prev_timeout():
-	song_prev_Tween.stop_all()
-	song_prev_Tween.interpolate_property(song_prev,"volume_db",
-		song_prev.volume_db, -50, song_prev_transition_time, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	song_prev_Tween.start()
+	var song_prev_Tween = song_prev.create_tween()
+	song_prev_Tween.set_trans(Tween.TRANS_LINEAR)
+	song_prev_Tween.set_ease(Tween.EASE_IN_OUT)
+	song_prev_Tween.tween_property(song_prev, "volume_db", -50, song_prev_transition_time)
+	song_prev_Tween.play()
 	await get_tree().create_timer(song_prev_transition_time).timeout
 	song_prev.stop()
 

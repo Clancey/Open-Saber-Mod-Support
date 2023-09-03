@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cg6kwny2mi3wq"
 path.s3tc="res://.godot/imported/gradient.png-868485b961980f32f4d74d4a0bbe1d87.s3tc.ctex"
+path.etc2="res://.godot/imported/gradient.png-868485b961980f32f4d74d4a0bbe1d87.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://game/data/gradient.png"
-dest_files=["res://.godot/imported/gradient.png-868485b961980f32f4d74d4a0bbe1d87.s3tc.ctex"]
+dest_files=["res://.godot/imported/gradient.png-868485b961980f32f4d74d4a0bbe1d87.s3tc.ctex", "res://.godot/imported/gradient.png-868485b961980f32f4d74d4a0bbe1d87.etc2.ctex"]
 
 [params]
 

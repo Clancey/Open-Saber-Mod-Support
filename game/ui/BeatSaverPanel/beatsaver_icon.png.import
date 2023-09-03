@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dycn47j2d352k"
 path.s3tc="res://.godot/imported/beatsaver_icon.png-1043a4bb2adc86ef3a937136630340d4.s3tc.ctex"
+path.etc2="res://.godot/imported/beatsaver_icon.png-1043a4bb2adc86ef3a937136630340d4.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://game/ui/BeatSaverPanel/beatsaver_icon.png"
-dest_files=["res://.godot/imported/beatsaver_icon.png-1043a4bb2adc86ef3a937136630340d4.s3tc.ctex"]
+dest_files=["res://.godot/imported/beatsaver_icon.png-1043a4bb2adc86ef3a937136630340d4.s3tc.ctex", "res://.godot/imported/beatsaver_icon.png-1043a4bb2adc86ef3a937136630340d4.etc2.ctex"]
 
 [params]
 

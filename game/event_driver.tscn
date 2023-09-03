@@ -69,7 +69,7 @@ shader_parameter/bg_2_intensity = 0.0
 shader_parameter/bg_3_intensity = 0.0
 shader_parameter/bg_4_intensity = 0.0
 shader_parameter/contrast = 1.72
-shader_parameter/bg_0_tint = null
+shader_parameter/bg_0_tint = Vector4(1, 0, 0, 0)
 shader_parameter/bg_1_tint = null
 shader_parameter/bg_2_tint = null
 shader_parameter/bg_3_tint = null
@@ -779,16 +779,6 @@ transform = Transform3D(-1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 1
 material_override = SubResource("11")
 mesh = SubResource("10")
 
-[node name="Tween" type="Tween" parent="Level/t1"]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-editor_description = ""
-script = null
-
 [node name="t2" type="Node3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10)
 
@@ -829,16 +819,6 @@ autoplay = "laser_anim"
 libraries = {
 "": SubResource("AnimationLibrary_ghmyd")
 }
-
-[node name="Tween" type="Tween" parent="Level/t2"]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-editor_description = ""
-script = null
 
 [node name="t3" type="Node3D" parent="Level"]
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, -41)
@@ -881,16 +861,6 @@ libraries = {
 "": SubResource("AnimationLibrary_x47bd")
 }
 
-[node name="Tween" type="Tween" parent="Level/t3"]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-editor_description = ""
-script = null
-
 [node name="floor" type="MeshInstance3D" parent="Level"]
 transform = Transform3D(-3.9101e-06, 0, 3, 0, 1, 0, -24, 0, -4.88762e-07, 0, 0, -24)
 material_override = SubResource("18")
@@ -907,16 +877,6 @@ mesh = SubResource("10")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 2, -3, 0, -23)
 material_override = SubResource("1")
 mesh = SubResource("10")
-
-[node name="Tween" type="Tween" parent="Level/t4"]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-editor_description = ""
-script = null
 
 [node name="rings" type="Node3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
@@ -985,16 +945,6 @@ mesh = ExtResource("3")
 transform = Transform3D(1.64568e-13, 1.01011e-06, 6.2, 6.2, -1.01011e-06, 0, 1.01011e-06, 6.2, -1.01011e-06, 0, 0, -55)
 material_override = SubResource("20")
 mesh = ExtResource("3")
-
-[node name="Tween" type="Tween" parent="Level/rings"]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-editor_description = ""
-script = null
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Level/rings"]
 playback_default_blend_time = 0.2

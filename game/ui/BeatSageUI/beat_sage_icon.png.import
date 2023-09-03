@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bmetc7xglkymg"
 path.s3tc="res://.godot/imported/beat_sage_icon.png-73b21f9e2b63fce257353de42beb8eae.s3tc.ctex"
+path.etc2="res://.godot/imported/beat_sage_icon.png-73b21f9e2b63fce257353de42beb8eae.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://game/ui/BeatSageUI/beat_sage_icon.png"
-dest_files=["res://.godot/imported/beat_sage_icon.png-73b21f9e2b63fce257353de42beb8eae.s3tc.ctex"]
+dest_files=["res://.godot/imported/beat_sage_icon.png-73b21f9e2b63fce257353de42beb8eae.s3tc.ctex", "res://.godot/imported/beat_sage_icon.png-73b21f9e2b63fce257353de42beb8eae.etc2.ctex"]
 
 [params]
 

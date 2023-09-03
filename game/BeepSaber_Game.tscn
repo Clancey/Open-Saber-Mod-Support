@@ -35,10 +35,12 @@
 [sub_resource type="Environment" id="1"]
 background_mode = 3
 sky = ExtResource("14")
+tonemap_mode = 2
 glow_enabled = true
 glow_intensity = 0.28
 glow_strength = 1.38
 glow_bloom = 0.03
+glow_blend_mode = 1
 glow_hdr_threshold = 1.04
 
 [sub_resource type="SphereShape3D" id="2"]
@@ -232,6 +234,10 @@ pool_size = 100
 
 [connection signal="area_entered" from="OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead" to="." method="_on_PlayerHead_area_entered"]
 [connection signal="area_exited" from="OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead" to="." method="_on_PlayerHead_area_exited"]
+[connection signal="bomb_collide" from="OQ_ARVROrigin/OQ_LeftController/LeftLightSaber" to="." method="_on_LeftLightSaber_bomb_collide"]
+[connection signal="cube_collide" from="OQ_ARVROrigin/OQ_LeftController/LeftLightSaber" to="." method="_on_LeftLightSaber_cube_collide"]
+[connection signal="bomb_collide" from="OQ_ARVROrigin/OQ_RightController/RightLightSaber" to="." method="_on_RightLightSaber_bomb_collide"]
+[connection signal="cube_collide" from="OQ_ARVROrigin/OQ_RightController/RightLightSaber" to="." method="_on_RightLightSaber_cube_collide"]
 [connection signal="difficulty_changed" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_on_BeepSaberMainMenu_difficulty_changed"]
 [connection signal="settings_requested" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_on_BeepSaberMainMenu_settings_requested"]
 [connection signal="goto_mainmenu" from="EndScore_canvas/EndScore_panel" to="." method="_on_EndScore_panel_goto_mainmenu"]

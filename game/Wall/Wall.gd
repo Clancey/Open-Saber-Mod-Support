@@ -17,8 +17,6 @@ var _obstacle;
 @onready var _mesh = $WallMeshOrientation/WallMesh
 @onready var _coll = $WallMeshOrientation/WallArea/CollisionShape3D
 
-var wall_material = preload("res://game/Wall/wall.material");
-
 func _ready():
 	# play the spawn animation when wall enters the scene
 	_anim.play("Spawn")
@@ -58,5 +56,5 @@ func duplicate_create():
 		await self.ready
 	
 	_mesh.mesh = _mesh.mesh.duplicate();
-#	_mesh.mesh.surface_set_material(0, wall_material.duplicate());
+#	_mesh.mesh.surface_set_material(0, _mesh.mesh.material_override.duplicate());
 	_coll.shape = _coll.shape.duplicate()

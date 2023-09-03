@@ -240,16 +240,6 @@ text = "Refresh Songs/Playlists"
 [node name="song_prev" type="AudioStreamPlayer" parent="."]
 volume_db = -60.0
 
-[node name="Tween" type="Tween" parent="song_prev"]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-editor_description = ""
-script = null
-
 [node name="stop_prev" type="Timer" parent="song_prev"]
 one_shot = true
 

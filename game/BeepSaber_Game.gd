@@ -718,6 +718,8 @@ func _create_cut_rigid_body(_sign, cube : Node3D, cutplane : Plane, cut_distance
 	piece.coll.look_at_from_position(-cutplane.normal*_sign*0.125, cutplane.normal, Vector3(0,1,0))
 
 	piece.rigid_body.global_transform = cube.global_transform
+	piece.rigid_body.linear_velocity = Vector3.ZERO
+	piece.rigid_body.angular_velocity = Vector3.ZERO
 	# make piece visible and start its simulation
 	piece.rigid_body.fire()
 	
@@ -726,7 +728,7 @@ func _create_cut_rigid_body(_sign, cube : Node3D, cutplane : Plane, cut_distance
 	var splitplane_2d = cutplane_2d.cross(piece.mesh.transform.basis.z)
 #	_sign *= rot_dir_flt
 	piece.rigid_body.apply_central_impulse((_sign * splitplane_2d * 15) + (cutplane_2d*10))
-	piece.rigid_body.apply_torque_impulse((_sign) * Vector3.FORWARD * 0.15)
+	#piece.rigid_body.apply_torque_impulse((_sign) * Vector3.FORWARD * 0.15)
 	
 	# This function gets run twice so we don't want two particle effects
 	if is_equal_approx(_sign,1):
@@ -809,7 +811,7 @@ func _cut_cube(controller : XRController3D, saber : Area3D, cube : Node3D):
 	var o = controller.global_transform.origin;
 	var saber_end : Vector3
 	var saber_end_past : Vector3
-	if(controller.controller_id == 1): # Check if it's the left controller
+	if(controller.tracker == "left_hand"): # Check if it's the left controller
 		saber_end = left_saber_end
 		saber_end_past = left_saber_end_past
 	else:
@@ -828,7 +830,7 @@ func _cut_cube(controller : XRController3D, saber : Area3D, cube : Node3D):
 	if cube._note._cutDirection==8: #ignore angle if is a dot
 		cut_angle_accuracy = 1.0;
 	var cut_distance_accuracy = clamp((0.1 - abs(cut_distance))/0.1, 0.0, 1.0);
-	var travel_distance_factor = _controller_movement_aabb[controller.controller_id].get_longest_axis_size();
+	var travel_distance_factor = _controller_movement_aabb[controller.tracker].get_longest_axis_size();
 	travel_distance_factor = clamp((travel_distance_factor-0.5)/0.5, 0.0, 1.0);
 
 	_create_cut_pieces_sw.start()
@@ -849,7 +851,7 @@ func _cut_cube(controller : XRController3D, saber : Area3D, cube : Node3D):
 	_update_points_sw.stop()
 
 	# reset the movement tracking volume for the next cut
-	_controller_movement_aabb[controller.controller_id] = AABB(controller.global_transform.origin, Vector3(0,0,0));
+	_controller_movement_aabb[controller.tracker] = AABB(controller.global_transform.origin, Vector3(0,0,0));
 
 	#vr.show_dbg_info("cut_accuracy", str(beat_accuracy) + ", " + str(cut_angle_accuracy) + ", " + str(cut_distance_accuracy) + ", " + str(travel_distance_factor));
 	cube.release();

@@ -102,12 +102,13 @@ func procces_event(data,beat):
 				change_light_color(data._type,game.COLOR_LEFT,2)
 	else:
 		match int(data._type):
-#			8:
-#				if not $Level/rings/Tween.is_active():
-#					ring_rot_inv_dir = bool(randi()%2)
-#				$Level/rings/Tween.stop(self,"ring_rot_speed")
-#				$Level/rings/Tween.interpolate_property(self,"ring_rot_speed",3.0,0.0,2,Tween.TRANS_QUAD,Tween.EASE_OUT)
-#				$Level/rings/Tween.start()
+			8:
+				var ringtween = $Level/rings.create_tween()
+				ring_rot_inv_dir = bool(randi()%2)
+				ringtween.set_trans(Tween.TRANS_QUAD)
+				ringtween.set_ease(Tween.EASE_OUT)
+				ringtween.tween_property(self,"ring_rot_speed",0.0, 2).from(3.0)
+				ringtween.play()
 			9:
 				$Level/rings/AnimationPlayer.stop(false)
 				if $Level/rings/AnimationPlayer.current_animation == "out":
@@ -171,23 +172,29 @@ func change_light_color(type,color=-1,transition_mode=0):
 			$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%int(type),color.v)
 			group.visible = true
 		1:
-#			tween.stop_all()
-#			for m in material:
-#				tween.interpolate_property(m,"albedo_color",color*3,color,0.3,Tween.TRANS_LINEAR,Tween.EASE_OUT)
-#			tween.start()
+			tween.set_parallel()
+			tween.set_trans(Tween.TRANS_LINEAR)
+			tween.set_ease(Tween.EASE_OUT)
+			for m in material:
+				tween.tween_property(m, "albedo_color", color, 0.3).from(color*3)
+			tween.tween_method(_on_Tween_tween_step.bind(int(type)), color*3, color, 0.3)
+			tween.play()
 			group.visible = true
 		2:
-#			tween.stop_all()
-#			for m in material:
-#				tween.interpolate_property(m,"albedo_color",color*3,Color(0,0,0),1,Tween.TRANS_QUAD,Tween.EASE_IN)
-#			tween.start()
+			tween.set_parallel()
+			tween.set_trans(Tween.TRANS_QUAD)
+			tween.set_ease(Tween.EASE_IN)
+			for m in material:
+				tween.tween_property(m, "albedo_color", Color(0,0,0), 1).from(color*3)
+			tween.tween_method(_on_Tween_tween_step.bind(int(type)), color*3, Color(0,0,0), 1)
 			group.visible = true
-#			await tween.tween_completed
+			tween.play()
+			await tween.finished
 			if material[0].albedo_color == Color(0,0,0):
 				group.visible = false
 			
 
-func _on_Tween_tween_step(object, key, elapsed, value : Color, id):
+func _on_Tween_tween_step(value : Color, id):
 	if id == null: return
 	$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%id,value.v)
 

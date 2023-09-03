@@ -53,8 +53,11 @@ func _ready():
 
 # override so that we can update child segments too
 func _set_collision_mask_value(bit: int, value: bool):
-	collision_mask = collision_mask | (int(value) << bit)
+	collision_mask = 0x0
+	#collision_mask = collision_mask | (int(value) << bit)
+	set_collision_mask_value(bit, value)
 	for ray in _rays:
+		ray.collision_mask = 0x0
 		ray.set_collision_mask_value(bit,value)
 		
 func reset_counters():

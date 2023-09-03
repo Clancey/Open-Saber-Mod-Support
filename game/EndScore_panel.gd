@@ -36,25 +36,31 @@ func show_score(score,record,percent,song_string="",is_full_combo=false,is_new_r
 	
 	$char.text = "[center]"+letter_score
 	
-	$Tween.interpolate_property(self,"animated_percent",0,percent,3,Tween.TRANS_QUAD,Tween.EASE_OUT)
-	$Tween.start()
+	var tw = create_tween()
+	tw.set_trans(Tween.TRANS_QUAD)
+	tw.set_ease(Tween.EASE_OUT)
+	tw.tween_property(self,"animated_percent",percent,3).from(0)
+	tw.play()
+	while tw.is_running():
+		$pi/percent_indicator.set_percent(animated_percent,false)
+		await get_tree().process_frame
+	_on_Tween_tween_completed()
 
 func set_buttons_disabled(disabled):
 	$Repeat.disabled = disabled
 	$MainMenu.disabled = disabled
 
-func _on_Tween_tween_step(object, key, elapsed, value):
-	if key==":animated_percent":
-		$pi/percent_indicator.set_percent(value,false)
-		
-func _on_Tween_tween_completed(object, key):
-	if key==":animated_percent":
-		$pi/percent_indicator.set_percent(animated_percent,true)
-		$Tween.interpolate_property($details,"modulate",Color(1,1,1,0),Color(1,1,1,1),2,Tween.TRANS_QUAD,Tween.TRANS_LINEAR)
-		$Tween.interpolate_property($char,"modulate",Color(1,1,1,0),Color(1,1,1,1),2,Tween.TRANS_QUAD,Tween.TRANS_LINEAR)
-		$Tween.interpolate_property($full_combo_label,"modulate",Color(1,1,1,0),Color(1,1,1,1),2,Tween.TRANS_QUAD,Tween.TRANS_LINEAR)
-		$Tween.interpolate_property($new_record_label,"modulate",Color(1,1,1,0),Color(1,1,1,1),2,Tween.TRANS_QUAD,Tween.TRANS_LINEAR)
-		$Tween.start()
+func _on_Tween_tween_completed():
+	var tw = create_tween()
+	$pi/percent_indicator.set_percent(animated_percent,true)
+	tw.set_trans(Tween.TRANS_QUAD)
+	tw.set_ease(Tween.EASE_IN_OUT)
+	tw.set_parallel()
+	tw.tween_property($details,"modulate",Color(1,1,1,1),2).from(Color(1,1,1,0))
+	tw.tween_property($char,"modulate",Color(1,1,1,1),2).from(Color(1,1,1,0))
+	tw.tween_property($full_combo_label,"modulate",Color(1,1,1,1),2).from(Color(1,1,1,0))
+	tw.tween_property($new_record_label,"modulate",Color(1,1,1,1),2).from(Color(1,1,1,0))
+	tw.play()
 
 
 func _on_Repeat_button_up():

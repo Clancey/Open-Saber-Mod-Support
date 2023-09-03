@@ -7,7 +7,7 @@ var collision_disabled = false: set = _set_colision_disabled
 
 func _ready():
 	# play the spawn animation when this bomb enters the scene
-	_anim.playback_speed = max(min_speed,speed)
+	_anim.speed_scale = max(min_speed,speed)
 	_anim.play("Spawn");
 
 func _set_colision_disabled(value):
