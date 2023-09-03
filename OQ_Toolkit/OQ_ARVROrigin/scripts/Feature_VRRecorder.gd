@@ -344,7 +344,7 @@ func stop_and_save_recording(filename = null):
 	
 	var save_rec = FileAccess.open("user://" + filename, FileAccess.WRITE)
 	if save_rec:
-		save_rec.store_line(JSON.new().stringify(_r))
+		save_rec.store_line(JSON.stringify(_r))
 		save_rec.close()
 		vr.log_info("Saved recording to " + OS.get_user_data_dir() + "/" + filename);
 	else:

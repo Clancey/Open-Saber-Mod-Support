@@ -62,7 +62,7 @@ func request_custom_level(request_obj):
 	var res = create_request_.request(
 		"https://beatsage.com/beatsaber_custom_level_create",
 		headers,
-		false,# use ssl
+		#false,# use ssl
 		HTTPClient.METHOD_POST,
 		data_to_send)
 		
@@ -89,7 +89,7 @@ func request_youtube_metadata(youtube_url):
 	var res = youtube_metadata_request_.request(
 		"https://beatsage.com/youtube_metadata",
 		headers,
-		false,# use ssl
+		#false,# use ssl
 		HTTPClient.METHOD_POST,
 		data_to_send)
 		
@@ -181,11 +181,9 @@ func _on_CreateRequest_request_completed(result, response_code, headers, body):
 	
 	if response_code == HTTPClient.RESPONSE_OK:
 		var res_str = body.get_string_from_utf8()
-		var test_json_conv = JSON.new()
-		test_json_conv.parse(res_str)
-		var json = test_json_conv.get_data()
-		if json.error == OK:
-			var json_res = json.result
+		var json = JSON.parse_string(res_str)
+		if json:
+			var json_res = json
 			if json_res.has('id'):
 				request_id_ = json_res['id']
 			else:
@@ -193,7 +191,7 @@ func _on_CreateRequest_request_completed(result, response_code, headers, body):
 				print(json_res)
 				okay = false;
 		else:
-			vr.log_error("Received JSON error %s" % json.error)
+			vr.log_error("Received JSON error %s" % json)
 			okay = false;
 	else:
 		vr.log_error("Received server error from BeatSage create custom song request!")
@@ -219,11 +217,9 @@ func _on_HeartbeatRequest_request_completed(result, response_code, headers, body
 	# handle results
 	if response_code == HTTPClient.RESPONSE_OK:
 		var res_str = body.get_string_from_utf8()
-		var test_json_conv = JSON.new()
-		test_json_conv.parse(res_str)
-		var json = test_json_conv.get_data()
-		if json.error == OK:
-			var json_res = json.result
+		var json = JSON.parse_string(res_str)
+		if json:
+			var json_res = json
 			if json_res.has('status'):
 				var status = json_res['status']
 				if status == "PENDING":
@@ -239,7 +235,7 @@ func _on_HeartbeatRequest_request_completed(result, response_code, headers, body
 				print(json_res)
 				okay = false;
 		else:
-			vr.log_error("Received JSON error %s" % json.error)
+			vr.log_error("Received JSON error %s" % json)
 			okay = false;
 	else:
 		vr.log_error("Received server error from BeatSage heartbeat request!")
@@ -306,14 +302,12 @@ func _on_YouTubeMetadataRequest_request_completed(result, response_code, headers
 	# handle results
 	if response_code == HTTPClient.RESPONSE_OK:
 		var res_str = body.get_string_from_utf8()
-		var test_json_conv = JSON.new()
-		test_json_conv.parse(res_str)
-		var json = test_json_conv.get_data()
-		if json.error == OK:
-			var json_res = json.result
+		var json = JSON.parse_string(res_str)
+		if json:
+			var json_res = json
 			emit_signal("youtube_metadata_available", json_res)
 		else:
-			vr.log_error("Received JSON error %s" % json.error)
+			vr.log_error("Received JSON error %s" % json)
 			okay = false;
 	else:
 		vr.log_error("Received server error from youtube metadata request!")

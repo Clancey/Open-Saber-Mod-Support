@@ -149,9 +149,7 @@ func _get_selected_song():
 
 func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 	if result == 0:
-		var test_json_conv = JSON.new()
-		test_json_conv.parse(body.get_string_from_utf8())
-		var json_data = test_json_conv.get_data()
+		var json_data = JSON.parse_string(body.get_string_from_utf8())
 		next_page_available = prev_page_available + 1
 			
 		if json_data.has("docs"):
@@ -267,14 +265,12 @@ func _on_HTTPRequest_download_completed(result, response_code, headers, body):
 					"Failed to create song output dir '%s'" % song_out_dir)
 				has_error = true
 		
-		var Unzip = load('res://addons/gdunzip/unzip.gd').new()
 		if not has_error:
 			error = Unzip.unzip(zippath,song_out_dir)
-			
-		var dir = DirAccess.open(zippath)
-		dir.remove(zippath)
 		
-		downloading.remove(0)
+		DirAccess.remove_absolute(zippath)
+		
+		downloading.remove_at(0)
 		
 		if not downloading.size() > 0:
 			game.menu._on_LoadPlaylists_Button_pressed()
@@ -346,6 +342,7 @@ func _update_cover(result, response_code, headers, body):
 
 func _on_gotoMapsBy_pressed():
 	var selected_song = _get_selected_song()
+	if not selected_song.has("uploader"): return
 	_add_to_back_stack(prev_request)
 	prev_request = {
 		"type" : "uploader",
@@ -405,7 +402,7 @@ func _get_cover_url_from_song_data(song_data):
 	return version_data['coverURL']
 
 func _on_CloseButton_pressed():
-	self.hide()
+	self._hide()
 
 var _is_first_show = true
 func _on_BeatSaverPanel_visibility_changed():

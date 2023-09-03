@@ -14,9 +14,8 @@ func _ready():
 	# initialize items related to Beat Saver UI Dialog
 	_beat_saver_canvas = get_node(beat_saver_canvas_path)
 	if is_instance_valid(_beat_saver_canvas):
-		_beat_saver_canvas.connect(
-			'visibility_changed',
-			_on_MapSourceUI_closed.bind("beat_saver_canvas", _beat_saver_canvas))
+		_beat_saver_canvas.visibility_changed.connect(
+			_on_MapSourceUI_closed.bind(_beat_saver_canvas))
 	else:
 		vr.log_warning('_beat_saver_canvas is null')
 		beat_saver_button.disabled = true
@@ -24,9 +23,8 @@ func _ready():
 	# initialize items related to Beat Sage UI Dialog
 	_beat_sage_canvas = get_node(beat_sage_canvas_path)
 	if is_instance_valid(_beat_saver_canvas):
-		_beat_sage_canvas.connect(
-			'visibility_changed',
-			_on_MapSourceUI_closed.bind("beat_sage_canvas",_beat_sage_canvas))
+		_beat_sage_canvas.visibility_changed.connect(
+			_on_MapSourceUI_closed.bind(_beat_sage_canvas))
 	else:
 		vr.log_warning('_beat_sage_canvas is null')
 		beat_sage_button.disabled = true

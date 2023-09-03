@@ -125,12 +125,12 @@ func _on_SubmitButton_pressed():
 	if beatsage_request_.request_custom_level(request_data):
 		submit_button.disabled = true
 		progress_bar.value = 0
-		progress_screen._show()
+		progress_screen.show()
 
 func _on_BeatSageRequest_download_complete(filepath):
 	var okay = true
 	submit_button.disabled = false
-	progress_screen._hide()
+	progress_screen.hide()
 	
 	var song_dir_name = filepath.get_basename().get_file()
 	var song_out_dir = BS_SONG_DIR + song_dir_name + '/'
@@ -141,17 +141,15 @@ func _on_BeatSageRequest_download_complete(filepath):
 			"Failed to create song output dir '%s'" % song_out_dir)
 		okay = false
 	
-	var Unzip = load('res://addons/gdunzip/unzip.gd').new()
 	if okay:
 		var error = Unzip.unzip(filepath,song_out_dir)
 	
-	var dirrem = DirAccess.open(filepath)
-	dirrem.remove(filepath)
+	DirAccess.remove_absolute(filepath)
 
 func _on_BeatSageRequest_request_failed():
 	vr.log_error("BeatSage request failed!")
 	submit_button.disabled = false
-	progress_screen._hide()
+	progress_screen.hide()
 
 func _on_BeatSageRequest_progress_update(progress, max_progress):
 	progress_bar.value = progress
@@ -204,7 +202,7 @@ func _on_youtube_song_selected(video_metadata):
 	beatsage_request_.request_youtube_metadata(video_url)
 
 func _on_CloseButton_pressed():
-	self.hide()
+	self._hide()
 
 func _on_CancelButton_pressed():
 	beatsage_request_.cancel_custom_level_request()

@@ -243,9 +243,12 @@ func play_preview(filepath_or_buffer, start_time = 0, duration = -1, buffer_data
 		vr.log_error('_play_preview() - Unsupported song preview data type %s' % typeof(filepath_or_buffer))
 		return
 	
+	if not stream: return
+	
 	if duration == -1:
 		# assume preview duration based on parsed audio length
 		duration = stream.get_length()
+	
 	
 	# fade out preview if ones already running
 	if song_prev.playing:
@@ -383,9 +386,9 @@ func _delete_map():
 			dir.list_dir_begin() ;# TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 			var current_file = dir.get_next();
 			while current_file != "":
-				dir.remove(_map_path+current_file);
+				DirAccess.remove_absolute(_map_path+current_file);
 				current_file = dir.get_next();
-			dir.remove(_map_path);
+			DirAccess.remove_absolute(_map_path);
 			vr.log_info(_map_path+" Removed");
 			_map_path = null;
 			$Delete_Button.disabled = true;

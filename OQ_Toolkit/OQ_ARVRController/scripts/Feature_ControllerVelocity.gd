@@ -31,7 +31,7 @@ func update_controller_velocity(dt):
 	prior_controller_position = global_transform.origin
 
 	if prior_controller_velocities.size() > 30:
-		prior_controller_velocities.remove(0)
+		prior_controller_velocities.remove_at(0)
 
 func _process(dt):
 	update_controller_velocity(dt);

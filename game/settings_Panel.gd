@@ -246,8 +246,7 @@ func _on_wipe_check_timeout():
 		and vr.button_pressed(vr.BUTTON.RIGHT_THUMBSTICK) 
 		or Input.is_action_pressed("ui_page_up") and Input.is_action_pressed("ui_page_down")))
 		):
-			var dir = DirAccess.open(config_path)
-			dir.remove(config_path)
+			DirAccess.remove_absolute(config_path)
 			get_tree().change_scene_to_file("res://GameMain.tscn")
 
 func _on_apply_pressed():

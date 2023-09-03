@@ -206,7 +206,7 @@ offset_right = 1504.0
 offset_bottom = 280.0
 texture = ExtResource("5")
 expand_mode = 1
-stretch_mode = 6
+stretch_mode = 5
 
 [node name="song_data" type="RichTextLabel" parent="."]
 layout_mode = 0

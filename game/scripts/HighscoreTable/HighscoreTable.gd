@@ -105,11 +105,9 @@ func load_hs_table():
 	if file:
 		var text = file.get_as_text()
 		file.close()
-		var test_json_conv = JSON.new()
-		test_json_conv.parse(text)
-		var json_res = test_json_conv.get_data()
-		if json_res.error == OK:
-			_hs_table = json_res.result
+		var json_res = JSON.parse_string(text)
+		if json_res:
+			_hs_table = json_res
 	else:
 		print("WARN: Failed to open %s (might not exist yet)" % HIGHSCORES_FILEPATH)
 

@@ -97,7 +97,7 @@ func _on_button_down(b):
 	
 	var ev = _create_input_event(b, true);
 	if (!ev): return;
-	get_tree().input_event(ev);
+	Input.parse_input_event(ev);
 
 
 func _on_button_up(b):
@@ -105,7 +105,7 @@ func _on_button_up(b):
 	
 	var ev = _create_input_event(b, false);
 	if (!ev): return;
-	get_tree().input_event(ev);
+	Input.parse_input_event(ev);
 
 
 func _create_button(_parent, text, x, y, w = 1, h = 1):

@@ -22,13 +22,13 @@
 [ext_resource type="PackedScene" uid="uid://383dbnh6gxd3" path="res://game/ui/BeatSaverPanel/BeatSaverPanel.tscn" id="20"]
 [ext_resource type="PackedScene" uid="uid://spe4kya7ntv8" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DKeyboard.tscn" id="21"]
 [ext_resource type="PackedScene" path="res://game/Points_label_driver.tscn" id="22"]
-[ext_resource type="PackedScene" path="res://game/HighscorePanel.tscn" id="23"]
+[ext_resource type="PackedScene" uid="uid://cpwxp083qm1jq" path="res://game/HighscorePanel.tscn" id="23"]
 [ext_resource type="PackedScene" path="res://game/Bomb/Bomb.tscn" id="24"]
 [ext_resource type="PackedScene" path="res://game/ui/NameSelector/NameSelector.tscn" id="25"]
 [ext_resource type="PackedScene" path="res://game/ui/YouTubeUI/YouTubeUI.tscn" id="26"]
 [ext_resource type="PackedScene" uid="uid://cjirr6sfxfhhd" path="res://game/scripts/ScenePool/ScenePool.tscn" id="27"]
-[ext_resource type="PackedScene" path="res://game/ui/MapDownloadPanel/MapDownloadPanel.tscn" id="28"]
-[ext_resource type="PackedScene" path="res://game/ui/BeatSageUI/BeatSageUI.tscn" id="29"]
+[ext_resource type="PackedScene" uid="uid://dkqqtux44xxe7" path="res://game/ui/MapDownloadPanel/MapDownloadPanel.tscn" id="28"]
+[ext_resource type="PackedScene" uid="uid://bmdbiqndkvcm6" path="res://game/ui/BeatSageUI/BeatSageUI.tscn" id="29"]
 [ext_resource type="PackedScene" uid="uid://dvj8dorx2l7s0" path="res://game/BeepCube.tscn" id="30"]
 [ext_resource type="PackedScene" uid="uid://cgfj82g2xp1ne" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLogWindow.tscn" id="31"]
 
@@ -83,6 +83,7 @@ autoload_model = false
 
 [node name="Feature_UIRayCast" parent="OQ_ARVROrigin/OQ_LeftController" instance=ExtResource("12")]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+active = false
 ui_raycast_length = 5.0
 adjust_left_right = false
 ui_raycast_visible_button = -1

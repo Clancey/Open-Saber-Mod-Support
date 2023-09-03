@@ -26,14 +26,12 @@ func _ready():
 func _process(delta):
 	if _udp.get_available_packet_count() > 0:
 		var packet_str = _udp.get_packet().get_string_from_utf8()
-		var test_json_conv = JSON.new()
-		test_json_conv.parse(packet_str)
-		var json_res = test_json_conv.get_data()
-		if json_res.error != OK:
+		var json_res = JSON.parse_string(packet_str)
+		if !json_res:
 			print("CLIENT: json_res.error = %d; packet_str = %s" % [json_res.error,packet_str])
 			return
 			
-		var packet = json_res.result
+		var packet = json_res
 		if ! packet.has('type'):
 			print("CLIENT: packet doesn't contain type! %s" % packet)
 			return

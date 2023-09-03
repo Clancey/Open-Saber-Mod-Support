@@ -1,411 +1,291 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://cpwxp083qm1jq"]
 
-[ext_resource path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme" type="Theme" id=1]
-[ext_resource path="res://game/HighscorePanel.gd" type="Script" id=2]
-[ext_resource path="res://game/data/maps/Songs/TheFatRat_Timelapse/cover.jpg" type="Texture2D" id=4]
+[ext_resource type="Theme" path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme" id="1"]
+[ext_resource type="Script" path="res://game/HighscorePanel.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://j1wa4gcqkltx" path="res://game/data/maps/Songs/TheFatRat_Timelapse/cover.jpg" id="4"]
 
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0, 0, 0, 1 )
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(0, 0, 0, 1)
 border_width_left = 8
 border_width_top = 8
 border_width_right = 8
 border_width_bottom = 8
-border_color = Color( 1, 1, 1, 1 )
-
-[sub_resource type="StyleBoxFlat" id=2]
-bg_color = Color( 0.25098, 0.25098, 0.25098, 1 )
+border_color = Color(1, 1, 1, 1)
 
 [node name="HighscorePanel" type="Panel"]
 offset_right = 940.0
 offset_bottom = 520.0
-theme = ExtResource( 1 )
-theme_override_styles/panel = SubResource( 1 )
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme = ExtResource("1")
+theme_override_styles/panel = SubResource("1")
+script = ExtResource("2")
 
 [node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_top = 20
 theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="VBox" type="VBoxContainer" parent="Margin"]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 920.0
-offset_bottom = 500.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Title" type="Label" parent="Margin/VBox"]
-offset_right = 900.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "Highscores (Hard)"
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="LeftRight" type="HBoxContainer" parent="Margin/VBox"]
-offset_top = 37.0
-offset_right = 900.0
-offset_bottom = 433.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Margin/VBox/LeftRight"]
-offset_right = 537.0
-offset_bottom = 396.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 1.5
-theme_override_styles/bg = SubResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Margin" type="MarginContainer" parent="Margin/VBox/LeftRight/ScrollContainer"]
-offset_right = 537.0
-offset_bottom = 396.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_top = 10
 theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
 [node name="HighscoresList" type="VBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin"]
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 527.0
-offset_bottom = 386.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="BaseRecordRow" type="HBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList"]
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RankLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow"]
-offset_right = 50.0
-offset_bottom = 33.0
-custom_minimum_size = Vector2( 50, 0 )
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 size_flags_horizontal = 0
 text = "1."
 
 [node name="NameLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow"]
-offset_left = 54.0
-offset_right = 417.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Player 1"
 clip_text = true
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow"]
-offset_left = 421.0
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "100000"
-align = 2
 
 [node name="BaseRecordRow2" type="HBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList"]
-offset_top = 37.0
-offset_right = 517.0
-offset_bottom = 70.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RankLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow2"]
-offset_right = 50.0
-offset_bottom = 33.0
-custom_minimum_size = Vector2( 50, 0 )
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 size_flags_horizontal = 0
 text = "2."
 
 [node name="NameLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow2"]
-offset_left = 54.0
-offset_right = 433.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "I have a long name"
 clip_text = true
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow2"]
-offset_left = 437.0
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "10000"
-align = 2
 
 [node name="BaseRecordRow3" type="HBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList"]
-offset_top = 74.0
-offset_right = 517.0
-offset_bottom = 107.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RankLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow3"]
-offset_right = 50.0
-offset_bottom = 33.0
-custom_minimum_size = Vector2( 50, 0 )
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 size_flags_horizontal = 0
 text = "3."
 
 [node name="NameLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow3"]
-offset_left = 54.0
-offset_right = 449.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "I have an extremely long name that goes of the page"
 clip_text = true
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow3"]
-offset_left = 453.0
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "1000"
-align = 2
 
 [node name="BaseRecordRow4" type="HBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList"]
-offset_top = 111.0
-offset_right = 517.0
-offset_bottom = 144.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RankLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow4"]
-offset_right = 50.0
-offset_bottom = 33.0
-custom_minimum_size = Vector2( 50, 0 )
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 size_flags_horizontal = 0
 text = "4."
 
 [node name="NameLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow4"]
-offset_left = 54.0
-offset_right = 449.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Player 1"
 clip_text = true
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow4"]
-offset_left = 453.0
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "1000"
-align = 2
 
 [node name="BaseRecordRow5" type="HBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList"]
-offset_top = 148.0
-offset_right = 517.0
-offset_bottom = 181.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RankLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow5"]
-offset_right = 50.0
-offset_bottom = 33.0
-custom_minimum_size = Vector2( 50, 0 )
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 size_flags_horizontal = 0
 text = "5."
 
 [node name="NameLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow5"]
-offset_left = 54.0
-offset_right = 449.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Player 1"
 clip_text = true
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow5"]
-offset_left = 453.0
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "1000"
-align = 2
 
 [node name="BaseRecordRow6" type="HBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList"]
-offset_top = 185.0
-offset_right = 517.0
-offset_bottom = 218.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RankLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow6"]
-offset_right = 50.0
-offset_bottom = 33.0
-custom_minimum_size = Vector2( 50, 0 )
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 size_flags_horizontal = 0
 text = "6."
 
 [node name="NameLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow6"]
-offset_left = 54.0
-offset_right = 449.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Player 1"
 clip_text = true
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow6"]
-offset_left = 453.0
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "1000"
-align = 2
 
 [node name="BaseRecordRow7" type="HBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList"]
-offset_top = 222.0
-offset_right = 517.0
-offset_bottom = 255.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RankLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow7"]
-offset_right = 50.0
-offset_bottom = 33.0
-custom_minimum_size = Vector2( 50, 0 )
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 size_flags_horizontal = 0
 text = "7."
 
 [node name="NameLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow7"]
-offset_left = 54.0
-offset_right = 449.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Player 1"
 clip_text = true
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow7"]
-offset_left = 453.0
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "1000"
-align = 2
 
 [node name="BaseRecordRow8" type="HBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList"]
-offset_top = 259.0
-offset_right = 517.0
-offset_bottom = 292.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RankLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow8"]
-offset_right = 50.0
-offset_bottom = 33.0
-custom_minimum_size = Vector2( 50, 0 )
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 size_flags_horizontal = 0
 text = "8."
 
 [node name="NameLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow8"]
-offset_left = 54.0
-offset_right = 449.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Player 1"
 clip_text = true
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow8"]
-offset_left = 453.0
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "1000"
-align = 2
 
 [node name="BaseRecordRow9" type="HBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList"]
-offset_top = 296.0
-offset_right = 517.0
-offset_bottom = 329.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RankLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow9"]
-offset_right = 50.0
-offset_bottom = 33.0
-custom_minimum_size = Vector2( 50, 0 )
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 size_flags_horizontal = 0
 text = "9."
 
 [node name="NameLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow9"]
-offset_left = 54.0
-offset_right = 449.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Player 1"
 clip_text = true
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow9"]
-offset_left = 453.0
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "1000"
-align = 2
 
 [node name="BaseRecordRow10" type="HBoxContainer" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList"]
-offset_top = 333.0
-offset_right = 517.0
-offset_bottom = 366.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RankLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow10"]
-offset_right = 50.0
-offset_bottom = 33.0
-custom_minimum_size = Vector2( 50, 0 )
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
 size_flags_horizontal = 0
 text = "10."
 
 [node name="NameLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow10"]
-offset_left = 54.0
-offset_right = 449.0
-offset_bottom = 33.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Player 1"
 clip_text = true
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow10"]
-offset_left = 453.0
-offset_right = 517.0
-offset_bottom = 33.0
+layout_mode = 2
 text = "1000"
-align = 2
 
 [node name="VBox" type="VBoxContainer" parent="Margin/VBox/LeftRight"]
-offset_left = 541.0
-offset_right = 900.0
-offset_bottom = 396.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="SongCover" type="TextureRect" parent="Margin/VBox/LeftRight/VBox"]
-offset_right = 359.0
-offset_bottom = 287.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-texture = ExtResource( 4 )
-expand = true
-stretch_mode = 6
+texture = ExtResource("4")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="SongInfo_Label" type="Label" parent="Margin/VBox/LeftRight/VBox"]
-offset_top = 291.0
-offset_right = 359.0
-offset_bottom = 396.0
+layout_mode = 2
 text = "Song Author: TheFatRat
 Song Title: Time Lapse
 Beatmap Author: Timeweaver"
-valign = 1
 clip_text = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Exit_Button" type="Button" parent="Margin/VBox"]
-offset_top = 437.0
-offset_right = 900.0
-offset_bottom = 480.0
+layout_mode = 2
 text = "Close"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+
 [connection signal="pressed" from="Margin/VBox/Exit_Button" to="." method="_on_Exit_Button_pressed"]

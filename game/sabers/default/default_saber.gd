@@ -82,6 +82,6 @@ func _process(delta):
 		
 		#last_pos.insert(0,pos)
 		#while last_pos.size() > max_pos:
-			#last_pos.remove(last_pos.size()-1)
+			#last_pos.remove_at(last_pos.size()-1)
 #	else:
 #		imm_geo.clear()

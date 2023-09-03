@@ -72,11 +72,9 @@ func _get_search_result_data_from_html(html_text: String):
 		result_str = result_str.replace('\\"','\"')
 		#result_str = result_str.replace('\/','/')
 	
-	var test_json_conv = JSON.new()
-	test_json_conv.parse(result_str)
-	var json = test_json_conv.get_data()
-	if json.error == OK:
-		search_results = json.result
+	var json = JSON.parse_string(result_str)
+	if json:
+		search_results = json
 	else:
 		emit_signal("failed_request")
 		vr.log_error('failed to parse search result JSON "%s"' % result_str)

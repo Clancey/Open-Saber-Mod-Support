@@ -47,7 +47,7 @@ func release(controller):
 		_controllers_grabbing.is_empty()
 		_controllers_to_parts.is_empty()
 	else:
-		_controllers_grabbing.remove(_controllers_grabbing.find(controller))
+		_controllers_grabbing.remove_at(_controllers_grabbing.find(controller))
 		_controllers_to_parts.erase(controller)
 	if len(_controllers_grabbing) == 0:
 		reparent_to_rigidbody(

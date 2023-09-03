@@ -34,14 +34,12 @@ func _process(delta):
 			return
 			
 		var packet_str = _peer.get_packet().get_string_from_utf8()
-		var test_json_conv = JSON.new()
-		test_json_conv.parse(packet_str)
-		var json_res = test_json_conv.get_data()
-		if json_res.error != OK:
-			print("SERVER: json_res.error = %d; packet_str = %s" % [json_res.error,packet_str])
+		var json_res = JSON.parse_string(packet_str)
+		if !json_res:
+			print("SERVER: json_res.error = %d; packet_str = %s" % [json_res,packet_str])
 			return
 		
-		var packet = json_res.result
+		var packet = json_res
 		if ! packet.has('type'):
 			print("SERVER: packet does not contain type! %s" % packet)
 			return
