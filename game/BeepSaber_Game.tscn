@@ -15,8 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://qjvg3reomvyk" path="res://game/event_driver.tscn" id="13"]
 [ext_resource type="Sky" path="res://game/background_sky.tres" id="14"]
 [ext_resource type="PackedScene" path="res://OQ_Toolkit/OQ_ARVROrigin/Feature_MixedRealityCapture.tscn" id="15"]
-[ext_resource type="PackedScene" path="res://game/PercentIndicator.tscn" id="16"]
-[ext_resource type="PackedScene" path="res://game/EndScore_panel.tscn" id="17"]
+[ext_resource type="PackedScene" uid="uid://bcdbec8ps1nbs" path="res://game/PercentIndicator.tscn" id="16"]
+[ext_resource type="PackedScene" uid="uid://b7hskiadc7t0r" path="res://game/EndScore_panel.tscn" id="17"]
 [ext_resource type="PackedScene" path="res://game/Pause_Panel.tscn" id="18"]
 [ext_resource type="PackedScene" path="res://game/settings_Panel.tscn" id="19"]
 [ext_resource type="PackedScene" uid="uid://383dbnh6gxd3" path="res://game/ui/BeatSaverPanel/BeatSaverPanel.tscn" id="20"]
@@ -38,7 +38,7 @@ sky = ExtResource("14")
 tonemap_mode = 2
 glow_enabled = true
 glow_intensity = 0.28
-glow_strength = 1.38
+glow_strength = 1.33
 glow_bloom = 0.03
 glow_blend_mode = 1
 glow_hdr_threshold = 1.04

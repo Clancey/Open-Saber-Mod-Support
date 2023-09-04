@@ -32,3 +32,5 @@ res://game/scripts/SwingableRayCast/SwingableRayCast.gd
 res://game/scripts/SwingableRayCast/SwingableRayCast.tscn
 res://game/Bomb/BombMesh.tscn
 res://game/event_driver.gd
+res://game/PercentIndicator.tscn
+res://game/EndScore_panel.tscn
