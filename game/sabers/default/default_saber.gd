@@ -22,7 +22,10 @@ func _ready():
 #	remove_child(imm_geo)
 #	get_tree().get_root().add_child(imm_geo)
 	quickhide()
-	
+	_sub_ready()
+
+func _sub_ready():
+	pass
 #func _exit_tree():
 #	imm_geo.queue_free()
 	

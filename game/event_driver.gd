@@ -1,7 +1,5 @@
 extends Node3D
 
-var _spectrum = null;
-var _spectrum_nodes = [];
 @export var game_path: NodePath;
 var game;
 
@@ -13,30 +11,13 @@ var ring_rot_inv_dir = false;
 func _ready():
 	if not game:
 		game = get_node(game_path);
-	_setup_level();
+	update_colors()
 
 func _process(delta):
 	_update_level(delta);
 	
 # update the level animations
 func _update_level(dt):
-	var VU_COUNT = _spectrum_nodes.size();
-	var FREQ_MAX = 11050.0
-	var MIN_DB = 60.0
-
-	var prev_hz = 100
-	for i in range(1,VU_COUNT+1):
-		var hz = i * FREQ_MAX / VU_COUNT;
-		var f = _spectrum.get_magnitude_for_frequency_range(prev_hz,hz)
-		var energy = clamp((MIN_DB + linear_to_db(f.length()))/MIN_DB,0,1)
-		
-		if _spectrum_nodes[i-1].position.y < energy * 10.0:
-			_spectrum_nodes[i-1].position.y = min(_spectrum_nodes[i-1].position.y+0.2,energy * 10.0);
-		else:
-			_spectrum_nodes[i-1].position.y -= 0.08;
-
-		prev_hz = hz
-		
 	#procces ring rotations
 	if ring_rot_speed > 0:
 		for ring in $Level/rings.get_children():
@@ -44,23 +25,6 @@ func _update_level(dt):
 				var rot = ring_rot_speed
 				if ring_rot_inv_dir: rot *= -1
 				ring.rotate_z((rot * dt) * (float(ring.get_index()+1)/5))
-			
-
-# create the level data that is displayed
-func _setup_level():
-	# create a specrum analyzer
-	AudioServer.add_bus_effect(0, AudioEffectSpectrumAnalyzer.new());
-	_spectrum = AudioServer.get_bus_effect_instance(0,0);
-	# and create some cubes to display it in the level (updated in _update_level(dt))
-	var s = $Level/SpectrumBar;
-	_spectrum_nodes.push_back(s);
-	for  i in range(0, 7):
-		s = s.duplicate()
-		$Level.add_child(s);
-		s.position.x += 2.0;
-		_spectrum_nodes.push_back(s);
-		
-	update_colors()
 
 func update_colors():
 	for i in [0,2,3]:
@@ -124,7 +88,8 @@ func procces_event(data,beat):
 				var val = float(data._value)/8
 				$Level/t3/AnimationPlayer.speed_scale = val
 				$Level/t3/AnimationPlayer.seek(randf_range(0,$Level/t3/AnimationPlayer.current_animation_length),true)
-	
+
+var prev_tweeners = [null,null,null,null,null]
 func change_light_color(type,color=-1,transition_mode=0):
 	var group : Node3D
 	var material = []
@@ -156,7 +121,10 @@ func change_light_color(type,color=-1,transition_mode=0):
 	if not color is Color:
 		for m in material:
 			m.albedo_color = Color.BLACK
-		#tween.stop_all() ###
+		tween.kill()
+		if prev_tweeners[type] != null:
+			prev_tweeners[type].kill()
+			prev_tweeners[type] = null
 		$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%int(type),0.0)
 		group.visible = false
 		return
@@ -167,6 +135,7 @@ func change_light_color(type,color=-1,transition_mode=0):
 	
 	match transition_mode:
 		0:
+			tween.kill()
 			for m in material:
 				m.albedo_color = color
 			$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%int(type),color.v)
@@ -179,6 +148,7 @@ func change_light_color(type,color=-1,transition_mode=0):
 				tween.tween_property(m, "albedo_color", color, 0.3).from(color*3)
 			tween.tween_method(_on_Tween_tween_step.bind(int(type)), color*3, color, 0.3)
 			tween.play()
+			prev_tweeners[type] = tween
 			group.visible = true
 		2:
 			tween.set_parallel()
@@ -189,6 +159,7 @@ func change_light_color(type,color=-1,transition_mode=0):
 			tween.tween_method(_on_Tween_tween_step.bind(int(type)), color*3, Color(0,0,0), 1)
 			group.visible = true
 			tween.play()
+			prev_tweeners[type] = tween
 			await tween.finished
 			if material[0].albedo_color == Color(0,0,0):
 				group.visible = false

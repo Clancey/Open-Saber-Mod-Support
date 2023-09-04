@@ -52,30 +52,39 @@ func _ready():
 	game = get_node(game_path);
 	keyboard = get_node(keyboard_path);
 	$back.visible = false
-	v_scroll.connect("value_changed", Callable(self, "_on_ListV_Scroll_value_changed"))
+	v_scroll.connect("value_changed", _on_ListV_Scroll_value_changed)
 	
 	httpreq.use_threads = true
 	get_tree().get_root().add_child(httpreq)
-	httpreq.connect("request_completed", Callable(self, "_on_HTTPRequest_request_completed"))
+	httpreq.connect("request_completed", _on_HTTPRequest_request_completed)
 	
 	httpdownload.use_threads = true
 	httpdownload.download_chunk_size = 65536
 	get_tree().get_root().add_child(httpdownload)
-	httpdownload.connect("request_completed", Callable(self, "_on_HTTPRequest_download_completed"))
+	httpdownload.connect("request_completed", _on_HTTPRequest_download_completed)
 	
 	httpcoverdownload.use_threads = true
 	httpcoverdownload.download_chunk_size = 65536
 	get_tree().get_root().add_child(httpcoverdownload)
-	httpcoverdownload.connect("request_completed", Callable(self, "_update_cover"))
+	httpcoverdownload.connect("request_completed", _update_cover)
 	
 	httppreviewdownload.use_threads = true
 	httppreviewdownload.download_chunk_size = 65536
 	get_tree().get_root().add_child(httppreviewdownload)
-	httppreviewdownload.connect("request_completed", Callable(self, "_on_preview_download_completed"))
+	httppreviewdownload.connect("request_completed", _on_preview_download_completed)
 	
 	if keyboard != null:
 		keyboard.connect("text_input_enter", Callable(self, "_text_input_enter"))
 		keyboard.connect("text_input_cancel", Callable(self, "_text_input_cancel"))
+		
+	var parent_canvas = self
+	while parent_canvas != null:
+		if parent_canvas is OQ_UI2DCanvas:
+			break
+		parent_canvas = parent_canvas.get_parent()
+	if parent_canvas != null:
+		parent_canvas.visibility_changed.connect(_on_BeatSaverPanel_visibility_changed)
+	
 
 # override hide() method to handle case where UI is inside a OQ_UI2DCanvas
 func _hide():
@@ -102,6 +111,7 @@ func _show():
 		self.visible = true
 	else:
 		parent_canvas.show()
+	_on_BeatSaverPanel_visibility_changed()
 
 func update_list(request):
 	var page = request.page
@@ -406,7 +416,7 @@ func _on_CloseButton_pressed():
 
 var _is_first_show = true
 func _on_BeatSaverPanel_visibility_changed():
-	if visible and _is_first_show:
+	if _is_first_show:
 		# populate initial list of songs with most played on BeatSaver
 		update_list({"type":"list","page":0,"list":"plays"})
 		_is_first_show = false

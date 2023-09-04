@@ -1,14 +1,23 @@
-[gd_scene load_steps=14 format=3 uid="uid://bw3rjal5qlu0p"]
+[gd_scene load_steps=16 format=3 uid="uid://bw3rjal5qlu0p"]
 
 [ext_resource type="Material" uid="uid://chqutrqmle57g" path="res://game/LightSaber.material" id="1"]
 [ext_resource type="AudioStream" uid="uid://bkuquwclng0k" path="res://game/data/lightsaber.ogg" id="2"]
 [ext_resource type="Script" path="res://game/sabers/default/default_saber.gd" id="3"]
+[ext_resource type="Texture2D" uid="uid://drc5tdiltfqnk" path="res://game/data/BeepCube_Emission.png" id="3_b1nd4"]
 [ext_resource type="AudioStream" uid="uid://db2atyh66c0qv" path="res://game/data/beepcube_cut.ogg" id="4"]
 
 [sub_resource type="CapsuleMesh" id="1"]
 resource_local_to_scene = true
 radius = 0.0005
 height = 1.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vuh23"]
+emission_enabled = true
+emission = Color(0.207843, 0.207843, 0.207843, 1)
+emission_energy_multiplier = 0.85
+emission_texture = ExtResource("3_b1nd4")
+uv1_scale = Vector3(0, 1.725, 1)
+uv1_offset = Vector3(-1.25, 0.32, -0.195)
 
 [sub_resource type="CylinderMesh" id="2"]
 top_radius = 0.015
@@ -263,6 +272,7 @@ mesh = SubResource("1")
 
 [node name="Hilt_Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+material_override = SubResource("StandardMaterial3D_vuh23")
 mesh = SubResource("2")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]

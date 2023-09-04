@@ -1,6 +1,6 @@
 [gd_scene load_steps=34 format=3 uid="uid://dqb3ybvpsfcbw"]
 
-[ext_resource type="PackedScene" path="res://game/floor.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://crstqa7v6ehg3" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DCanvas.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://OQ_Toolkit/OQ_ARVROrigin.tscn" id="4"]
@@ -231,7 +231,6 @@ mouse_filter = 1
 
 [node name="BeepCubePool" parent="." instance=ExtResource("27")]
 Scene = ExtResource("30")
-pool_size = 100
 
 [connection signal="area_entered" from="OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead" to="." method="_on_PlayerHead_area_entered"]
 [connection signal="area_exited" from="OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead" to="." method="_on_PlayerHead_area_exited"]

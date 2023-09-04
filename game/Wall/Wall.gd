@@ -30,6 +30,7 @@ func _set_width(value):
 	_mesh.mesh.size.x = width
 	_coll.shape.size.x = width / 2.0
 	_mesh_orientation.position.x = width / 2.0
+	update_material()
 	
 func _set_height(value):
 	height = value
@@ -40,6 +41,7 @@ func _set_height(value):
 	_mesh.mesh.size.y = height
 	_coll.shape.size.y = height / 2.0
 	_mesh_orientation.position.y = height / 2.0
+	update_material()
 	
 func _set_depth(value):
 	depth = value
@@ -50,11 +52,15 @@ func _set_depth(value):
 	_mesh.mesh.size.z = depth
 	_coll.shape.size.z = depth / 2.0
 	_mesh_orientation.position.z = -1 * depth / 2.0
+	update_material()
 
+func update_material():
+	_mesh.material_override.set_shader_parameter("size", Vector3(width, height, depth))
+	
 func duplicate_create():
 	if not _mesh:
 		await self.ready
 	
 	_mesh.mesh = _mesh.mesh.duplicate();
-#	_mesh.mesh.surface_set_material(0, _mesh.mesh.material_override.duplicate());
+	_mesh.material_override = _mesh.material_override.duplicate()
 	_coll.shape = _coll.shape.duplicate()

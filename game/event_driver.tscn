@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://qjvg3reomvyk"]
+[gd_scene load_steps=32 format=3 uid="uid://qjvg3reomvyk"]
 
 [ext_resource type="Script" path="res://game/event_driver.gd" id="2"]
 [ext_resource type="ArrayMesh" uid="uid://cy814avk383k" path="res://game/data/ring.obj" id="3"]
@@ -9,18 +9,6 @@
 [ext_resource type="Texture2D" uid="uid://2tphh7sk1ekp" path="res://game/data/background/bg_4.png" id="8"]
 [ext_resource type="Texture2D" uid="uid://tunmi5sdu42a" path="res://game/data/background/bg_3.png" id="9"]
 [ext_resource type="Texture2D" uid="uid://mtc2b2mfx2wd" path="res://game/data/background/bg_1.png" id="10"]
-
-[sub_resource type="StandardMaterial3D" id="1"]
-shading_mode = 0
-albedo_color = Color(0.992157, 0, 1, 1)
-
-[sub_resource type="StandardMaterial3D" id="2"]
-shading_mode = 0
-albedo_color = Color(0.262745, 0.388235, 0.964706, 1)
-
-[sub_resource type="BoxMesh" id="3"]
-material = SubResource("2")
-size = Vector3(0.5, 2, 0.5)
 
 [sub_resource type="Shader" id="4"]
 code = "shader_type spatial;
@@ -246,6 +234,10 @@ albedo_texture = SubResource("17")
 [sub_resource type="StandardMaterial3D" id="20"]
 shading_mode = 0
 albedo_color = Color(0.0941176, 0.0941176, 0.0941176, 1)
+
+[sub_resource type="StandardMaterial3D" id="1"]
+shading_mode = 0
+albedo_color = Color(0.992157, 0, 1, 1)
 
 [sub_resource type="Animation" id="21"]
 length = 2.0
@@ -576,14 +568,6 @@ script = ExtResource("2")
 
 [node name="Level" type="Node3D" parent="."]
 
-[node name="SpectrumBar" type="Node3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 1, -61)
-
-[node name="Cube" type="MeshInstance3D" parent="Level/SpectrumBar"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
-material_override = SubResource("1")
-mesh = SubResource("3")
-
 [node name="Sphere" type="MeshInstance3D" parent="Level"]
 material_override = SubResource("5")
 mesh = SubResource("6")
@@ -865,6 +849,24 @@ libraries = {
 transform = Transform3D(-3.9101e-06, 0, 3, 0, 1, 0, -24, 0, -4.88762e-07, 0, 0, -24)
 material_override = SubResource("18")
 mesh = SubResource("19")
+
+[node name="line0" type="MeshInstance3D" parent="Level/floor"]
+transform = Transform3D(1, 0, 6.82121e-16, 0, 1, 0, -2.27374e-13, 0, 0.003, 0, 0.01, 0)
+material_override = SubResource("20")
+mesh = SubResource("19")
+skeleton = NodePath("../..")
+
+[node name="line1" type="MeshInstance3D" parent="Level/floor"]
+transform = Transform3D(1, 0, 6.82121e-16, 0, 1, 0, -2.27374e-13, 0, 0.003, 0, 0.01, -0.5)
+material_override = SubResource("20")
+mesh = SubResource("19")
+skeleton = NodePath("../..")
+
+[node name="line2" type="MeshInstance3D" parent="Level/floor"]
+transform = Transform3D(1, 0, 6.82121e-16, 0, 1, 0, -2.27374e-13, 0, 0.003, 0, 0.01, 0.5)
+material_override = SubResource("20")
+mesh = SubResource("19")
+skeleton = NodePath("../..")
 
 [node name="t4" type="Node3D" parent="Level"]
 

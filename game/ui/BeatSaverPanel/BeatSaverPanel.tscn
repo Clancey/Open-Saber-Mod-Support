@@ -233,7 +233,6 @@ text = "Close"
 
 [node name="list_slider" parent="." instance=ExtResource("3")]
 
-[connection signal="visibility_changed" from="." to="." method="_on_BeatSaverPanel_visibility_changed"]
 [connection signal="item_selected" from="ItemList" to="." method="_on_ItemList_item_selected"]
 [connection signal="button_up" from="mode" to="." method="_on_mode_button_up"]
 [connection signal="button_up" from="download" to="." method="_on_download_button_up"]

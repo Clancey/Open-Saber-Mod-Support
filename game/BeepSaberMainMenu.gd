@@ -233,10 +233,10 @@ func _load_cover(cover_path, filename):
 
 func play_preview(filepath_or_buffer, start_time = 0, duration = -1, buffer_data_type_hint = 'ogg'):
 	var stream = null
-	if filepath_or_buffer is String:
+	if filepath_or_buffer is String and buffer_data_type_hint == 'ogg':
 		# get song preview data from file
 		stream = AudioStreamOggVorbis.load_from_file(filepath_or_buffer)
-	elif filepath_or_buffer is PackedByteArray:
+	elif filepath_or_buffer is PackedByteArray and buffer_data_type_hint == 'ogg':
 		# take song preview data from buffer as-is. trust passed type hint
 		stream = AudioStreamOggVorbis.load_from_buffer(filepath_or_buffer)
 	else:
