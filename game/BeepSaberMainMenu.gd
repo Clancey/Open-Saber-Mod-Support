@@ -198,8 +198,27 @@ func _load_song_info(load_path):
 	if (map_info._difficultyBeatmapSets.size() == 0):
 		vr.log_error("No _difficultyBeatmapSets in info.dat");
 		return false;
+	
+	map_info = mix_dificulty_sets(map_info)
+	
 	map_info._path=load_path
 	return map_info;
+
+# mix all the dificult sets into a single one
+func mix_dificulty_sets(map_info):
+	var newset = []
+	for ds in map_info._difficultyBeatmapSets:
+		for d in ds._difficultyBeatmaps:
+			if ds.get("_beatmapCharacteristicName") != "Standard":
+				if not d.has("_customData"):
+					d["_customData"] = {}
+				d["_customData"]["_difficultyLabel"] = (
+					str(ds.get("_beatmapCharacteristicName"))+" "+d["_customData"]["_difficultyLabel"])
+			newset.append(d)
+	map_info._difficultyBeatmapSets[0] = {
+		"_beatmapCharacteristicName": "Lightshow",
+		"_difficultyBeatmaps": newset}
+	return map_info
 
 # callback from ImageUtils when background image loading is complete. if image
 # failed to load, tex will be null
@@ -296,10 +315,17 @@ func _select_song(id):
 	for ii_dif in range(_map_info._difficultyBeatmapSets[0]._difficultyBeatmaps.size()):
 		var current_dif_data = {
 			id = ii_dif,
-			Name = _map_info._difficultyBeatmapSets[0]._difficultyBeatmaps[ii_dif]._difficulty
+			Name = _map_info._difficultyBeatmapSets[0]._difficultyBeatmaps[ii_dif]._difficulty,
+			DisplayName = ""
 		}
+		if (_map_info._difficultyBeatmapSets[0]._difficultyBeatmaps[ii_dif].has("_customData") and
+			_map_info._difficultyBeatmapSets[0]._difficultyBeatmaps[ii_dif]._customData.has("_difficultyLabel")):
+				current_dif_data.DisplayName = _map_info._difficultyBeatmapSets[0]._difficultyBeatmaps[ii_dif]._customData._difficultyLabel
+		if current_dif_data.DisplayName.is_empty():
+			current_dif_data.DisplayName = current_dif_data.Name
 		var BMPS = _map_info._difficultyBeatmapSets[0]._difficultyBeatmaps
-		$DifficultyMenu.add_item(current_dif_data.Name)
+		$DifficultyMenu.add_item(current_dif_data.DisplayName)
+		$DifficultyMenu.set_item_tooltip($DifficultyMenu.get_item_count()-1, current_dif_data.Name + " / " + current_dif_data.DisplayName)
 		$DifficultyMenu.set_item_metadata($DifficultyMenu.get_item_count()-1,current_dif_data)
 	
 	_select_difficulty(0)
@@ -354,7 +380,7 @@ func _load_map_and_start():
 		vr.log_error("Could not read map data from " + map_filename);
 	
 	#print(info);
-	_beepsaber.start_map(_map_info, map_data);
+	_beepsaber.start_map(_map_info, map_data, _map_difficulty);
 	
 	return true;
 

@@ -5,6 +5,7 @@ var game;
 
 var ring_rot_speed = 0.0;
 var ring_rot_inv_dir = false;
+var rings_in = false;
 
 @export var disabled = false
 
@@ -76,10 +77,12 @@ func procces_event(data,beat):
 				ringtween.play()
 			9:
 				$Level/rings/AnimationPlayer.stop(false)
-				if $Level/rings/AnimationPlayer.current_animation == "out":
+				if !rings_in:
 					$Level/rings/AnimationPlayer.play("in")
+					rings_in = true
 				else:
 					$Level/rings/AnimationPlayer.play("out")
+					rings_in = false
 					
 			12:
 				var val = float(data._value)/8

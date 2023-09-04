@@ -902,12 +902,12 @@ skeleton = NodePath("../..")
 [node name="t4" type="Node3D" parent="Level"]
 
 [node name="Bar1" type="MeshInstance3D" parent="Level/t4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 2, 3, 0, -23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1.49852, 3, 0, -23.8955)
 material_override = SubResource("1")
 mesh = SubResource("10")
 
 [node name="Bar2" type="MeshInstance3D" parent="Level/t4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 2, -3, 0, -23)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1.49852, -3, 0, -23.8955)
 material_override = SubResource("1")
 mesh = SubResource("10")
 

@@ -33,3 +33,6 @@ res://game/BeepSaberMainMenu.tscn
 res://game/GodotSplash.tscn
 res://game/BeepSaber_Game.gd
 res://game/scripts/SwingableRayCast/SwingableRayCast.gd
+res://game/event_driver.gd
+res://game/BeepSaberMainMenu.gd
+res://game/BeepCube_SliceParticles.gd

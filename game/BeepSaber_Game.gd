@@ -46,8 +46,11 @@ enum GameState {
 
 @onready var menu = $MainMenu_OQ_UI2DCanvas.ui_control
 
-var COLOR_LEFT := Color(1.0, 0.1, 0.1, 1.0);
-var COLOR_RIGHT := Color(0.1, 0.1, 1.0, 1.0);
+var COLOR_LEFT := Color(1.0, 0.1, 0.1, 1.0) : get = _get_color_left
+var COLOR_RIGHT := Color(0.1, 0.1, 1.0, 1.0) : get = _get_color_right
+
+var COLOR_LEFT_ONCE = null;
+var COLOR_RIGHT_ONCE = null;
 
 const CUBE_HEIGHT_OFFSET = 0.4
 const WALL_HEIGHT = 3.0
@@ -156,6 +159,7 @@ func restart_map():
 
 	_display_points();
 	$event_driver.update_colors()
+	update_saber_colors()
 	if _current_map._events.size() > 0:
 		$event_driver.set_all_off()
 	else:
@@ -164,15 +168,37 @@ func restart_map():
 	_clear_track()
 	_transition_game_state(GameState.Playing)
 
-func start_map(info, map_data):
+func start_map(info, map_data, map_difficulty = ""):
 	_current_map = map_data;
 	_current_info = info;
+	
+	set_colors_from_map(info, map_difficulty)
+	
 	print("loading: ",info._path + info._songFilename)
 	var stream = AudioStreamOggVorbis.load_from_file(info._path + info._songFilename)
 	
 	song_player.stream = stream;
 	restart_map();
-	
+
+func set_colors_from_map(info, map_difficulty):
+	COLOR_LEFT_ONCE = null
+	COLOR_RIGHT_ONCE = null
+	var roots = []
+	if info.has("_customData"): 
+		roots.append(info["_customData"])
+	if info["_difficultyBeatmapSets"][0]["_difficultyBeatmaps"][map_difficulty].has("_customData"): 
+		roots.append(info["_difficultyBeatmapSets"][0]["_difficultyBeatmaps"][map_difficulty]["_customData"])
+	for r in roots:
+		if r.has("_envColorRightBoost") and r.has("_envColorLeftBoost"):
+			COLOR_LEFT_ONCE = Color(
+				r["_envColorLeftBoost"].get("r",COLOR_LEFT.r),
+				r["_envColorLeftBoost"].get("g",COLOR_LEFT.g),
+				r["_envColorLeftBoost"].get("b",COLOR_LEFT.b))
+			COLOR_RIGHT_ONCE = Color(
+				r["_envColorRightBoost"].get("r",COLOR_RIGHT.r),
+				r["_envColorRightBoost"].get("g",COLOR_RIGHT.g),
+				r["_envColorRightBoost"].get("b",COLOR_RIGHT.b))
+
 # This function will transitioning the game from it's current state into
 # the provided 'next_state'.
 func _transition_game_state(next_state):
@@ -221,6 +247,9 @@ func _on_game_state_entered(state):
 			right_ui_raycast.visible = true;
 			highscore_keyboard.visible = false;
 			online_search_keyboard.visible = false;
+			
+			COLOR_LEFT_ONCE = null;
+			COLOR_RIGHT_ONCE = null;
 		GameState.Settings:
 			$MainMenu_OQ_UI2DCanvas.visible = false;
 			$Settings_canvas.visible = true;
@@ -442,6 +471,12 @@ func _spawn_note(note, current_beat):
 	else:
 		# spawn bombs by adding to track
 		track.add_child(note_node);
+
+func _get_color_left():
+	return COLOR_LEFT_ONCE if COLOR_LEFT_ONCE != null else COLOR_LEFT
+
+func _get_color_right():
+	return COLOR_RIGHT_ONCE if COLOR_RIGHT_ONCE != null else COLOR_RIGHT
 
 # constants used to interpret the '_type' field in map obstacles
 const WALL_TYPE_FULL_HEIGHT = 0;
@@ -959,7 +994,6 @@ func _on_LeftLightSaber_bomb_collide(bomb):
 	# song starts to play again
 	if song_player.playing:
 		_reset_combo()
-		print(bomb)
 		bomb.queue_free()
 		left_controller.simple_rumble(1.0, 0.15);
 
