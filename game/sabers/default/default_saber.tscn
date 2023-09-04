@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bw3rjal5qlu0p"]
+[gd_scene load_steps=14 format=3 uid="uid://bw3rjal5qlu0p"]
 
 [ext_resource type="Material" uid="uid://chqutrqmle57g" path="res://game/LightSaber.material" id="1"]
 [ext_resource type="AudioStream" uid="uid://bkuquwclng0k" path="res://game/data/lightsaber.ogg" id="2"]
@@ -240,28 +240,6 @@ _data = {
 "Show": SubResource("6")
 }
 
-[sub_resource type="Shader" id="7"]
-code = "shader_type spatial;
-render_mode cull_disabled, unshaded;
-
-uniform vec4 color;
-uniform int size;
-
-void fragment(){
-	ALPHA_SCISSOR_THRESHOLD = 0.5;
-	if (int((SCREEN_UV.x*1000.0)+(SCREEN_UV.y*1000.0))%size==0){
-		ALPHA = 0.0;
-	}else{
-		ALBEDO = color.rgb;
-	}
-}"
-
-[sub_resource type="ShaderMaterial" id="8"]
-render_priority = 0
-shader = SubResource("7")
-shader_parameter/color = null
-shader_parameter/size = 2
-
 [node name="default_saber" type="Node3D"]
 script = ExtResource("3")
 
@@ -283,17 +261,6 @@ volume_db = -6.0
 libraries = {
 "": SubResource("AnimationLibrary_ox0xw")
 }
-
-[node name="ImmediateMesh" type="ImmediateMesh" parent="."]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-editor_description = ""
-material_override = SubResource("8")
-script = null
 
 [node name="base" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0492174, 0)

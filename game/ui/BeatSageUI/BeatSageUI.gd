@@ -180,8 +180,7 @@ func _on_BeatSageRequest_youtube_metadata_available(metadata):
 		# TODO leave default thumbnail
 		song_cover.texture = null
 	else:
-		var img_tex := ImageTexture.new()
-		img_tex.create_from_image(img)
+		var img_tex = ImageTexture.create_from_image(img)
 		song_cover.texture = img_tex
 
 func _on_BeatSageRequest_youtube_metadata_request_failed():

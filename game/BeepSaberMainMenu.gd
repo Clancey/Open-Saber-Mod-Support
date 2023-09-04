@@ -78,7 +78,7 @@ func _load_playlists():
 				var copy_file_name = copy.get_next()
 				while copy_file_name != "":
 					var copy_new_dir = new_dir+"/"+copy_file_name;
-					print(copy_new_dir)
+					#print(copy_new_dir)
 					dir.copy(copy_new_dir,bspath+"Songs/"+file_name+"/"+copy_file_name)
 					copy_file_name = copy.get_next();
 			file_name = dir.get_next();
@@ -354,7 +354,6 @@ func _load_map_and_start():
 		vr.log_error("Could not read map data from " + map_filename);
 	
 	#print(info);
-
 	_beepsaber.start_map(_map_info, map_data);
 	
 	return true;

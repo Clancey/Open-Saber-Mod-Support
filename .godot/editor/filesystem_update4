@@ -8,6 +8,7 @@ res://game/Wall/wall_new.material
 res://game/BlackWhiteThem.tres
 res://OQ_Toolkit/OQ_ARVROrigin/scripts/MovementVignette_CanvasItem.gdshader
 res://game/BeepCube_Cut.gdshader
+res://game/sabers/default/tail.gdshader
 res://game/BeepSaber_Game.tscn
 res://game/event_driver.tscn
 res://game/Wall/Wall.tscn
@@ -30,4 +31,5 @@ res://game/EndScore_panel.tscn
 res://game/PercentIndicator.tscn
 res://game/BeepSaberMainMenu.tscn
 res://game/GodotSplash.tscn
-res://game/vr_slider.gd
+res://game/BeepSaber_Game.gd
+res://game/scripts/SwingableRayCast/SwingableRayCast.gd

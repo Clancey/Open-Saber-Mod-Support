@@ -35,23 +35,24 @@ signal signal_controller_type_changed;
 
 var bid_to_bname = [
 	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
-	"grip", #0
+	"by_button", #1
+	"grip", #2
+	"select_button", #3
+	"grip", #4
+	"ax_button", #5
+	"by_button", #6
+	"ax_button", #7
+	"grip", #8
+	"grip", #9
+	"grip", #10
+	"trigger", #11
+	"aim_pose", #12
+	"grip", #13
+	"primary_click", #14
+	"trigger", #15
 	"grip", #16
 ]
+
 
 # Sets up everything as it is expected by the helper scripts in the vr singleton
 func _enter_tree():

@@ -160,7 +160,7 @@ func restart_map():
 		$event_driver.set_all_off()
 	else:
 		$event_driver.set_all_on()
-
+	
 	_clear_track()
 	_transition_game_state(GameState.Playing)
 
@@ -168,13 +168,8 @@ func start_map(info, map_data):
 	_current_map = map_data;
 	_current_info = info;
 	print("loading: ",info._path + info._songFilename)
-	print(info._songFilename)
 	var stream = AudioStreamOggVorbis.load_from_file(info._path + info._songFilename)
-	#var seq = OggPacketSequence.new()
 	
-#	seq.packet_data = snd_file.get_buffer(snd_file.get_length())
-#	stream.packet_sequence = seq
-#	snd_file.close()
 	song_player.stream = stream;
 	restart_map();
 	
@@ -964,6 +959,7 @@ func _on_LeftLightSaber_bomb_collide(bomb):
 	# song starts to play again
 	if song_player.playing:
 		_reset_combo()
+		print(bomb)
 		bomb.queue_free()
 		left_controller.simple_rumble(1.0, 0.15);
 

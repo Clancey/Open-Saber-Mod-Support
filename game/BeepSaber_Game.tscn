@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=33 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
@@ -14,7 +14,6 @@
 [ext_resource type="PackedScene" uid="uid://cisgyiarwaf2i" path="res://OQ_Toolkit/OQ_ARVRController/Feature_UIRayCast.tscn" id="12"]
 [ext_resource type="PackedScene" uid="uid://qjvg3reomvyk" path="res://game/event_driver.tscn" id="13"]
 [ext_resource type="Sky" path="res://game/background_sky.tres" id="14"]
-[ext_resource type="PackedScene" path="res://OQ_Toolkit/OQ_ARVROrigin/Feature_MixedRealityCapture.tscn" id="15"]
 [ext_resource type="PackedScene" uid="uid://bcdbec8ps1nbs" path="res://game/PercentIndicator.tscn" id="16"]
 [ext_resource type="PackedScene" uid="uid://b7hskiadc7t0r" path="res://game/EndScore_panel.tscn" id="17"]
 [ext_resource type="PackedScene" path="res://game/Pause_Panel.tscn" id="18"]
@@ -80,6 +79,7 @@ tracker = &"left_hand"
 autoload_model = false
 
 [node name="LeftLightSaber" parent="OQ_ARVROrigin/OQ_LeftController" instance=ExtResource("10")]
+collision_layer = 0
 
 [node name="Feature_UIRayCast" parent="OQ_ARVROrigin/OQ_LeftController" instance=ExtResource("12")]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
@@ -93,6 +93,7 @@ tracker = &"right_hand"
 autoload_model = false
 
 [node name="RightLightSaber" parent="OQ_ARVROrigin/OQ_RightController" instance=ExtResource("10")]
+collision_layer = 0
 type = 1
 
 [node name="Feature_UIRayCast" parent="OQ_ARVROrigin/OQ_RightController" instance=ExtResource("12")]
@@ -102,8 +103,6 @@ adjust_left_right = false
 ui_raycast_visible_button = -1
 
 [node name="Feature_VRSimulator" parent="OQ_ARVROrigin" instance=ExtResource("6")]
-
-[node name="Feature_MixedRealityCapture" parent="OQ_ARVROrigin" instance=ExtResource("15")]
 
 [node name="Track" type="Node3D" parent="."]
 
