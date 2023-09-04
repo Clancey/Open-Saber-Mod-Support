@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://ku0r0adowu8p"
+path="res://.godot/imported/endpath.obj-abc8f7c9e14a566b5f2c058b3f627c48.mesh"
+
+[deps]
+
+files=["res://.godot/imported/endpath.obj-abc8f7c9e14a566b5f2c058b3f627c48.mesh"]
+
+source_file="res://game/data/background/endpath.obj"
+dest_files=["res://.godot/imported/endpath.obj-abc8f7c9e14a566b5f2c058b3f627c48.mesh", "res://.godot/imported/endpath.obj-abc8f7c9e14a566b5f2c058b3f627c48.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

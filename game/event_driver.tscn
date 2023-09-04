@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://qjvg3reomvyk"]
+[gd_scene load_steps=36 format=3 uid="uid://qjvg3reomvyk"]
 
 [ext_resource type="Script" path="res://game/event_driver.gd" id="2"]
 [ext_resource type="ArrayMesh" uid="uid://cy814avk383k" path="res://game/data/ring.obj" id="3"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dni5frh7n4p12" path="res://game/data/background/bg_2.png" id="6"]
 [ext_resource type="Texture2D" uid="uid://djaa4fvy6pao" path="res://game/data/background/bg_0.png" id="7"]
 [ext_resource type="Texture2D" uid="uid://2tphh7sk1ekp" path="res://game/data/background/bg_4.png" id="8"]
+[ext_resource type="ArrayMesh" uid="uid://ku0r0adowu8p" path="res://game/data/background/endpath.obj" id="8_krd13"]
 [ext_resource type="Texture2D" uid="uid://tunmi5sdu42a" path="res://game/data/background/bg_3.png" id="9"]
 [ext_resource type="Texture2D" uid="uid://mtc2b2mfx2wd" path="res://game/data/background/bg_1.png" id="10"]
 
@@ -37,14 +38,21 @@ uniform lowp float bg_2_intensity_mult = 1.0;
 uniform lowp float bg_3_intensity_mult = 1.0;
 uniform lowp float bg_4_intensity_mult = 1.0;
 
+vec3 get_from_map(sampler2D maptx, vec2 uv, float intensity, vec3 albedo, vec4 tint){
+	vec3 map = texture(maptx,uv).rgb;
+	albedo *= clamp((map+1.0) - (1.0*(intensity*1.4)), 0.8, 1.0);
+	albedo += (map*intensity)*tint.rgb;
+	return albedo;
+}
+
 void fragment(){
 	ALBEDO = texture(bg_base,UV).rgb;
 	vec2 xinv_uv = vec2(-UV.x,UV.y);
-	if (bg_0_intensity>0.0){ALBEDO += (texture(bg_0,xinv_uv).rgb*(bg_0_intensity*bg_0_intensity_mult))*bg_0_tint.rgb;}
-	if (bg_1_intensity>0.0){ALBEDO += (texture(bg_1,xinv_uv).rgb*(bg_1_intensity*bg_1_intensity_mult))*bg_1_tint.rgb;}
-	if (bg_2_intensity>0.0){ALBEDO += (texture(bg_2,xinv_uv).rgb*(bg_2_intensity*bg_2_intensity_mult))*bg_2_tint.rgb;}
-	if (bg_3_intensity>0.0){ALBEDO += (texture(bg_3,xinv_uv).rgb*(bg_3_intensity*bg_3_intensity_mult))*bg_3_tint.rgb;}
-	if (bg_4_intensity>0.0){ALBEDO += (texture(bg_4,xinv_uv).rgb*(bg_4_intensity*bg_4_intensity_mult))*bg_4_tint.rgb;}
+	if (bg_0_intensity>0.0){ALBEDO = get_from_map(bg_0, xinv_uv, (bg_0_intensity*bg_0_intensity_mult), ALBEDO, bg_0_tint);}
+	if (bg_1_intensity>0.0){ALBEDO = get_from_map(bg_1, xinv_uv, (bg_1_intensity*bg_1_intensity_mult), ALBEDO, bg_1_tint);}
+	if (bg_2_intensity>0.0){ALBEDO = get_from_map(bg_2, xinv_uv, (bg_2_intensity*bg_2_intensity_mult), ALBEDO, bg_2_tint);}
+	if (bg_3_intensity>0.0){ALBEDO = get_from_map(bg_3, xinv_uv, (bg_3_intensity*bg_3_intensity_mult), ALBEDO, bg_3_tint);}
+	if (bg_4_intensity>0.0){ALBEDO = get_from_map(bg_4, xinv_uv, (bg_4_intensity*bg_4_intensity_mult), ALBEDO, bg_4_tint);}
 	ALBEDO.rgb = vec3(pow(ALBEDO.r, contrast), pow(ALBEDO.g, contrast), pow(ALBEDO.b, contrast));
 }"
 
@@ -58,10 +66,10 @@ shader_parameter/bg_3_intensity = 0.0
 shader_parameter/bg_4_intensity = 0.0
 shader_parameter/contrast = 1.72
 shader_parameter/bg_0_tint = Vector4(1, 0, 0, 0)
-shader_parameter/bg_1_tint = null
-shader_parameter/bg_2_tint = null
-shader_parameter/bg_3_tint = null
-shader_parameter/bg_4_tint = null
+shader_parameter/bg_1_tint = Vector4(1, 0, 0, 0)
+shader_parameter/bg_2_tint = Vector4(1, 0, 0, 0)
+shader_parameter/bg_3_tint = Vector4(1, 0, 0, 0)
+shader_parameter/bg_4_tint = Vector4(1, 0, 0, 0)
 shader_parameter/bg_0_intensity_mult = 0.25
 shader_parameter/bg_1_intensity_mult = 0.15
 shader_parameter/bg_2_intensity_mult = 0.25
@@ -76,8 +84,8 @@ shader_parameter/bg_4 = ExtResource("8")
 
 [sub_resource type="SphereMesh" id="6"]
 flip_faces = true
-radius = 512.0
-height = 256.0
+radius = 100.0
+height = 200.0
 
 [sub_resource type="StandardMaterial3D" id="8"]
 shading_mode = 0
@@ -216,9 +224,27 @@ _data = {
 "laser_anim": SubResource("15")
 }
 
+[sub_resource type="Gradient" id="Gradient_0q6si"]
+offsets = PackedFloat32Array(0.532895, 0.8125, 0.907895)
+colors = PackedColorArray(1, 0.952381, 0.952381, 1, 0.387324, 0.36888, 0.36888, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_0et1e"]
+gradient = SubResource("Gradient_0q6si")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yn705"]
+transparency = 1
+blend_mode = 3
+shading_mode = 0
+disable_ambient_light = true
+albedo_texture = SubResource("GradientTexture2D_0et1e")
+
+[sub_resource type="StandardMaterial3D" id="1"]
+shading_mode = 0
+albedo_color = Color(0.992157, 0, 1, 1)
+
 [sub_resource type="Gradient" id="16"]
 offsets = PackedFloat32Array(0, 0.660256, 1)
-colors = PackedColorArray(0, 0, 0, 1, 0.1875, 0.1875, 0.1875, 1, 0, 0, 0, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.0729167, 0.0729167, 0.0729167, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="17"]
 gradient = SubResource("16")
@@ -234,10 +260,6 @@ albedo_texture = SubResource("17")
 [sub_resource type="StandardMaterial3D" id="20"]
 shading_mode = 0
 albedo_color = Color(0.0941176, 0.0941176, 0.0941176, 1)
-
-[sub_resource type="StandardMaterial3D" id="1"]
-shading_mode = 0
-albedo_color = Color(0.992157, 0, 1, 1)
 
 [sub_resource type="Animation" id="21"]
 length = 2.0
@@ -844,6 +866,13 @@ autoplay = "laser_anim"
 libraries = {
 "": SubResource("AnimationLibrary_x47bd")
 }
+
+[node name="Endpath" type="MeshInstance3D" parent="Level"]
+transform = Transform3D(-1.61803e-07, 0, -3.00028, 0, 2.05989, 0, 3.70161, 0, -1.31146e-07, 0, 0, -84.8588)
+mesh = ExtResource("8_krd13")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_yn705")
+surface_material_override/1 = SubResource("1")
 
 [node name="floor" type="MeshInstance3D" parent="Level"]
 transform = Transform3D(-3.9101e-06, 0, 3, 0, 1, 0, -24, 0, -4.88762e-07, 0, 0, -24)
