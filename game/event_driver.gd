@@ -89,6 +89,11 @@ func procces_event(data,beat):
 				$Level/t3/AnimationPlayer.speed_scale = val
 				$Level/t3/AnimationPlayer.seek(randf_range(0,$Level/t3/AnimationPlayer.current_animation_length),true)
 
+func stop_prev_tween(type):
+	if prev_tweeners[type] != null:
+		prev_tweeners[type].kill()
+		prev_tweeners[type] = null
+
 var prev_tweeners = [null,null,null,null,null]
 func change_light_color(type,color=-1,transition_mode=0):
 	var group : Node3D
@@ -122,10 +127,8 @@ func change_light_color(type,color=-1,transition_mode=0):
 		for m in material:
 			m.albedo_color = Color.BLACK
 		tween.kill()
-		if prev_tweeners[type] != null:
-			prev_tweeners[type].kill()
-			prev_tweeners[type] = null
-		$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%int(type),0.0)
+		stop_prev_tween(type)
+		_on_Tween_tween_step(Color.BLACK, type)
 		group.visible = false
 		return
 	else:
@@ -135,12 +138,14 @@ func change_light_color(type,color=-1,transition_mode=0):
 	
 	match transition_mode:
 		0:
+			stop_prev_tween(type)
 			tween.kill()
 			for m in material:
 				m.albedo_color = color
-			$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%int(type),color.v)
+			_on_Tween_tween_step(color, type)
 			group.visible = true
 		1:
+			stop_prev_tween(type)
 			tween.set_parallel()
 			tween.set_trans(Tween.TRANS_LINEAR)
 			tween.set_ease(Tween.EASE_OUT)
@@ -151,6 +156,7 @@ func change_light_color(type,color=-1,transition_mode=0):
 			prev_tweeners[type] = tween
 			group.visible = true
 		2:
+			stop_prev_tween(type)
 			tween.set_parallel()
 			tween.set_trans(Tween.TRANS_QUAD)
 			tween.set_ease(Tween.EASE_IN)
@@ -163,7 +169,8 @@ func change_light_color(type,color=-1,transition_mode=0):
 			await tween.finished
 			if material[0].albedo_color == Color(0,0,0):
 				group.visible = false
-			
+				tween.kill()
+				_on_Tween_tween_step(Color.BLACK, type)
 
 func _on_Tween_tween_step(value : Color, id):
 	if id == null: return

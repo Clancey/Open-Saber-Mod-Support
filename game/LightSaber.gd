@@ -75,6 +75,7 @@ func set_collision_mechanism(use_swingable_raycast: bool):
 	else:
 		_swing_cast._set_collision_mask_value(CollisionLayerConstants.RightNote_bit, use_swingable_raycast)
 		set_collision_mask_value(CollisionLayerConstants.RightNote_bit, ! use_swingable_raycast)
+	_swing_cast._set_collision_mask_value(CollisionLayerConstants.Bombs_bit, true)
 
 func _ready():
 #	set_saber("res://game/sabers/particles/particles_saber.tscn")
@@ -116,10 +117,9 @@ func hit(cube):
 	emit_signal("saber_hit",cube,time_offset)
 	
 func _handle_area_collided(area):
-	#i dont know why this works :/
-	if (area.collision_layer*2) & CollisionLayerConstants.AllNotes_mask:
+	if area.collision_layer*2 & CollisionLayerConstants.AllNotes_mask:
 		emit_signal("cube_collide",area.get_parent().get_parent())
-	elif area.collision_layer & CollisionLayerConstants.Bombs_mask:
+	elif area.collision_layer*2 & CollisionLayerConstants.Bombs_mask:
 		emit_signal("bomb_collide",area.get_parent().get_parent())
 
 func _on_SwingableRayCast_area_collided(area):

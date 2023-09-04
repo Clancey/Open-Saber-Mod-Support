@@ -23,7 +23,7 @@
 [ext_resource type="PackedScene" uid="uid://spe4kya7ntv8" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DKeyboard.tscn" id="21"]
 [ext_resource type="PackedScene" path="res://game/Points_label_driver.tscn" id="22"]
 [ext_resource type="PackedScene" uid="uid://cpwxp083qm1jq" path="res://game/HighscorePanel.tscn" id="23"]
-[ext_resource type="PackedScene" path="res://game/Bomb/Bomb.tscn" id="24"]
+[ext_resource type="PackedScene" uid="uid://6du64wi28yi6" path="res://game/Bomb/Bomb.tscn" id="24"]
 [ext_resource type="PackedScene" path="res://game/ui/NameSelector/NameSelector.tscn" id="25"]
 [ext_resource type="PackedScene" path="res://game/ui/YouTubeUI/YouTubeUI.tscn" id="26"]
 [ext_resource type="PackedScene" uid="uid://cjirr6sfxfhhd" path="res://game/scripts/ScenePool/ScenePool.tscn" id="27"]

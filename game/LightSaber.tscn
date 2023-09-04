@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bw3rjal5qlu0p" path="res://game/sabers/default/default_saber.tscn" id="1"]
 [ext_resource type="Script" path="res://game/LightSaber.gd" id="2"]
-[ext_resource type="PackedScene" path="res://game/scripts/SwingableRayCast/SwingableRayCast.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://chkilqvhyqt37" path="res://game/scripts/SwingableRayCast/SwingableRayCast.tscn" id="3"]
 
 [sub_resource type="CylinderShape3D" id="1"]
 height = 1.24761
@@ -193,7 +193,6 @@ collision_mask = 8
 [node name="SwingableRayCast" parent="." instance=ExtResource("3")]
 exclude_parent = false
 target_position = Vector3(0, 1.26, 0)
-collision_mask = 32
 collide_with_areas = true
 collide_with_bodies = false
 

@@ -868,6 +868,18 @@ material_override = SubResource("20")
 mesh = SubResource("19")
 skeleton = NodePath("../..")
 
+[node name="line3" type="MeshInstance3D" parent="Level/floor"]
+transform = Transform3D(1, 0, 6.82121e-16, 0, 1, 0, -2.27374e-13, 0, 0.003, 0, 0.01, 1)
+material_override = SubResource("20")
+mesh = SubResource("19")
+skeleton = NodePath("../..")
+
+[node name="line4" type="MeshInstance3D" parent="Level/floor"]
+transform = Transform3D(1, 0, 6.82121e-16, 0, 1, 0, -2.27374e-13, 0, 0.003, 0, 0.01, -1)
+material_override = SubResource("20")
+mesh = SubResource("19")
+skeleton = NodePath("../..")
+
 [node name="t4" type="Node3D" parent="Level"]
 
 [node name="Bar1" type="MeshInstance3D" parent="Level/t4"]

@@ -26,3 +26,9 @@ res://OQ_Toolkit/OQ_UI2D/OQ_UI2DCanvas.tscn
 res://game/floor.tscn
 res://game/floor.gd
 res://game/scripts/ScenePool/ScenePool.gd
+res://game/LightSaber.gd
+res://game/Bomb/Bomb.tscn
+res://game/scripts/SwingableRayCast/SwingableRayCast.gd
+res://game/scripts/SwingableRayCast/SwingableRayCast.tscn
+res://game/Bomb/BombMesh.tscn
+res://game/event_driver.gd
