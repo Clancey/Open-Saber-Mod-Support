@@ -244,8 +244,10 @@ volume_db = -60.0
 one_shot = true
 
 [node name="song_vr_slider" parent="." instance=ExtResource("6")]
+scroll_node_path = NodePath("../SongsMenu")
 
 [node name="diff_vr_slider" parent="." instance=ExtResource("6")]
+scroll_node_path = NodePath("../DifficultyMenu")
 
 [connection signal="pressed" from="Play_Button" to="." method="_on_Play_Button_pressed"]
 [connection signal="button_up" from="Delete_Button" to="." method="_on_Delete_Button_button_up"]

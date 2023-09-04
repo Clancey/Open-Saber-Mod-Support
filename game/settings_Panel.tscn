@@ -1,74 +1,87 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=15 format=3 uid="uid://biylg2wsontn3"]
 
-[ext_resource path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" type="FontFile" id=1]
-[ext_resource path="res://game/settings_Panel.gd" type="Script" id=2]
-[ext_resource path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" type="FontFile" id=3]
-[ext_resource path="res://game/vr_slider.tscn" type="PackedScene" id=4]
+[ext_resource type="FontFile" uid="uid://01k27lk2a4bw" path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" id="1"]
+[ext_resource type="Script" path="res://game/settings_Panel.gd" id="2"]
+[ext_resource type="FontFile" uid="uid://cdsnr8tscm8y6" path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" id="3"]
+[ext_resource type="PackedScene" uid="uid://dtipmx5ep1dkk" path="res://game/vr_slider.tscn" id="4"]
 
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0, 0, 0, 1 )
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(0, 0, 0, 1)
 border_width_left = 8
 border_width_top = 8
 border_width_right = 8
 border_width_bottom = 8
-border_color = Color( 1, 1, 1, 1 )
+border_color = Color(1, 1, 1, 1)
 
-[sub_resource type="FontFile" id=2]
-size = 32
-font_data = ExtResource( 1 )
+[sub_resource type="FontFile" id="2"]
+fallbacks = Array[Font]([ExtResource("1")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
-[sub_resource type="Theme" id=3]
-default_font = SubResource( 2 )
+[sub_resource type="Theme" id="3"]
+default_font = SubResource("2")
 
-[sub_resource type="FontFile" id=4]
-size = 30
-font_data = ExtResource( 3 )
+[sub_resource type="FontFile" id="4"]
+fallbacks = Array[Font]([ExtResource("3")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
-[sub_resource type="Theme" id=5]
-default_font = SubResource( 4 )
+[sub_resource type="Theme" id="5"]
+default_font = SubResource("4")
 
-[sub_resource type="FontFile" id=6]
-size = 32
-font_data = ExtResource( 3 )
+[sub_resource type="FontFile" id="6"]
+fallbacks = Array[Font]([ExtResource("3")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
-[sub_resource type="Theme" id=7]
-default_font = SubResource( 6 )
+[sub_resource type="Theme" id="7"]
+default_font = SubResource("6")
 
-[sub_resource type="StyleBoxFlat" id=8]
-bg_color = Color( 0.14902, 0.14902, 0.14902, 1 )
+[sub_resource type="StyleBoxFlat" id="10"]
+bg_color = Color(0, 0, 0, 1)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
 border_width_bottom = 5
-border_color = Color( 1, 1, 1, 1 )
+border_color = Color(1, 1, 1, 1)
 
-[sub_resource type="StyleBoxFlat" id=9]
-bg_color = Color( 0.270588, 0.270588, 0.270588, 1 )
+[sub_resource type="StyleBoxFlat" id="8"]
+bg_color = Color(0.14902, 0.14902, 0.14902, 1)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
 border_width_bottom = 5
-border_color = Color( 1, 1, 1, 1 )
+border_color = Color(1, 1, 1, 1)
 
-[sub_resource type="StyleBoxFlat" id=10]
-bg_color = Color( 0, 0, 0, 1 )
+[sub_resource type="StyleBoxFlat" id="9"]
+bg_color = Color(0.270588, 0.270588, 0.270588, 1)
 border_width_left = 5
 border_width_top = 5
 border_width_right = 5
 border_width_bottom = 5
-border_color = Color( 1, 1, 1, 1 )
+border_color = Color(1, 1, 1, 1)
 
 [node name="settings_Panel" type="Panel"]
 offset_right = 896.0
 offset_bottom = 576.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource( 1 )
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme_override_styles/panel = SubResource("1")
+script = ExtResource("2")
 
 [node name="settings" type="Label" parent="."]
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -77,252 +90,151 @@ offset_left = -432.0
 offset_top = -272.0
 offset_right = 429.0
 offset_bottom = -229.0
-theme = SubResource( 3 )
+theme = SubResource("3")
 text = "Settings"
-align = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 0
 offset_left = 27.0
 offset_top = 71.0
 offset_right = 867.0
 offset_bottom = 481.0
-scroll_horizontal_enabled = false
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="VBox" type="VBoxContainer" parent="ScrollContainer"]
-offset_right = 828.0
-offset_bottom = 569.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="d_background" type="CheckButton" parent="ScrollContainer/VBox"]
-offset_right = 828.0
-offset_bottom = 51.0
-theme = SubResource( 3 )
-pressed = true
+layout_mode = 2
+theme = SubResource("3")
 text = "Dynamic Background: "
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="cut_blocks" type="CheckButton" parent="ScrollContainer/VBox"]
-offset_top = 55.0
-offset_right = 828.0
-offset_bottom = 106.0
-theme = SubResource( 3 )
-pressed = true
+layout_mode = 2
+theme = SubResource("3")
 text = "Cut Blocks: "
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="glare" type="CheckButton" parent="ScrollContainer/VBox"]
-offset_top = 110.0
-offset_right = 828.0
-offset_bottom = 161.0
-theme = SubResource( 3 )
-pressed = true
+layout_mode = 2
+theme = SubResource("3")
 text = "Glow: "
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="saber_tail" type="CheckButton" parent="ScrollContainer/VBox"]
-offset_top = 165.0
-offset_right = 828.0
-offset_bottom = 216.0
-theme = SubResource( 3 )
-pressed = true
+layout_mode = 2
+theme = SubResource("3")
 text = "Saber Tail: "
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="show_fps" type="CheckButton" parent="ScrollContainer/VBox"]
-offset_top = 220.0
-offset_right = 828.0
-offset_bottom = 271.0
-theme = SubResource( 3 )
+layout_mode = 2
+theme = SubResource("3")
 text = "Show FPS:"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="show_collisions" type="CheckButton" parent="ScrollContainer/VBox"]
-offset_top = 275.0
-offset_right = 828.0
-offset_bottom = 326.0
-theme = SubResource( 3 )
+layout_mode = 2
+theme = SubResource("3")
 text = "Show Collision Shapes:"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="bombs_enabled" type="CheckButton" parent="ScrollContainer/VBox"]
-offset_top = 330.0
-offset_right = 828.0
-offset_bottom = 381.0
-theme = SubResource( 3 )
-pressed = true
+layout_mode = 2
+theme = SubResource("3")
 text = "Bombs Enabled:"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="SaberThicknessRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
-offset_top = 385.0
-offset_right = 828.0
-offset_bottom = 428.0
+layout_mode = 2
 
 [node name="saber_thickness_label" type="Label" parent="ScrollContainer/VBox/SaberThicknessRow"]
-offset_right = 323.0
-offset_bottom = 43.0
-theme = SubResource( 3 )
+layout_mode = 2
+theme = SubResource("3")
 text = "Saber Thickness: "
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="saber_thickness" type="HSlider" parent="ScrollContainer/VBox/SaberThicknessRow"]
-offset_left = 327.0
-offset_right = 828.0
-offset_bottom = 43.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 min_value = 10.0
 value = 100.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="SaberTypeRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
-offset_top = 432.0
-offset_right = 828.0
-offset_bottom = 475.0
+layout_mode = 2
 
 [node name="saber_type_label" type="Label" parent="ScrollContainer/VBox/SaberTypeRow"]
-offset_right = 209.0
-offset_bottom = 43.0
-theme = SubResource( 3 )
+layout_mode = 2
+theme = SubResource("3")
 text = "Saber Type:"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="saber" type="OptionButton" parent="ScrollContainer/VBox/SaberTypeRow"]
-offset_left = 213.0
-offset_right = 828.0
-offset_bottom = 43.0
+layout_mode = 2
 size_flags_horizontal = 3
-theme = SubResource( 5 )
-theme_override_fonts/font = SubResource( 4 )
-text = "Default saber"
+theme = SubResource("5")
+theme_override_fonts/font = SubResource("4")
 flat = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="SaberColorsRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
-offset_top = 479.0
-offset_right = 828.0
-offset_bottom = 522.0
+layout_mode = 2
 
 [node name="left_saber_col_label" type="Label" parent="ScrollContainer/VBox/SaberColorsRow"]
-offset_right = 266.0
-offset_bottom = 43.0
-theme = SubResource( 3 )
+layout_mode = 2
+theme = SubResource("3")
 text = "Saber Colors: "
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="left_saber_col" type="ColorPickerButton" parent="ScrollContainer/VBox/SaberColorsRow"]
-offset_left = 270.0
-offset_right = 547.0
-offset_bottom = 43.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Left saber"
 flat = true
-color = Color( 1, 0.101961, 0.101961, 1 )
+color = Color(1, 0.101961, 0.101961, 1)
 edit_alpha = false
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="right_saber_col" type="ColorPickerButton" parent="ScrollContainer/VBox/SaberColorsRow"]
-offset_left = 551.0
-offset_right = 828.0
-offset_bottom = 43.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Right saber"
 flat = true
-color = Color( 0.101961, 0.101961, 1, 1 )
+color = Color(0.101961, 0.101961, 1, 1)
 edit_alpha = false
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="UI_VolumeRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
-offset_top = 526.0
-offset_right = 828.0
-offset_bottom = 569.0
+layout_mode = 2
 
 [node name="ui_volume_label" type="Label" parent="ScrollContainer/VBox/UI_VolumeRow"]
-offset_right = 190.0
-offset_bottom = 43.0
-theme = SubResource( 3 )
+layout_mode = 2
+theme = SubResource("3")
 text = "UI Volume:"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="ui_volume_slider" type="HSlider" parent="ScrollContainer/VBox/UI_VolumeRow"]
-offset_left = 194.0
-offset_right = 828.0
-offset_bottom = 43.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 max_value = 10.0
 value = 10.0
 
 [node name="defaults" type="Button" parent="."]
+layout_mode = 0
 offset_left = 546.283
 offset_top = 496.0
 offset_right = 692.283
 offset_bottom = 556.0
-theme = SubResource( 7 )
-theme_override_styles/hover = SubResource( 8 )
-theme_override_styles/pressed = SubResource( 9 )
-theme_override_styles/normal = SubResource( 10 )
+theme = SubResource("7")
+theme_override_styles/normal = SubResource("10")
+theme_override_styles/hover = SubResource("8")
+theme_override_styles/pressed = SubResource("9")
 text = "Default"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="apply" type="Button" parent="."]
+layout_mode = 0
 offset_left = 719.136
 offset_top = 496.0
 offset_right = 865.136
 offset_bottom = 556.0
-theme = SubResource( 7 )
-theme_override_styles/hover = SubResource( 8 )
-theme_override_styles/pressed = SubResource( 9 )
-theme_override_styles/normal = SubResource( 10 )
+theme = SubResource("7")
+theme_override_styles/normal = SubResource("10")
+theme_override_styles/hover = SubResource("8")
+theme_override_styles/pressed = SubResource("9")
 text = "Apply"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="vr_slider" parent="." instance=ExtResource( 4 )]
-scroll_node = NodePath("../ScrollContainer")
+[node name="vr_slider" parent="." instance=ExtResource("4")]
+scroll_node_path = NodePath("../ScrollContainer")
 
 [node name="wipe_check" type="Timer" parent="."]
 wait_time = 5.0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://bpur4cpfjskxt"]
+[gd_scene load_steps=22 format=3 uid="uid://bpur4cpfjskxt"]
 
 [ext_resource type="Script" path="res://game/sabers/particles/particles_saber.gd" id="1"]
 [ext_resource type="ArrayMesh" uid="uid://cq3betaoj4fv8" path="res://game/sabers/particles/sword.obj" id="2"]
@@ -210,27 +210,6 @@ _data = {
 "Show": SubResource("5")
 }
 
-[sub_resource type="Shader" id="6"]
-code = "shader_type spatial;
-render_mode cull_disabled, unshaded;
-
-uniform vec4 color;
-uniform float size = 0.1f;
-uniform float shape = 0f;
-uniform float angle = 1f;
-
-void fragment(){
-	ALPHA_SCISSOR_THRESHOLD = 0.5;
-	vec2 multuv = (SCREEN_UV)*size*10f;
-	float value = float((sin(multuv.x+(multuv.y*angle))-sin((multuv.x*angle)-multuv.y)>shape));
-	ALBEDO = color.rgb;
-	ALPHA = value;
-}"
-
-[sub_resource type="ShaderMaterial" id="7"]
-render_priority = 0
-shader = SubResource("6")
-
 [sub_resource type="Gradient" id="Gradient_d20e8"]
 offsets = PackedFloat32Array(0.638158, 1)
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
@@ -297,22 +276,11 @@ libraries = {
 "": SubResource("AnimationLibrary_kyofm")
 }
 
-[node name="ImmediateMesh" type="ImmediateMesh" parent="."]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-editor_description = ""
-material_override = SubResource("7")
-script = null
-
 [node name="base" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.049218, 0)
 
 [node name="tip" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2554, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.255, 0)
 
 [node name="CPUParticles3D" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.736082, 0)
@@ -326,7 +294,7 @@ process_material = SubResource("ParticleProcessMaterial_ijkly")
 draw_pass_1 = SubResource("QuadMesh_ye5bo")
 
 [node name="LightSaber_Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.50312e-16, -3.58433e-09, -0.082, -0.078669, -3.58433e-09, 0, -3.43873e-09, 0.082, -3.58433e-09, -1.15453e-15, 0.0434965, 7.08648e-09)
+transform = Transform3D(1.50944e-16, -3.58433e-09, -0.082, -0.079, -3.58433e-09, 0, -3.4532e-09, 0.082, -3.58433e-09, 0, 0.043, 0)
 material_override = SubResource("13")
 mesh = ExtResource("2")
 

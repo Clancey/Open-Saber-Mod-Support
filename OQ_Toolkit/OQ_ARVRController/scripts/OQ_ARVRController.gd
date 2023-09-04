@@ -33,6 +33,25 @@ var _simulation_joystick_axis = [0.0, 0.0, 0.0, 0.0];
 
 signal signal_controller_type_changed;
 
+var bid_to_bname = [
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #0
+	"grip", #16
+]
 
 # Sets up everything as it is expected by the helper scripts in the vr singleton
 func _enter_tree():
@@ -48,7 +67,7 @@ func _enter_tree():
 			vr.log_warning(" in OQ_ARVRController._enter_tree(): right controller already set; overwriting it");
 		vr.rightController = self;
 	else:
-		vr.log_error(" in OQ_ARVRController._enter_tree(): unexpected controller id %d" % tracker);
+		vr.log_error(" in OQ_ARVRController._enter_tree(): unexpected controller id %s" % tracker);
 
 # Reset when we exit the tree
 func _exit_tree():
@@ -263,7 +282,7 @@ func _hand_gesture_to_button(i):
 
 	# keep the hand_pinch to button mapping
 	if (hand_pinch_to_button):
-		return is_button_pressed(i);
+		return is_button_pressed(bid_to_bname[i]);
 
 
 func _sim_is_button_pressed(i):
@@ -274,7 +293,7 @@ func _sim_is_button_pressed(i):
 			elif (!hand_pinch_to_button):
 				return 0;
 
-		return is_button_pressed(i); # is the button pressed
+		return is_button_pressed(bid_to_bname[i]); # is the button pressed
 	else: return _simulation_buttons_pressed[i];
 
 func _sim_get_joystick_axis(i):

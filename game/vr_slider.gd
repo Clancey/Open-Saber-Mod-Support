@@ -37,9 +37,7 @@ func _ready():
 		set_process(false)
 		return
 	
-	if scroll_node is ItemList:
-		v_scroll = scroll_node.get_v_scroll()
-	elif scroll_node is ScrollContainer:
+	if scroll_node is ItemList or scroll_node is ScrollContainer:
 		v_scroll = scroll_node.get_v_scroll_bar()
 	else:
 		vr.log_error("vr_slider._ready() scroll_node must be set ScrollContainer or ItemList")
@@ -62,7 +60,7 @@ func _process(delta):
 			v_scroll.value += ((relpos-newpos)*20)
 		elif enable_joystick_scrolling && ! vr.rightController.is_hand:
 			# Scroll via joystick
-			var y_joy = vr.rightController.get_joystick_axis(1)
+			var y_joy = vr.rightController.get_vector2("primary").y
 			if abs(y_joy) > JOYSTICK_SCROLL_THRESHOLD:
 				# negate sign so positive scroll_amounts will scroll down
 				var scroll_amount = lerp(

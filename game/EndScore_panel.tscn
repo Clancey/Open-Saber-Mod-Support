@@ -15,6 +15,9 @@ border_color = Color(1, 1, 1, 1)
 
 [sub_resource type="FontFile" id="2"]
 fallbacks = Array[Font]([ExtResource("1")])
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
 cache/0/16/0/ascent = 0.0
 cache/0/16/0/descent = 0.0
 cache/0/16/0/underline_position = 0.0
@@ -51,6 +54,9 @@ border_color = Color(1, 1, 1, 1)
 
 [sub_resource type="FontFile" id="7"]
 fallbacks = Array[Font]([ExtResource("4")])
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
 cache/0/16/0/ascent = 0.0
 cache/0/16/0/descent = 0.0
 cache/0/16/0/underline_position = 0.0
@@ -2121,6 +2127,9 @@ default_font = SubResource("7")
 
 [sub_resource type="FontFile" id="9"]
 fallbacks = Array[Font]([ExtResource("4")])
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
 cache/0/16/0/ascent = 0.0
 cache/0/16/0/descent = 0.0
 cache/0/16/0/underline_position = 0.0
@@ -2881,16 +2890,6 @@ offset_left = -256.0
 offset_top = -256.0
 offset_right = 256.0
 offset_bottom = 256.0
-
-[node name="Tween" type="Tween" parent="."]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-editor_description = ""
-script = null
 
 [node name="char" type="RichTextLabel" parent="."]
 layout_mode = 0

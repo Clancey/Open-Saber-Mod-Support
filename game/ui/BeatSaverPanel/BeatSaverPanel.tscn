@@ -232,6 +232,7 @@ offset_bottom = 936.0
 text = "Close"
 
 [node name="list_slider" parent="." instance=ExtResource("3")]
+scroll_node_path = NodePath("../ItemList")
 
 [connection signal="item_selected" from="ItemList" to="." method="_on_ItemList_item_selected"]
 [connection signal="button_up" from="mode" to="." method="_on_mode_button_up"]
