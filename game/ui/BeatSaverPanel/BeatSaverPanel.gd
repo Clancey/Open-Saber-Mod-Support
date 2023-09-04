@@ -344,8 +344,7 @@ func _update_cover(result, response_code, headers, body):
 		var img = Image.new()
 		if not img.load_jpg_from_buffer(body) == 0:
 			img.load_png_from_buffer(body)
-		var img_tex = ImageTexture.new()
-		img_tex.create_from_image(img)
+		var img_tex = ImageTexture.create_from_image(img)
 		$ItemList.set_item_icon(_current_cover_to_download,img_tex)
 	_current_cover_to_download += 1
 	update_next_cover()

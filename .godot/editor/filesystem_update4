@@ -34,3 +34,9 @@ res://game/Bomb/BombMesh.tscn
 res://game/event_driver.gd
 res://game/PercentIndicator.tscn
 res://game/EndScore_panel.tscn
+res://game/Wall/Wall.gd
+res://game/scripts/BackgroundImgLoader.gd
+res://game/BeepSaberMainMenu.gd
+res://game/ui/YouTubeUI/YouTubeUI.gd
+res://game/BeepSaberMainMenu.tscn
+res://game/ui/BeatSaverPanel/BeatSaverPanel.gd

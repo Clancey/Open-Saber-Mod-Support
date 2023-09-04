@@ -68,7 +68,8 @@ func procces_event(data,beat):
 		match int(data._type):
 			8:
 				var ringtween = $Level/rings.create_tween()
-				ring_rot_inv_dir = bool(randi()%2)
+				if abs(ring_rot_speed) < 1:
+					ring_rot_inv_dir = !ring_rot_inv_dir
 				ringtween.set_trans(Tween.TRANS_QUAD)
 				ringtween.set_ease(Tween.EASE_OUT)
 				ringtween.tween_property(self,"ring_rot_speed",0.0, 2).from(3.0)

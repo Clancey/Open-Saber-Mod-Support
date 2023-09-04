@@ -28,7 +28,7 @@ func _set_width(value):
 		await self.ready
 		
 	_mesh.mesh.size.x = width
-	_coll.shape.size.x = width / 2.0
+	_coll.shape.size.x = width #/ 2.0
 	_mesh_orientation.position.x = width / 2.0
 	update_material()
 	
@@ -39,7 +39,7 @@ func _set_height(value):
 		await self.ready
 		
 	_mesh.mesh.size.y = height
-	_coll.shape.size.y = height / 2.0
+	_coll.shape.size.y = height #/ 2.0
 	_mesh_orientation.position.y = height / 2.0
 	update_material()
 	
@@ -50,7 +50,7 @@ func _set_depth(value):
 		await self.ready
 		
 	_mesh.mesh.size.z = depth
-	_coll.shape.size.z = depth / 2.0
+	_coll.shape.size.z = depth #/ 2.0
 	_mesh_orientation.position.z = -1 * depth / 2.0
 	update_material()
 

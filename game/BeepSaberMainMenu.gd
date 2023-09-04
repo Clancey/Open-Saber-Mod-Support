@@ -206,39 +206,32 @@ func _load_song_info(load_path):
 func _on_cover_loaded(img_tex, filepath, is_main_cover, list_idx):
 	if img_tex != null:
 		if is_main_cover:
-			cover.texture = img_tex
+			cover.call_deferred("set_texture", img_tex)
 		else:
-			songs_menu.set_item_icon(list_idx,img_tex)
+			songs_menu.call_deferred("set_item_icon", list_idx,img_tex)
+			#songs_menu.set_item_icon(list_idx,img_tex)
 
 func _load_cover(cover_path, filename):
-	# read cover image data from file into a buffer
-	_cover_file_load_sw.start()
-	var file = FileAccess.open(cover_path+filename, FileAccess.READ)
-	var img_data = null
-	if file:
-		img_data = file.get_buffer(file.get_length())
-		file.close()
-		_cover_file_load_sw.stop()
-	else:
-		vr.log_error('Failed to open cover image file "%s"' % cover_path+filename)
-		_cover_file_load_sw.stop()
-		return
-		
 	# parse buffer into an ImageTexture
 	_cover_texture_create_sw.start()
 	var tex = ImageTexture.new();
-	tex.create_from_image(ImageUtils.get_img_from_buffer(img_data));
+	tex.create_from_image(Image.load_from_file(cover_path+filename));
 	_cover_texture_create_sw.stop()
 	return tex;
 
 func play_preview(filepath_or_buffer, start_time = 0, duration = -1, buffer_data_type_hint = 'ogg'):
 	var stream = null
-	if filepath_or_buffer is String and buffer_data_type_hint == 'ogg':
+	if filepath_or_buffer is String:
 		# get song preview data from file
-		stream = AudioStreamOggVorbis.load_from_file(filepath_or_buffer)
-	elif filepath_or_buffer is PackedByteArray and buffer_data_type_hint == 'ogg':
+		if buffer_data_type_hint == 'ogg':
+			stream = AudioStreamOggVorbis.load_from_file(filepath_or_buffer)
+	elif filepath_or_buffer is PackedByteArray:
 		# take song preview data from buffer as-is. trust passed type hint
-		stream = AudioStreamOggVorbis.load_from_buffer(filepath_or_buffer)
+		if buffer_data_type_hint == 'ogg':
+			stream = AudioStreamOggVorbis.load_from_buffer(filepath_or_buffer)
+		elif buffer_data_type_hint == 'mp3':
+			stream = AudioStreamMP3.new()
+			stream.data = filepath_or_buffer
 	else:
 		vr.log_error('_play_preview() - Unsupported song preview data type %s' % typeof(filepath_or_buffer))
 		return
