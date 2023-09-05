@@ -283,7 +283,7 @@ func _hand_gesture_to_button(i):
 
 	# keep the hand_pinch to button mapping
 	if (hand_pinch_to_button):
-		return is_button_pressed(bid_to_bname[i]);
+		return int(is_button_pressed(bid_to_bname[i]));
 
 
 func _sim_is_button_pressed(i):
@@ -294,7 +294,7 @@ func _sim_is_button_pressed(i):
 			elif (!hand_pinch_to_button):
 				return 0;
 
-		return is_button_pressed(bid_to_bname[i]); # is the button pressed
+		return int(is_button_pressed(bid_to_bname[i])); # is the button pressed
 	else: return _simulation_buttons_pressed[i];
 
 func _sim_get_joystick_axis(i):

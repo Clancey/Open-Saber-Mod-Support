@@ -601,7 +601,7 @@ func _check_and_update_saber(controller : XRController3D, saber: Area3D):
 		if (controller._button_just_pressed(vr.CONTROLLER_BUTTON.XA) ||
 			controller._button_just_pressed(vr.CONTROLLER_BUTTON.YB)):
 				if (!saber._anim.is_playing()):
-					if (saber.is_extended()): saber.hide();
+					if (saber.is_extended()): saber._hide();
 					else: saber._show();
 					
 	
@@ -639,7 +639,7 @@ func _physics_process(dt):
 		fps_label.set_label_text("FPS: %d" % Engine.get_frames_per_second())
 	
 	# pause game when player presses menu button
-	if (vr.button_just_released(vr.BUTTON.ENTER)):
+	if (vr.button_just_released(vr.BUTTON.ENTER) or vr.button_just_released(6)):
 		if _current_game_state == GameState.Playing:
 			_transition_game_state(GameState.Paused)
 
@@ -672,11 +672,11 @@ func _ready():
 	update_saber_colors()
 	
 	# This is a workaround for now to orient correctly for the Vive controllers
-	if (vr.active_arvr_interface_name == "OpenVR"):
-		left_saber.rotation_degrees.x = -90;
-		right_saber.rotation_degrees.x = -90;
-		left_ui_raycast.rotation_degrees.x = 0;
-		right_ui_raycast.rotation_degrees.x = 0;
+	#if (vr.active_arvr_interface_name == "OpenVR"):
+		#left_saber.rotation_degrees.x = -90;
+		#right_saber.rotation_degrees.x = -90;
+		#left_ui_raycast.rotation_degrees.x = 0;
+		#right_ui_raycast.rotation_degrees.x = 0; 
 
 	# initialize list of cut cube resources
 	for _i in range(MAX_CUT_CUBE_RESOURCES):
