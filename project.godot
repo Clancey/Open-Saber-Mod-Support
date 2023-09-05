@@ -36,7 +36,7 @@ window/vsync/vsync_mode=false
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/stopwatch/plugin.cfg")
+enabled=PackedStringArray("res://addons/godotopenxr/plugin.cfg", "res://addons/stopwatch/plugin.cfg")
 
 [gdnative]
 
