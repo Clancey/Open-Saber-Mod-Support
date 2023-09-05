@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://bpur4cpfjskxt"]
+[gd_scene load_steps=24 format=3 uid="uid://bpur4cpfjskxt"]
 
 [ext_resource type="Script" path="res://game/sabers/particles/particles_saber.gd" id="1"]
 [ext_resource type="ArrayMesh" uid="uid://cq3betaoj4fv8" path="res://game/sabers/particles/sword.obj" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cg6kwny2mi3wq" path="res://game/data/gradient.png" id="4"]
 [ext_resource type="Shader" path="res://game/LightSaber.gdshader" id="5"]
 [ext_resource type="AudioStream" uid="uid://bsy5s05go6qg3" path="res://game/sabers/particles/sword_clash.10.ogg" id="6"]
+[ext_resource type="PackedScene" uid="uid://buhdimf18mwbo" path="res://game/sabers/default/tail.tscn" id="8_m1jst"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4m7pm"]
 emission_enabled = true
@@ -84,6 +85,30 @@ tracks/4/keys = {
 "update": 0,
 "values": [Vector3(0, 0.043, 0), Vector3(2.33906e-06, 14.357, 0)]
 }
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("CPUParticles3D:emitting")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("tail:size")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(0, 0),
+"update": 0,
+"values": [1.2, 1.2]
+}
 
 [sub_resource type="Animation" id="4"]
 resource_name = "QuickHide"
@@ -123,6 +148,30 @@ tracks/2/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector3(0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CPUParticles3D:emitting")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("tail:size")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
 }
 
 [sub_resource type="Animation" id="5"]
@@ -202,11 +251,63 @@ tracks/5/keys = {
 "times": PackedFloat32Array(0.3)
 }
 tracks/5/use_blend = true
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("CPUParticles3D:emitting")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("tail:size")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0, 0),
+"update": 0,
+"values": [0.0, 1.2]
+}
+
+[sub_resource type="Animation" id="Animation_y7mm6"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CPUParticles3D:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("tail:size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.2]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_kyofm"]
 _data = {
 "Hide": SubResource("3"),
 "QuickHide": SubResource("4"),
+"RESET": SubResource("Animation_y7mm6"),
 "Show": SubResource("5")
 }
 
@@ -228,10 +329,12 @@ curve = SubResource("Curve_k5ros")
 lifetime_randomness = 0.3
 emission_shape = 3
 emission_box_extents = Vector3(0, 0.515, 0)
-direction = Vector3(0, -1, 0)
-spread = 82.64
+direction = Vector3(0, 1, 0)
+spread = 34.12
 flatness = 0.18
 gravity = Vector3(0, 0, 0)
+initial_velocity_min = 0.2
+initial_velocity_max = 0.2
 linear_accel_min = 0.6
 linear_accel_max = 1.0
 scale_min = 0.0
@@ -244,7 +347,6 @@ turbulence_noise_scale = 1.57
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8ejbi"]
 blend_mode = 1
 shading_mode = 0
-albedo_color = Color(0.603922, 0.603922, 0.603922, 1)
 albedo_texture = ExtResource("4")
 
 [sub_resource type="QuadMesh" id="QuadMesh_ye5bo"]
@@ -280,11 +382,12 @@ libraries = {
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.049218, 0)
 
 [node name="tip" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.255, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2554, 0)
 
 [node name="CPUParticles3D" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.736082, 0)
-amount = 45
+emitting = false
+amount = 60
 lifetime = 1.2
 speed_scale = 2.4
 randomness = 1.0
@@ -294,12 +397,20 @@ process_material = SubResource("ParticleProcessMaterial_ijkly")
 draw_pass_1 = SubResource("QuadMesh_ye5bo")
 
 [node name="LightSaber_Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.50944e-16, -3.58433e-09, -0.082, -0.079, -3.58433e-09, 0, -3.4532e-09, 0.082, -3.58433e-09, 0, 0.043, 0)
+transform = Transform3D(1.50312e-16, -3.58433e-09, -0.082, -0.078669, -3.58433e-09, 0, -3.43873e-09, 0.082, -3.58433e-09, -1.15453e-15, 0.0434965, 7.08648e-09)
 material_override = SubResource("13")
 mesh = ExtResource("2")
+
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="LightSaber_Mesh"]
+transform = Transform3D(2.39808e-14, -12.6572, 0.153244, -5.33065e-07, 0.159063, 12.1942, -12.1951, -6.95289e-09, -5.33023e-07, -0.066, 1.77636e-15, -1.32349e-23)
+remote_path = NodePath("../../tail")
 
 [node name="hitsound" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.753543, 0)
 stream = ExtResource("3")
 attenuation_model = 3
 volume_db = 1.0
+
+[node name="tail" parent="." instance=ExtResource("8_m1jst")]
+transform = Transform3D(1, -4.44089e-16, -3.55271e-14, 2.41362e-17, 0.995731, -0.0120556, 3.90799e-14, 0.0130432, 0.999921, -1.16445e-15, 0.0486887, 7.31344e-09)
+size = 1.2

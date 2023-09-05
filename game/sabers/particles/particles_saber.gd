@@ -2,13 +2,13 @@ extends "res://game/sabers/default/default_saber.gd"
 
 func _sub_ready():
 	saber_holder.saber_hit.connect(hit_particles)
-	set_tail_size(5)
 
 var last_tip_pos = Vector3()
 func _process(delta):
 	var current_tip_pos = $tip.global_transform.origin
-	$CPUParticles3D.speed_scale = 0.5+(20*(current_tip_pos-last_tip_pos).length())
-	#$CPUParticles3D.lifetime = 4+(8*(current_tip_pos-last_tip_pos).length())
+	var speed = (current_tip_pos-last_tip_pos).length()
+	$CPUParticles3D.speed_scale = 2.5+(50*speed)
+	$CPUParticles3D.lifetime = max(0.1, 2-(20*speed))
 	last_tip_pos = current_tip_pos
 
 func hit_particles(cube,time_offset):

@@ -53,14 +53,14 @@ func _create_input_event(b, pressed):
 	var unicode = 0;
 
 	if (b == _toggle_symbols_button):
-		_toggle_symbols(b.pressed);
+		_toggle_symbols(b.button_pressed);
 		return;
 	elif (b == _cancel_button):
 		if (!pressed): emit_signal("cancel_pressed");
 		return;
 	elif (b == _shift_button):
 		if (pressed): 
-			_toggle_case(!b.pressed); # button event is created before it is actually toggled
+			_toggle_case(!b.button_pressed); # button event is created before it is actually toggled
 		keycode = KEY_SHIFT;
 	elif (b == _backspace_button):
 		keycode = KEY_BACKSPACE;
@@ -122,8 +122,8 @@ func _create_button(_parent, text, x, y, w = 1, h = 1):
 	
 	b.name = "button_"+text;
 	
-	b.connect("button_down", Callable(self, "_on_button_down").bind(b));
-	b.connect("button_up", Callable(self, "_on_button_up").bind(b));
+	b.connect("button_down", _on_button_down.bind(b));
+	b.connect("button_up", _on_button_up.bind(b));
 	
 	_parent.add_child(b);
 	return b;
