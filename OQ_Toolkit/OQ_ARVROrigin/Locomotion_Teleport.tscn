@@ -1,41 +1,26 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://dwer6604mtvax"]
 
-[ext_resource path="res://OQ_Toolkit/OQ_ARVROrigin/scripts/Locomotion_Teleport_Marker.gdshader" type="Shader" id=1]
-[ext_resource path="res://OQ_Toolkit/OQ_ARVROrigin/scripts/Locomotion_Teleport_Arc.gdshader" type="Shader" id=2]
-[ext_resource path="res://OQ_Toolkit/OQ_ARVROrigin/scripts/Locomotion_Teleport.gd" type="Script" id=3]
+[ext_resource type="Script" path="res://OQ_Toolkit/OQ_ARVROrigin/scripts/Locomotion_Teleport.gd" id="3"]
 
-[sub_resource type="PlaneMesh" id=1]
-size = Vector2( 0.1, 1 )
+[sub_resource type="PlaneMesh" id="1"]
+size = Vector2(0.1, 1)
 subdivide_depth = 15
 
-[sub_resource type="ShaderMaterial" id=2]
-shader = ExtResource( 2 )
-shader_param/start_position = Vector3( 3, 1, 0 )
-shader_param/direction = Vector3( -1.25, 2, 0 )
-shader_param/arc_length = 3.0
-shader_param/color = Plane( 1, 1, 0, 1 )
-
-[sub_resource type="PlaneMesh" id=3]
-size = Vector2( 0.6, 0.6 )
-
-[sub_resource type="ShaderMaterial" id=4]
-shader = ExtResource( 1 )
-shader_param/color = Plane( 0.5, 0.5, 1, 1 )
+[sub_resource type="PlaneMesh" id="3"]
+size = Vector2(0.6, 0.6)
 
 [node name="Locomotion_Teleport" type="Node3D"]
-script = ExtResource( 3 )
+script = ExtResource("3")
 
 [node name="arc_mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D( 0.268392, 0.950271, 0.157956, -0.818967, 0.311423, -0.481985, -0.507208, 0, 0.861824, 0.486711, 0, 0 )
-mesh = SubResource( 1 )
-material/0 = SubResource( 2 )
+transform = Transform3D(0.268392, 0.950271, 0.157956, -0.818967, 0.311423, -0.481985, -0.507208, 0, 0.861824, 0.486711, 0, 0)
+mesh = SubResource("1")
 
 [node name="arc_raycast" type="RayCast3D" parent="."]
-transform = Transform3D( 0.685577, 0, -0.728, 0, 1, 0, 0.728, 0, 0.685577, 0, 0, 0 )
+transform = Transform3D(0.685577, 0, -0.728, 0, 1, 0, 0.728, 0, 0.685577, 0, 0, 0)
 
 [node name="target_marker" type="Node3D" parent="."]
 
 [node name="target_marker_mesh" type="MeshInstance3D" parent="target_marker"]
-transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0 )
-mesh = SubResource( 3 )
-material/0 = SubResource( 4 )
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+mesh = SubResource("3")

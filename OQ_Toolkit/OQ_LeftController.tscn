@@ -1,7 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://by56sicdi70y2"]
 
-[ext_resource path="res://OQ_Toolkit/OQ_ARVRController/scripts/OQ_ARVRController.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://OQ_Toolkit/OQ_ARVRController/scripts/OQ_ARVRController.gd" id="1"]
 
 [node name="OQ_LeftController" type="XRController3D"]
-transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 1.5, -0.5 )
-script = ExtResource( 1 )
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 1.5, -0.5)
+script = ExtResource("1")

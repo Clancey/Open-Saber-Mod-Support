@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://deoh1pl5kvqei"]
+[gd_scene load_steps=9 format=3 uid="uid://deoh1pl5kvqei"]
 
 [ext_resource type="FontFile" uid="uid://01k27lk2a4bw" path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" id="1"]
 [ext_resource type="Script" path="res://game/points_label.gd" id="2"]
@@ -15,9 +15,6 @@ cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 [sub_resource type="Theme" id="5"]
 default_font = SubResource("4")
 
-[sub_resource type="ViewportTexture" id="1"]
-viewport_path = NodePath("SubViewport")
-
 [sub_resource type="StandardMaterial3D" id="2"]
 resource_local_to_scene = true
 transparency = 2
@@ -25,7 +22,6 @@ alpha_scissor_threshold = 0.41
 alpha_antialiasing_mode = 0
 cull_mode = 2
 shading_mode = 0
-albedo_texture = SubResource("1")
 
 [sub_resource type="PlaneMesh" id="3"]
 
@@ -70,6 +66,7 @@ disable_3d = true
 own_world_3d = true
 transparent_bg = true
 size = Vector2i(100, 40)
+render_target_update_mode = 3
 
 [node name="Label" type="Label" parent="SubViewport"]
 offset_top = -4.0

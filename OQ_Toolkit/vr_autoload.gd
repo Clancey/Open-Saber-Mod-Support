@@ -788,7 +788,7 @@ func _webxr_cb_session_supported(a, b):
 	pass
 
 func _webxr_cb_session_started():
-	get_viewport().arvr = true
+	get_viewport().use_xr = true
 	log_info("WebXR Session Started; reference space type: " + arvr_webxr_interface.reference_space_type);
 
 signal signal_webxr_started;
@@ -801,7 +801,7 @@ func _webxr_initialize(enable_vr):
 		return;
 		
 	if (arvr_webxr_interface.initialize()):
-		get_viewport().arvr = true;
+		get_viewport().use_xr = true;
 		#DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if (false;) else DisplayServer.VSYNC_DISABLED)
 		inVR = true;
 		log_info("  Success initializing WebXR Interface.");

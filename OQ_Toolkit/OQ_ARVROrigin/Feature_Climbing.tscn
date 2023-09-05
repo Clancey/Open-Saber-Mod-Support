@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://c1lfuenxtahol"]
 
-[ext_resource path="res://OQ_Toolkit/OQ_ARVROrigin/scripts/Feature_Climbing.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://OQ_Toolkit/OQ_ARVROrigin/scripts/Feature_Climbing.gd" id="1"]
 
 [node name="Feature_Climbing" type="Node3D"]
-script = ExtResource( 1 )
+script = ExtResource("1")

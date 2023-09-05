@@ -34,6 +34,7 @@ func _ready():
 	set_label_text(text);
 	
 	mesh_material = mesh_instance.material_override
+	mesh_material.albedo_texture = ui_viewport.get_texture()
 	
 	if (billboard):
 		mesh_material.params_billboard_mode = StandardMaterial3D.BILLBOARD_FIXED_Y;

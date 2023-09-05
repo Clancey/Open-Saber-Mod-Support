@@ -7,18 +7,17 @@
 margin = 0.001
 size = Vector3(1, 1, 0.001)
 
-[sub_resource type="ViewportTexture" id="2"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_gi0ft"]
 viewport_path = NodePath("SubViewport")
 
 [sub_resource type="StandardMaterial3D" id="3"]
 resource_local_to_scene = true
 cull_mode = 2
 shading_mode = 0
-albedo_texture = SubResource("2")
+albedo_texture = SubResource("ViewportTexture_gi0ft")
 
 [sub_resource type="PlaneMesh" id="4"]
 resource_local_to_scene = true
-material = SubResource("3")
 size = Vector2(1, 1)
 
 [node name="OQ_UI2DCanvas" type="Node3D"]
@@ -26,9 +25,11 @@ script = ExtResource("1")
 
 [node name="SubViewport" type="SubViewport" parent="."]
 disable_3d = true
+own_world_3d = true
 transparent_bg = true
 gui_embed_subwindows = true
 size = Vector2i(512, 256)
+render_target_update_mode = 3
 
 [node name="UIArea" type="Area3D" parent="."]
 collision_layer = 524288
@@ -40,4 +41,5 @@ shape = SubResource("1")
 
 [node name="UIMeshInstance" type="MeshInstance3D" parent="UIArea"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, -1, 4.37114e-08, 0, 0, 0)
+material_override = SubResource("3")
 mesh = SubResource("4")

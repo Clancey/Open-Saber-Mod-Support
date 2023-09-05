@@ -53,7 +53,8 @@ func _show():
 
 func _ready():
 	
-	mesh_material = mesh_instance.mesh.surface_get_material(0);
+	mesh_material = mesh_instance.material_override;
+	mesh_material.albedo_texture = viewport.get_texture()
 	# only enable transparency when necessary as it is significantly slower than non-transparent rendering
 	mesh_material.flags_transparent = transparent;
 	

@@ -7,6 +7,5 @@ extends Node
 func _ready():
 	vr.initialize()
 	vr.scene_switch_root = self;
-	#if (vr.inVR): 
-	vr.switch_scene("res://game/GodotSplash.tscn", 0.0, 0.0);
+	if (vr.inVR): vr.switch_scene("res://game/GodotSplash.tscn", 0.0, 0.0);
 	vr.switch_scene("res://game/BeepSaber_Game.tscn", 0.1, 2.0);

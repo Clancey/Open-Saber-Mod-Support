@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://2knh3821eknj"]
 
-[ext_resource path="res://OQ_Toolkit/OQ_Helpers/scripts/OQ_VisibilityToggle.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://OQ_Toolkit/OQ_Helpers/scripts/OQ_VisibilityToggle.gd" id="1"]
 
 [node name="OQ_VisibilityToggle" type="Node3D"]
-script = ExtResource( 1 )
+script = ExtResource("1")

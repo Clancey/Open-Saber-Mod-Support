@@ -9,6 +9,10 @@ var last_position = [Vector2(0,-50),Vector2(0,-50)]
 var C_LEFT = Color()
 var C_RIGHT = Color()
 
+func _ready():
+	$Node3D/cutFloor.material_override.albedo_texture = $SubViewport.get_texture()
+	$Node3D/cutFloor.material_override.emission_texture = $SubViewport.get_texture()
+
 func update_colors(COLOR_LEFT,COLOR_RIGHT):
 	C_LEFT = COLOR_LEFT
 	C_RIGHT = COLOR_RIGHT

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cs8e62lsifik5"]
+[gd_scene load_steps=9 format=3 uid="uid://cs8e62lsifik5"]
 
 [ext_resource type="Script" path="res://game/floor.gd" id="3"]
 
@@ -31,17 +31,12 @@ shading_mode = 0
 [sub_resource type="PlaneMesh" id="2"]
 size = Vector2(0.5, 0.5)
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_cfl7p"]
-viewport_path = NodePath("SubViewport")
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_boyhf"]
 resource_local_to_scene = true
-albedo_texture = SubResource("ViewportTexture_cfl7p")
 emission_enabled = true
 emission = Color(1, 1, 1, 1)
 emission_energy_multiplier = 16.0
 emission_operator = 1
-emission_texture = SubResource("ViewportTexture_cfl7p")
 
 [node name="StandingGround" type="StaticBody3D" groups=["floor"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -57,6 +52,7 @@ shape = SubResource("1")
 disable_3d = true
 own_world_3d = true
 render_target_clear_mode = 1
+render_target_update_mode = 3
 
 [node name="ColorRect" type="ColorRect" parent="SubViewport"]
 material = SubResource("CanvasItemMaterial_7a0en")
@@ -115,7 +111,7 @@ material_override = SubResource("StandardMaterial3D_2qncm")
 mesh = SubResource("2")
 skeleton = NodePath("../..")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D"]
+[node name="cutFloor" type="MeshInstance3D" parent="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.001, 0)
 material_override = SubResource("StandardMaterial3D_boyhf")
 mesh = SubResource("2")
