@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://OQ_Toolkit/OQ_ARVRCamera.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://OQ_Toolkit/OQ_LeftController.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://OQ_Toolkit/OQ_RightController.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://OQ_Toolkit/OQ_Helpers/OQ_SplashScreen.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://ipiuvdrt64nc" path="res://OQ_Toolkit/OQ_Helpers/OQ_SplashScreen.tscn" id="5"]
 
 [sub_resource type="Environment" id="1"]
 

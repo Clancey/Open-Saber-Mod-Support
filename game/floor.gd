@@ -54,3 +54,9 @@ func _process(delta):
 	if is_out[1] == 1:
 		$SubViewport/ColorRect/burn_r.visible = false
 	is_out = [1,1]
+
+func _on_timer_clear_timeout():
+	$SubViewport/ColorRect.self_modulate.a = 1
+	await get_tree().process_frame
+	$SubViewport/ColorRect.self_modulate.a = 0
+	$TimerClear.start()

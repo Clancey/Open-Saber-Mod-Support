@@ -91,14 +91,13 @@ func _ready():
 	rotation_degrees = offset_rot
 	
 func _process(delta):
-	
 	position = offset_pos
 	rotation_degrees = offset_rot
 	if is_extended():
 		#check floor collision for burn mark
 		$RayCast3D.force_raycast_update()
 		var raycoli = $RayCast3D.get_collider()
-		if raycoli != null and (raycoli.collision_layer*2 & CollisionLayerConstants.Floor_mask):
+		if raycoli != null and (raycoli.collision_layer & CollisionLayerConstants.Floor_mask):
 			var colipoint = $RayCast3D.get_collision_point()
 			raycoli.burn_mark(colipoint,type)
 				
