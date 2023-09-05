@@ -1,4 +1,6 @@
 # Godot Beep Saber VR
+This is a fork of [Beep Saber by NeoSpark314](https://github.com/NeoSpark314/BeepSaber) ported to Godot 4.2 and OpenXR (WIP)
+
 This is a basic implementation of the beat saber game mechanic for VR using the [Godot Game Engine](https://godotengine.org/) and the [Godot Oculus Quest Toolkit](https://github.com/NeoSpark314/godot_oculus_quest_toolkit). The main objective of this project is to show how a VR game can be implemented using
 the Godot game engine.
 
@@ -11,7 +13,7 @@ this stand alone version was forked so that it can be changed and developed inde
 ![screenshot02](doc/images/v0.3.0_screenshot02.jpg)
 ![screenshot03](doc/images/v0.3.0_screenshot03.jpg)
 # About the implementation
-This game uses godot 3.2. The implementation supports to load and play maps from [BeatSaver](https://beatsaver.com/).
+This game uses godot 4.2-dev4. The implementation supports to load and play maps from [BeatSaver](https://beatsaver.com/).
 
 There is one demo song included that is part of the deployed package.
 
