@@ -811,7 +811,8 @@ func _update_points_from_cut(saber, cube, beat_accuracy, cut_angle_accuracy, cut
 	points = round(points);
 	_current_points += points * _current_multiplier;
 #	print(points)
-	$Points_label_driver.show_points(cube.transform.origin,points)
+	
+	$Points_label_driver.show_points(cube.global_position,points)
 	# track acurracy percent
 	var normalized_points = clamp(points/80, 0.0, 1.0);
 #	var normalized_points = clamp(points/100, 0.0, 1.0);

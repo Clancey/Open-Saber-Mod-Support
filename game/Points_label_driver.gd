@@ -14,11 +14,11 @@ func _ready():
 		add_child(points_label[0])
 
 
-func show_points(position=Vector3(),value=0):
+func show_points(_position=Vector3(),value=0):
 	var color = Color(1,1,1)
 	if value == 0:
 		value = "x"
 		color = Color(1,0,0)
-	points_label[current_point_label].show_points(position,value,color)
+	points_label[current_point_label].show_points(_position,value,color)
 	current_point_label += 1
 	current_point_label %= points_label.size()

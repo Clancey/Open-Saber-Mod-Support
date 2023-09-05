@@ -34,3 +34,8 @@ res://game/BeepSaberMainMenu.tscn
 res://game/GodotSplash.tscn
 res://game/LightSaber.gd
 res://game/floor.gd
+res://game/points_label.gd
+res://game/points_label.tscn
+res://game/BeepSaber_Game.gd
+res://game/Points_label_driver.tscn
+res://game/Points_label_driver.gd
