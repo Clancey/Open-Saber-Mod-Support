@@ -124,7 +124,7 @@ func change_light_color(type,color=-1,transition_mode=0):
 		4:
 			group = $Level/t4
 			material = [$Level/t4/Bar1.material_override, $Level/floor.material_override]
-			shader = [$wall_material_holder.material_override]
+			shader = []#[$wall_material_holder.material_override]
 			tween = $Level/t4.create_tween()
 	
 	if not color is Color:

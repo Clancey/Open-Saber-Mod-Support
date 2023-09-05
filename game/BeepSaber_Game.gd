@@ -158,7 +158,6 @@ func restart_map():
 	_full_combo = true;
 
 	_display_points();
-	$event_driver.update_colors()
 	update_saber_colors()
 	if _current_map._events.size() > 0:
 		$event_driver.set_all_off()

@@ -1,15 +1,14 @@
-[gd_scene load_steps=36 format=3 uid="uid://qjvg3reomvyk"]
+[gd_scene load_steps=35 format=3 uid="uid://qjvg3reomvyk"]
 
 [ext_resource type="Script" path="res://game/event_driver.gd" id="2"]
 [ext_resource type="ArrayMesh" uid="uid://cy814avk383k" path="res://game/data/ring.obj" id="3"]
-[ext_resource type="Material" uid="uid://rrfsjs2ep4b2" path="res://game/Wall/wall_new.material" id="4"]
 [ext_resource type="Texture2D" uid="uid://dyrjirngmo2mx" path="res://game/data/background/bg_base.png" id="5"]
 [ext_resource type="Texture2D" uid="uid://dni5frh7n4p12" path="res://game/data/background/bg_2.png" id="6"]
 [ext_resource type="Texture2D" uid="uid://djaa4fvy6pao" path="res://game/data/background/bg_0.png" id="7"]
-[ext_resource type="Texture2D" uid="uid://2tphh7sk1ekp" path="res://game/data/background/bg_4.png" id="8"]
 [ext_resource type="ArrayMesh" uid="uid://ku0r0adowu8p" path="res://game/data/background/endpath.obj" id="8_krd13"]
 [ext_resource type="Texture2D" uid="uid://tunmi5sdu42a" path="res://game/data/background/bg_3.png" id="9"]
 [ext_resource type="Texture2D" uid="uid://mtc2b2mfx2wd" path="res://game/data/background/bg_1.png" id="10"]
+[ext_resource type="Material" uid="uid://mu4iyylnwc38" path="res://game/Wall/wall_new2.material" id="10_3fiaj"]
 
 [sub_resource type="Shader" id="4"]
 code = "shader_type spatial;
@@ -80,7 +79,7 @@ shader_parameter/bg_0 = ExtResource("7")
 shader_parameter/bg_1 = ExtResource("10")
 shader_parameter/bg_2 = ExtResource("6")
 shader_parameter/bg_3 = ExtResource("9")
-shader_parameter/bg_4 = ExtResource("8")
+shader_parameter/bg_4 = ExtResource("10")
 
 [sub_resource type="SphereMesh" id="6"]
 flip_faces = true
@@ -986,4 +985,4 @@ libraries = {
 }
 
 [node name="wall_material_holder" type="MeshInstance3D" parent="."]
-material_override = ExtResource("4")
+material_override = ExtResource("10_3fiaj")

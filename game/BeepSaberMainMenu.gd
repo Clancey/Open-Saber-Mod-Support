@@ -233,8 +233,7 @@ func _on_cover_loaded(img_tex, filepath, is_main_cover, list_idx):
 func _load_cover(cover_path, filename):
 	# parse buffer into an ImageTexture
 	_cover_texture_create_sw.start()
-	var tex = ImageTexture.new();
-	tex.create_from_image(Image.load_from_file(cover_path+filename));
+	var tex = ImageTexture.create_from_image(Image.load_from_file(cover_path+filename));
 	_cover_texture_create_sw.stop()
 	return tex;
 
