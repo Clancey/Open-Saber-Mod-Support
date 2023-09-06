@@ -10,6 +10,11 @@ var rings_in = false;
 @export var disabled = false
 
 func _ready():
+	if not RenderingServer.get_rendering_device():
+		$Level/Sphere.material_override.set_shader_parameter("contrast", 1)
+		for im in range(5):
+			$Level/Sphere.material_override.set_shader_parameter("bg_%s_intensity_mult"%[im], 
+			$Level/Sphere.material_override.get_shader_parameter("bg_%s_intensity_mult"%[im]) * 2.2)
 	if not game:
 		game = get_node(game_path);
 	update_colors()

@@ -846,12 +846,17 @@ var arvr_openxr_interface = null;
 
 var xr_interface: XRInterface
 
-func initialize(initialize_vr = true, refresh_rate = 90):
+func initialize(render_scale = 1.0):
 	_init_vr_log();
 	
 	xr_interface = XRServer.find_interface("OpenXR")
+	if xr_interface: xr_interface.render_target_size_multiplier = render_scale
 	if xr_interface and xr_interface.is_initialized():
 		log_info("OpenXR initialised successfully")
+		var fps = xr_interface.get_available_display_refresh_rates()
+		log_info("avaliable fps: "+str(fps))
+		if fps.size() >= 1:
+			xr_interface.set_display_refresh_rate(fps[fps.size()-1])
 
 		# Turn off v-sync!
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)

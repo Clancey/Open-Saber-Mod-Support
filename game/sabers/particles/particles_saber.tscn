@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://buhdimf18mwbo" path="res://game/sabers/default/tail.tscn" id="8_m1jst"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4m7pm"]
+albedo_color = Color(0, 0, 0, 1)
 emission_enabled = true
 emission = Color(0.207843, 0.207843, 0.207843, 1)
 emission_energy_multiplier = 0.85
@@ -174,6 +175,33 @@ tracks/4/keys = {
 "values": [0.0]
 }
 
+[sub_resource type="Animation" id="Animation_y7mm6"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CPUParticles3D:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("tail:size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.2]
+}
+
 [sub_resource type="Animation" id="5"]
 length = 1.2
 tracks/0/type = "value"
@@ -276,33 +304,6 @@ tracks/7/keys = {
 "values": [0.0, 1.2]
 }
 
-[sub_resource type="Animation" id="Animation_y7mm6"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("CPUParticles3D:emitting")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("tail:size")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [1.2]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_kyofm"]
 _data = {
 "Hide": SubResource("3"),
@@ -387,7 +388,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2554, 0)
 [node name="CPUParticles3D" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.736082, 0)
 emitting = false
-amount = 60
+amount = 50
 lifetime = 1.2
 speed_scale = 2.4
 randomness = 1.0
@@ -412,5 +413,5 @@ attenuation_model = 3
 volume_db = 1.0
 
 [node name="tail" parent="." instance=ExtResource("8_m1jst")]
-transform = Transform3D(1, -4.44089e-16, -3.55271e-14, 2.41362e-17, 0.995731, -0.0120556, 3.90799e-14, 0.0130432, 0.999921, -1.16445e-15, 0.0486887, 7.31344e-09)
+transform = Transform3D(0.999998, 8.32667e-16, -1.45661e-13, 2.41354e-17, 0.995729, -0.0120556, -7.10543e-14, 0.0130432, 0.999924, -1.16445e-15, 0.0486887, 7.31344e-09)
 size = 1.2

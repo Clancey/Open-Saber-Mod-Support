@@ -112,12 +112,13 @@ common/physics_fps=72
 [rendering]
 
 renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 shading/overrides/force_vertex_shading.mobile=false
 shading/overrides/force_lambert_over_burley=true
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)
+vrs/mode=2
 environment/defaults/default_environment="res://default_env.tres"
-quality/driver/driver_name="GLES2"
 quality/intended_usage/framebuffer_allocation=3
 vram_compression/import_etc=true
 lights_and_shadows/shadow_atlas/size=2048
