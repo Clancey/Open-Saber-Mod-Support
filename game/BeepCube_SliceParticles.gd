@@ -1,12 +1,13 @@
 extends Node3D
 class_name BeepCubeSliceParticles
 
-@onready var c1 := $CPUParticles3D
+@onready var c1 := $Particles3D
 
 func _ready():
 	c1.one_shot = true
-	if not RenderingServer.get_rendering_device():
-		c1.queue_free()
+	#disable gpu particles since they don't work correctly on android
+	if OS.get_name() == "Android":
+		c1.free()
 	reset()
 
 func reset():

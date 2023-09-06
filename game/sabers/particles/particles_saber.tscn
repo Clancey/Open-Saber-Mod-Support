@@ -108,7 +108,7 @@ tracks/6/keys = {
 "times": PackedFloat32Array(0, 0.1),
 "transitions": PackedFloat32Array(0, 0),
 "update": 0,
-"values": [1.2, 1.2]
+"values": [0.0, 0.0]
 }
 
 [sub_resource type="Animation" id="4"]
@@ -301,7 +301,7 @@ tracks/7/keys = {
 "times": PackedFloat32Array(0, 0.5),
 "transitions": PackedFloat32Array(0, 0),
 "update": 0,
-"values": [0.0, 1.2]
+"values": [0.0, 1.15]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_kyofm"]
@@ -383,7 +383,7 @@ libraries = {
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.049218, 0)
 
 [node name="tip" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2554, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.255, 0)
 
 [node name="CPUParticles3D" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.736082, 0)
@@ -398,12 +398,12 @@ process_material = SubResource("ParticleProcessMaterial_ijkly")
 draw_pass_1 = SubResource("QuadMesh_ye5bo")
 
 [node name="LightSaber_Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.50312e-16, -3.58433e-09, -0.082, -0.078669, -3.58433e-09, 0, -3.43873e-09, 0.082, -3.58433e-09, -1.15453e-15, 0.0434965, 7.08648e-09)
+transform = Transform3D(1.50944e-16, -3.58433e-09, -0.082, -0.079, -3.58433e-09, 0, -3.4532e-09, 0.082, -3.58433e-09, 0, 0.043, 0)
 material_override = SubResource("13")
 mesh = ExtResource("2")
 
 [node name="RemoteTransform3D" type="RemoteTransform3D" parent="LightSaber_Mesh"]
-transform = Transform3D(2.39808e-14, -12.6572, 0.153244, -5.33065e-07, 0.159063, 12.1942, -12.1951, -6.95289e-09, -5.33023e-07, -0.066, 1.77636e-15, -1.32349e-23)
+transform = Transform3D(2.4869e-14, -12.6557, 0.240074, -5.33065e-07, 0.249189, 12.1928, -12.1951, -1.08924e-08, -5.32962e-07, -0.066, 0, -3.38813e-21)
 remote_path = NodePath("../../tail")
 
 [node name="hitsound" type="AudioStreamPlayer3D" parent="."]
@@ -413,5 +413,5 @@ attenuation_model = 3
 volume_db = 1.0
 
 [node name="tail" parent="." instance=ExtResource("8_m1jst")]
-transform = Transform3D(0.999998, 8.32667e-16, -1.45661e-13, 2.41354e-17, 0.995729, -0.0120556, -7.10543e-14, 0.0130432, 0.999924, -1.16445e-15, 0.0486887, 7.31344e-09)
+transform = Transform3D(0.999998, 1.11022e-16, -1.84741e-13, -5.39674e-17, 0.999804, -0.0189659, -2.84217e-14, 0.0204336, 0.999809, -9.96203e-18, 0.048214, 2.27911e-10)
 size = 1.2

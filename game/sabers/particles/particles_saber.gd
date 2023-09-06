@@ -4,14 +4,14 @@ extends "res://game/sabers/default/default_saber.gd"
 
 func _sub_ready():
 	saber_holder.saber_hit.connect(hit_particles)
-	if not RenderingServer.get_rendering_device():
-		Particles.queue_free()
+	if OS.get_name() == "Android":
+		Particles.free()
 
 var last_tip_pos = Vector3()
 func _process(delta):
 	var current_tip_pos = $tip.global_transform.origin
 	var speed = (current_tip_pos-last_tip_pos).length()
-	if Particles:
+	if is_instance_valid(Particles):
 		Particles.speed_scale = 2.5+(30*speed)
 		#Particles.lifetime = max(0.1, 2-(20*speed))
 	last_tip_pos = current_tip_pos
