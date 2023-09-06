@@ -233,6 +233,7 @@ mouse_filter = 1
 
 [node name="BeepCubePool" parent="." instance=ExtResource("27")]
 Scene = ExtResource("30")
+default_parent = NodePath("../Track")
 
 [connection signal="area_entered" from="OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead" to="." method="_on_PlayerHead_area_entered"]
 [connection signal="area_exited" from="OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead" to="." method="_on_PlayerHead_area_exited"]

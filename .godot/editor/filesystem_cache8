@@ -1,8 +1,8 @@
 fc8a56933c4b1c8d796fdb8f7a9f9475
-::res://::1693974711
+::res://::1693976210
 audiobuslayout.tres::AudioBusLayout::-1::1693615460::0::1::::<><>::
 default_env.tres::Environment::5636673327367591254::1693974099::0::1::::<><>::
-export_presets.cfg::TextFile::-1::1693974672::0::1::::<><>::
+export_presets.cfg::TextFile::-1::1693974769::0::1::::<><>::
 GameMain.gd::GDScript::-1::1693972583::0::1::::<>Node<>::
 GameMain.tscn::PackedScene::3262442458750324624::1693974098::0::1::::<><>::res://GameMain.gd
 icon.png::CompressedTexture2D::7766929767280722646::1693525112::1693898745::1::::<><>::
@@ -23,7 +23,7 @@ StopwatchPanel.tscn::PackedScene::-1::1693615461::0::1::::<><>::res://addons/sto
 Stopwatch.gd::GDScript::-1::1693615461::0::1::::Stopwatch<>RefCounted<>::
 StopwatchFactory.gd::GDScript::-1::1693775685::0::1::::<>Node<>::
 ::res://android/::1693955375
-::res://game/::1693974678
+::res://game/::1693974774
 background.tres::NoiseTexture2D::2792289316322517047::1693615654::0::1::::<><>::
 background_sky.tres::Sky::4113043952982076381::1693972680::0::1::::<><>::uid://dyrjirngmo2mx::::res://game/data/background/bg_base.png
 BeepCube.gd::GDScript::-1::1693694871::0::1::::BeepCube<>Note<>::
@@ -50,7 +50,7 @@ GodotSplash.tscn::PackedScene::4845982667471694631::1693902566::0::1::::<><>::ui
 HighscorePanel.gd::GDScript::-1::1693615461::0::1::::HighscorePanel<>Panel<>::
 HighscorePanel.tscn::PackedScene::5872514975644579658::1693774940::0::1::::<><>::res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme<>res://game/HighscorePanel.gd<>uid://j1wa4gcqkltx
 LightSaber.gd::GDScript::-1::1693891927::0::1::::<>Area3D<>::
-LightSaber.gdshader::Shader::-1::1693974678::0::1::::<><>::
+LightSaber.gdshader::Shader::-1::1693974774::0::1::::<><>::
 LightSaber.material::ShaderMaterial::5298442505030848398::1693952591::0::1::::<><>::res://game/LightSaber.gdshader
 LightSaber.tscn::PackedScene::967496201626911759::1693898136::0::1::::<><>::uid://bw3rjal5qlu0p
 Note.gd::GDScript::-1::1693615461::0::1::::Note<>Node3D<>::
@@ -177,10 +177,10 @@ OQ_RightController.tscn::PackedScene::5285095053538706710::1693902567::0::1::::<
 vr_autoload.gd::GDScript::-1::1693972173::0::1::::<>Node<>::
 ::res://OQ_Toolkit/OQ_ARVRCamera/::1693902567
 Feature_StereoPanorama.tscn::PackedScene::8873522555161226040::1693902567::0::1::::<><>::res://OQ_Toolkit/OQ_ARVRCamera/scripts/Feature_StereoPanorama.gd
-::res://OQ_Toolkit/OQ_ARVRCamera/scripts/::1693974678
+::res://OQ_Toolkit/OQ_ARVRCamera/scripts/::1693974774
 Feature_StereoPanorama.gd::GDScript::-1::1693615462::0::1::::<>Node3D<>::
 OQ_ARVRCamera.gd::GDScript::-1::1693615462::0::1::::<>XRCamera3D<>::
-StereoPanorama.gdshader::Shader::-1::1693974678::0::1::::<><>::
+StereoPanorama.gdshader::Shader::-1::1693974774::0::1::::<><>::
 StereoPanorama.material::ShaderMaterial::7379016316024507324::1693899239::0::1::::<><>::res://OQ_Toolkit/OQ_ARVRCamera/scripts/StereoPanorama.gdshader
 ::res://OQ_Toolkit/OQ_ARVRController/::1693695721
 Feature_AreaObjectGrab.tscn::PackedScene::-1::1693615461::0::1::::<><>::res://OQ_Toolkit/OQ_ARVRController/scripts/Feature_AreaObjectGrab.gd
