@@ -844,10 +844,17 @@ var arvr_open_vr_interface = null;
 var arvr_webxr_interface = null;
 var arvr_openxr_interface = null;
 
+var webxr_initializer
 var xr_interface: XRInterface
 
 func initialize(render_scale = 1.0):
 	_init_vr_log();
+	
+	if OS.get_name() == "Web":
+		var webxr = load("res://game/scripts/webxr/webxr_initializer.tscn").instantiate()
+		add_child(webxr)
+		webxr_initializer = webxr
+		return
 	
 	xr_interface = XRServer.find_interface("OpenXR")
 	if xr_interface: xr_interface.render_target_size_multiplier = render_scale
