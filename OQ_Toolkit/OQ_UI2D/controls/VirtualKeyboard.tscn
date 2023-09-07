@@ -20,13 +20,13 @@ focus_mode = 0
 theme_override_styles/hover = SubResource("1")
 text = "A"
 
-[node name="Container_Letters" type="Container" parent="."]
+[node name="Container_Symbols" type="Container" parent="."]
+visible = false
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Container_Symbols" type="Container" parent="."]
-visible = false
+[node name="Container_Letters" type="Container" parent="."]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0

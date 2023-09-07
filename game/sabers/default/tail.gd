@@ -36,17 +36,20 @@ func _process(delta):
 				var posB = last_pos[i][0]
 				
 				var t = clamp(last_pos[i][1] / time, 0.02, 0.98)
+				var offsetted = clamp(t + (1.0/last_pos.size()), 0.02, 0.98)
 
 				imm_geo.surface_set_uv(Vector2(t,0.98))
 				imm_geo.surface_add_vertex(posA[0])
 				imm_geo.surface_set_uv(Vector2(t,0.02))
 				imm_geo.surface_add_vertex(posA[1])
+				imm_geo.surface_set_uv(Vector2(offsetted,0.02))
 				imm_geo.surface_add_vertex(posB[1])
 
 				imm_geo.surface_set_uv(Vector2(t,0.98))
 				imm_geo.surface_add_vertex(posA[0])
+				imm_geo.surface_set_uv(Vector2(offsetted,0.98))
 				imm_geo.surface_add_vertex(posB[0])
-				imm_geo.surface_set_uv(Vector2(t,0.02))
+				imm_geo.surface_set_uv(Vector2(offsetted,0.02))
 				imm_geo.surface_add_vertex(posB[1])
 				
 				last_pos[i][1] += delta

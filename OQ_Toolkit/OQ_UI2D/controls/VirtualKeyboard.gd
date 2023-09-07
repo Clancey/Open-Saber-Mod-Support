@@ -198,4 +198,4 @@ func set_upper_case(upper_case):
 
 func _ready():
 	_create_keyboard_buttons();
-	pass # Replace with function body.
+	_toggle_symbols(false)

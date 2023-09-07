@@ -99,6 +99,9 @@ var _right_notes = 0;
 var _wrong_notes = 0;
 var _full_combo = true;
 
+#prevents the song for starting from the start when pausing and unpausing
+var pause_position = 0.0;
+
 #settings
 var cube_cuts_falloff = true
 var bombs_enabled = true
@@ -304,6 +307,7 @@ func _on_game_state_entered(state):
 			highscore_keyboard.visible = false;
 			online_search_keyboard.visible = false;
 			
+			pause_position = song_player.get_playback_position()
 			song_player.stop();
 			$PauseMenu_canvas.ui_control.set_pause_text("%s By %s\nMap author: %s" % [_current_info["_songName"],_current_info["_songAuthorName"],_current_info["_levelAuthorName"]],menu._map_difficulty_name)
 		GameState.MapComplete:
@@ -946,7 +950,7 @@ func _on_Pause_Panel_continue_button():
 	$Pause_countdown.visible = false
 	
 	# continue game play
-	song_player.play(song_player.get_playback_position());
+	song_player.play(pause_position);
 	_transition_game_state(GameState.Playing)
 
 func _on_BeepSaberMainMenu_difficulty_changed(map_info, diff_name, diff_rank):
