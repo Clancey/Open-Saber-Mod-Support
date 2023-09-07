@@ -18,3 +18,13 @@ res://game/BeepCube_SliceParticles.tscn
 res://game/scripts/ScenePool/ScenePool.tscn
 res://game/sabers/default/tail.tscn
 res://OQ_Toolkit/OQ_UI2D/controls/VirtualKeyboard.gd
+res://README.md
+res://game/ui/BeatSageUI/BeatSageUI.gd
+res://game/ui/BeatSageUI/BeatSageUI.tscn
+res://game/ui/BeatSaverPanel/BeatSaverPanel.tscn
+res://game/ui/BeatSageUI/BeatSageRequest/BeatSageRequest.tscn
+res://game/settings_Panel.gd
+res://game/BeepSaber_Game.gd
+res://game/settings_Panel.tscn
+res://game/LightSaber.gd
+res://game/LightSaber.tscn

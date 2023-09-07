@@ -23,6 +23,8 @@ signal bomb_collide(bomb)
 
 @export var offset_pos = Vector3()
 @export var offset_rot = Vector3()
+var extra_offset_pos = Vector3()
+var extra_offset_rot = Vector3()
 
 func _show():
 	if (!is_extended()):
@@ -87,12 +89,9 @@ func _ready():
 	# default to using SwingableRaycast collision detection
 	set_collision_mechanism(true)
 	
-	position = offset_pos
-	rotation_degrees = offset_rot
-	
 func _process(delta):
-	position = offset_pos
-	rotation_degrees = offset_rot
+	position = offset_pos + extra_offset_pos
+	rotation_degrees = offset_rot + extra_offset_rot
 	if is_extended():
 		#check floor collision for burn mark
 		$RayCast3D.force_raycast_update()

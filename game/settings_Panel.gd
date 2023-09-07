@@ -15,7 +15,10 @@ var savedata = {
 	bombs_enabled = true,
 	events = true,
 	saber = 0,
-	ui_volume = 10.0
+	ui_volume = 10.0,
+	left_saber_offset = [Vector3.ZERO, Vector3.ZERO],
+	right_saber_offset = [Vector3.ZERO, Vector3.ZERO],
+	disable_map_color = false
 }
 var defaults
 const config_path = "user://config.dat"
@@ -32,6 +35,23 @@ const config_path = "user://config.dat"
 @onready var show_collisions = $ScrollContainer/VBox/show_collisions
 @onready var bombs_enabled = $ScrollContainer/VBox/bombs_enabled
 @onready var ui_volume_slider = $ScrollContainer/VBox/UI_VolumeRow/ui_volume_slider
+@onready var left_saber_offset = [
+	$ScrollContainer/VBox/left_saber_offset/posx,
+	$ScrollContainer/VBox/left_saber_offset/posy,
+	$ScrollContainer/VBox/left_saber_offset/posz,
+	$ScrollContainer/VBox/left_saber_offset/rotx,
+	$ScrollContainer/VBox/left_saber_offset/roty,
+	$ScrollContainer/VBox/left_saber_offset/rotz,
+]
+@onready var right_saber_offset = [
+	$ScrollContainer/VBox/right_saber_offset/posx,
+	$ScrollContainer/VBox/right_saber_offset/posy,
+	$ScrollContainer/VBox/right_saber_offset/posz,
+	$ScrollContainer/VBox/right_saber_offset/rotx,
+	$ScrollContainer/VBox/right_saber_offset/roty,
+	$ScrollContainer/VBox/right_saber_offset/rotz,
+]
+@onready var disable_map_color = $ScrollContainer/VBox/disable_map_color
 
 var sabers = [
 	["Default saber","res://game/sabers/default/default_saber.tscn"],
@@ -75,6 +95,12 @@ func _ready():
 		_on_bombs_enabled_toggled(savedata.bombs_enabled,false)
 	if savedata.has("ui_volume"):
 		_on_ui_volume_slider_value_changed(savedata.ui_volume,false)
+	if savedata.has("disable_map_color"):
+		_on_disable_map_color_toggled(savedata.disable_map_color,false)
+	if savedata.has("left_saber_offset"):
+		_on_left_saber_offset_value_changed(savedata.left_saber_offset,false)
+	if savedata.has("right_saber_offset"):
+		_on_right_saber_offset_value_changed(savedata.right_saber_offset,false)
 		
 	_play_ui_sound_demo = true
 
@@ -217,6 +243,61 @@ func _on_ui_volume_slider_value_changed(value,overwrite=true):
 	else:
 		ui_volume_slider.value = value
 
+
+func _on_left_saber_offset_value_changed(value,overwrite=true):
+	if not value is Array:
+		value = [
+			Vector3(left_saber_offset[0].value,left_saber_offset[1].value,left_saber_offset[2].value),
+			Vector3(left_saber_offset[3].value,left_saber_offset[4].value,left_saber_offset[5].value)]
+	
+	for ls in get_tree().get_nodes_in_group("lightsaber"):
+		if ls.type == 0:
+			ls.extra_offset_pos = value[0]
+			ls.extra_offset_rot = value[1]
+	
+	if overwrite:
+		savedata.left_saber_offset = value
+		save_current_settings()
+	else:
+		left_saber_offset[0].value = value[0].x
+		left_saber_offset[1].value = value[0].y
+		left_saber_offset[2].value = value[0].z
+		left_saber_offset[3].value = value[1].x
+		left_saber_offset[4].value = value[1].y
+		left_saber_offset[5].value = value[1].z
+
+func _on_right_saber_offset_value_changed(value,overwrite=true):
+	if not value is Array:
+		value = [
+			Vector3(right_saber_offset[0].value,right_saber_offset[1].value,right_saber_offset[2].value),
+			Vector3(right_saber_offset[3].value,right_saber_offset[4].value,right_saber_offset[5].value)]
+	
+	for ls in get_tree().get_nodes_in_group("lightsaber"):
+		if ls.type == 1:
+			ls.extra_offset_pos = value[0]
+			ls.extra_offset_rot = value[1]
+	
+	if overwrite:
+		savedata.right_saber_offset = value
+		save_current_settings()
+	else:
+		right_saber_offset[0].value = value[0].x
+		right_saber_offset[1].value = value[0].y
+		right_saber_offset[2].value = value[0].z
+		right_saber_offset[3].value = value[1].x
+		right_saber_offset[4].value = value[1].y
+		right_saber_offset[5].value = value[1].z
+
+func _on_disable_map_color_toggled(toggled_on,overwrite=true):
+	if game:
+		game.disable_map_color = toggled_on
+	
+	if overwrite:
+		savedata.disable_map_color = toggled_on
+		save_current_settings()
+	else:
+		disable_map_color.button_pressed = toggled_on
+
 func _force_update_show_coll_shapes(node):
 	# toggle enable to make engine show collision shapes
 	if node is CollisionShape3D:
@@ -251,3 +332,8 @@ func _on_wipe_check_timeout():
 
 func _on_apply_pressed():
 	emit_signal("apply")
+	$ScrollContainer/VBox/SaberColorsRow/left_saber_col.get_popup().hide()
+	$ScrollContainer/VBox/SaberColorsRow/right_saber_col.get_popup().hide()
+
+
+

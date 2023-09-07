@@ -51,6 +51,7 @@ var COLOR_RIGHT := Color(0.1, 0.1, 1.0, 1.0) : get = _get_color_right
 
 var COLOR_LEFT_ONCE = null;
 var COLOR_RIGHT_ONCE = null;
+var disable_map_color = false;
 
 const CUBE_HEIGHT_OFFSET = 0.4
 const WALL_HEIGHT = 3.0
@@ -476,9 +477,11 @@ func _spawn_note(note, current_beat):
 		track.add_child(note_node);
 
 func _get_color_left():
+	if disable_map_color: return COLOR_LEFT
 	return COLOR_LEFT_ONCE if COLOR_LEFT_ONCE != null else COLOR_LEFT
 
 func _get_color_right():
+	if disable_map_color: return COLOR_RIGHT
 	return COLOR_RIGHT_ONCE if COLOR_RIGHT_ONCE != null else COLOR_RIGHT
 
 # constants used to interpret the '_type' field in map obstacles
