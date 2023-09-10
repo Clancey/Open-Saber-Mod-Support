@@ -63,6 +63,15 @@ func _ready():
 	UI_AudioEngine.attach_children(self)
 	if not game:
 		game = get_node(game_path);
+	
+	if OS.get_name() in ["Web"]:
+		savedata.saber_tail = false
+		savedata.cube_cuts_falloff = false
+		savedata.glare = false
+		savedata.events = false
+		game.get_node("event_driver").visible = false
+		game.get_node("StandingGround").visible = false
+	
 	defaults = savedata.duplicate()
 	if FileAccess.file_exists(config_path):
 		var file = FileAccess.open(config_path,FileAccess.READ)

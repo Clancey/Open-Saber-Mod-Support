@@ -54,21 +54,23 @@ func _ready():
 	$back.visible = false
 	v_scroll.connect("value_changed", _on_ListV_Scroll_value_changed)
 	
-	httpreq.use_threads = true
+	var is_web = OS.get_name() == "Web"
+	
+	if !is_web: httpreq.use_threads = true
 	get_tree().get_root().add_child(httpreq)
 	httpreq.connect("request_completed", _on_HTTPRequest_request_completed)
 	
-	httpdownload.use_threads = true
+	if !is_web: httpdownload.use_threads = true
 	httpdownload.download_chunk_size = 65536
 	get_tree().get_root().add_child(httpdownload)
 	httpdownload.connect("request_completed", _on_HTTPRequest_download_completed)
 	
-	httpcoverdownload.use_threads = true
+	if !is_web: httpcoverdownload.use_threads = true
 	httpcoverdownload.download_chunk_size = 65536
 	get_tree().get_root().add_child(httpcoverdownload)
 	httpcoverdownload.connect("request_completed", _update_cover)
 	
-	httppreviewdownload.use_threads = true
+	if !is_web: httppreviewdownload.use_threads = true
 	httppreviewdownload.download_chunk_size = 65536
 	get_tree().get_root().add_child(httppreviewdownload)
 	httppreviewdownload.connect("request_completed", _on_preview_download_completed)
@@ -85,7 +87,6 @@ func _ready():
 	if parent_canvas != null:
 		parent_canvas.visibility_changed.connect(_on_BeatSaverPanel_visibility_changed)
 	
-
 # override hide() method to handle case where UI is inside a OQ_UI2DCanvas
 func _hide():
 	var parent_canvas = self

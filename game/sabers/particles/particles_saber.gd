@@ -4,7 +4,7 @@ extends "res://game/sabers/default/default_saber.gd"
 
 func _sub_ready():
 	saber_holder.saber_hit.connect(hit_particles)
-	if OS.get_name() == "Android":
+	if OS.get_name() in ["Android","Web"]:
 		Particles.free()
 
 var last_tip_pos = Vector3()

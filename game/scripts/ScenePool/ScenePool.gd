@@ -17,11 +17,21 @@ func _ready():
 		push_error("Scene is null ('%s' ScenePool)" % name)
 		return
 	
-	var pre_cubes = []
+	
+	print("creating initial cube pool")
+	await get_tree().process_frame
+	default_parent.visible = true
+	var init_cubes = []
 	for pp in range(pre_pool):
-		pre_cubes.append(acquire(default_parent, true))
-	for pc in pre_cubes:
-		pc.release()
+		var cube = acquire(default_parent, true)
+		cube.visible = true
+		init_cubes.append(cube)
+		if pp%10 == 0:
+			await get_tree().process_frame
+	#this forces the game to render all of the cubes in a couple of frames to prevent slow downs in the first pool cycle
+	for cube in init_cubes:
+		cube.release()
+	print("cubes in pool: ",_free_list.size())
 
 func acquire(parent: Node = default_parent, force = false):
 	var cube = _free_list.pop_front() if not force else null
@@ -34,8 +44,10 @@ func acquire(parent: Node = default_parent, force = false):
 		cube = new_scene
 	if not cube.is_inside_tree():
 		parent.add_child(cube)
+	#print("cubes in pool: ",_free_list.size())
 	return cube
 
 func _on_scene_released(scene):
+	#_free_list.push_front(scene)
 	_free_list.push_back(scene)
-	#print("pool size: ",_free_list.size())
+	#print("cubes in pool: ",_free_list.size())

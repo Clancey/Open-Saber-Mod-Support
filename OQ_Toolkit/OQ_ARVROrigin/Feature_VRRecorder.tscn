@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://cptqhi2uoupht"]
-
-[ext_resource type="Script" path="res://OQ_Toolkit/OQ_ARVROrigin/scripts/Feature_VRRecorder.gd" id="1"]
-
-[node name="Feature_VRRecorder" type="Node3D"]
-script = ExtResource("1")

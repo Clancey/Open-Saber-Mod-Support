@@ -21,6 +21,7 @@ func _ready():
 		# (which we connected to the "session_supported" signal above) will
 		# be called sometime later to let us know if it's supported or not.
 		webxr_interface.is_session_supported("immersive-vr")
+		
 
 func _webxr_session_supported(session_mode, supported):
 	if session_mode == 'immersive-vr':

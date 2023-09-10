@@ -6,7 +6,7 @@ class_name BeepCubeSliceParticles
 func _ready():
 	c1.one_shot = true
 	#disable gpu particles since they don't work correctly on android
-	if OS.get_name() == "Android":
+	if OS.get_name() in ["Android","Web"]:
 		c1.free()
 	reset()
 
