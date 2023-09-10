@@ -131,7 +131,7 @@ func _on_ResultsList_item_selected(index):
 
 func _on_SearchLineEdit_focus_entered():
 	if is_instance_valid(keyboard):
-		keyboard.show()
+		keyboard._show()
 
 func _on_keybaord_text_input_enter(text):
 	# only handle text inputs while the UI is visible

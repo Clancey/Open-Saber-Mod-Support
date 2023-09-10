@@ -233,13 +233,13 @@ func _on_game_state_entered(state):
 		GameState.Bootup:
 			pass
 		GameState.MapSelection:
-			$MainMenu_OQ_UI2DCanvas.visible = true;
-			$Settings_canvas.visible = false;
-			map_source_dialogs.visible = true;
-			$EndScore_canvas.visible = false;
-			$PauseMenu_canvas.visible = false;
-			highscore_canvas.visible = false;
-			name_selector_canvas.visible = false;
+			$MainMenu_OQ_UI2DCanvas._show();
+			$Settings_canvas._hide();
+			show_MapSourceDialogs(true);
+			$EndScore_canvas._hide();
+			$PauseMenu_canvas._hide();
+			highscore_canvas._hide();
+			name_selector_canvas._hide();
 			left_saber._hide();
 			right_saber._hide();
 			$Multiplier_Label.visible = false;
@@ -248,19 +248,19 @@ func _on_game_state_entered(state):
 			track.visible = false;
 			left_ui_raycast.visible = true;
 			right_ui_raycast.visible = true;
-			highscore_keyboard.visible = false;
-			online_search_keyboard.visible = false;
+			highscore_keyboard._hide();
+			online_search_keyboard._hide();
 			
 			COLOR_LEFT_ONCE = null;
 			COLOR_RIGHT_ONCE = null;
 		GameState.Settings:
-			$MainMenu_OQ_UI2DCanvas.visible = false;
-			$Settings_canvas.visible = true;
-			map_source_dialogs.visible = true;
-			$EndScore_canvas.visible = false;
-			$PauseMenu_canvas.visible = false;
-			highscore_canvas.visible = false;
-			name_selector_canvas.visible = false;
+			$MainMenu_OQ_UI2DCanvas._hide();
+			$Settings_canvas._show();
+			show_MapSourceDialogs(true);
+			$EndScore_canvas._hide();
+			$PauseMenu_canvas._hide();
+			highscore_canvas._hide();
+			name_selector_canvas._hide();
 			left_saber._hide();
 			right_saber._hide();
 			$Multiplier_Label.visible = false;
@@ -269,16 +269,16 @@ func _on_game_state_entered(state):
 			track.visible = false;
 			left_ui_raycast.visible = true;
 			right_ui_raycast.visible = true;
-			highscore_keyboard.visible = false;
-			online_search_keyboard.visible = false;
+			highscore_keyboard._hide();
+			online_search_keyboard._hide();
 		GameState.Playing:
-			$MainMenu_OQ_UI2DCanvas.visible = false;
-			$Settings_canvas.visible = false;
-			map_source_dialogs.visible = false;
-			$EndScore_canvas.visible = false;
-			$PauseMenu_canvas.visible = false;
-			highscore_canvas.visible = false;
-			name_selector_canvas.visible = false;
+			$MainMenu_OQ_UI2DCanvas._hide();
+			$Settings_canvas._hide();
+			show_MapSourceDialogs(false);
+			$EndScore_canvas._hide();
+			$PauseMenu_canvas._hide();
+			highscore_canvas._hide();
+			name_selector_canvas._hide();
 			left_saber._show();
 			right_saber._show();
 			$Multiplier_Label.visible = true;
@@ -287,16 +287,16 @@ func _on_game_state_entered(state):
 			track.visible = true;
 			left_ui_raycast.visible = false;
 			right_ui_raycast.visible = false;
-			highscore_keyboard.visible = false;
-			online_search_keyboard.visible = false;
+			highscore_keyboard._hide();
+			online_search_keyboard._hide();
 		GameState.Paused:
-			$MainMenu_OQ_UI2DCanvas.visible = false;
-			$Settings_canvas.visible = false;
-			map_source_dialogs.visible = false;
-			$EndScore_canvas.visible = false;
-			$PauseMenu_canvas.visible = true;
-			highscore_canvas.visible = false;
-			name_selector_canvas.visible = false;
+			$MainMenu_OQ_UI2DCanvas._hide();
+			$Settings_canvas._hide();
+			show_MapSourceDialogs(false);
+			$EndScore_canvas._hide();
+			$PauseMenu_canvas._show();
+			highscore_canvas._hide();
+			name_selector_canvas._hide();
 #			left_saber._show();
 #			right_saber._show();
 			$Multiplier_Label.visible = true;
@@ -305,8 +305,8 @@ func _on_game_state_entered(state):
 			track.visible = false;
 			left_ui_raycast.visible = true;
 			right_ui_raycast.visible = true;
-			highscore_keyboard.visible = false;
-			online_search_keyboard.visible = false;
+			highscore_keyboard._hide();
+			online_search_keyboard._hide();
 			
 			pause_position = song_player.get_playback_position()
 			song_player.stop();
@@ -314,13 +314,13 @@ func _on_game_state_entered(state):
 		GameState.MapComplete:
 			_endscore_panel().set_buttons_disabled(false)
 			
-			$MainMenu_OQ_UI2DCanvas.visible = false;
-			$Settings_canvas.visible = false;
-			map_source_dialogs.visible = false;
-			$EndScore_canvas.visible = true;
-			$PauseMenu_canvas.visible = false;
-			highscore_canvas.visible = false;
-			name_selector_canvas.visible = false;
+			$MainMenu_OQ_UI2DCanvas._hide();
+			$Settings_canvas._hide();
+			show_MapSourceDialogs(false);
+			$EndScore_canvas._show();
+			$PauseMenu_canvas._hide();
+			highscore_canvas._hide();
+			name_selector_canvas._hide();
 			left_saber._hide();
 			right_saber._hide();
 			$Multiplier_Label.visible = false;
@@ -329,8 +329,8 @@ func _on_game_state_entered(state):
 			track.visible = false;
 			left_ui_raycast.visible = true;
 			right_ui_raycast.visible = true;
-			highscore_keyboard.visible = false;
-			online_search_keyboard.visible = false;
+			highscore_keyboard._hide();
+			online_search_keyboard._hide();
 		GameState.NewHighscore:
 			# populate highscore panel with records
 			_highscore_panel().load_highscores(
@@ -348,11 +348,11 @@ func _on_game_state_entered(state):
 			for player_name in Highscores.get_all_player_names():
 				_name_selector().add_name(player_name)
 			
-			$MainMenu_OQ_UI2DCanvas.visible = false;
-			$Settings_canvas.visible = false;
-			map_source_dialogs.visible = false;
-			$EndScore_canvas.visible = true;
-			$PauseMenu_canvas.visible = false;
+			$MainMenu_OQ_UI2DCanvas._hide();
+			$Settings_canvas._hide();
+			show_MapSourceDialogs(false);
+			$EndScore_canvas._show();
+			$PauseMenu_canvas._hide();
 			highscore_canvas.visible = true;
 			name_selector_canvas.visible = true;
 			left_saber._hide();
@@ -363,10 +363,17 @@ func _on_game_state_entered(state):
 			track.visible = false;
 			left_ui_raycast.visible = true;
 			right_ui_raycast.visible = true;
-			highscore_keyboard.visible = true;
-			online_search_keyboard.visible = false;
+			highscore_keyboard._show();
+			online_search_keyboard._hide();
 		_:
 			vr.log_warning("Unhandled enter event for state %s" % state)
+
+func show_MapSourceDialogs(showing = true):
+	map_source_dialogs.visible = showing
+	for c in map_source_dialogs.get_children():
+		c._hide()
+	if showing:
+		map_source_dialogs.get_child(0)._show()
 
 # when the song ended we want to display the current score and
 # the high score

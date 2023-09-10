@@ -303,11 +303,11 @@ func _on_preview_download_completed(result, response_code, headers, body):
 				'mp3')# bsaver has all it's previews in mp3 format for now
 
 func _on_search_button_up():
-	keyboard.visible=true
+	keyboard._show()
 	keyboard._text_edit.grab_focus();
 
 func _text_input_enter(text):
-	keyboard.visible=false
+	keyboard._hide()
 	search_word = text
 	$mode.text = search_word
 	current_list = -1
@@ -320,7 +320,7 @@ func _text_input_enter(text):
 	update_list(prev_request)
 	
 func _text_input_cancel():
-	keyboard.visible=false
+	keyboard._hide()
 
 
 var _current_cover_to_download = 0

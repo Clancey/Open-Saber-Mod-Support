@@ -47,8 +47,10 @@ func update_size():
 		viewport.set_size(ui_size);
 
 func _hide():
+	viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	hide()
 func _show():
+	viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_PARENT_VISIBLE
 	show()
 
 func _ready():

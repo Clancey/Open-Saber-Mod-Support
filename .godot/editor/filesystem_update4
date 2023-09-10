@@ -20,3 +20,10 @@ res://game/BeepSaberMainMenu.gd
 res://game/scripts/ScenePool/ScenePool.gd
 res://game/BeepCube.tscn
 res://game/scripts/webxr/webxr_initializer.gd
+res://OQ_Toolkit/OQ_UI2D/scripts/OQ_UI2DCanvas.gd
+res://OQ_Toolkit/OQ_UI2D/OQ_UI2DCanvas.tscn
+res://game/BeepSaber_Game.gd
+res://OQ_Toolkit/OQ_UI2D/scripts/OQ_UI2DKeyboard.gd
+res://OQ_Toolkit/OQ_UI2D/controls/VirtualKeyboard.tscn
+res://OQ_Toolkit/OQ_UI2D/OQ_UI2DKeyboard.tscn
+res://game/ui/YouTubeUI/YouTubeUI.gd

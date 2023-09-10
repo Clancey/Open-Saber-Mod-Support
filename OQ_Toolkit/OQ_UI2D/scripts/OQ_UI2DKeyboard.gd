@@ -50,6 +50,16 @@ func _ready():
 	else:
 		$OQ_UI2DCanvas_TextInput.visible = false; # ?? maybe delte the node if not used
 
+func _show():
+	show()
+	$OQ_UI2DCanvas_Keyboard._show()
+	$OQ_UI2DCanvas_TextInput._show()
+	
+func _hide():
+	hide()
+	$OQ_UI2DCanvas_Keyboard._hide()
+	$OQ_UI2DCanvas_TextInput._hide()
+
 func _set_cancelable(value):
 	cancelable = value
 	if _keyboard != null:
