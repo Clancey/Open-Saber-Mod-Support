@@ -10,9 +10,11 @@ config_version=5
 
 [application]
 
-config/name="Beep Saber"
+config/name="Open Saber"
 run/main_scene="res://GameMain.tscn"
 config/features=PackedStringArray("4.2")
+boot_splash/bg_color=Color(0, 0, 0, 1)
+boot_splash/image="res://game/data/beepsaber_logo.png"
 config/icon="res://icon.png"
 
 [audio]

@@ -41,9 +41,8 @@ func initialize(beepsaber_game):
 
 var path = "res://game/data/maps/";
 var dlpath = str(OS.get_system_dir(3))+"/";
-#var bspath = "/sdcard/BeepSaber/";
-#var bspath = "/storage/emulated/0/";
-var bspath = "user://BeepSaber/";
+#var bspath = "/sdcard/OpenSaber/";
+var bspath = "user://OpenSaber/";
 @export var keyboard_path: NodePath;
 var keyboard;
 

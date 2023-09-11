@@ -37,3 +37,8 @@ res://game/PercentIndicator.tscn
 res://game/ui/BeatSaverPanel/BeatSaverPanel.gd
 res://game/Bomb/Bomb.tscn
 res://game/Bomb/BombMesh.tscn
+res://android/build/build/intermediates/assets/debug/mergeDebugAssets/GameMain.gd
+res://OQ_Toolkit/OQ_Helpers/OQ_SplashScreen.tscn
+res://GameMain.gd
+res://game/GodotSplash.tscn
+res://README.md

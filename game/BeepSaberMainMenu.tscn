@@ -3,7 +3,7 @@
 [ext_resource type="Theme" uid="uid://dvcjel72een6o" path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme" id="1"]
 [ext_resource type="FontFile" uid="uid://cdsnr8tscm8y6" path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" id="2"]
 [ext_resource type="Script" path="res://game/BeepSaberMainMenu.gd" id="3"]
-[ext_resource type="Texture2D" uid="uid://j1wa4gcqkltx" path="res://game/data/maps/Songs/TheFatRat_Timelapse/cover.jpg" id="4"]
+[ext_resource type="Texture2D" uid="uid://cviyxvrpvyr0g" path="res://game/data/beepsaber_logo.png" id="3_wpmn0"]
 [ext_resource type="FontFile" uid="uid://01k27lk2a4bw" path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" id="5"]
 [ext_resource type="PackedScene" uid="uid://dtipmx5ep1dkk" path="res://game/vr_slider.tscn" id="6"]
 [ext_resource type="FontVariation" uid="uid://ckoe517v8p3qp" path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard_font.tres" id="7"]
@@ -171,9 +171,9 @@ offset_left = 1050.0
 offset_top = 67.0
 offset_right = 1390.0
 offset_bottom = 320.0
-texture = ExtResource("4")
+texture = ExtResource("3_wpmn0")
 expand_mode = 1
-stretch_mode = 6
+stretch_mode = 5
 
 [node name="SongInfo_Label" type="Label" parent="."]
 layout_mode = 0
