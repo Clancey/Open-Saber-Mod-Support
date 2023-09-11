@@ -703,6 +703,13 @@ func _ready():
 	UI_AudioEngine.attach_children(online_search_keyboard)
 
 	_transition_game_state(GameState.MapSelection)
+	
+	#render common assets for a couple of frames to prevent performance issues when loading them mid game
+	$pre_renderer.visible = true
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	$pre_renderer.queue_free()
 
 func update_saber_colors():
 	left_saber.set_color(COLOR_LEFT)

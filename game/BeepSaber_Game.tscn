@@ -1,8 +1,9 @@
-[gd_scene load_steps=33 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=34 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://crstqa7v6ehg3" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DCanvas.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://iglrdadxsqw4" path="res://game/Wall/Wall.tscn" id="3_73652"]
 [ext_resource type="PackedScene" uid="uid://bj5rqt2kaosrw" path="res://OQ_Toolkit/OQ_ARVROrigin.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://dm1owypcp2llh" path="res://OQ_Toolkit/OQ_ARVRCamera.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://b51lxj766o73h" path="res://OQ_Toolkit/OQ_ARVROrigin/Feature_VRSimulator.tscn" id="6"]
@@ -53,6 +54,16 @@ radius = 0.07
 [node name="BeepSaber" type="Node3D" groups=["main_game"]]
 script = ExtResource("9")
 bomb_template = ExtResource("24")
+
+[node name="pre_renderer" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00581, -5.78464)
+visible = false
+
+[node name="Bomb" parent="pre_renderer" instance=ExtResource("24")]
+
+[node name="Wall" parent="pre_renderer" instance=ExtResource("3_73652")]
+height = 1
+depth = 1
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." groups=["enviroment"]]
 environment = SubResource("1")
