@@ -14,9 +14,9 @@ The main target platform is the Oculus Quest but it should also work with SteamV
 Originally this game was (and still is) a demo game as part of the Godot Oculus Quest Toolkit. To keep the demo implementation small
 this stand alone version was forked so that it can be changed and developed independent of the original demo.
 
-![screenshot01](doc/images/v0.3.0_screenshot01.jpg)
-![screenshot02](doc/images/v0.3.0_screenshot02.jpg)
-![screenshot03](doc/images/v0.3.0_screenshot03.jpg)
+![screenshot01](doc/images/OS0.4.0_1.gif)
+![screenshot02](doc/images/OS0.4.0_2.gif)
+![screenshot03](doc/images/OS0.4.0_3.gif)
 # About the implementation
 This game uses godot 4.2-dev4. The implementation supports to load and play maps from [BeatSaver](https://beatsaver.com/).
 
