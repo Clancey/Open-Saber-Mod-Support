@@ -25,8 +25,9 @@ func _ready():
 	for pp in range(pre_pool):
 		var cube = acquire(default_parent, true)
 		cube.visible = true
+		cube.position.z = -2
 		init_cubes.append(cube)
-		if pp%10 == 0:
+		if pp%4 == 0:
 			await get_tree().process_frame
 	#this forces the game to render all of the cubes in a couple of frames to prevent slow downs in the first pool cycle
 	for cube in init_cubes:

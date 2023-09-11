@@ -1,9 +1,5 @@
 extends StaticBody3D
 
-
-#func _process(delta):
-	#burn_mark()
-
 var last_position = [Vector2(0,-50),Vector2(0,-50)]
 
 var C_LEFT = Color()

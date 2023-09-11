@@ -64,13 +64,12 @@ func _ready():
 	if not game:
 		game = get_node(game_path);
 	
-	if OS.get_name() in ["Web"]:
-		savedata.saber_tail = false
-		savedata.cube_cuts_falloff = false
+	if OS.get_name() in ["Web"] and game:
+		#savedata.saber_tail = false
+		#savedata.cube_cuts_falloff = false
 		savedata.glare = false
-		savedata.events = false
-		game.get_node("event_driver").visible = false
-		game.get_node("StandingGround").visible = false
+		#savedata.events = false
+		game.get_node("StandingGround/SubViewport").render_target_update_mode = SubViewport.UPDATE_DISABLED
 	
 	defaults = savedata.duplicate()
 	if FileAccess.file_exists(config_path):
@@ -199,6 +198,8 @@ func _on_glare_toggled(button_pressed,overwrite=true):
 func _on_d_background_toggled(button_pressed,overwrite=true):
 	if game:
 		game.disable_events(!button_pressed)
+		if OS.get_name() in ["Web"]:
+			game.get_node("event_driver").visible = button_pressed
 	
 	if overwrite:
 		savedata.events = button_pressed

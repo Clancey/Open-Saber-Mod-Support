@@ -323,6 +323,7 @@ var _rumble_duration = -128.0; #-1 means deactivated so applications can also se
 func simple_rumble(intensity, duration):
 	_rumble_intensity = intensity;
 	_rumble_duration = duration;
+	trigger_haptic_pulse("haptic", 20, intensity, duration, 0)
 	
 func is_simple_rumbling():
 	return (_rumble_duration > 0.0);

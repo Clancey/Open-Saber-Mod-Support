@@ -353,8 +353,8 @@ func _on_game_state_entered(state):
 			show_MapSourceDialogs(false);
 			$EndScore_canvas._show();
 			$PauseMenu_canvas._hide();
-			highscore_canvas.visible = true;
-			name_selector_canvas.visible = true;
+			highscore_canvas._show();
+			name_selector_canvas._show();
 			left_saber._hide();
 			right_saber._hide();
 			$Multiplier_Label.visible = false;
@@ -1008,6 +1008,7 @@ func _on_LeftLightSaber_bomb_collide(bomb):
 	# song starts to play again
 	if song_player.playing:
 		_reset_combo()
+		$Points_label_driver.show_points(bomb.transform.origin,0)
 		bomb.queue_free()
 		left_controller.simple_rumble(1.0, 0.15);
 
@@ -1017,6 +1018,7 @@ func _on_RightLightSaber_bomb_collide(bomb):
 	# song starts to play again
 	if song_player.playing:
 		_reset_combo()
+		$Points_label_driver.show_points(bomb.transform.origin,0)
 		bomb.queue_free()
 		right_controller.simple_rumble(1.0, 0.15);
 

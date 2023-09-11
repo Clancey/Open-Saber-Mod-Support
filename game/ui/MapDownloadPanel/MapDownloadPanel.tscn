@@ -42,6 +42,7 @@ image_margin = 50
 description = "Beat Saver is an online collection of custom Beat Saber levels. You can search and download songs based on song title, song artist, or by mapper (level artist)."
 
 [node name="BeatSageButton" parent="Margin/VBox/Grid" instance=ExtResource("2")]
+visible = false
 layout_mode = 2
 texture = ExtResource("5")
 description = "Beat Sage is an AI that creates free custom levels for Beat Saber. Given a song on YouTube, the system will output a Beat Saber level that is matched with that song!"

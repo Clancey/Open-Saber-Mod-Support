@@ -29,6 +29,7 @@ func ui_raycast_hit_event(position, click, release):
 		#if (release): print("Release");
 
 		viewport.push_input(e);
+		get_parent()._input_update()
 		
 	elif (last_pos2d != null && last_pos2d != pos2d):
 		var e = InputEventMouseMotion.new();
@@ -38,6 +39,7 @@ func ui_raycast_hit_event(position, click, release):
 		e.position = pos2d;
 		
 		viewport.push_input(e);
+		get_parent()._input_update()
 	last_pos2d = pos2d;
 
 

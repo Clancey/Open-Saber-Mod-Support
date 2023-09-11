@@ -14,6 +14,7 @@ var ui_collisionshape = null;
 
 # set to true to prevent UIRayCast marker from colliding with canvas
 @export var disable_collision := false;
+@export var update_only_on_input := false;
 
 var mesh_material = null;
 @onready var mesh_instance : MeshInstance3D = $UIArea/UIMeshInstance
@@ -29,6 +30,7 @@ func _get_configuration_warnings():
 func _input(event):
 	if (event is InputEventKey):
 		viewport.push_input(event);
+		_input_update()
 
 
 func find_child_control():
@@ -50,7 +52,11 @@ func _hide():
 	viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	hide()
 func _show():
-	viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_PARENT_VISIBLE
+	if !update_only_on_input:
+		viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_PARENT_VISIBLE
+	else:
+		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+		_input_update()
 	show()
 
 func _ready():
@@ -89,8 +95,14 @@ func _editor_update_preview():
 	
 	viewport.add_child(preview_node);
 
+func _input_update():
+	if update_only_on_input:
+		$update_once.update_once(viewport)
+	else:
+		viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_PARENT_VISIBLE
 
 func _process(_dt):
+	
 	if !Engine.is_editor_hint(): # not in edtior
 		if disable_collision:
 			ui_collisionshape.disabled = true;
@@ -98,7 +110,6 @@ func _process(_dt):
 			# if we are invisible we need to disable the collision shape to avoid interaction with the UIRayCast
 			ui_collisionshape.disabled = not is_visible_in_tree()
 		return;
-		
 
 	# Not sure if it is a good idea to do this in the _process but at the moment it seems to 
 	# be the easiest to show the actual canvas size inside the editor

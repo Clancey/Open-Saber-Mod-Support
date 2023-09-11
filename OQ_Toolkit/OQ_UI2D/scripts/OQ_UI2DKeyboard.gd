@@ -54,6 +54,7 @@ func _show():
 	show()
 	$OQ_UI2DCanvas_Keyboard._show()
 	$OQ_UI2DCanvas_TextInput._show()
+	_text_edit.grab_focus()
 	
 func _hide():
 	hide()

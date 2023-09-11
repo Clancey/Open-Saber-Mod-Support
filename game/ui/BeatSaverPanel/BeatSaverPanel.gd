@@ -177,6 +177,10 @@ func _on_HTTPRequest_request_completed(result, response_code, headers, body):
 	$mode.disabled = false
 	$back.visible = back_stack.size() > 0
 	_scroll_page_request_pending = false
+	
+	var canvas = get_parent().get_parent()
+	if canvas.has_method("_input_update"): canvas._input_update()
+	
 	_update_all_covers()
 
 
@@ -289,7 +293,9 @@ func _on_HTTPRequest_download_completed(result, response_code, headers, body):
 	else:
 		$Label.text = "Download error"
 		vr.log_info("download error "+str(result))
-		
+	
+	var canvas = get_parent().get_parent()
+	if canvas.has_method("_input_update"): canvas._input_update()
 	download_next()
 		
 func _on_preview_download_completed(result, response_code, headers, body):
@@ -348,6 +354,10 @@ func _update_cover(result, response_code, headers, body):
 		var img_tex = ImageTexture.create_from_image(img)
 		$ItemList.set_item_icon(_current_cover_to_download,img_tex)
 	_current_cover_to_download += 1
+	
+	var canvas = get_parent().get_parent()
+	if canvas.has_method("_input_update"): canvas._input_update()
+	
 	update_next_cover()
 
 func _on_gotoMapsBy_pressed():

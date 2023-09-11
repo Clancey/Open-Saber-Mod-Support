@@ -102,6 +102,8 @@ func set_label_text(t: String):
 			resize_auto();
 		ResizeModes.FIXED:
 			resize_fixed();
+	if !Engine.is_editor_hint():
+		$update_once.update_once($SubViewport)
 			
 func _process(_dt):
 	if Engine.is_editor_hint():

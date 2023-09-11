@@ -14,6 +14,7 @@ script = ExtResource("3")
 
 [node name="OQ_UI2DCanvas_TextInput" parent="." instance=ExtResource("1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+update_only_on_input = false
 
 [node name="TextEdit" type="TextEdit" parent="OQ_UI2DCanvas_TextInput"]
 offset_right = 512.0

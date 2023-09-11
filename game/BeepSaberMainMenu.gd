@@ -105,6 +105,10 @@ func _load_playlists():
 		_most_played_songs.append(tuple[1])
 	
 	refresh_playlist()
+	
+	var canvas = get_parent().get_parent()
+	if canvas.has_method("_input_update"):
+		canvas._input_update()
 
 # compare two tuples
 # this is used to sort songs by most recently downloaded, most player, etc
@@ -483,8 +487,8 @@ func _on_LoadPlaylists_Button_pressed():
 	# Note: this call is non-blocking; so a user has to click again after
 	#       granting the permissions; we need to find a solutio for this
 	#       maybe polling after the button press?
-	if (_check_and_request_permission()):
-		_load_playlists();
+	_check_and_request_permission()
+	_load_playlists()
 
 
 func _on_Search_Button_button_up():

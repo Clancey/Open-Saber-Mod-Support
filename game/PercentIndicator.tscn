@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://bcdbec8ps1nbs"]
+[gd_scene load_steps=9 format=3 uid="uid://bcdbec8ps1nbs"]
 
 [ext_resource type="FontFile" uid="uid://cdsnr8tscm8y6" path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" id="2"]
 [ext_resource type="Texture2D" uid="uid://cvbisnhbooqsv" path="res://game/data/UI/ring.png" id="3"]
 [ext_resource type="Script" path="res://game/PercentIndicator.gd" id="4"]
+[ext_resource type="Script" path="res://OQ_Toolkit/OQ_UI2D/scripts/update_viewport_once.gd" id="4_53tik"]
 
 [sub_resource type="FontFile" id="1"]
 fallbacks = Array[Font]([ExtResource("2")])
@@ -985,3 +986,6 @@ vertical_alignment = 1
 libraries = {
 "": SubResource("AnimationLibrary_h8lms")
 }
+
+[node name="update_once" type="Node" parent="."]
+script = ExtResource("4_53tik")

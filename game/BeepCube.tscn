@@ -107,7 +107,6 @@ monitoring = false
 shape = SubResource("2")
 
 [node name="CubeMeshAnimation" type="Node3D" parent="CubeMeshOrientation"]
-transform = Transform3D(-0.1, -8.74228e-09, 0, 8.74228e-09, -0.1, 0, 0, 0, 0.1, 0, 0, -2)
 
 [node name="BeepCube_Mesh" type="MeshInstance3D" parent="CubeMeshOrientation/CubeMeshAnimation"]
 transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
