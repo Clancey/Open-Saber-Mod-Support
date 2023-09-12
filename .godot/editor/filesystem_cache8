@@ -1,13 +1,13 @@
 fc8a56933c4b1c8d796fdb8f7a9f9475
-::res://::1694403281
+::res://::1694500093
 audiobuslayout.tres::AudioBusLayout::-1::1693615460::0::1::::<><>::
 default_env.tres::Environment::5636673327367591254::1694402979::0::1::::<><>::
-export_presets.cfg::TextFile::-1::1694403146::0::1::::<><>::
+export_presets.cfg::TextFile::-1::1694403309::0::1::::<><>::
 GameMain.gd::GDScript::-1::1694402535::0::1::::<>Node<>::
 GameMain.tscn::PackedScene::3262442458750324624::1694402977::0::1::::<><>::res://GameMain.gd
 icon.png::CompressedTexture2D::7766929767280722646::1694401717::1694401749::1::::<><>::
 openxr_action_map.tres::OpenXRActionMap::3318702749007985095::1693871172::0::1::::<><>::
-README.md::TextFile::-1::1694403039::0::1::::<><>::
+README.md::TextFile::-1::1694405355::0::1::::<><>::
 ::res://addons/::1693955351
 ::res://addons/godotopenxr/::1690956370
 GodotOpenXRLoaders_CHANGES.md::TextFile::-1::1690956370::0::1::::<><>::
@@ -23,7 +23,7 @@ StopwatchPanel.tscn::PackedScene::-1::1693615461::0::1::::<><>::res://addons/sto
 Stopwatch.gd::GDScript::-1::1693615461::0::1::::Stopwatch<>RefCounted<>::
 StopwatchFactory.gd::GDScript::-1::1693775685::0::1::::<>Node<>::
 ::res://android/::1693955375
-::res://game/::1694403190
+::res://game/::1694403331
 background.tres::NoiseTexture2D::2792289316322517047::1693615654::0::1::::<><>::
 background_sky.tres::Sky::4113043952982076381::1694375616::0::1::::<><>::uid://dyrjirngmo2mx::::res://game/data/background/bg_base.png
 BeepCube.gd::GDScript::-1::1693976925::0::1::::BeepCube<>Note<>::
@@ -50,7 +50,7 @@ GodotSplash.tscn::PackedScene::4845982667471694631::1694402979::0::1::::<><>::ui
 HighscorePanel.gd::GDScript::-1::1693615461::0::1::::HighscorePanel<>Panel<>::
 HighscorePanel.tscn::PackedScene::5872514975644579658::1693774940::0::1::::<><>::res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme<>res://game/HighscorePanel.gd<>uid://j1wa4gcqkltx
 LightSaber.gd::GDScript::-1::1694050366::0::1::::<>Area3D<>::
-LightSaber.gdshader::Shader::-1::1694403190::0::1::::<><>::
+LightSaber.gdshader::Shader::-1::1694403331::0::1::::<><>::
 LightSaber.material::ShaderMaterial::5298442505030848398::1693952591::0::1::::<><>::res://game/LightSaber.gdshader
 LightSaber.tscn::PackedScene::967496201626911759::1694402977::0::1::::<><>::uid://bw3rjal5qlu0p::::res://game/sabers/default/default_saber.tscn<>res://game/LightSaber.gd<>uid://chkilqvhyqt37::::res://game/scripts/SwingableRayCast/SwingableRayCast.tscn
 Note.gd::GDScript::-1::1693615461::0::1::::Note<>Node3D<>::
@@ -72,7 +72,7 @@ bomb.glb::PackedScene::4318398527428631295::1693541393::1693898749::1::::<><>::
 Bomb.tscn::PackedScene::2183318543071305159::1694402979::0::1::::<><>::uid://cxpnql8hhru8j::::res://game/Bomb/BombMesh.tscn<>res://game/Bomb/Bomb.gd
 BombMaterial.tres::StandardMaterial3D::-1::1693615461::0::1::::<><>::
 BombMesh.tscn::PackedScene::6418968960043778003::1694402979::0::1::::<><>::uid://b2r4nmdou52r8::::res://game/Bomb/bomb.glb
-::res://game/data/::1694403190
+::res://game/data/::1694403331
 BeepCube.material::StandardMaterial3D::-1::1693525112::0::1::::<><>::res://game/data/BeepCube_Emission.png
 beepcube_cut.ogg::AudioStreamOggVorbis::7285224296985209529::1693525112::1693898745::1::::<><>::
 BeepCube_Emission.png::CompressedTexture2D::8358456758755041468::1694402083::1694402084::1::::<><>::
@@ -81,7 +81,7 @@ beep_saber.theme::Theme::-1::1693525112::0::1::::<><>::res://OQ_Toolkit/OQ_UI2D/
 button_background.png::CompressedTexture2D::493739971827838743::1693525112::1693898745::1::::<><>::
 click_002.ogg::AudioStreamOggVorbis::9010486377045141584::1693541393::1693898745::1::::<><>::
 cube.gltf::PackedScene::4914611256337965369::1693897997::1693970995::1::::<><>::
-glow.gdshader::Shader::-1::1694403190::0::1::::<><>::
+glow.gdshader::Shader::-1::1694403331::0::1::::<><>::
 gradient.png::CompressedTexture2D::5258617318105819724::1693525112::1693898745::1::::<><>::
 lightsaber.ogg::AudioStreamOggVorbis::92076618295227084::1693525112::1693898745::1::::<><>::
 ring.obj::Mesh::191974368922121062::1693525112::1693898745::1::::<><>::

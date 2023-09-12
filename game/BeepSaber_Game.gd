@@ -163,7 +163,7 @@ func restart_map():
 
 	_display_points();
 	update_saber_colors()
-	if _current_map._events.size() > 0:
+	if _current_map.has("_events") and _current_map._events.size() > 0:
 		$event_driver.set_all_off()
 	else:
 		$event_driver.set_all_on()
@@ -172,6 +172,9 @@ func restart_map():
 	_transition_game_state(GameState.Playing)
 
 func start_map(info, map_data, map_difficulty = ""):
+	if !map_data.has("_notes"): 
+		print("Map has no '_notes'")
+		return
 	_current_map = map_data;
 	_current_info = info;
 	
@@ -187,20 +190,21 @@ func set_colors_from_map(info, map_difficulty):
 	COLOR_LEFT_ONCE = null
 	COLOR_RIGHT_ONCE = null
 	var roots = []
-	if info.has("_customData"): 
-		roots.append(info["_customData"])
-	if info["_difficultyBeatmapSets"][0]["_difficultyBeatmaps"][map_difficulty].has("_customData"): 
-		roots.append(info["_difficultyBeatmapSets"][0]["_difficultyBeatmaps"][map_difficulty]["_customData"])
-	for r in roots:
-		if r.has("_envColorRightBoost") and r.has("_envColorLeftBoost"):
-			COLOR_LEFT_ONCE = Color(
-				r["_envColorLeftBoost"].get("r",COLOR_LEFT.r),
-				r["_envColorLeftBoost"].get("g",COLOR_LEFT.g),
-				r["_envColorLeftBoost"].get("b",COLOR_LEFT.b))
-			COLOR_RIGHT_ONCE = Color(
-				r["_envColorRightBoost"].get("r",COLOR_RIGHT.r),
-				r["_envColorRightBoost"].get("g",COLOR_RIGHT.g),
-				r["_envColorRightBoost"].get("b",COLOR_RIGHT.b))
+	for color_name in ["_envColor%sBoost", "_envColor%s", "_color%s"]:
+		if info.has("_customData"): 
+			roots.append(info["_customData"])
+		if info["_difficultyBeatmapSets"][0]["_difficultyBeatmaps"][map_difficulty].has("_customData"): 
+			roots.append(info["_difficultyBeatmapSets"][0]["_difficultyBeatmaps"][map_difficulty]["_customData"])
+		for r in roots:
+			if r.has(color_name%["Right"]) and r.has(color_name%["Left"]):
+				COLOR_LEFT_ONCE = Color(
+					r[color_name%["Left"]].get("r",COLOR_LEFT.r),
+					r[color_name%["Left"]].get("g",COLOR_LEFT.g),
+					r[color_name%["Left"]].get("b",COLOR_LEFT.b))
+				COLOR_RIGHT_ONCE = Color(
+					r[color_name%["Right"]].get("r",COLOR_RIGHT.r),
+					r[color_name%["Right"]].get("g",COLOR_RIGHT.g),
+					r[color_name%["Right"]].get("b",COLOR_RIGHT.b))
 
 # This function will transitioning the game from it's current state into
 # the provided 'next_state'.

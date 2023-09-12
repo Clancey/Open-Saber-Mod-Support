@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://crstqa7v6ehg3"]
+[gd_scene load_steps=8 format=3 uid="uid://crstqa7v6ehg3"]
 
 [ext_resource type="Script" path="res://OQ_Toolkit/OQ_UI2D/scripts/OQ_UI2DCanvas.gd" id="1"]
 [ext_resource type="Script" path="res://OQ_Toolkit/OQ_UI2D/scripts/helper_UIArea.gd" id="2"]
@@ -8,10 +8,14 @@
 margin = 0.001
 size = Vector3(1, 1, 0.001)
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_q5ibf"]
+viewport_path = NodePath("SubViewport")
+
 [sub_resource type="StandardMaterial3D" id="3"]
 resource_local_to_scene = true
 cull_mode = 2
 shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_q5ibf")
 
 [sub_resource type="PlaneMesh" id="4"]
 resource_local_to_scene = true
