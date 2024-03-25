@@ -215,8 +215,9 @@ func mix_dificulty_sets(map_info):
 			if ds.get("_beatmapCharacteristicName") != "Standard":
 				if not d.has("_customData"):
 					d["_customData"] = {}
-				d["_customData"]["_difficultyLabel"] = (
-					str(ds.get("_beatmapCharacteristicName"))+" "+d["_customData"]["_difficultyLabel"])
+				if d["_customData"].has(["_difficultyLabel"]):
+					d["_customData"]["_difficultyLabel"] = (
+						str(ds.get("_beatmapCharacteristicName"))+" "+d["_customData"]["_difficultyLabel"])
 			newset.append(d)
 	map_info._difficultyBeatmapSets[0] = {
 		"_beatmapCharacteristicName": "Lightshow",

@@ -28,6 +28,9 @@ enum GameState {
 @onready var name_selector_canvas := $NameSelector_Canvas
 @onready var highscore_keyboard := $Keyboard_highscore
 
+@onready var multiplier_label: MeshInstance3D = $Multiplier_Label
+@onready var point_label: MeshInstance3D = $Point_Label
+
 @onready var map_source_dialogs := $MapSourceDialogs
 @onready var online_search_keyboard := $Keyboard_online_search
 
@@ -90,7 +93,7 @@ var _current_diff_name = -1;
 var _current_diff_rank = -1;
 
 
-var _current_points = 0;
+var _current_points := 0;
 var _current_multiplier = 1;
 var _current_combo = 0;
 
@@ -246,8 +249,8 @@ func _on_game_state_entered(state):
 			name_selector_canvas._hide();
 			left_saber._hide();
 			right_saber._hide();
-			$Multiplier_Label.visible = false;
-			$Point_Label.visible = false;
+			multiplier_label.visible = false;
+			point_label.visible = false;
 			$Percent.visible = false;
 			track.visible = false;
 			left_ui_raycast.visible = true;
@@ -267,8 +270,8 @@ func _on_game_state_entered(state):
 			name_selector_canvas._hide();
 			left_saber._hide();
 			right_saber._hide();
-			$Multiplier_Label.visible = false;
-			$Point_Label.visible = false;
+			multiplier_label.visible = false;
+			point_label.visible = false;
 			$Percent.visible = false;
 			track.visible = false;
 			left_ui_raycast.visible = true;
@@ -285,8 +288,8 @@ func _on_game_state_entered(state):
 			name_selector_canvas._hide();
 			left_saber._show();
 			right_saber._show();
-			$Multiplier_Label.visible = true;
-			$Point_Label.visible = true;
+			multiplier_label.visible = true;
+			point_label.visible = true;
 			$Percent.visible = true;
 			track.visible = true;
 			left_ui_raycast.visible = false;
@@ -301,10 +304,8 @@ func _on_game_state_entered(state):
 			$PauseMenu_canvas._show();
 			highscore_canvas._hide();
 			name_selector_canvas._hide();
-#			left_saber._show();
-#			right_saber._show();
-			$Multiplier_Label.visible = true;
-			$Point_Label.visible = true;
+			multiplier_label.visible = true;
+			point_label.visible = true;
 			$Percent.visible = true;
 			track.visible = false;
 			left_ui_raycast.visible = true;
@@ -327,8 +328,8 @@ func _on_game_state_entered(state):
 			name_selector_canvas._hide();
 			left_saber._hide();
 			right_saber._hide();
-			$Multiplier_Label.visible = false;
-			$Point_Label.visible = false;
+			multiplier_label.visible = false;
+			point_label.visible = false;
 			$Percent.visible = false;
 			track.visible = false;
 			left_ui_raycast.visible = true;
@@ -361,8 +362,8 @@ func _on_game_state_entered(state):
 			name_selector_canvas._show();
 			left_saber._hide();
 			right_saber._hide();
-			$Multiplier_Label.visible = false;
-			$Point_Label.visible = false;
+			multiplier_label.visible = false;
+			point_label.visible = false;
 			$Percent.visible = false;
 			track.visible = false;
 			left_ui_raycast.visible = true;
@@ -808,9 +809,6 @@ func _clear_track():
 			c.queue_free();
 
 func _update_points_from_cut(saber, cube, beat_accuracy, cut_angle_accuracy, cut_distance_accuracy, travel_distance_factor):
-	#if (beat_accuracy == 0.0 || cut_angle_accuracy == 0.0 || cut_distance_accuracy == 0.0):
-	#	_reset_combo();
-	#	return;
 	
 	#send data to saber for esthetics effects
 	saber.hit(cube) 
@@ -819,7 +817,7 @@ func _update_points_from_cut(saber, cube, beat_accuracy, cut_angle_accuracy, cut
 	if (saber.type != cube._note._type):
 		_reset_combo();
 		_wrong_notes += 1.0
-		$Points_label_driver.show_points(cube.transform.origin,0)
+		$Points_label_driver.show_points(cube.transform.origin,"x")
 		return;
 
 	_current_combo += 1;
@@ -834,13 +832,10 @@ func _update_points_from_cut(saber, cube, beat_accuracy, cut_angle_accuracy, cut
 
 	points = round(points);
 	_current_points += points * _current_multiplier;
-#	print(points)
 	
-	$Points_label_driver.show_points(cube.global_position,points)
+	$Points_label_driver.show_points(cube.transform.origin,str(points))
 	# track acurracy percent
 	var normalized_points = clamp(points/80, 0.0, 1.0);
-#	var normalized_points = clamp(points/100, 0.0, 1.0);
-#	print(normalized_points)
 	_right_notes += normalized_points;
 	_wrong_notes += 1.0-normalized_points;
 
@@ -853,9 +848,9 @@ func _display_points():
 	if _right_notes+_wrong_notes > 0:
 		current_percent = int((_right_notes/(_right_notes+_wrong_notes))*100)
 	
-	$Point_Label.set_label_text("Score: %6d" % _current_points);
+	(point_label.mesh as TextMesh).text = "Score:%6d" % _current_points
 	$Percent.ui_control.set_percent(current_percent)
-	$Multiplier_Label.set_label_text("x %d\nCombo %d" %[_current_multiplier, _current_combo])
+	(multiplier_label.mesh as TextMesh).text = "x %d\nCombo %d" % [_current_multiplier, _current_combo]
 
 # perform the necessay computations to cut a cube with the saber
 func _cut_cube(controller : XRController3D, saber : Area3D, cube : Node3D):
@@ -1019,7 +1014,7 @@ func _on_LeftLightSaber_bomb_collide(bomb):
 	# song starts to play again
 	if song_player.playing:
 		_reset_combo()
-		$Points_label_driver.show_points(bomb.transform.origin,0)
+		$Points_label_driver.show_points(bomb.transform.origin,"x")
 		bomb.queue_free()
 		left_controller.simple_rumble(1.0, 0.15);
 
@@ -1029,7 +1024,7 @@ func _on_RightLightSaber_bomb_collide(bomb):
 	# song starts to play again
 	if song_player.playing:
 		_reset_combo()
-		$Points_label_driver.show_points(bomb.transform.origin,0)
+		$Points_label_driver.show_points(bomb.transform.origin,"x")
 		bomb.queue_free()
 		right_controller.simple_rumble(1.0, 0.15);
 

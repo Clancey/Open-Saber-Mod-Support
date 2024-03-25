@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=38 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
@@ -50,6 +50,31 @@ fog_density = 0.0015
 
 [sub_resource type="SphereShape3D" id="2"]
 radius = 0.07
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8ccdl"]
+shading_mode = 0
+disable_receive_shadows = true
+
+[sub_resource type="TextMesh" id="TextMesh_cx1im"]
+material = SubResource("StandardMaterial3D_8ccdl")
+text = "Multiplier
+"
+font_size = 6
+horizontal_alignment = 0
+vertical_alignment = 0
+depth = 0.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0v1t3"]
+shading_mode = 0
+disable_receive_shadows = true
+
+[sub_resource type="TextMesh" id="TextMesh_0bbpk"]
+material = SubResource("StandardMaterial3D_0v1t3")
+text = "Score"
+font_size = 6
+horizontal_alignment = 0
+vertical_alignment = 0
+depth = 0.0
 
 [node name="BeepSaber" type="Node3D" groups=["main_game"]]
 script = ExtResource("9")
@@ -133,19 +158,15 @@ transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1.5, -1)
 [node name="BeepSaberMainMenu" parent="MainMenu_OQ_UI2DCanvas" instance=ExtResource("11")]
 keyboard_path = NodePath("../../Keyboard_highscore")
 
-[node name="Multiplier_Label" parent="." instance=ExtResource("2")]
-transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 1, -1.55441, 1.30572, -2.69107)
-text = "Multiplier"
-margin = 0
-background_color = Color(0, 0, 0, 0)
-transparent = true
+[node name="Multiplier_Label" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 1.375, -2.5)
+mesh = SubResource("TextMesh_cx1im")
+skeleton = NodePath("")
 
-[node name="Point_Label" parent="." instance=ExtResource("2")]
-transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 1, 1.47323, 1.30572, -2.69107)
-text = "Score"
-margin = 0
-background_color = Color(0, 0, 0, 0)
-transparent = true
+[node name="Point_Label" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.75, 1.375, -2.5)
+mesh = SubResource("TextMesh_0bbpk")
+skeleton = NodePath("")
 
 [node name="Percent" parent="." instance=ExtResource("3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5455, 0.895287, -2.54167)
