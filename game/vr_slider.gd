@@ -55,10 +55,10 @@ func _process(delta):
 	
 	var newpos = -vr.rightController.rotation_degrees.x-(vr.rightController.transform.origin.y*20)
 	if is_mouse_in:
-		if vr.button_pressed(vr.BUTTON.RIGHT_INDEX_TRIGGER):
+		if vr.rightController.trigger_pressed():
 			# Scroll via "click & drag"
 			v_scroll.value += ((relpos-newpos)*20)
-		elif enable_joystick_scrolling && ! vr.rightController.is_hand:
+		elif enable_joystick_scrolling:
 			# Scroll via joystick
 			var y_joy = vr.rightController.get_vector2("primary").y
 			if abs(y_joy) > JOYSTICK_SCROLL_THRESHOLD:

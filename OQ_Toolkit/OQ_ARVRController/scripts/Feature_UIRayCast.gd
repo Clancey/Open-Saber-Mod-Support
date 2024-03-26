@@ -23,29 +23,17 @@ var is_colliding := false;
 func _set_raycast_transform():
 	# woraround for now until there is a more standardized way to know the controller
 	# orientation
+	ui_raycast_position.transform = Transform3D();
 	
-	
-	if (controller.is_hand):
+	# center the ray cast better to the actual controller position
+	if (adjust_left_right):
+		ui_raycast_position.position.y = -0.005;
+		ui_raycast_position.position.z = -0.01;
 		
-		if (vr.ovrBaseAPI):
-			ui_raycast_position.transform = controller.transform.inverse() * vr.ovrBaseAPI.get_pointer_pose(controller.controller_id);
-#		else:
-#			ui_raycast_position.transform.basis = Basis(Vector3(deg_to_rad(-90),0,0));
-	else:
-		ui_raycast_position.transform = Transform3D();
-		
-		# center the ray cast better to the actual controller position
-		if (adjust_left_right):
-			ui_raycast_position.position.y = -0.005;
-			ui_raycast_position.position.z = -0.01;
-		
-			if (controller.controller_id == 1):
-				ui_raycast_position.position.x = -0.01;
-			if (controller.controller_id == 2):
-				ui_raycast_position.position.x =  0.01;
-		
-	
-		
+		if (controller.controller_id == 1):
+			ui_raycast_position.position.x = -0.01;
+		if (controller.controller_id == 2):
+			ui_raycast_position.position.x =  0.01;
 
 func _update_raycasts():
 	ui_raycast_hitmarker.visible = false;
@@ -71,14 +59,8 @@ func _update_raycasts():
 		var c = ui_raycast.get_collider();
 		if (!c.has_method("ui_raycast_hit_event")): return;
 		
-		var click = false;
-		var release = false;
-		if (controller.is_hand):
-			click = controller._button_just_pressed(hand_click_button);
-			release = controller._button_just_released(hand_click_button);
-		else:
-			click = controller._button_just_pressed(ui_raycast_click_button);
-			release = controller._button_just_released(ui_raycast_click_button);
+		var click = controller.trigger_just_pressed()
+		var release = controller.trigger_just_released()
 		
 		var position = ui_raycast.get_collision_point();
 		ui_raycast_hitmarker.visible = true;

@@ -326,19 +326,6 @@ func _on_show_collisions_toggled(button_pressed):
 	# must toggle 
 	_force_update_show_coll_shapes(get_tree().root)
 
-#check if A, B and right thumbstick buttons are pressed at the same time to delete settings
-func _on_wipe_check_timeout():
-	if game == null:
-		return
-	
-	if (game.menu.visible
-		and ((vr.button_pressed(vr.BUTTON.A) 
-		and vr.button_pressed(vr.BUTTON.B)
-		and vr.button_pressed(vr.BUTTON.RIGHT_THUMBSTICK) 
-		or Input.is_action_pressed("ui_page_up") and Input.is_action_pressed("ui_page_down")))
-		):
-			DirAccess.remove_absolute(config_path)
-			get_tree().change_scene_to_file("res://GameMain.tscn")
 
 func _on_apply_pressed():
 	emit_signal("apply")

@@ -15,8 +15,10 @@ enum GameState {
 }
 
 
-@onready var left_controller := $OQ_ARVROrigin/OQ_LeftController;
-@onready var right_controller := $OQ_ARVROrigin/OQ_RightController;
+@onready var left_controller: OQ_ARVRController = $OQ_ARVROrigin/OQ_LeftController
+@onready var right_controller: OQ_ARVRController = $OQ_ARVROrigin/OQ_RightController
+@onready var dominant_hand := right_controller
+@onready var non_dominant_hand := left_controller
 
 @onready var left_saber := $OQ_ARVROrigin/OQ_LeftController/LeftLightSaber;
 @onready var right_saber := $OQ_ARVROrigin/OQ_RightController/RightLightSaber;
@@ -599,9 +601,6 @@ func _spawn_event(data,beat):
 
 # with this variable we track the movement volume of the controller
 # since the last cut (used to give a higher score when moved a lot)
-#var _controller_movement_aabb = [
-	#AABB(), AABB(), AABB()
-#]
 var _controller_movement_aabb = {
 	"left_hand" = AABB(),
 	"right_hand" = AABB(),
@@ -613,14 +612,13 @@ func _update_controller_movement_aabb(controller : XRController3D):
 	_controller_movement_aabb[id] = aabb;
 
 
-func _check_and_update_saber(controller : XRController3D, saber: Area3D):
+func _check_and_update_saber(controller: OQ_ARVRController, saber: Area3D):
 	# to allow extending/sheething the saber while not playing a song
-	if (!song_player.playing):
-		if (controller._button_just_pressed(vr.CONTROLLER_BUTTON.XA) ||
-			controller._button_just_pressed(vr.CONTROLLER_BUTTON.YB)):
-				if (!saber._anim.is_playing()):
-					if (saber.is_extended()): saber._hide();
-					else: saber._show();
+	if ((not song_player.playing)
+		and (controller.ax_just_pressed() or controller.by_just_pressed())
+		and (not saber._anim.is_playing())):
+		if (saber.is_extended()): saber._hide()
+		else: saber._show()
 					
 	
 	# check for saber rumble (only when extended and not already rumbling)
@@ -657,7 +655,7 @@ func _physics_process(dt):
 		fps_label.set_label_text("FPS: %d" % Engine.get_frames_per_second())
 	
 	# pause game when player presses menu button
-	if (vr.button_just_released(vr.BUTTON.ENTER) or vr.button_just_released(6)):
+	if non_dominant_hand.by_just_pressed():
 		if _current_game_state == GameState.Playing:
 			_transition_game_state(GameState.Paused)
 
@@ -688,13 +686,6 @@ func _ready():
 	$MapSourceDialogs/BeatSaver_Canvas.ui_control.main_menu_node = _main_menu
 
 	update_saber_colors()
-	
-	# This is a workaround for now to orient correctly for the Vive controllers
-	#if (vr.active_arvr_interface_name == "OpenVR"):
-		#left_saber.rotation_degrees.x = -90;
-		#right_saber.rotation_degrees.x = -90;
-		#left_ui_raycast.rotation_degrees.x = 0;
-		#right_ui_raycast.rotation_degrees.x = 0; 
 
 	# initialize list of cut cube resources
 	for _i in range(MAX_CUT_CUBE_RESOURCES):
@@ -781,9 +772,7 @@ func _create_cut_rigid_body(_sign, cube : Node3D, cutplane : Plane, cut_distance
 	# some impulse so the cube half moves
 	var cutplane_2d = Vector3(saber_end_mov.x,saber_end_mov.y,0.0)
 	var splitplane_2d = cutplane_2d.cross(piece.mesh.transform.basis.z)
-#	_sign *= rot_dir_flt
 	piece.rigid_body.apply_central_impulse((_sign * splitplane_2d * 15) + (cutplane_2d*10))
-	#piece.rigid_body.apply_torque_impulse((_sign) * Vector3.FORWARD * 0.15)
 	
 	# This function gets run twice so we don't want two particle effects
 	if is_equal_approx(_sign,1):
@@ -848,7 +837,7 @@ func _display_points():
 	if _right_notes+_wrong_notes > 0:
 		current_percent = int((_right_notes/(_right_notes+_wrong_notes))*100)
 	
-	(point_label.mesh as TextMesh).text = "Score:%6d" % _current_points
+	(point_label.mesh as TextMesh).text = "Score: %6d" % _current_points
 	$Percent.ui_control.set_percent(current_percent)
 	(multiplier_label.mesh as TextMesh).text = "x %d\nCombo %d" % [_current_multiplier, _current_combo]
 

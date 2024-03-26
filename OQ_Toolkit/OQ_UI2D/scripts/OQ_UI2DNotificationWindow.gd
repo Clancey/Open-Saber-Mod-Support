@@ -13,9 +13,8 @@ func _remove_notification_window():
 	queue_free();
 	
 func _physics_process(dt):
-	if ((vr.button_just_pressed(vr.BUTTON.X) && vr.button_pressed(vr.BUTTON.A))
-		|| (vr.button_just_pressed(vr.BUTTON.A) && vr.button_pressed(vr.BUTTON.X))):
+	if (vr.leftController.ax_just_pressed()
+		or vr.rightController.ax_just_pressed()):
 		_remove_notification_window();
 	elif autoremove_distance > 0 && (global_transform.origin - vr.vrCamera.global_transform.origin).length() > autoremove_distance:
 		_remove_notification_window();
-
