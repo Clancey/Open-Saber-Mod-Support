@@ -1,8 +1,0 @@
-res://default_env.tres
-res://game/points_label.tscn
-res://game/background_sky.tres
-res://game/BlackWhiteThem.tres
-res://game/BeepSaber_Game.tscn
-res://game/Points_label_driver.tscn
-res://game/points_label.gd
-res://game/Points_label_driver.gd
