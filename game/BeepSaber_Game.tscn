@@ -24,7 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://dmuvh1rllcn3e" path="res://game/Points_label_driver.tscn" id="22"]
 [ext_resource type="PackedScene" uid="uid://cpwxp083qm1jq" path="res://game/HighscorePanel.tscn" id="23"]
 [ext_resource type="PackedScene" uid="uid://6du64wi28yi6" path="res://game/Bomb/Bomb.tscn" id="24"]
-[ext_resource type="PackedScene" path="res://game/ui/NameSelector/NameSelector.tscn" id="25"]
+[ext_resource type="PackedScene" uid="uid://cj71atwq2eow8" path="res://game/ui/NameSelector/NameSelector.tscn" id="25"]
 [ext_resource type="PackedScene" uid="uid://cb8ftj7lpxrfy" path="res://game/ui/YouTubeUI/YouTubeUI.tscn" id="26"]
 [ext_resource type="PackedScene" uid="uid://cjirr6sfxfhhd" path="res://game/scripts/ScenePool/ScenePool.tscn" id="27"]
 [ext_resource type="PackedScene" uid="uid://dkqqtux44xxe7" path="res://game/ui/MapDownloadPanel/MapDownloadPanel.tscn" id="28"]
