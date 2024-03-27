@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://i5nhm2p2kqay"]
+
+[ext_resource type="Script" path="res://game/EndScore.gd" id="1_jacne"]
+[ext_resource type="PackedScene" uid="uid://63fr72w7kh2w" path="res://game/PercentIndicator.tscn" id="2_dpn16"]
+
+[node name="EndScore" type="Node3D"]
+script = ExtResource("1_jacne")
+
+[node name="PercentIndicator" parent="." instance=ExtResource("2_dpn16")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0.1)

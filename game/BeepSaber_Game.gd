@@ -32,6 +32,7 @@ enum GameState {
 
 @onready var multiplier_label: MeshInstance3D = $Multiplier_Label
 @onready var point_label: MeshInstance3D = $Point_Label
+@onready var percent_indicator: PercentIndicator = $Percent_Indicator
 
 @onready var map_source_dialogs := $MapSourceDialogs
 @onready var online_search_keyboard := $Keyboard_online_search
@@ -101,8 +102,8 @@ var _current_combo = 0;
 
 var _in_wall = false;
 
-var _right_notes = 0;
-var _wrong_notes = 0;
+var _right_notes := 0.0;
+var _wrong_notes := 0.0;
 var _full_combo = true;
 
 #prevents the song for starting from the start when pausing and unpausing
@@ -166,7 +167,8 @@ func restart_map():
 	_wrong_notes = 0.0
 	_full_combo = true;
 
-	_display_points();
+	_display_points()
+	percent_indicator.start_map()
 	update_saber_colors()
 	if _current_map.has("_events") and _current_map._events.size() > 0:
 		$event_driver.set_all_off()
@@ -253,7 +255,7 @@ func _on_game_state_entered(state):
 			right_saber._hide();
 			multiplier_label.visible = false;
 			point_label.visible = false;
-			$Percent.visible = false;
+			percent_indicator.visible = false;
 			track.visible = false;
 			left_ui_raycast.visible = true;
 			right_ui_raycast.visible = true;
@@ -274,7 +276,7 @@ func _on_game_state_entered(state):
 			right_saber._hide();
 			multiplier_label.visible = false;
 			point_label.visible = false;
-			$Percent.visible = false;
+			percent_indicator.visible = false;
 			track.visible = false;
 			left_ui_raycast.visible = true;
 			right_ui_raycast.visible = true;
@@ -292,7 +294,7 @@ func _on_game_state_entered(state):
 			right_saber._show();
 			multiplier_label.visible = true;
 			point_label.visible = true;
-			$Percent.visible = true;
+			percent_indicator.visible = true;
 			track.visible = true;
 			left_ui_raycast.visible = false;
 			right_ui_raycast.visible = false;
@@ -308,7 +310,7 @@ func _on_game_state_entered(state):
 			name_selector_canvas._hide();
 			multiplier_label.visible = true;
 			point_label.visible = true;
-			$Percent.visible = true;
+			percent_indicator.visible = true;
 			track.visible = false;
 			left_ui_raycast.visible = true;
 			right_ui_raycast.visible = true;
@@ -332,7 +334,7 @@ func _on_game_state_entered(state):
 			right_saber._hide();
 			multiplier_label.visible = false;
 			point_label.visible = false;
-			$Percent.visible = false;
+			percent_indicator.visible = false;
 			track.visible = false;
 			left_ui_raycast.visible = true;
 			right_ui_raycast.visible = true;
@@ -366,7 +368,7 @@ func _on_game_state_entered(state):
 			right_saber._hide();
 			multiplier_label.visible = false;
 			point_label.visible = false;
-			$Percent.visible = false;
+			percent_indicator.visible = false;
 			track.visible = false;
 			left_ui_raycast.visible = true;
 			right_ui_raycast.visible = true;
@@ -398,8 +400,20 @@ func _on_song_ended():
 		highscore = _current_points;
 		new_record = true
 
-	var current_percent = int((_right_notes/(_right_notes+_wrong_notes))*100)
+	var current_percent := _right_notes/(_right_notes+_wrong_notes)
 	$EndScore_canvas.ui_control.show_score(
+		_current_points,
+		highscore,
+		int(current_percent*100),
+		"%s By %s\n%s     Map author: %s" % [
+			_current_info["_songName"],
+			_current_info["_songAuthorName"],
+			menu._map_difficulty_name,
+			_current_info["_levelAuthorName"]],
+		_full_combo,
+		new_record
+		)
+	$EndScore_canvas/EndScore.show_score(
 		_current_points,
 		highscore,
 		current_percent,
@@ -410,7 +424,7 @@ func _on_song_ended():
 			_current_info["_levelAuthorName"]],
 		_full_combo,
 		new_record
-		)
+	)
 	
 	if Highscores.is_new_highscore(_current_info,_current_diff_rank,_current_points):
 		_transition_game_state(GameState.NewHighscore)
@@ -650,7 +664,7 @@ func _update_saber_end_variabless(dt):
 	last_dt = dt
 
 
-func _physics_process(dt):
+func _physics_process(dt: float) -> void:
 	if fps_label.visible:
 		fps_label.set_label_text("FPS: %d" % Engine.get_frames_per_second())
 	
@@ -833,13 +847,15 @@ func _update_points_from_cut(saber, cube, beat_accuracy, cut_angle_accuracy, cut
 
 
 func _display_points():
-	var current_percent = 100
+	var hit_rate: float
 	if _right_notes+_wrong_notes > 0:
-		current_percent = int((_right_notes/(_right_notes+_wrong_notes))*100)
+		hit_rate = _right_notes/(_right_notes+_wrong_notes)
+	else:
+		hit_rate = 1.0
 	
 	(point_label.mesh as TextMesh).text = "Score: %6d" % _current_points
-	$Percent.ui_control.set_percent(current_percent)
 	(multiplier_label.mesh as TextMesh).text = "x %d\nCombo %d" % [_current_multiplier, _current_combo]
+	percent_indicator.update_percent(hit_rate)
 
 # perform the necessay computations to cut a cube with the saber
 func _cut_cube(controller : XRController3D, saber : Area3D, cube : Node3D):

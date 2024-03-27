@@ -35,16 +35,6 @@ func show_score(score,record,percent,song_string="",is_full_combo=false,is_new_r
 		letter_score = "F"
 	
 	$char.text = "[center]"+letter_score
-	
-	var tw = create_tween()
-	tw.set_trans(Tween.TRANS_QUAD)
-	tw.set_ease(Tween.EASE_OUT)
-	tw.tween_property(self,"animated_percent",percent,3).from(0)
-	tw.play()
-	while tw.is_running():
-		$pi/percent_indicator.set_percent(animated_percent,false)
-		await get_tree().process_frame
-	_on_Tween_tween_completed()
 
 func set_buttons_disabled(disabled):
 	$Repeat.disabled = disabled
@@ -52,7 +42,7 @@ func set_buttons_disabled(disabled):
 
 func _on_Tween_tween_completed():
 	var tw = create_tween()
-	$pi/percent_indicator.set_percent(animated_percent,true)
+	#$pi/percent_indicator.set_percent(animated_percent,true)
 	tw.set_trans(Tween.TRANS_QUAD)
 	tw.set_ease(Tween.EASE_IN_OUT)
 	tw.set_parallel()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=39 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
@@ -15,11 +15,12 @@
 [ext_resource type="PackedScene" uid="uid://cisgyiarwaf2i" path="res://OQ_Toolkit/OQ_ARVRController/Feature_UIRayCast.tscn" id="12"]
 [ext_resource type="PackedScene" uid="uid://qjvg3reomvyk" path="res://game/event_driver.tscn" id="13"]
 [ext_resource type="Sky" uid="uid://byunh6ley5hib" path="res://game/background_sky.tres" id="14"]
-[ext_resource type="PackedScene" uid="uid://bcdbec8ps1nbs" path="res://game/PercentIndicator.tscn" id="16"]
+[ext_resource type="PackedScene" uid="uid://63fr72w7kh2w" path="res://game/PercentIndicator.tscn" id="16"]
 [ext_resource type="PackedScene" uid="uid://b7hskiadc7t0r" path="res://game/EndScore_panel.tscn" id="17"]
-[ext_resource type="PackedScene" path="res://game/Pause_Panel.tscn" id="18"]
+[ext_resource type="PackedScene" uid="uid://f53k0dxxtenr" path="res://game/Pause_Panel.tscn" id="18"]
 [ext_resource type="PackedScene" uid="uid://biylg2wsontn3" path="res://game/settings_Panel.tscn" id="19"]
 [ext_resource type="PackedScene" uid="uid://383dbnh6gxd3" path="res://game/ui/BeatSaverPanel/BeatSaverPanel.tscn" id="20"]
+[ext_resource type="PackedScene" uid="uid://i5nhm2p2kqay" path="res://game/EndScore.tscn" id="20_fgfws"]
 [ext_resource type="PackedScene" uid="uid://spe4kya7ntv8" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DKeyboard.tscn" id="21"]
 [ext_resource type="PackedScene" uid="uid://dmuvh1rllcn3e" path="res://game/Points_label_driver.tscn" id="22"]
 [ext_resource type="PackedScene" uid="uid://cpwxp083qm1jq" path="res://game/HighscorePanel.tscn" id="23"]
@@ -57,8 +58,8 @@ disable_receive_shadows = true
 
 [sub_resource type="TextMesh" id="TextMesh_cx1im"]
 material = SubResource("StandardMaterial3D_8ccdl")
-text = "Multiplier
-"
+text = "x 0
+Combo 000"
 font_size = 6
 horizontal_alignment = 0
 vertical_alignment = 0
@@ -70,9 +71,8 @@ disable_receive_shadows = true
 
 [sub_resource type="TextMesh" id="TextMesh_0bbpk"]
 material = SubResource("StandardMaterial3D_0v1t3")
-text = "Score"
+text = "Score: 000000"
 font_size = 6
-horizontal_alignment = 2
 vertical_alignment = 0
 depth = 0.0
 
@@ -164,15 +164,13 @@ mesh = SubResource("TextMesh_cx1im")
 skeleton = NodePath("")
 
 [node name="Point_Label" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.75, 1.375, -2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.375, -2.5)
 mesh = SubResource("TextMesh_0bbpk")
 skeleton = NodePath("")
 
-[node name="Percent" parent="." instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5455, 0.895287, -2.54167)
-transparent = true
-
-[node name="percent_indicator" parent="Percent" instance=ExtResource("16")]
+[node name="Percent_Indicator" parent="." instance=ExtResource("16")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, -2.5)
+skeleton = NodePath("")
 
 [node name="EndScore_canvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(1.91111, 0, 0, 0, 1.91111, 0, 0, 0, 1.91111, 0, 1.60386, -0.777581)
@@ -180,6 +178,8 @@ visible = false
 update_only_on_input = false
 
 [node name="EndScore_panel" parent="EndScore_canvas" instance=ExtResource("17")]
+
+[node name="EndScore" parent="EndScore_canvas" instance=ExtResource("20_fgfws")]
 
 [node name="PauseMenu_canvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(1.86849, 0, 0, 0, 1.86849, 0, 0, 0, 1.86849, 0, 1.43532, -0.756856)
