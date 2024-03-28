@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=38 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
@@ -16,7 +16,6 @@
 [ext_resource type="PackedScene" uid="uid://qjvg3reomvyk" path="res://game/event_driver.tscn" id="13"]
 [ext_resource type="Sky" uid="uid://byunh6ley5hib" path="res://game/background_sky.tres" id="14"]
 [ext_resource type="PackedScene" uid="uid://63fr72w7kh2w" path="res://game/PercentIndicator.tscn" id="16"]
-[ext_resource type="PackedScene" uid="uid://b7hskiadc7t0r" path="res://game/EndScore_panel.tscn" id="17"]
 [ext_resource type="PackedScene" uid="uid://f53k0dxxtenr" path="res://game/Pause_Panel.tscn" id="18"]
 [ext_resource type="PackedScene" uid="uid://biylg2wsontn3" path="res://game/settings_Panel.tscn" id="19"]
 [ext_resource type="PackedScene" uid="uid://383dbnh6gxd3" path="res://game/ui/BeatSaverPanel/BeatSaverPanel.tscn" id="20"]
@@ -172,14 +171,8 @@ skeleton = NodePath("")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, -2.5)
 skeleton = NodePath("")
 
-[node name="EndScore_canvas" parent="." instance=ExtResource("3")]
-transform = Transform3D(1.91111, 0, 0, 0, 1.91111, 0, 0, 0, 1.91111, 0, 1.60386, -0.777581)
-visible = false
-update_only_on_input = false
-
-[node name="EndScore_panel" parent="EndScore_canvas" instance=ExtResource("17")]
-
-[node name="EndScore" parent="EndScore_canvas" instance=ExtResource("20_fgfws")]
+[node name="EndScore" parent="." instance=ExtResource("20_fgfws")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.60386, -0.777581)
 
 [node name="PauseMenu_canvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(1.86849, 0, 0, 0, 1.86849, 0, 0, 0, 1.86849, 0, 1.43532, -0.756856)
@@ -279,8 +272,8 @@ default_parent = NodePath("../Track")
 [connection signal="cube_collide" from="OQ_ARVROrigin/OQ_RightController/RightLightSaber" to="." method="_on_RightLightSaber_cube_collide"]
 [connection signal="difficulty_changed" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_on_BeepSaberMainMenu_difficulty_changed"]
 [connection signal="settings_requested" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_on_BeepSaberMainMenu_settings_requested"]
-[connection signal="goto_mainmenu" from="EndScore_canvas/EndScore_panel" to="." method="_on_EndScore_panel_goto_mainmenu"]
-[connection signal="repeat" from="EndScore_canvas/EndScore_panel" to="." method="_on_EndScore_panel_repeat"]
+[connection signal="mainmenu" from="EndScore" to="." method="_on_EndScore_panel_goto_mainmenu"]
+[connection signal="repeat" from="EndScore" to="." method="_on_EndScore_panel_repeat"]
 [connection signal="continue_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_on_Pause_Panel_continue_button"]
 [connection signal="mainmenu_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_on_EndScore_panel_goto_mainmenu"]
 [connection signal="restart_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_on_EndScore_panel_repeat"]

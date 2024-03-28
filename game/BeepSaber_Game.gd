@@ -29,6 +29,7 @@ enum GameState {
 @onready var highscore_canvas := $Highscores_Canvas
 @onready var name_selector_canvas := $NameSelector_Canvas
 @onready var highscore_keyboard := $Keyboard_highscore
+@onready var endscore := $EndScore as EndScore
 
 @onready var multiplier_label: MeshInstance3D = $Multiplier_Label
 @onready var point_label: MeshInstance3D = $Point_Label
@@ -247,7 +248,7 @@ func _on_game_state_entered(state):
 			$MainMenu_OQ_UI2DCanvas._show();
 			$Settings_canvas._hide();
 			show_MapSourceDialogs(true);
-			$EndScore_canvas._hide();
+			endscore.hide();
 			$PauseMenu_canvas._hide();
 			highscore_canvas._hide();
 			name_selector_canvas._hide();
@@ -268,7 +269,7 @@ func _on_game_state_entered(state):
 			$MainMenu_OQ_UI2DCanvas._hide();
 			$Settings_canvas._show();
 			show_MapSourceDialogs(true);
-			$EndScore_canvas._hide();
+			endscore.hide();
 			$PauseMenu_canvas._hide();
 			highscore_canvas._hide();
 			name_selector_canvas._hide();
@@ -286,7 +287,7 @@ func _on_game_state_entered(state):
 			$MainMenu_OQ_UI2DCanvas._hide();
 			$Settings_canvas._hide();
 			show_MapSourceDialogs(false);
-			$EndScore_canvas._hide();
+			endscore.hide();
 			$PauseMenu_canvas._hide();
 			highscore_canvas._hide();
 			name_selector_canvas._hide();
@@ -304,7 +305,7 @@ func _on_game_state_entered(state):
 			$MainMenu_OQ_UI2DCanvas._hide();
 			$Settings_canvas._hide();
 			show_MapSourceDialogs(false);
-			$EndScore_canvas._hide();
+			endscore.hide();
 			$PauseMenu_canvas._show();
 			highscore_canvas._hide();
 			name_selector_canvas._hide();
@@ -321,12 +322,12 @@ func _on_game_state_entered(state):
 			song_player.stop();
 			$PauseMenu_canvas.ui_control.set_pause_text("%s By %s\nMap author: %s" % [_current_info["_songName"],_current_info["_songAuthorName"],_current_info["_levelAuthorName"]],menu._map_difficulty_name)
 		GameState.MapComplete:
-			_endscore_panel().set_buttons_disabled(false)
+			endscore.set_buttons_disabled(false)
 			
 			$MainMenu_OQ_UI2DCanvas._hide();
 			$Settings_canvas._hide();
 			show_MapSourceDialogs(false);
-			$EndScore_canvas._show();
+			endscore.show();
 			$PauseMenu_canvas._hide();
 			highscore_canvas._hide();
 			name_selector_canvas._hide();
@@ -345,7 +346,7 @@ func _on_game_state_entered(state):
 			_highscore_panel().load_highscores(
 				_current_info,_current_diff_rank)
 			
-			_endscore_panel().set_buttons_disabled(true)
+			endscore.set_buttons_disabled(true)
 			
 			# fill name selector with most recent player names
 			_name_selector().clear_names()
@@ -360,7 +361,7 @@ func _on_game_state_entered(state):
 			$MainMenu_OQ_UI2DCanvas._hide();
 			$Settings_canvas._hide();
 			show_MapSourceDialogs(false);
-			$EndScore_canvas._show();
+			endscore.show();
 			$PauseMenu_canvas._hide();
 			highscore_canvas._show();
 			name_selector_canvas._show();
@@ -401,19 +402,7 @@ func _on_song_ended():
 		new_record = true
 
 	var current_percent := _right_notes/(_right_notes+_wrong_notes)
-	$EndScore_canvas.ui_control.show_score(
-		_current_points,
-		highscore,
-		int(current_percent*100),
-		"%s By %s\n%s     Map author: %s" % [
-			_current_info["_songName"],
-			_current_info["_songAuthorName"],
-			menu._map_difficulty_name,
-			_current_info["_levelAuthorName"]],
-		_full_combo,
-		new_record
-		)
-	$EndScore_canvas/EndScore.show_score(
+	endscore.show_score(
 		_current_points,
 		highscore,
 		current_percent,
@@ -925,9 +914,6 @@ func _louden_song():
 func _highscore_panel() -> HighscorePanel:
 	return highscore_canvas.ui_control
 	
-func _endscore_panel() -> EndScorePanel:
-	return $EndScore_canvas.ui_control
-	
 # accessor method for the player name selector UI element
 func _name_selector() -> NameSelector:
 	return name_selector_canvas.ui_control
@@ -949,7 +935,7 @@ func _on_PlayerHead_area_exited(area):
 
 func _on_EndScore_panel_repeat():
 	restart_map()
-	$EndScore_canvas.visible = false
+	endscore.visible = false
 	$PauseMenu_canvas.visible = false
 
 

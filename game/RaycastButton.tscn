@@ -1,0 +1,43 @@
+[gd_scene load_steps=8 format=3 uid="uid://bxsfwm7o1kryl"]
+
+[ext_resource type="Script" path="res://game/RaycastButton.gd" id="1_xb2lf"]
+[ext_resource type="Shader" path="res://game/UI_Panel.gdshader" id="1_yg4af"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ovdvl"]
+margin = 0.001
+size = Vector3(0.25, 0.063, 0.001)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jqx3k"]
+render_priority = 0
+shader = ExtResource("1_yg4af")
+shader_parameter/size = Vector2(1, 1)
+shader_parameter/highlight = 0.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_yo6nj"]
+material = SubResource("ShaderMaterial_jqx3k")
+size = Vector2(0.25, 0.063)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5pi6w"]
+shading_mode = 0
+disable_receive_shadows = true
+
+[sub_resource type="TextMesh" id="TextMesh_tkjex"]
+material = SubResource("StandardMaterial3D_5pi6w")
+text = "Button"
+font_size = 4
+depth = 0.0
+
+[node name="RaycastButton" type="Area3D"]
+collision_mask = 0
+script = ExtResource("1_xb2lf")
+size = Vector2(0.25, 0.063)
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_ovdvl")
+
+[node name="BackPanel" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_yo6nj")
+
+[node name="Text" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.025)
+mesh = SubResource("TextMesh_tkjex")

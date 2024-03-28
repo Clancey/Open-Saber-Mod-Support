@@ -18,6 +18,7 @@ var controller : XRController3D = null;
 const hand_click_button := vr.CONTROLLER_BUTTON.XA;
 
 var is_colliding := false;
+var colliding_with: Object = null
 
 
 func _set_raycast_transform():
@@ -54,9 +55,11 @@ func _update_raycasts():
 		
 	ui_raycast.force_raycast_update(); # need to update here to get the current position; else the marker laggs behind
 	
-	
-	if ui_raycast.is_colliding():
-		var c = ui_raycast.get_collider();
+	var c := ui_raycast.get_collider()
+	if c != colliding_with and colliding_with != null and colliding_with.has_method("ui_raycast_exit"):
+		colliding_with.ui_raycast_exit()
+	colliding_with = c
+	if c:
 		if (!c.has_method("ui_raycast_hit_event")): return;
 		
 		var click = controller.trigger_just_pressed()
