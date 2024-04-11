@@ -121,7 +121,7 @@ func randomArrayElement(rng, array):
 # Note: if you want to use it with .json files that are part of your project you 
 #       need to make sure they are exported by including *.json in the 
 #       ExportSettings->Resources->Filters options
-func load_json_file(filename):
+func load_json_file(filename) -> Dictionary:
 	var save = FileAccess.open(filename, FileAccess.READ);
 	if save:
 		var r = JSON.parse_string(save.get_as_text())
@@ -129,7 +129,7 @@ func load_json_file(filename):
 		return r;
 	else:
 		#vr.log_error("Could not load_json_file from " + filename);
-		return null;
+		return {}
 
 ###############################################################################
 # Controller Handling

@@ -1,4 +1,5 @@
 extends Panel
+class_name PausePanel
 
 signal continue_button()
 signal restart_button()

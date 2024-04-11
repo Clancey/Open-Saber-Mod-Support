@@ -1,4 +1,5 @@
 extends Node3D
+class_name UIRayCast
 
 @export var active := true;
 @export var ui_raycast_length := 3.0;

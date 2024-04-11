@@ -2,6 +2,7 @@
 # here I only track the extended/sheethed state and provide helper functions to
 # trigger the necessary animations
 extends Area3D
+class_name LightSaber
 
 # the type of note this saber can cut (0 -> left, 1 -> right)
 @export var type = 0 # (int, 0, 1)

@@ -1,42 +1,43 @@
 # This file contains the main game logic for the BeepSaber demo implementation
 #
 extends Node3D
+class_name BeepSaber_Game
 
-enum GameState {
-	Bootup,
-	MapSelection,
-	Settings,
-	Playing,
-	Paused,
-	# song ended and we're showing the player their final score
-	MapComplete,
-	# song ended and we're waiting for player to enter name for highscore
-	NewHighscore
-}
+var gamestate_bootup := GameState.new()
+var gamestate_mapcomplete := GameStateMapComplete.new()
+var gamestate_mapselection := GameStateMapSelection.new()
+var gamestate_newhighscore := GameStateNewHighScore.new()
+var gamestate_paused := GameStatePaused.new()
+var gamestate_playing := GameStatePlaying.new()
+var gamestate_settings := GameStateSettings.new()
+var gamestate: GameState = gamestate_bootup
 
-
-@onready var left_controller: OQ_ARVRController = $OQ_ARVROrigin/OQ_LeftController
-@onready var right_controller: OQ_ARVRController = $OQ_ARVROrigin/OQ_RightController
+@onready var left_controller := $OQ_ARVROrigin/OQ_LeftController as OQ_ARVRController
+@onready var right_controller := $OQ_ARVROrigin/OQ_RightController as OQ_ARVRController
 @onready var dominant_hand := right_controller
 @onready var non_dominant_hand := left_controller
 
-@onready var left_saber := $OQ_ARVROrigin/OQ_LeftController/LeftLightSaber;
-@onready var right_saber := $OQ_ARVROrigin/OQ_RightController/RightLightSaber;
+@onready var left_saber := $OQ_ARVROrigin/OQ_LeftController/LeftLightSaber as LightSaber
+@onready var right_saber := $OQ_ARVROrigin/OQ_RightController/RightLightSaber as LightSaber
 
-@onready var right_ui_raycast := $OQ_ARVROrigin/OQ_RightController/Feature_UIRayCast;
-@onready var left_ui_raycast := $OQ_ARVROrigin/OQ_LeftController/Feature_UIRayCast;
+@onready var right_ui_raycast := $OQ_ARVROrigin/OQ_RightController/Feature_UIRayCast as UIRayCast
+@onready var left_ui_raycast := $OQ_ARVROrigin/OQ_LeftController/Feature_UIRayCast as UIRayCast
 
-@onready var highscore_canvas := $Highscores_Canvas
-@onready var name_selector_canvas := $NameSelector_Canvas
-@onready var highscore_keyboard := $Keyboard_highscore
+@onready var main_menu := $MainMenu_OQ_UI2DCanvas as OQ_UI2DCanvas
+@onready var pause_menu := $PauseMenu_canvas as OQ_UI2DCanvas
+@onready var settings_canvas := $Settings_canvas as OQ_UI2DCanvas
+@onready var highscore_canvas := $Highscores_Canvas as OQ_UI2DCanvas
+@onready var highscore_panel := highscore_canvas.ui_control as HighscorePanel
+@onready var name_selector_canvas := $NameSelector_Canvas as OQ_UI2DCanvas
+@onready var highscore_keyboard := $Keyboard_highscore as OQ_UI2DKeyboard
 @onready var endscore := $EndScore as EndScore
 
-@onready var multiplier_label: MeshInstance3D = $Multiplier_Label
-@onready var point_label: MeshInstance3D = $Point_Label
-@onready var percent_indicator: PercentIndicator = $Percent_Indicator
+@onready var multiplier_label := $Multiplier_Label as MeshInstance3D
+@onready var point_label := $Point_Label as MeshInstance3D
+@onready var percent_indicator := $Percent_Indicator as PercentIndicator
 
-@onready var map_source_dialogs := $MapSourceDialogs
-@onready var online_search_keyboard := $Keyboard_online_search
+@onready var map_source_dialogs := $MapSourceDialogs as Node3D
+@onready var online_search_keyboard := $Keyboard_online_search as OQ_UI2DKeyboard
 
 @onready var fps_label = $OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead/FPS_Label
 
@@ -47,37 +48,29 @@ enum GameState {
 
 @onready var _cube_pool := $BeepCubePool
 
-@onready var track = $Track;
+@onready var track := $Track as Node3D
 
-@onready var song_player := $SongPlayer;
+@onready var song_player := $SongPlayer as AudioStreamPlayer
 
-@onready var menu = $MainMenu_OQ_UI2DCanvas.ui_control
+@onready var menu := main_menu.ui_control as MainMenu
 
 var COLOR_LEFT := Color(1.0, 0.1, 0.1, 1.0) : get = _get_color_left
 var COLOR_RIGHT := Color(0.1, 0.1, 1.0, 1.0) : get = _get_color_right
 
-var COLOR_LEFT_ONCE = null;
-var COLOR_RIGHT_ONCE = null;
+var COLOR_LEFT_ONCE: Color = Color.TRANSPARENT;
+var COLOR_RIGHT_ONCE: Color = Color.TRANSPARENT;
 var disable_map_color = false;
 
-const CUBE_HEIGHT_OFFSET = 0.4
-const WALL_HEIGHT = 3.0
+var _current_map := {}
+var _current_note_speed = 1.0
+var _current_info := {}
+var _current_note = 0
+var _current_obstacle = 0
+var _current_event = 0
 
-
-var _current_game_state = GameState.Bootup;
-var _current_map = null;
-var _current_note_speed = 1.0;
-var _current_info = null;
-var _current_note = 0;
-var _current_obstacle = 0;
-var _current_event = 0;
-
-var _proc_map_sw := StopwatchFactory.create("process_map",10,true)
 var _cut_cube_sw := StopwatchFactory.create("cute_cube",10,true)
 var _update_points_sw := StopwatchFactory.create("update_points",10,true)
 var _create_cut_pieces_sw := StopwatchFactory.create("create_cut_pieces",10,true)
-var _instance_cube_sw := StopwatchFactory.create("instance_cube",10,true)
-var _add_cube_to_scene_sw := StopwatchFactory.create("add_cube_to_scene",10,true)
 
 # There's an interesting issue where the AudioStreamPlayer's playback_position
 # doesn't immediately return to 0.0 after restarting the song_player. This
@@ -92,9 +85,9 @@ var _add_cube_to_scene_sw := StopwatchFactory.create("add_cube_to_scene",10,true
 var _audio_synced_after_restart = false
 
 # current difficulty name (Easy, Normal, Hard, etc.)
-var _current_diff_name = -1;
+var _current_diff_name := ""
 # current difficulty rank (1,3,5,etc.)
-var _current_diff_rank = -1;
+var _current_diff_rank := -1
 
 
 var _current_points := 0;
@@ -146,7 +139,7 @@ class CutCubeResources:
 	var piece2 := CutPieceNodes.new()
 	
 	func _init():
-		particles = preload("res://game/BeepCube_SliceParticles.tscn").instantiate()
+		particles = preload("res://game/BeepCube_SliceParticles.tscn").instantiate() as BeepCubeSliceParticles
 
 const MAX_CUT_CUBE_RESOURCES = 32
 @onready var _cut_cube_resources := LinkedList.new()
@@ -177,27 +170,27 @@ func restart_map():
 		$event_driver.set_all_on()
 	
 	_clear_track()
-	_transition_game_state(GameState.Playing)
+	_transition_game_state(gamestate_playing)
 
-func start_map(info, map_data, map_difficulty = ""):
+func start_map(info: Dictionary, map_data: Dictionary, map_difficulty: int):
 	if !map_data.has("_notes"): 
 		print("Map has no '_notes'")
 		return
-	_current_map = map_data;
-	_current_info = info;
+	_current_map = map_data
+	_current_info = info
 	
 	set_colors_from_map(info, map_difficulty)
 	
 	print("loading: ",info._path + info._songFilename)
-	var stream = AudioStreamOggVorbis.load_from_file(info._path + info._songFilename)
+	var stream := AudioStreamOggVorbis.load_from_file(info._path + info._songFilename)
 	
-	song_player.stream = stream;
-	restart_map();
+	song_player.stream = stream
+	restart_map()
 
-func set_colors_from_map(info, map_difficulty):
-	COLOR_LEFT_ONCE = null
-	COLOR_RIGHT_ONCE = null
-	var roots = []
+func set_colors_from_map(info: Dictionary, map_difficulty: int):
+	COLOR_LEFT_ONCE = Color.TRANSPARENT
+	COLOR_RIGHT_ONCE = Color.TRANSPARENT
+	var roots := []
 	for color_name in ["_envColor%sBoost", "_envColor%s", "_color%s"]:
 		if info.has("_customData"): 
 			roots.append(info["_customData"])
@@ -216,169 +209,11 @@ func set_colors_from_map(info, map_difficulty):
 
 # This function will transitioning the game from it's current state into
 # the provided 'next_state'.
-func _transition_game_state(next_state):
-	_on_game_state_exited(_current_game_state)
-	_current_game_state = next_state
-	_on_game_state_entered(_current_game_state)
+func _transition_game_state(next_state: GameState):
+	gamestate = next_state
+	gamestate._ready(self)
 
-# Callback when the game is transitioning out of the given state.
-func _on_game_state_exited(state):
-	match state:
-		GameState.Bootup:
-			pass
-		GameState.MapSelection:
-			pass
-		GameState.Playing:
-			pass
-		GameState.Paused:
-			pass
-		GameState.MapComplete:
-			pass
-		GameState.NewHighscore:
-			pass
-		_:
-			vr.log_warning("Unhandled exit event for state %s" % state)
-
-# Callback when the game is transitioning into the given state.
-func _on_game_state_entered(state):
-	match state:
-		GameState.Bootup:
-			pass
-		GameState.MapSelection:
-			$MainMenu_OQ_UI2DCanvas._show();
-			$Settings_canvas._hide();
-			show_MapSourceDialogs(true);
-			endscore.hide();
-			$PauseMenu_canvas._hide();
-			highscore_canvas._hide();
-			name_selector_canvas._hide();
-			left_saber._hide();
-			right_saber._hide();
-			multiplier_label.visible = false;
-			point_label.visible = false;
-			percent_indicator.visible = false;
-			track.visible = false;
-			left_ui_raycast.visible = true;
-			right_ui_raycast.visible = true;
-			highscore_keyboard._hide();
-			online_search_keyboard._hide();
-			
-			COLOR_LEFT_ONCE = null;
-			COLOR_RIGHT_ONCE = null;
-		GameState.Settings:
-			$MainMenu_OQ_UI2DCanvas._hide();
-			$Settings_canvas._show();
-			show_MapSourceDialogs(true);
-			endscore.hide();
-			$PauseMenu_canvas._hide();
-			highscore_canvas._hide();
-			name_selector_canvas._hide();
-			left_saber._hide();
-			right_saber._hide();
-			multiplier_label.visible = false;
-			point_label.visible = false;
-			percent_indicator.visible = false;
-			track.visible = false;
-			left_ui_raycast.visible = true;
-			right_ui_raycast.visible = true;
-			highscore_keyboard._hide();
-			online_search_keyboard._hide();
-		GameState.Playing:
-			$MainMenu_OQ_UI2DCanvas._hide();
-			$Settings_canvas._hide();
-			show_MapSourceDialogs(false);
-			endscore.hide();
-			$PauseMenu_canvas._hide();
-			highscore_canvas._hide();
-			name_selector_canvas._hide();
-			left_saber._show();
-			right_saber._show();
-			multiplier_label.visible = true;
-			point_label.visible = true;
-			percent_indicator.visible = true;
-			track.visible = true;
-			left_ui_raycast.visible = false;
-			right_ui_raycast.visible = false;
-			highscore_keyboard._hide();
-			online_search_keyboard._hide();
-		GameState.Paused:
-			$MainMenu_OQ_UI2DCanvas._hide();
-			$Settings_canvas._hide();
-			show_MapSourceDialogs(false);
-			endscore.hide();
-			$PauseMenu_canvas._show();
-			highscore_canvas._hide();
-			name_selector_canvas._hide();
-			multiplier_label.visible = true;
-			point_label.visible = true;
-			percent_indicator.visible = true;
-			track.visible = false;
-			left_ui_raycast.visible = true;
-			right_ui_raycast.visible = true;
-			highscore_keyboard._hide();
-			online_search_keyboard._hide();
-			
-			pause_position = song_player.get_playback_position()
-			song_player.stop();
-			$PauseMenu_canvas.ui_control.set_pause_text("%s By %s\nMap author: %s" % [_current_info["_songName"],_current_info["_songAuthorName"],_current_info["_levelAuthorName"]],menu._map_difficulty_name)
-		GameState.MapComplete:
-			endscore.set_buttons_disabled(false)
-			
-			$MainMenu_OQ_UI2DCanvas._hide();
-			$Settings_canvas._hide();
-			show_MapSourceDialogs(false);
-			endscore.show();
-			$PauseMenu_canvas._hide();
-			highscore_canvas._hide();
-			name_selector_canvas._hide();
-			left_saber._hide();
-			right_saber._hide();
-			multiplier_label.visible = false;
-			point_label.visible = false;
-			percent_indicator.visible = false;
-			track.visible = false;
-			left_ui_raycast.visible = true;
-			right_ui_raycast.visible = true;
-			highscore_keyboard._hide();
-			online_search_keyboard._hide();
-		GameState.NewHighscore:
-			# populate highscore panel with records
-			_highscore_panel().load_highscores(
-				_current_info,_current_diff_rank)
-			
-			endscore.set_buttons_disabled(true)
-			
-			# fill name selector with most recent player names
-			_name_selector().clear_names()
-			# WARNING: The get_all_player_names() method could become
-			# costly for a very large highscore database (ie. many
-			# songs and many difficulties). If that ever becomes a
-			# concern, we may want to consider caching a list of the
-			# N most recent players instead.
-			for player_name in Highscores.get_all_player_names():
-				_name_selector().add_name(player_name)
-			
-			$MainMenu_OQ_UI2DCanvas._hide();
-			$Settings_canvas._hide();
-			show_MapSourceDialogs(false);
-			endscore.show();
-			$PauseMenu_canvas._hide();
-			highscore_canvas._show();
-			name_selector_canvas._show();
-			left_saber._hide();
-			right_saber._hide();
-			multiplier_label.visible = false;
-			point_label.visible = false;
-			percent_indicator.visible = false;
-			track.visible = false;
-			left_ui_raycast.visible = true;
-			right_ui_raycast.visible = true;
-			highscore_keyboard._show();
-			online_search_keyboard._hide();
-		_:
-			vr.log_warning("Unhandled enter event for state %s" % state)
-
-func show_MapSourceDialogs(showing = true):
+func show_MapSourceDialogs(showing := true):
 	map_source_dialogs.visible = showing
 	for c in map_source_dialogs.get_children():
 		c._hide()
@@ -416,187 +251,32 @@ func _on_song_ended():
 	)
 	
 	if Highscores.is_new_highscore(_current_info,_current_diff_rank,_current_points):
-		_transition_game_state(GameState.NewHighscore)
+		_transition_game_state(gamestate_newhighscore)
 	else:
-		_transition_game_state(GameState.MapComplete)
+		_transition_game_state(gamestate_mapcomplete)
 
 # call this method to submit a new highscore to the database
-func _submit_highscore(player_name):
-	if _current_game_state == GameState.NewHighscore:
+func _submit_highscore(player_name: String):
+	if gamestate == gamestate_newhighscore:
 		Highscores.add_highscore(
 			_current_info,
 			_current_diff_rank,
 			player_name,
 			_current_points)
 			
-		_transition_game_state(GameState.MapComplete)
+		_transition_game_state(gamestate_mapcomplete)
 
 const beat_distance = 4.0;
 const beats_ahead = 4.0;
-const CUBE_DISTANCE = 0.5;
 const CUBE_ROTATIONS = [180, 0, 270, 90, -135, 135, -45, 45, 0];
-
-func _spawn_note(note, current_beat):
-	var note_node = null;
-	var is_cube = true
-	var color := COLOR_LEFT
-	if (note._type == 0):
-		_instance_cube_sw.start()
-		note_node = _cube_pool.acquire(track)
-		color = COLOR_LEFT
-		_instance_cube_sw.stop()
-	elif (note._type == 1):
-		_instance_cube_sw.start()
-		note_node = _cube_pool.acquire(track)
-		color = COLOR_RIGHT
-		_instance_cube_sw.stop()
-	elif (note._type == 3) and bombs_enabled:
-		is_cube = false
-		note_node = bomb_template.instantiate()
-	else:
-		return;
-	
-	if note_node == null:
-		print("Failed to acquire a new note from scene pool")
-		return
-	
-	# disable collision until it gets nearer to player (helps with performance)
-	note_node.collision_disabled = true
-
-	if menu._map_difficulty_noteJumpMovementSpeed > 0:
-		note_node.speed = float(menu._map_difficulty_noteJumpMovementSpeed)/9
-
-	var line = -(CUBE_DISTANCE * 3.0 / 2.0) + note._lineIndex * CUBE_DISTANCE;
-	var layer = CUBE_DISTANCE + note._lineLayer * CUBE_DISTANCE;
-
-	var rotation_z = deg_to_rad(CUBE_ROTATIONS[note._cutDirection]);
-
-	var distance = note._time - current_beat;
-
-	note_node.transform.origin = Vector3(
-		line,
-		CUBE_HEIGHT_OFFSET + layer,
-		-distance * beat_distance);
-
-	if is_cube:
-		var is_dot = note._cutDirection == 8
-		note_node._cube_mesh_orientation.rotation.z = rotation_z;
-		note_node._cube_mesh_orientation.rotation.y = (PI if is_dot else 0)
-
-	note_node._note = note;
-	
-	if note_node is BeepCube:
-		_add_cube_to_scene_sw.start()
-		note_node.spawn(note._type, color)
-		_add_cube_to_scene_sw.stop()
-	else:
-		# spawn bombs by adding to track
-		track.add_child(note_node);
 
 func _get_color_left():
 	if disable_map_color: return COLOR_LEFT
-	return COLOR_LEFT_ONCE if COLOR_LEFT_ONCE != null else COLOR_LEFT
+	return COLOR_LEFT_ONCE if COLOR_LEFT_ONCE != Color.TRANSPARENT else COLOR_LEFT
 
 func _get_color_right():
 	if disable_map_color: return COLOR_RIGHT
-	return COLOR_RIGHT_ONCE if COLOR_RIGHT_ONCE != null else COLOR_RIGHT
-
-# constants used to interpret the '_type' field in map obstacles
-const WALL_TYPE_FULL_HEIGHT = 0;
-const WALL_TYPE_CROUCH = 1;
-
-func _spawn_wall(obstacle, current_beat):
-	# instantiate new wall from template
-	var wall = wall_template.duplicate();
-	wall.duplicate_create();# gives it its own unique mesh and collision shape
-	
-	var height = 0;
-	
-	if (obstacle._type == WALL_TYPE_FULL_HEIGHT):
-		wall.height = WALL_HEIGHT;
-		height = 0;
-	elif (obstacle._type == WALL_TYPE_CROUCH):
-		wall.height = WALL_HEIGHT / 2.0;
-		height = WALL_HEIGHT / 2.0;
-	else:
-		return;
-
-	track.add_child(wall);
-
-	var line = -(CUBE_DISTANCE * 3.0 / 2.0) + obstacle._lineIndex * CUBE_DISTANCE;
-	
-	var distance = obstacle._time - current_beat;
-
-	wall.transform.origin = Vector3(line,height,-distance * beat_distance);
-	wall.depth = beat_distance * obstacle._duration;
-	wall.width = CUBE_DISTANCE * obstacle._width;
-	
-	# walls have slightly difference origins offsets than cubes do, so we must
-	# translate them by half a cube distance to correct for the misalignment.
-	wall.translate(Vector3(-CUBE_DISTANCE/2.0,-CUBE_DISTANCE/2.0,0.0));
-
-	wall._obstacle = obstacle;
-
-
-func _process_map(dt):
-	if (_current_map == null):
-		return;
-	
-	_proc_map_sw.start()
-	
-	var current_time = song_player.get_playback_position();
-	
-	var current_beat = current_time * _current_info._beatsPerMinute / 60.0;
-
-	# spawn notes
-	var n =_current_map._notes;
-	while (_current_note < n.size() && n[_current_note]._time <= current_beat+beats_ahead):
-		_spawn_note(n[_current_note], current_beat);
-		_current_note += 1;
-
-	# spawn obstacles (walls)
-	var o = _current_map._obstacles;
-	while (_current_obstacle < o.size() && o[_current_obstacle]._time <= current_beat+beats_ahead):
-		_spawn_wall(o[_current_obstacle], current_beat);
-		_current_obstacle += 1;
-
-	var speed = Vector3(0.0, 0.0, beat_distance * _current_info._beatsPerMinute / 60.0) * dt;
-
-	for c_idx in track.get_child_count():
-		var c = track.get_child(c_idx)
-		if ! c.visible:
-			continue
-		
-		c.translate(speed);
-
-		var depth = CUBE_DISTANCE
-		if c is Wall:
-			# compute wall's depth based on duration
-			depth = beat_distance * c._obstacle._duration
-		else:
-			# enable bomb/cube collision when it gets closer enough to player
-			if c.global_transform.origin.z > -3.0:
-				c.collision_disabled = false
-
-		# remove children that go to far
-		if ((c.global_transform.origin.z - depth) > 2.0):
-			if c is BeepCube:
-				_reset_combo();
-				# cubes must be released() instead of queue_free() because they
-				# are part of a pool.
-				c.release()
-			else:
-				c.queue_free();
-
-	var e = _current_map._events;
-	while (_current_event < e.size() && e[_current_event]._time <= current_beat):#+beats_ahead):
-		_spawn_event(e[_current_event], current_beat);
-		_current_event += 1;
-
-	if (song_player.get_playback_position() >= song_player.stream.get_length()-1):
-		_on_song_ended();
-		
-	_proc_map_sw.stop()
+	return COLOR_RIGHT_ONCE if COLOR_RIGHT_ONCE != Color.TRANSPARENT else COLOR_RIGHT
 
 func _spawn_event(data,beat):
 	$event_driver.procces_event(data,beat)
@@ -608,11 +288,6 @@ var _controller_movement_aabb = {
 	"left_hand" = AABB(),
 	"right_hand" = AABB(),
 }
-
-func _update_controller_movement_aabb(controller : XRController3D):
-	var id = controller.tracker
-	var aabb = _controller_movement_aabb[id].expand(controller.global_transform.origin);
-	_controller_movement_aabb[id] = aabb;
 
 
 func _check_and_update_saber(controller: OQ_ARVRController, saber: Area3D):
@@ -657,34 +332,18 @@ func _physics_process(dt: float) -> void:
 	if fps_label.visible:
 		fps_label.set_label_text("FPS: %d" % Engine.get_frames_per_second())
 	
-	# pause game when player presses menu button
-	if non_dominant_hand.by_just_pressed():
-		if _current_game_state == GameState.Playing:
-			_transition_game_state(GameState.Paused)
-
-	if _current_game_state == GameState.Playing:
-		if song_player.playing and not _audio_synced_after_restart:
-			# 0.5 seconds is a pretty concervative number to use for the audio
-			# resync check. Having this duration be this long might only be an
-			# issue for maps that spawn notes extremely early into the song.
-			if song_player.get_playback_position() < 0.5:
-				_audio_synced_after_restart = true;
-		elif song_player.playing:
-			_process_map(dt);
-			_update_controller_movement_aabb(left_controller);
-			_update_controller_movement_aabb(right_controller);
+	gamestate._physics_process(self, dt)
 	
 	_check_and_update_saber(left_controller, left_saber);
 	_check_and_update_saber(right_controller, right_saber);
 	
 	_update_saber_end_variabless(dt)
-	
 
 var _main_menu = null;
 var _lpf = null;
 
 func _ready():
-	_main_menu = $MainMenu_OQ_UI2DCanvas.find_child("BeepSaberMainMenu", true, false);
+	_main_menu = main_menu.find_child("BeepSaberMainMenu", true, false);
 	_main_menu.initialize(self);
 	$MapSourceDialogs/BeatSaver_Canvas.ui_control.main_menu_node = _main_menu
 
@@ -701,7 +360,7 @@ func _ready():
 	UI_AudioEngine.attach_children(highscore_keyboard)
 	UI_AudioEngine.attach_children(online_search_keyboard)
 
-	_transition_game_state(GameState.MapSelection)
+	_transition_game_state(gamestate_mapselection)
 	
 	#render common assets for a couple of frames to prevent performance issues when loading them mid game
 	$pre_renderer.visible = true
@@ -909,11 +568,7 @@ func _quiet_song():
 # restores song volume when player leaves wall
 func _louden_song():
 	song_player.volume_db = 0.0;
-	
-# accessor method for the side highscore panel (on right side of menu)
-func _highscore_panel() -> HighscorePanel:
-	return highscore_canvas.ui_control
-	
+
 # accessor method for the player name selector UI element
 func _name_selector() -> NameSelector:
 	return name_selector_canvas.ui_control
@@ -936,16 +591,16 @@ func _on_PlayerHead_area_exited(area):
 func _on_EndScore_panel_repeat():
 	restart_map()
 	endscore.visible = false
-	$PauseMenu_canvas.visible = false
+	pause_menu.visible = false
 
 
 func _on_EndScore_panel_goto_mainmenu():
 	_clear_track()
-	_transition_game_state(GameState.MapSelection)
+	_transition_game_state(gamestate_mapselection)
 
 
 func _on_Pause_Panel_continue_button():
-	$PauseMenu_canvas.visible = false
+	pause_menu.visible = false
 	$Pause_countdown.visible = true
 	track.visible = true
 	$Pause_countdown.set_label_text("3")
@@ -957,10 +612,10 @@ func _on_Pause_Panel_continue_button():
 	$Pause_countdown.visible = false
 	
 	# continue game play
-	song_player.play(pause_position);
-	_transition_game_state(GameState.Playing)
+	song_player.play(pause_position)
+	_transition_game_state(gamestate_playing)
 
-func _on_BeepSaberMainMenu_difficulty_changed(map_info, diff_name, diff_rank):
+func _on_BeepSaberMainMenu_difficulty_changed(map_info: Dictionary, diff_name: String, diff_rank: int):
 	_current_diff_name = diff_name
 	_current_diff_rank = diff_rank
 	
@@ -969,37 +624,37 @@ func _on_BeepSaberMainMenu_difficulty_changed(map_info, diff_name, diff_rank):
 		await self.ready
 	
 	highscore_canvas._show()
-	_highscore_panel().load_highscores(map_info,diff_rank)
+	highscore_panel.load_highscores(map_info,diff_rank)
 
 func _on_BeepSaberMainMenu_settings_requested():
-	_transition_game_state(GameState.Settings)
+	_transition_game_state(gamestate_settings)
 
 func _on_settings_Panel_apply():
-	_transition_game_state(GameState.MapSelection)
+	_transition_game_state(gamestate_mapselection)
 
-func _on_Keyboard_highscore_text_input_enter(text):
-	if _current_game_state == GameState.NewHighscore:
+func _on_Keyboard_highscore_text_input_enter(text: String):
+	if gamestate == gamestate_newhighscore:
 		_submit_highscore(text)
 
-func _on_NameSelector_name_selected(name):
-	if _current_game_state == GameState.NewHighscore:
+func _on_NameSelector_name_selected(name: String):
+	if gamestate == gamestate_newhighscore:
 		_submit_highscore(name)
 
-func _on_LeftLightSaber_cube_collide(cube):
+func _on_LeftLightSaber_cube_collide(cube: Node3D):
 	# check 'playing' to prevent cutting items while resuming from pause menu
 	# where items are visible at this point, but there a count down before the
 	# song starts to play again
 	if song_player.playing:
 		_cut_cube(left_controller, left_saber, cube);
 
-func _on_RightLightSaber_cube_collide(cube):
+func _on_RightLightSaber_cube_collide(cube: Node3D):
 	# check 'playing' to prevent cutting items while resuming from pause menu
 	# where items are visible at this point, but there a count down before the
 	# song starts to play again
 	if song_player.playing:
 		_cut_cube(right_controller, right_saber, cube);
 
-func _on_LeftLightSaber_bomb_collide(bomb):
+func _on_LeftLightSaber_bomb_collide(bomb: Node3D):
 	# check 'playing' to prevent cutting items while resuming from pause menu
 	# where items are visible at this point, but there a count down before the
 	# song starts to play again
@@ -1007,9 +662,9 @@ func _on_LeftLightSaber_bomb_collide(bomb):
 		_reset_combo()
 		$Points_label_driver.show_points(bomb.transform.origin,"x")
 		bomb.queue_free()
-		left_controller.simple_rumble(1.0, 0.15);
+		left_controller.simple_rumble(1.0, 0.15)
 
-func _on_RightLightSaber_bomb_collide(bomb):
+func _on_RightLightSaber_bomb_collide(bomb: Node3D):
 	# check 'playing' to prevent cutting items while resuming from pause menu
 	# where items are visible at this point, but there a count down before the
 	# song starts to play again
@@ -1017,10 +672,8 @@ func _on_RightLightSaber_bomb_collide(bomb):
 		_reset_combo()
 		$Points_label_driver.show_points(bomb.transform.origin,"x")
 		bomb.queue_free()
-		right_controller.simple_rumble(1.0, 0.15);
+		right_controller.simple_rumble(1.0, 0.15)
 
-func _on_BeepCubePool_scene_instanced(cube):
+func _on_BeepCubePool_scene_instanced(cube: Node3D):
 	cube.visible = false
 	$Track.add_child(cube)
-
-
