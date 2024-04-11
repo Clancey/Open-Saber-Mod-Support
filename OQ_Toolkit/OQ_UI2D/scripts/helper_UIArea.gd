@@ -1,5 +1,5 @@
 # A Helper to make UIs work on a Area object
-extends Area3D
+extends UIRaycastTarget
 
 # Member variables
 var prev_pos = null

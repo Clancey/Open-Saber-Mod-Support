@@ -15,6 +15,9 @@ var animated_percent: float = 0.0
 func _ready() -> void:
 	set_buttons_disabled(true)
 
+func _physics_process(delta: float) -> void:
+	($RaycastArea as Area3D).collision_layer = visible
+
 func show_score(score: int, record: int, percent: float, song_string: String, is_full_combo: bool, is_new_record: bool) -> void:
 	var transparent := Color(1,1,1,0)
 	(details.material as StandardMaterial3D).albedo_color = transparent

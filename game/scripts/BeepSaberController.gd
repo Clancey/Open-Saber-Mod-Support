@@ -1,13 +1,7 @@
 # This script contains the button logic for the controller
 extends XRController3D
-class_name OQ_ARVRController
+class_name BeepSaberController
 
-# When set to true it will try to detect and load a model
-@export var autoload_model := true
-
-# if set to true it will propagate the hand pinch gestures as axis events
-@export var hand_pinch_to_axis := false
-@export var hand_pinch_to_button := true
 
 var ax := false
 var ax_last_frame := false
@@ -15,10 +9,6 @@ var by := false
 var by_last_frame := false
 var trigger := false
 var trigger_last_frame := false
-
-@export var enable_gesture_to_button := false
-
-signal signal_controller_type_changed
 
 
 # Sets up everything as it is expected by the helper scripts in the vr singleton
@@ -29,7 +19,7 @@ func _enter_tree() -> void:
 	if (tracker == "left_hand"):
 		if (vr.leftController != null):
 			vr.log_warning(" in OQ_ARVRController._enter_tree(): left controller already set; overwriting it")
-		vr.leftController = self;
+		vr.leftController = self
 	elif (tracker == "right_hand"):
 		if (vr.rightController != null):
 			vr.log_warning(" in OQ_ARVRController._enter_tree(): right controller already set; overwriting it")

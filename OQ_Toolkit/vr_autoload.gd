@@ -137,15 +137,15 @@ func load_json_file(filename) -> Dictionary:
 
 # Global accessors to the tracked vr objects; they will be set by the scripts attached
 # to the OQ_ objects
-var leftController : OQ_ARVRController = null;
-var rightController : OQ_ARVRController = null;
-var vrOrigin : XROrigin3D = null;
-var vrCamera : XRCamera3D = null;
+var leftController : BeepSaberController = null
+var rightController : BeepSaberController = null
+var vrOrigin : XROrigin3D = null
+var vrCamera : XRCamera3D = null
 
 # these two variable point to leftController/rightController
 # and are swapped when calling
-var dominantController : XRController3D = rightController;
-var nonDominantController : XRController3D = leftController;
+var dominantController : XRController3D = rightController
+var nonDominantController : XRController3D = leftController
 
 func set_dominant_controller_left(is_left_handed):
 	if (is_left_handed):

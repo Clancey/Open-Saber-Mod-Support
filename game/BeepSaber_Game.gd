@@ -12,16 +12,16 @@ var gamestate_playing := GameStatePlaying.new()
 var gamestate_settings := GameStateSettings.new()
 var gamestate: GameState = gamestate_bootup
 
-@onready var left_controller := $OQ_ARVROrigin/OQ_LeftController as OQ_ARVRController
-@onready var right_controller := $OQ_ARVROrigin/OQ_RightController as OQ_ARVRController
+@onready var left_controller := $XROrigin3D/LeftController as BeepSaberController
+@onready var right_controller := $XROrigin3D/RightController as BeepSaberController
 @onready var dominant_hand := right_controller
 @onready var non_dominant_hand := left_controller
 
-@onready var left_saber := $OQ_ARVROrigin/OQ_LeftController/LeftLightSaber as LightSaber
-@onready var right_saber := $OQ_ARVROrigin/OQ_RightController/RightLightSaber as LightSaber
+@onready var left_saber := $XROrigin3D/LeftController/LeftLightSaber as LightSaber
+@onready var right_saber := $XROrigin3D/RightController/RightLightSaber as LightSaber
 
-@onready var right_ui_raycast := $OQ_ARVROrigin/OQ_RightController/Feature_UIRayCast as UIRayCast
-@onready var left_ui_raycast := $OQ_ARVROrigin/OQ_LeftController/Feature_UIRayCast as UIRayCast
+@onready var right_ui_raycast := $XROrigin3D/RightController/UIRaycast as UIRaycast
+@onready var left_ui_raycast := $XROrigin3D/LeftController/UIRaycast as UIRaycast
 
 @onready var main_menu := $MainMenu_OQ_UI2DCanvas as OQ_UI2DCanvas
 @onready var pause_menu := $PauseMenu_canvas as OQ_UI2DCanvas
@@ -39,7 +39,7 @@ var gamestate: GameState = gamestate_bootup
 @onready var map_source_dialogs := $MapSourceDialogs as Node3D
 @onready var online_search_keyboard := $Keyboard_online_search as OQ_UI2DKeyboard
 
-@onready var fps_label = $OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead/FPS_Label
+@onready var fps_label = $XROrigin3D/XRCamera3D/PlayerHead/FPS_Label
 
 @onready var cube_template = preload("res://game/BeepCube.tscn").instantiate();
 @onready var wall_template = preload("res://game/Wall/Wall.tscn").instantiate();
@@ -290,7 +290,7 @@ var _controller_movement_aabb = {
 }
 
 
-func _check_and_update_saber(controller: OQ_ARVRController, saber: Area3D):
+func _check_and_update_saber(controller: BeepSaberController, saber: Area3D):
 	# to allow extending/sheething the saber while not playing a song
 	if ((not song_player.playing)
 		and (controller.ax_just_pressed() or controller.by_just_pressed())

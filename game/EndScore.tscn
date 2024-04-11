@@ -1,10 +1,11 @@
-[gd_scene load_steps=22 format=3 uid="uid://i5nhm2p2kqay"]
+[gd_scene load_steps=24 format=3 uid="uid://i5nhm2p2kqay"]
 
 [ext_resource type="Shader" path="res://game/UI_Panel.gdshader" id="1_cfcnp"]
 [ext_resource type="Script" path="res://game/EndScore.gd" id="1_jacne"]
 [ext_resource type="PackedScene" uid="uid://63fr72w7kh2w" path="res://game/PercentIndicator.tscn" id="2_dpn16"]
-[ext_resource type="PackedScene" uid="uid://bxsfwm7o1kryl" path="res://game/RaycastButton.tscn" id="4_g6wnr"]
+[ext_resource type="PackedScene" uid="uid://bxsfwm7o1kryl" path="res://game/scripts/UIRaycast/UIRaycastButton.tscn" id="4_n4s7s"]
 [ext_resource type="FontFile" uid="uid://01k27lk2a4bw" path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" id="5_v4xkn"]
+[ext_resource type="Script" path="res://game/scripts/UIRaycast/UIRaycastTarget.gd" id="6_25iqa"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_igkn4"]
 render_priority = 0
@@ -1342,6 +1343,9 @@ cache/0/160/0/kerning_overrides/160/0 = Vector2(0, 0)
 [sub_resource type="Theme" id="Theme_553gf"]
 default_font = SubResource("9")
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_iqqq6"]
+size = Vector3(2, 1, 0.001)
+
 [node name="EndScore" type="MeshInstance3D"]
 mesh = SubResource("QuadMesh_le4ok")
 script = ExtResource("1_jacne")
@@ -1349,13 +1353,13 @@ script = ExtResource("1_jacne")
 [node name="PercentIndicator" parent="." instance=ExtResource("2_dpn16")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
 
-[node name="Repeat" parent="." instance=ExtResource("4_g6wnr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, -0.4, 0.1)
+[node name="Repeat" parent="." instance=ExtResource("4_n4s7s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, -0.35, 0.1)
 size = Vector2(0.5, 0.125)
 text = "Repeat"
 
-[node name="MainMenu" parent="." instance=ExtResource("4_g6wnr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.4, 0.1)
+[node name="MainMenu" parent="." instance=ExtResource("4_n4s7s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.35, 0.1)
 size = Vector2(0.5, 0.125)
 text = "Main Menu"
 
@@ -1417,6 +1421,12 @@ theme_override_font_sizes/normal_font_size = 160
 bbcode_enabled = true
 text = "[center][rainbow freq=0.5 sat=0.7 val=2]S"
 autowrap_mode = 0
+
+[node name="RaycastArea" type="Area3D" parent="."]
+script = ExtResource("6_25iqa")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RaycastArea"]
+shape = SubResource("BoxShape3D_iqqq6")
 
 [connection signal="released" from="Repeat" to="." method="_on_Repeat_button_up"]
 [connection signal="released" from="MainMenu" to="." method="_on_MainMenu_button_up"]

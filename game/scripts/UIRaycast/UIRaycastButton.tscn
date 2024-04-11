@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://bxsfwm7o1kryl"]
 
-[ext_resource type="Script" path="res://game/RaycastButton.gd" id="1_xb2lf"]
+[ext_resource type="Script" path="res://game/scripts/UIRaycast/UIRaycastButton.gd" id="1_xb2lf"]
 [ext_resource type="Shader" path="res://game/UI_Panel.gdshader" id="1_yg4af"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ovdvl"]

@@ -1,5 +1,5 @@
-extends Area3D
-class_name RaycastButton
+extends UIRaycastTarget
+class_name UIRaycastButton
 
 signal pressed
 signal released
