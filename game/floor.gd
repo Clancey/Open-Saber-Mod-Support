@@ -1,62 +1,80 @@
 extends StaticBody3D
 
-var last_position = [Vector2(0,-50),Vector2(0,-50)]
+var left_last_position := Vector2(0,-50)
+var right_last_position := Vector2(0,-50)
 
-var C_LEFT = Color()
-var C_RIGHT = Color()
+var C_LEFT := Color()
+var C_RIGHT := Color()
 
-func _ready():
-	$Node3D/cutFloor.material_override.albedo_texture = $SubViewport.get_texture()
-	$Node3D/cutFloor.material_override.emission_texture = $SubViewport.get_texture()
+@onready var sub_viewport := $SubViewport as SubViewport
+@onready var color_rect := $SubViewport/ColorRect as ColorRect
+@onready var burn_l := $SubViewport/ColorRect/burn_l as Node2D
+@onready var burn_r := $SubViewport/ColorRect/burn_r as Node2D
+@onready var l_sprite := $SubViewport/ColorRect/burn_l/sprite as Panel
+@onready var r_sprite := $SubViewport/ColorRect/burn_r/sprite as Panel
+@onready var timer_clear := $TimerClear as Timer
 
-func update_colors(COLOR_LEFT,COLOR_RIGHT):
+func _ready() -> void:
+	var material := ($Node3D/cutFloor as MeshInstance3D).material_override as StandardMaterial3D
+	material.albedo_texture = sub_viewport.get_texture()
+	material.emission_texture = sub_viewport.get_texture()
+
+func update_colors(COLOR_LEFT: Color, COLOR_RIGHT: Color) -> void:
 	C_LEFT = COLOR_LEFT
 	C_RIGHT = COLOR_RIGHT
-	$SubViewport/ColorRect/burn_l.modulate = C_LEFT*6
-	$SubViewport/ColorRect/burn_r.modulate = C_RIGHT*6
-	
-var is_out = [0,0]
-func burn_mark(position=Vector3(0,0,-50),type=0):
-	var burn_mark_sprite
-	var burn_mark_sprite_long
-	if type == 0:
-		burn_mark_sprite = $SubViewport/ColorRect/burn_l
-		burn_mark_sprite_long = $SubViewport/ColorRect/burn_l/sprite
-	elif type == 1:
-		burn_mark_sprite = $SubViewport/ColorRect/burn_r
-		burn_mark_sprite_long = $SubViewport/ColorRect/burn_r/sprite
-	else:
-		return
-	var was_out = !burn_mark_sprite.visible
-	burn_mark_sprite.visible = true
-	is_out[type] = 0
-	
-	var newpos = Vector2(
+	burn_l.modulate = C_LEFT*6
+	burn_r.modulate = C_RIGHT*6
+
+var left_is_out := false
+var right_is_out := false
+func burn_mark(position:=Vector3(0,0,-50),type:=0) -> void:
+	var newpos := Vector2(
 		(position.x+1)*256,
 		position.z*256
 	)
+	var burn_mark_sprite: Node2D
+	var burn_mark_sprite_long: Panel
+	var dist: float
+	if type == 0:
+		burn_mark_sprite = burn_l
+		burn_mark_sprite_long = l_sprite
+		left_is_out = false
+		burn_mark_sprite.rotation = newpos.angle_to_point(left_last_position)
+		dist = left_last_position.distance_to(newpos)
+	elif type == 1:
+		burn_mark_sprite = burn_r
+		burn_mark_sprite_long = r_sprite
+		right_is_out = false
+		burn_mark_sprite.rotation = newpos.angle_to_point(right_last_position)
+		dist = right_last_position.distance_to(newpos)
+	else:
+		return
+	var was_out := !burn_mark_sprite.visible
+	burn_mark_sprite.visible = true
 	
 	burn_mark_sprite.position = newpos
 	
-	burn_mark_sprite.rotation = newpos.angle_to_point(last_position[type])
 	burn_mark_sprite.rotation_degrees += 180
-	var dist = last_position[type].distance_to(newpos)
 	if dist > 12 and not was_out:
 		burn_mark_sprite_long.size.x = dist+12
 	else:
 		burn_mark_sprite_long.size.x = 24
 	
-	last_position[type] = newpos
+	if type == 0:
+		left_last_position = newpos
+	elif type == 1:
+		right_last_position = newpos
 
-func _process(delta):
-	if is_out[0] == 1:
-		$SubViewport/ColorRect/burn_l.visible = false
-	if is_out[1] == 1:
-		$SubViewport/ColorRect/burn_r.visible = false
-	is_out = [1,1]
+func _process(delta: float) -> void:
+	if left_is_out:
+		burn_l.visible = false
+	if right_is_out:
+		burn_r.visible = false
+	left_is_out = true
+	right_is_out = true
 
-func _on_timer_clear_timeout():
-	$SubViewport/ColorRect.self_modulate.a = 1
+func _on_timer_clear_timeout() -> void:
+	color_rect.self_modulate.a = 1
 	await get_tree().process_frame
-	$SubViewport/ColorRect.self_modulate.a = 0
-	$TimerClear.start()
+	color_rect.self_modulate.a = 0
+	timer_clear.start()

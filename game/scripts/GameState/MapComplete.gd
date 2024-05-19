@@ -6,7 +6,7 @@ func _ready(game: BeepSaber_Game) -> void:
 	game.main_menu._hide()
 	game.settings_canvas._hide()
 	game.show_MapSourceDialogs(false)
-	game.endscore.show()
+	game.endscore._show()
 	game.pause_menu._hide()
 	game.highscore_canvas._hide()
 	game.name_selector_canvas._hide()

@@ -5,18 +5,24 @@ signal mainmenu
 signal repeat
 
 var animated_percent: float = 0.0
+@onready var raycast_area := $RaycastArea as Area3D
 @onready var percent_indicator := $PercentIndicator as PercentIndicator
 @onready var details := ($Details as MeshInstance3D).mesh as TextMesh
 @onready var grade_label := $GradeViewport/GradeLabel as RichTextLabel
 @onready var fc_label := $FCViewport/FCLabel as RichTextLabel
 @onready var nr_label := $NRViewport/NRLabel as RichTextLabel
-@onready var name_label := $NameLabel.mesh as TextMesh
+@onready var name_label := ($NameLabel as MeshInstance3D).mesh as TextMesh
 
 func _ready() -> void:
 	set_buttons_disabled(true)
 
-func _physics_process(delta: float) -> void:
-	($RaycastArea as Area3D).collision_layer = visible
+func _show() -> void:
+	raycast_area.collision_layer = 1
+	show()
+
+func _hide() -> void:
+	raycast_area.collision_layer = 0
+	hide()
 
 func show_score(score: int, record: int, percent: float, song_string: String, is_full_combo: bool, is_new_record: bool) -> void:
 	var transparent := Color(1,1,1,0)
