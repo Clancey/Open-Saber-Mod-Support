@@ -101,10 +101,10 @@ func _update_rumble(dt: float) -> void:
 
 var first_time = true
 
-func _physics_process(_dt: float) -> void:
+func _physics_process(dt: float) -> void:
 	if get_is_active(): # wait for active controller
 		_update_buttons_and_sticks()
-		_update_rumble(_dt)
+		_update_rumble(dt)
 		# this avoid getting just_pressed events when a key is pressed and the controller becomes
 		# active (like it happens on vr.scene_change!)
 		if (first_time):

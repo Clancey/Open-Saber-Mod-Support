@@ -1,10 +1,9 @@
-[gd_scene load_steps=35 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=34 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://crstqa7v6ehg3" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DCanvas.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://iglrdadxsqw4" path="res://game/Wall/Wall.tscn" id="3_73652"]
-[ext_resource type="PackedScene" uid="uid://b51lxj766o73h" path="res://OQ_Toolkit/OQ_ARVROrigin/Feature_VRSimulator.tscn" id="6"]
 [ext_resource type="Script" path="res://game/scripts/BeepSaberController.gd" id="8_5lcn1"]
 [ext_resource type="Script" path="res://game/BeepSaber_Game.gd" id="9"]
 [ext_resource type="PackedScene" uid="uid://n1wrym3osxb8" path="res://game/LightSaber.tscn" id="10"]
@@ -137,8 +136,6 @@ type = 1
 [node name="UIRaycast" parent="XROrigin3D/RightController" instance=ExtResource("12")]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 ui_raycast_length = 5.0
-
-[node name="Feature_VRSimulator" parent="XROrigin3D" instance=ExtResource("6")]
 
 [node name="Track" type="Node3D" parent="."]
 
