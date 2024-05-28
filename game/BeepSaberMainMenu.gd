@@ -4,6 +4,7 @@
 # This file also contains the logic to load a beatmap in the format that
 # normal Beat Saber uses. So you can load here custom beat saber songs too
 extends Panel
+class_name MainMenu
 
 # emitted when a new map is selected
 signal map_changed(map_info);
@@ -188,19 +189,18 @@ func _song_path(dat):
 	else:
 		return path + "Songs/" + dat.id + "/";
 	
-func _load_song_info(load_path):
-	#var dir = DirAccess.new();
-	var map_info = vr.load_json_file(load_path + "Info.dat");
-	if (!map_info):
+func _load_song_info(load_path) -> Dictionary:
+	var map_info := vr.load_json_file(load_path + "Info.dat");
+	if (map_info == {}):
 		map_info = vr.load_json_file(load_path + "info.dat");
 		#because android is case sensitive and some maps have it lowercase, some not
-		if (!map_info):
+		if (map_info == {}):
 			vr.log_error("Invalid info.dat found in " + load_path);
-			return false;
+			return {}
 		
 	if (map_info._difficultyBeatmapSets.size() == 0):
 		vr.log_error("No _difficultyBeatmapSets in info.dat");
-		return false;
+		return {}
 	
 	map_info = mix_dificulty_sets(map_info)
 	
@@ -208,15 +208,16 @@ func _load_song_info(load_path):
 	return map_info;
 
 # mix all the dificult sets into a single one
-func mix_dificulty_sets(map_info):
+func mix_dificulty_sets(map_info) -> Dictionary:
 	var newset = []
 	for ds in map_info._difficultyBeatmapSets:
 		for d in ds._difficultyBeatmaps:
 			if ds.get("_beatmapCharacteristicName") != "Standard":
 				if not d.has("_customData"):
 					d["_customData"] = {}
-				d["_customData"]["_difficultyLabel"] = (
-					str(ds.get("_beatmapCharacteristicName"))+" "+d["_customData"]["_difficultyLabel"])
+				if d["_customData"].has(["_difficultyLabel"]):
+					d["_customData"]["_difficultyLabel"] = (
+						str(ds.get("_beatmapCharacteristicName"))+" "+d["_customData"]["_difficultyLabel"])
 			newset.append(d)
 	map_info._difficultyBeatmapSets[0] = {
 		"_beatmapCharacteristicName": "Lightshow",
@@ -283,7 +284,7 @@ func play_preview(filepath_or_buffer, start_time = 0, duration = -1, buffer_data
 # a loaded beat map will have an info dictionary; this is a global variable here
 # to later extend it to load different maps
 var _map_id = null;
-var _map_info = null;
+var _map_info := {}
 var _map_path = null;
 
 @onready var song_prev = $song_prev
@@ -347,7 +348,7 @@ func _on_stop_prev_timeout():
 
 
 var _map_difficulty = 0
-var _map_difficulty_name = ""
+var _map_difficulty_name := ""
 var _map_difficulty_noteJumpMovementSpeed = 9.0
 
 func _select_difficulty(id):
@@ -379,10 +380,9 @@ func _load_map_and_start():
 	_map_difficulty_noteJumpMovementSpeed = set0._difficultyBeatmaps[_map_difficulty]["_noteJumpMovementSpeed"];
 	
 	if (map_data == null):
-		vr.log_error("Could not read map data from " + map_filename);
+		vr.log_error("Could not read map data from " + map_filename)
 	
-	#print(info);
-	_beepsaber.start_map(_map_info, map_data, _map_difficulty);
+	_beepsaber.start_map(_map_info, map_data, _map_difficulty)
 	
 	return true;
 

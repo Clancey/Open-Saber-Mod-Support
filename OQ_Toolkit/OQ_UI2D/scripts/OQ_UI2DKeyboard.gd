@@ -1,4 +1,5 @@
 extends Node3D
+class_name OQ_UI2DKeyboard
 
 @export var show_text_input := true;
 # if 'show_text_input' is enabled and this flag is set true, then

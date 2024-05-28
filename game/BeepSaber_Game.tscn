@@ -1,30 +1,27 @@
-[gd_scene load_steps=34 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=35 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://crstqa7v6ehg3" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DCanvas.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://iglrdadxsqw4" path="res://game/Wall/Wall.tscn" id="3_73652"]
-[ext_resource type="PackedScene" uid="uid://bj5rqt2kaosrw" path="res://OQ_Toolkit/OQ_ARVROrigin.tscn" id="4"]
-[ext_resource type="PackedScene" uid="uid://dm1owypcp2llh" path="res://OQ_Toolkit/OQ_ARVRCamera.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://b51lxj766o73h" path="res://OQ_Toolkit/OQ_ARVROrigin/Feature_VRSimulator.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://by56sicdi70y2" path="res://OQ_Toolkit/OQ_LeftController.tscn" id="7"]
-[ext_resource type="PackedScene" uid="uid://chke0jlny7bqs" path="res://OQ_Toolkit/OQ_RightController.tscn" id="8"]
+[ext_resource type="Script" path="res://game/scripts/BeepSaberController.gd" id="8_5lcn1"]
 [ext_resource type="Script" path="res://game/BeepSaber_Game.gd" id="9"]
 [ext_resource type="PackedScene" uid="uid://n1wrym3osxb8" path="res://game/LightSaber.tscn" id="10"]
 [ext_resource type="PackedScene" uid="uid://glii0poslcve" path="res://game/BeepSaberMainMenu.tscn" id="11"]
-[ext_resource type="PackedScene" uid="uid://cisgyiarwaf2i" path="res://OQ_Toolkit/OQ_ARVRController/Feature_UIRayCast.tscn" id="12"]
+[ext_resource type="PackedScene" uid="uid://cisgyiarwaf2i" path="res://game/scripts/UIRaycast/UIRaycast.tscn" id="12"]
 [ext_resource type="PackedScene" uid="uid://qjvg3reomvyk" path="res://game/event_driver.tscn" id="13"]
 [ext_resource type="Sky" uid="uid://byunh6ley5hib" path="res://game/background_sky.tres" id="14"]
-[ext_resource type="PackedScene" uid="uid://bcdbec8ps1nbs" path="res://game/PercentIndicator.tscn" id="16"]
-[ext_resource type="PackedScene" uid="uid://b7hskiadc7t0r" path="res://game/EndScore_panel.tscn" id="17"]
-[ext_resource type="PackedScene" path="res://game/Pause_Panel.tscn" id="18"]
+[ext_resource type="PackedScene" uid="uid://63fr72w7kh2w" path="res://game/PercentIndicator.tscn" id="16"]
+[ext_resource type="PackedScene" uid="uid://f53k0dxxtenr" path="res://game/Pause_Panel.tscn" id="18"]
 [ext_resource type="PackedScene" uid="uid://biylg2wsontn3" path="res://game/settings_Panel.tscn" id="19"]
 [ext_resource type="PackedScene" uid="uid://383dbnh6gxd3" path="res://game/ui/BeatSaverPanel/BeatSaverPanel.tscn" id="20"]
+[ext_resource type="PackedScene" uid="uid://i5nhm2p2kqay" path="res://game/EndScore.tscn" id="20_fgfws"]
 [ext_resource type="PackedScene" uid="uid://spe4kya7ntv8" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DKeyboard.tscn" id="21"]
 [ext_resource type="PackedScene" uid="uid://dmuvh1rllcn3e" path="res://game/Points_label_driver.tscn" id="22"]
 [ext_resource type="PackedScene" uid="uid://cpwxp083qm1jq" path="res://game/HighscorePanel.tscn" id="23"]
 [ext_resource type="PackedScene" uid="uid://6du64wi28yi6" path="res://game/Bomb/Bomb.tscn" id="24"]
-[ext_resource type="PackedScene" path="res://game/ui/NameSelector/NameSelector.tscn" id="25"]
+[ext_resource type="PackedScene" uid="uid://cj71atwq2eow8" path="res://game/ui/NameSelector/NameSelector.tscn" id="25"]
 [ext_resource type="PackedScene" uid="uid://cb8ftj7lpxrfy" path="res://game/ui/YouTubeUI/YouTubeUI.tscn" id="26"]
 [ext_resource type="PackedScene" uid="uid://cjirr6sfxfhhd" path="res://game/scripts/ScenePool/ScenePool.tscn" id="27"]
 [ext_resource type="PackedScene" uid="uid://dkqqtux44xxe7" path="res://game/ui/MapDownloadPanel/MapDownloadPanel.tscn" id="28"]
@@ -51,6 +48,30 @@ fog_density = 0.0015
 [sub_resource type="SphereShape3D" id="2"]
 radius = 0.07
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8ccdl"]
+shading_mode = 0
+disable_receive_shadows = true
+
+[sub_resource type="TextMesh" id="TextMesh_cx1im"]
+material = SubResource("StandardMaterial3D_8ccdl")
+text = "x 0
+Combo 000"
+font_size = 6
+horizontal_alignment = 0
+vertical_alignment = 0
+depth = 0.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0v1t3"]
+shading_mode = 0
+disable_receive_shadows = true
+
+[sub_resource type="TextMesh" id="TextMesh_0bbpk"]
+material = SubResource("StandardMaterial3D_0v1t3")
+text = "Score: 000000"
+font_size = 6
+vertical_alignment = 0
+depth = 0.0
+
 [node name="BeepSaber" type="Node3D" groups=["main_game"]]
 script = ExtResource("9")
 bomb_template = ExtResource("24")
@@ -70,16 +91,17 @@ environment = SubResource("1")
 
 [node name="SongPlayer" type="AudioStreamPlayer" parent="."]
 
-[node name="OQ_ARVROrigin" parent="." instance=ExtResource("4")]
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 
-[node name="OQ_ARVRCamera" parent="OQ_ARVROrigin" instance=ExtResource("5")]
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
 current = true
 far = 1024.0
 
-[node name="PlayerHead" type="Area3D" parent="OQ_ARVROrigin/OQ_ARVRCamera"]
+[node name="PlayerHead" type="Area3D" parent="XROrigin3D/XRCamera3D"]
 
-[node name="FPS_Label" parent="OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead" instance=ExtResource("2")]
+[node name="FPS_Label" parent="XROrigin3D/XRCamera3D/PlayerHead" instance=ExtResource("2")]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 1, -0.778996, 0.48322, -1.51666)
 visible = false
 text = "FPS: "
@@ -87,38 +109,36 @@ margin = 0
 background_color = Color(0, 0, 0, 0)
 transparent = true
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="XROrigin3D/XRCamera3D/PlayerHead"]
 shape = SubResource("2")
 
-[node name="OQ_LeftController" parent="OQ_ARVROrigin" instance=ExtResource("7")]
+[node name="LeftController" type="XRController3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 1.5, -0.5)
 tracker = &"left_hand"
-autoload_model = false
+script = ExtResource("8_5lcn1")
 
-[node name="LeftLightSaber" parent="OQ_ARVROrigin/OQ_LeftController" instance=ExtResource("10")]
+[node name="LeftLightSaber" parent="XROrigin3D/LeftController" instance=ExtResource("10")]
 collision_layer = 0
 
-[node name="Feature_UIRayCast" parent="OQ_ARVROrigin/OQ_LeftController" instance=ExtResource("12")]
+[node name="UIRaycast" parent="XROrigin3D/LeftController" instance=ExtResource("12")]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 active = false
 ui_raycast_length = 5.0
-adjust_left_right = false
-ui_raycast_visible_button = -1
 
-[node name="OQ_RightController" parent="OQ_ARVROrigin" instance=ExtResource("8")]
+[node name="RightController" type="XRController3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.5, -0.5)
 tracker = &"right_hand"
-autoload_model = false
+script = ExtResource("8_5lcn1")
 
-[node name="RightLightSaber" parent="OQ_ARVROrigin/OQ_RightController" instance=ExtResource("10")]
+[node name="RightLightSaber" parent="XROrigin3D/RightController" instance=ExtResource("10")]
 collision_layer = 0
 type = 1
 
-[node name="Feature_UIRayCast" parent="OQ_ARVROrigin/OQ_RightController" instance=ExtResource("12")]
+[node name="UIRaycast" parent="XROrigin3D/RightController" instance=ExtResource("12")]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 ui_raycast_length = 5.0
-adjust_left_right = false
-ui_raycast_visible_button = -1
 
-[node name="Feature_VRSimulator" parent="OQ_ARVROrigin" instance=ExtResource("6")]
+[node name="Feature_VRSimulator" parent="XROrigin3D" instance=ExtResource("6")]
 
 [node name="Track" type="Node3D" parent="."]
 
@@ -133,32 +153,22 @@ transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1.5, -1)
 [node name="BeepSaberMainMenu" parent="MainMenu_OQ_UI2DCanvas" instance=ExtResource("11")]
 keyboard_path = NodePath("../../Keyboard_highscore")
 
-[node name="Multiplier_Label" parent="." instance=ExtResource("2")]
-transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 1, -1.55441, 1.30572, -2.69107)
-text = "Multiplier"
-margin = 0
-background_color = Color(0, 0, 0, 0)
-transparent = true
+[node name="Multiplier_Label" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 1.375, -2.5)
+mesh = SubResource("TextMesh_cx1im")
+skeleton = NodePath("")
 
-[node name="Point_Label" parent="." instance=ExtResource("2")]
-transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 1, 1.47323, 1.30572, -2.69107)
-text = "Score"
-margin = 0
-background_color = Color(0, 0, 0, 0)
-transparent = true
+[node name="Point_Label" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.375, -2.5)
+mesh = SubResource("TextMesh_0bbpk")
+skeleton = NodePath("")
 
-[node name="Percent" parent="." instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5455, 0.895287, -2.54167)
-transparent = true
+[node name="Percent_Indicator" parent="." instance=ExtResource("16")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, -2.5)
+skeleton = NodePath("")
 
-[node name="percent_indicator" parent="Percent" instance=ExtResource("16")]
-
-[node name="EndScore_canvas" parent="." instance=ExtResource("3")]
-transform = Transform3D(1.91111, 0, 0, 0, 1.91111, 0, 0, 0, 1.91111, 0, 1.60386, -0.777581)
-visible = false
-update_only_on_input = false
-
-[node name="EndScore_panel" parent="EndScore_canvas" instance=ExtResource("17")]
+[node name="EndScore" parent="." instance=ExtResource("20_fgfws")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.60386, -0.777581)
 
 [node name="PauseMenu_canvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(1.86849, 0, 0, 0, 1.86849, 0, 0, 0, 1.86849, 0, 1.43532, -0.756856)
@@ -250,16 +260,16 @@ mouse_filter = 1
 Scene = ExtResource("30")
 default_parent = NodePath("../Track")
 
-[connection signal="area_entered" from="OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead" to="." method="_on_PlayerHead_area_entered"]
-[connection signal="area_exited" from="OQ_ARVROrigin/OQ_ARVRCamera/PlayerHead" to="." method="_on_PlayerHead_area_exited"]
-[connection signal="bomb_collide" from="OQ_ARVROrigin/OQ_LeftController/LeftLightSaber" to="." method="_on_LeftLightSaber_bomb_collide"]
-[connection signal="cube_collide" from="OQ_ARVROrigin/OQ_LeftController/LeftLightSaber" to="." method="_on_LeftLightSaber_cube_collide"]
-[connection signal="bomb_collide" from="OQ_ARVROrigin/OQ_RightController/RightLightSaber" to="." method="_on_RightLightSaber_bomb_collide"]
-[connection signal="cube_collide" from="OQ_ARVROrigin/OQ_RightController/RightLightSaber" to="." method="_on_RightLightSaber_cube_collide"]
+[connection signal="area_entered" from="XROrigin3D/XRCamera3D/PlayerHead" to="." method="_on_PlayerHead_area_entered"]
+[connection signal="area_exited" from="XROrigin3D/XRCamera3D/PlayerHead" to="." method="_on_PlayerHead_area_exited"]
+[connection signal="bomb_collide" from="XROrigin3D/LeftController/LeftLightSaber" to="." method="_on_LeftLightSaber_bomb_collide"]
+[connection signal="cube_collide" from="XROrigin3D/LeftController/LeftLightSaber" to="." method="_on_LeftLightSaber_cube_collide"]
+[connection signal="bomb_collide" from="XROrigin3D/RightController/RightLightSaber" to="." method="_on_RightLightSaber_bomb_collide"]
+[connection signal="cube_collide" from="XROrigin3D/RightController/RightLightSaber" to="." method="_on_RightLightSaber_cube_collide"]
 [connection signal="difficulty_changed" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_on_BeepSaberMainMenu_difficulty_changed"]
 [connection signal="settings_requested" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_on_BeepSaberMainMenu_settings_requested"]
-[connection signal="goto_mainmenu" from="EndScore_canvas/EndScore_panel" to="." method="_on_EndScore_panel_goto_mainmenu"]
-[connection signal="repeat" from="EndScore_canvas/EndScore_panel" to="." method="_on_EndScore_panel_repeat"]
+[connection signal="mainmenu" from="EndScore" to="." method="_on_EndScore_panel_goto_mainmenu"]
+[connection signal="repeat" from="EndScore" to="." method="_on_EndScore_panel_repeat"]
 [connection signal="continue_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_on_Pause_Panel_continue_button"]
 [connection signal="mainmenu_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_on_EndScore_panel_goto_mainmenu"]
 [connection signal="restart_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_on_EndScore_panel_repeat"]

@@ -103,10 +103,7 @@ func show_notification(title, text = ""):
 	var pos = vr.vrCamera.global_transform.origin - vr.vrCamera.global_transform.basis.z;
 	
 	nw.look_at_from_position(pos, vr.vrCamera.global_transform.origin, Vector3(0,1,0));
-	
-	
-	
-	
+
 # returns the current player height based on the difference between
 # the height of origin and camera; this assumes that tracking is floor level
 func get_current_player_height():
@@ -124,7 +121,7 @@ func randomArrayElement(rng, array):
 # Note: if you want to use it with .json files that are part of your project you 
 #       need to make sure they are exported by including *.json in the 
 #       ExportSettings->Resources->Filters options
-func load_json_file(filename):
+func load_json_file(filename) -> Dictionary:
 	var save = FileAccess.open(filename, FileAccess.READ);
 	if save:
 		var r = JSON.parse_string(save.get_as_text())
@@ -132,7 +129,7 @@ func load_json_file(filename):
 		return r;
 	else:
 		#vr.log_error("Could not load_json_file from " + filename);
-		return null;
+		return {}
 
 ###############################################################################
 # Controller Handling
@@ -140,15 +137,15 @@ func load_json_file(filename):
 
 # Global accessors to the tracked vr objects; they will be set by the scripts attached
 # to the OQ_ objects
-var leftController : XRController3D = null;
-var rightController : XRController3D = null;
-var vrOrigin : XROrigin3D = null;
-var vrCamera : XRCamera3D = null;
+var leftController : BeepSaberController = null
+var rightController : BeepSaberController = null
+var vrOrigin : XROrigin3D = null
+var vrCamera : XRCamera3D = null
 
 # these two variable point to leftController/rightController
 # and are swapped when calling
-var dominantController : XRController3D = rightController;
-var nonDominantController : XRController3D = leftController;
+var dominantController : XRController3D = rightController
+var nonDominantController : XRController3D = leftController
 
 func set_dominant_controller_left(is_left_handed):
 	if (is_left_handed):
@@ -244,107 +241,6 @@ enum CONTROLLER_BUTTON {
 	INDEX_TRIGGER = 15, # index trigger pressed over threshold
 }
 
-func remap_controller_axis_and_buttons(controller_type = VR_CONTROLLER_TYPE.OCULUS_TOUCH):
-	"""
-	if (controller_type == VR_CONTROLLER_TYPE.OCULUS_TOUCH):
-		# for now nothing to do here as this is the default when the dictionary 
-		# variables are created above
-		BUTTON.ENTER = 3; # this is a special case for the oculus touch controller
-	elif (controller_type == VR_CONTROLLER_TYPE.WEBXR):
-		# reset everything
-		for k in CONTROLLER_AXIS: CONTROLLER_AXIS[k] = -1;
-		for k in CONTROLLER_BUTTON: CONTROLLER_BUTTON[k] = -1;
-		
-		CONTROLLER_AXIS.JOYSTICK_X = 2;
-		CONTROLLER_AXIS.JOYSTICK_Y = 3
-		
-		#CONTROLLER_AXIS.INDEX_TRIGGER = 
-		CONTROLLER_BUTTON.INDEX_TRIGGER = 0;
-		CONTROLLER_BUTTON.GRIP_TRIGGER = 1;
-		CONTROLLER_BUTTON.THUMBSTICK = 3;
-		CONTROLLER_BUTTON.XA = 4;
-		CONTROLLER_BUTTON.YB = 5;
-		
-
-	# now we assign AXIS and BUTTON dictionaries that are used to identify
-	# individual buttons on each controller via name
-	AXIS.LEFT_JOYSTICK_X = CONTROLLER_AXIS.JOYSTICK_X;
-	AXIS.LEFT_JOYSTICK_Y = CONTROLLER_AXIS.JOYSTICK_Y;
-	AXIS.LEFT_INDEX_TRIGGER = CONTROLLER_AXIS.INDEX_TRIGGER;
-	AXIS.LEFT_GRIP_TRIGGER = CONTROLLER_AXIS.GRIP_TRIGGER;
-	if (CONTROLLER_AXIS.JOYSTICK_X!=-1): AXIS.RIGHT_JOYSTICK_X = CONTROLLER_AXIS.JOYSTICK_X + 16;
-	if (CONTROLLER_AXIS.JOYSTICK_Y!=-1): AXIS.RIGHT_JOYSTICK_Y = CONTROLLER_AXIS.JOYSTICK_Y + 16;
-	if (CONTROLLER_AXIS.INDEX_TRIGGER!=-1): AXIS.RIGHT_INDEX_TRIGGER = CONTROLLER_AXIS.INDEX_TRIGGER + 16;
-	if (CONTROLLER_AXIS.GRIP_TRIGGER!=-1): AXIS.RIGHT_GRIP_TRIGGER = CONTROLLER_AXIS.GRIP_TRIGGER + 16;
-	
-	BUTTON.Y = CONTROLLER_BUTTON.YB;
-	BUTTON.LEFT_GRIP_TRIGGER = CONTROLLER_BUTTON.GRIP_TRIGGER;
-	BUTTON.TOUCH_X = CONTROLLER_BUTTON.TOUCH_XA;
-	BUTTON.TOUCH_Y = CONTROLLER_BUTTON.TOUCH_YB;
-	BUTTON.X = CONTROLLER_BUTTON.XA;
-
-	BUTTON.LEFT_TOUCH_THUMB_UP = CONTROLLER_BUTTON.TOUCH_THUMB_UP;
-	BUTTON.LEFT_TOUCH_INDEX_TRIGGER = CONTROLLER_BUTTON.TOUCH_INDEX_TRIGGER;
-	BUTTON.LEFT_TOUCH_INDEX_POINTING = CONTROLLER_BUTTON.TOUCH_INDEX_POINTING;
-
-	BUTTON.LEFT_THUMBSTICK = CONTROLLER_BUTTON.THUMBSTICK;
-	BUTTON.LEFT_INDEX_TRIGGER = CONTROLLER_BUTTON.INDEX_TRIGGER;
-	
-	if (CONTROLLER_BUTTON.YB!=-1): BUTTON.B = CONTROLLER_BUTTON.YB + 16;
-	if (CONTROLLER_BUTTON.GRIP_TRIGGER!=-1): BUTTON.RIGHT_GRIP_TRIGGER = CONTROLLER_BUTTON.GRIP_TRIGGER + 16;
-	if (CONTROLLER_BUTTON.TOUCH_XA!=-1): BUTTON.TOUCH_A = CONTROLLER_BUTTON.TOUCH_XA + 16;
-	if (CONTROLLER_BUTTON.TOUCH_YB!=-1): BUTTON.TOUCH_B = CONTROLLER_BUTTON.TOUCH_YB + 16;
-	if (CONTROLLER_BUTTON.XA!=-1): BUTTON.A = CONTROLLER_BUTTON.XA + 16;
-	
-	if (CONTROLLER_BUTTON.TOUCH_THUMB_UP!=-1): BUTTON.RIGHT_TOUCH_THUMB_UP = CONTROLLER_BUTTON.TOUCH_THUMB_UP + 16;
-	if (CONTROLLER_BUTTON.TOUCH_INDEX_TRIGGER!=-1): BUTTON.RIGHT_TOUCH_INDEX_TRIGGER = CONTROLLER_BUTTON.TOUCH_INDEX_TRIGGER + 16;
-	if (CONTROLLER_BUTTON.TOUCH_INDEX_POINTING!=-1): BUTTON.RIGHT_TOUCH_INDEX_POINTING = CONTROLLER_BUTTON.TOUCH_INDEX_POINTING + 16;
-
-	if (CONTROLLER_BUTTON.THUMBSTICK!=-1): BUTTON.RIGHT_THUMBSTICK = CONTROLLER_BUTTON.THUMBSTICK + 16;
-	if (CONTROLLER_BUTTON.INDEX_TRIGGER!=-1): BUTTON.RIGHT_INDEX_TRIGGER = CONTROLLER_BUTTON.INDEX_TRIGGER + 16;
-	"""
-	log_info("Current Controller Mapping: ");
-	for k in CONTROLLER_AXIS:
-		log_info(" Axis " + k + " = " + str(CONTROLLER_AXIS[k]));
-	for k in CONTROLLER_BUTTON:
-		log_info(" Button " + k + " = " + str(CONTROLLER_BUTTON[k]));
-
-func get_controller_axis(axis_id):
-	if (axis_id == AXIS.None) : return 0.0;
-	if (axis_id < 16):
-		if (leftController == null): return false;
-		return leftController._sim_get_joystick_axis(axis_id);
-	else: 
-		if (rightController == null): return false;
-		return rightController._sim_get_joystick_axis(axis_id-16);
-
-func button_pressed(button_id):
-	if (button_id == BUTTON.None) : return false;
-	if (button_id < 16): 
-		if (leftController == null): return false;
-		return leftController._buttons_pressed[button_id];
-	else: 
-		if (rightController == null): return false;
-		return rightController._buttons_pressed[button_id-16];
-
-func button_just_pressed(button_id):
-	if (button_id == BUTTON.None) : return false;
-	if (button_id < 16): 
-		if (leftController == null): return false;
-		return leftController._buttons_just_pressed[button_id];
-	else: 
-		if (rightController == null): return false;
-		return rightController._buttons_just_pressed[button_id-16];
-
-func button_just_released(button_id):
-	if (button_id == BUTTON.None) : return false;
-	if (button_id < 16): 
-		if (leftController == null): return false;
-		return leftController._buttons_just_released[button_id];
-	else: 
-		if (rightController == null): return false;
-		return rightController._buttons_just_released[button_id-16];
-
 
 ###############################################################################
 # Global defines used across the toolkit
@@ -363,65 +259,7 @@ enum LocomotionStickTurnType {
 }
 
 
-###############################################################################
-# OVR Settings helpers
-###############################################################################
-
-# Oculus VR Api Classes
-var ovrBaseAPI = null;
-var ovrInitAPI = null;
-var ovrUtilities = null;
-var ovrVrApiProxy = null;
-# for the types we need to assume it is always available
-var ovrVrApiTypes = null;#load("res://addons/godot_ovrmobile/OvrVrApiTypes.gd").new();
-
 var _need_settings_refresh = false;
-
-
-func _initialize_OVR_API():
-	# load all native interfaces to the vrApi
-	var _OvrBaseAPI = load("res://addons/godot_ovrmobile/OvrBaseAPI.gdns");
-	var _OvrInitAPI = load("res://addons/godot_ovrmobile/OvrInitAPI.gdns");
-	var _OvrUtilities = load("res://addons/godot_ovrmobile/OvrUtilities.gdns");
-	var _OvrVrApiProxy = load("res://addons/godot_ovrmobile/OvrVrApiProxy.gdns");
-	
-	if (_OvrBaseAPI): ovrBaseAPI = _OvrBaseAPI.new();
-	else: log_error("Failed to load OvrBaseAPI.gdns");
-	if (_OvrInitAPI): ovrInitAPI = _OvrInitAPI.new();
-	else: log_error("Failed to load OvrInitAPI.gdns");
-	if (_OvrUtilities): ovrUtilities = _OvrUtilities.new();
-	else: log_error("Failed to load OvrUtilities.gdns");
-	if (_OvrVrApiProxy): ovrVrApiProxy = _OvrVrApiProxy.new();
-	else: log_error("Failed to load OvrVrApiProxy.gdns");
-
-	# print out a warning message if ovrBaseAPI is not found because it likely means that
-	# an incompatible version of the godot_ovrmobile version is used; the toolkit comes with a version
-	# that is compatible in https://github.com/NeoSpark314/godot_oculus_quest_toolkit
-	if (not ovrBaseAPI):
-		log_error("No OvrBaseAPI found; please make sure to use a godot_ovrmobile addon version compatible with the toolkit!; A compatible version is part of https://github.com/NeoSpark314/godot_oculus_quest_toolkit")
-	
-	log_info(str("    Quest Supported display refresh rates: ", get_supported_display_refresh_rates()));
-	#log_info(str("      is_oculus_quest_1_device: ", is_oculus_quest_1_device()));
-	#log_info(str("      is_oculus_quest_2_device: ", is_oculus_quest_2_device()));
-
-
-# When the android application gets paused it will destroy the VR context
-# this funciton makes sure that we persist the settings we set via vr. to persist
-# between pause and resume
-func _refresh_settings():
-	log_info("_refresh_settings()");
-	
-	set_display_refresh_rate(oculus_mobile_settings_cache["display_refresh_rate"]);
-	request_boundary_visible(oculus_mobile_settings_cache["boundary_visible"]);
-	set_tracking_space(oculus_mobile_settings_cache["tracking_space"]);
-	set_default_layer_color_scale(oculus_mobile_settings_cache["default_layer_color_scale"]);
-	set_extra_latency_mode(oculus_mobile_settings_cache["extra_latency_mode"]);
-	set_foveation_level(oculus_mobile_settings_cache["foveation_level"]);
-	set_enable_dynamic_foveation(oculus_mobile_settings_cache["foveation_dynamic"]);
-	set_swap_interval(oculus_mobile_settings_cache["swap_interval"]);
-	set_clock_levels(oculus_mobile_settings_cache["clock_levels_cpu"], oculus_mobile_settings_cache["clock_levels_gpu"]);
-	
-	_need_settings_refresh = false;
 
 
 func _notification(what):
@@ -430,250 +268,6 @@ func _notification(what):
 	if (what == NOTIFICATION_APPLICATION_RESUMED):
 		_need_settings_refresh = true;
 		pass;
-
-
-# the settings cache used to refresh the settings after an app pause; these are also the default settings
-# make sure to update _refresh_settings() and the respective setter wrapper methods when this needs to be changed
-var oculus_mobile_settings_cache = {
-	"display_refresh_rate" : 90,
-	"boundary_visible" : false,
-	"tracking_space" : 0,#ovrVrApiTypes.OvrTrackingSpace.VRAPI_TRACKING_SPACE_LOCAL_FLOOR,
-	"default_layer_color_scale" : Color(1.0, 1.0, 1.0, 1.0),
-	"extra_latency_mode" : 0,#ovrVrApiTypes.OvrExtraLatencyMode.VRAPI_EXTRA_LATENCY_MODE_ON,
-	"foveation_level" : FoveatedRenderingLevel.Off,
-	"foveation_dynamic" : 0,
-	"swap_interval" : 1,
-	"clock_levels_cpu" : 2,
-	"clock_levels_gpu" : 2,
-}
-
-# wrapper for accessing the VrAPI helper functions that check for availability
-
-func get_supported_display_refresh_rates():
-	if (!ovrBaseAPI):
-		log_error("get_supported_display_refresh_rates(): no ovrBaseAPI object.");
-		return [];
-	else:
-		return ovrBaseAPI.get_supported_display_refresh_rates();
-
-func set_display_refresh_rate(value):
-	if (!ovrBaseAPI):
-		log_error("set_display_refresh_rate(): no ovrBaseAPI object.");
-	else:
-		oculus_mobile_settings_cache["display_refresh_rate"] = value;
-		ovrBaseAPI.set_display_refresh_rate(value);
-
-func get_boundary_oriented_bounding_box():
-	if (!ovrBaseAPI):
-		log_error("get_boundary_oriented_bounding_box(): no ovrBaseAPI object.");
-		return [Transform3D(), Vector3(1.93, 2.5, 2.25)]; # return a default value
-	else:
-		var ret = ovrBaseAPI.get_boundary_oriented_bounding_box();
-		if ((ret == null) || !(ret is Array) || (ret.size() != 2)):
-			log_error(str("get_boundary_oriented_bounding_box(): invalid return value: ", ret));
-			return [Transform3D(), Vector3(0, 0, 0)]; # return a default value
-		return ret;
-		
-func request_boundary_visible(val):
-	if (!ovrBaseAPI):
-		log_error("request_boundary_visible(): no ovrBaseAPI object.");
-		return false;
-	else:
-		oculus_mobile_settings_cache["boundary_visible"] = val;
-		return ovrBaseAPI.request_boundary_visible(val);
-		
-func get_boundary_visible():
-	if (!ovrBaseAPI):
-		log_error("get_boundary_visible(): no ovrBaseAPI object.");
-		return false;
-	else:
-		return ovrBaseAPI.get_boundary_visible();
-
-func get_tracking_space():
-	if (!ovrBaseAPI):
-		log_error("get_tracking_space(): no ovrBaseAPI object.");
-		return -1;
-	else:
-		return ovrBaseAPI.get_tracking_space();
-		
-func set_tracking_space(tracking_space):
-	if (!ovrBaseAPI):
-		log_error("set_tracking_space(): no ovrBaseAPI object.");
-		return false;
-	else:
-		oculus_mobile_settings_cache["tracking_space"] = tracking_space;
-		return ovrBaseAPI.set_tracking_space(tracking_space);
-		
-func locate_tracking_space(target_tracking_space):
-	if (!ovrBaseAPI):
-		log_error("set_tracking_space(): no ovrBaseAPI object.");
-		return Transform3D();
-	else:
-		return ovrBaseAPI.locate_tracking_space(target_tracking_space);
-
-
-# these variables are currently only used by the recording playback
-# order is [head, controller_id 1, controller_id 2]
-var _sim_angular_velocity = [Vector3(0,0,0), Vector3(0,0,0), Vector3(0,0,0)];
-var _sim_angular_acceleration = [Vector3(0,0,0), Vector3(0,0,0), Vector3(0,0,0)];
-var _sim_linear_velocity = [Vector3(0,0,0), Vector3(0,0,0), Vector3(0,0,0)];
-var _sim_linear_acceleration = [Vector3(0,0,0), Vector3(0,0,0), Vector3(0,0,0)];
-
-func get_controller_angular_velocity(controller_id):
-	if (!ovrUtilities):
-		#return Vector3(0,0,0); # we could implement a fallback here
-		return _sim_angular_velocity[controller_id];
-	else:
-		var v = ovrUtilities.get_controller_angular_velocity(controller_id);
-		if (v != null): return v;
-	return Vector3(0,0,0);
-
-func get_controller_angular_acceleration(controller_id):
-	if (!ovrUtilities):
-		#return Vector3(0,0,0); # we could implement a fallback here
-		return _sim_angular_acceleration[controller_id];
-	else:
-		var v =  ovrUtilities.get_controller_angular_acceleration(controller_id);
-		if (v != null): return v;
-	return Vector3(0,0,0);
-	
-func get_controller_linear_velocity(controller_id):
-	if (!ovrUtilities):
-		#return Vector3(0,0,0); # we could implement a fallback here
-		return _sim_linear_velocity[controller_id];
-	else:
-		var v =  ovrUtilities.get_controller_linear_velocity(controller_id);
-		if (v != null): return v;
-	return Vector3(0,0,0);
-
-
-func get_controller_linear_acceleration(controller_id):
-	if (!ovrUtilities):
-		#return Vector3(0,0,0); # we could implement a fallback here
-		return _sim_linear_acceleration[controller_id];
-	else:
-		var v =  ovrUtilities.get_controller_linear_acceleration(controller_id);
-		if (v != null): return v;
-	return Vector3(0,0,0);
-
-
-func get_head_angular_velocity():
-	if (!ovrUtilities):
-		#return Vector3(0,0,0); # we could implement a fallback here
-		return _sim_angular_velocity[0];
-	else:
-		var v =  ovrUtilities.get_head_angular_velocity();
-		if (v != null): return v;
-	return Vector3(0,0,0);
-
-func get_head_angular_acceleration():
-	if (!ovrUtilities):
-		#return Vector3(0,0,0); # we could implement a fallback here
-		return _sim_angular_acceleration[0];
-	else:
-		var v = ovrUtilities.get_head_angular_acceleration();
-		if (v != null): return v;
-	return Vector3(0,0,0);
-	
-func get_head_linear_velocity():
-	if (!ovrUtilities):
-		#return Vector3(0,0,0); # we could implement a fallback here
-		return _sim_linear_velocity[0];
-	else:
-		var v = ovrUtilities.get_head_linear_velocity();
-		if (v != null): return v;
-	return Vector3(0,0,0);
-
-
-func get_head_linear_acceleration():
-	if (!ovrUtilities):
-		#return Vector3(0,0,0); # we could implement a fallback here
-		return _sim_linear_acceleration[0];
-	else:
-		var v = ovrUtilities.get_head_linear_acceleration();
-		if (v != null): return v;
-	return Vector3(0,0,0);
-
-
-func get_ipd():
-	if (!ovrUtilities):
-		log_error("get_ipd(): no ovrUtilities object.");
-		return 0.065;
-	else:
-		return ovrUtilities.get_ipd();
-
-
-func set_default_layer_color_scale(color : Color):
-	if (!ovrUtilities):
-		#log_error("get_ipd(): no ovrUtilities object."); # no error message here as it is commonly called in process
-		return false;
-	else:
-		oculus_mobile_settings_cache["default_layer_color_scale"] = color;
-		return ovrUtilities.set_default_layer_color_scale(color);
-
-
-func is_oculus_quest_1_device():
-	if (!ovrUtilities):
-		return false;
-	else:
-		return ovrUtilities.is_oculus_quest_1_device();
-	
-func is_oculus_quest_2_device():
-	if (!ovrUtilities):
-		return false;
-	else:
-		return ovrUtilities.is_oculus_quest_2_device();
-
-
-func set_extra_latency_mode(latency_mode):
-	if (!ovrBaseAPI):
-		log_error("set_tracking_space(): no ovrBaseAPI object.");
-		return false;
-	else:
-		oculus_mobile_settings_cache["extra_latency_mode"] = latency_mode;
-		return ovrBaseAPI.set_extra_latency_mode(latency_mode);
-
-
-enum FoveatedRenderingLevel {
-	Off = 0,
-	Low = 1,
-	Medium = 2,
-	High = 3,
-	HighTop = 4  # Quest Only
-}
-
-func set_foveation_level(ffr_level):
-	if (!ovrBaseAPI):
-		log_error("set_foveation_level(): no ovrBaseAPI object.");
-		return false;
-	else:
-		oculus_mobile_settings_cache["foveation_level"] = ffr_level;
-		return ovrBaseAPI.set_foveation_level(ffr_level);
-
-func set_enable_dynamic_foveation(ffr_dynamic):
-	if (!ovrBaseAPI):
-		log_error("set_enable_dynamic_foveation(): no ovrBaseAPI object.");
-		return false;
-	else:
-		oculus_mobile_settings_cache["foveation_dynamic"] = ffr_dynamic;
-		return ovrBaseAPI.set_enable_dynamic_foveation(ffr_dynamic);
-
-func set_swap_interval(interval):
-	if (!ovrBaseAPI):
-		log_error("set_swap_interval(): no ovrBaseAPI object.");
-		return false;
-	else:
-		oculus_mobile_settings_cache["swap_interval"] = interval;
-		return ovrBaseAPI.set_swap_interval(interval);
-	
-func set_clock_levels(cpu_level, gpu_level):
-	if (!ovrBaseAPI):
-		log_error("set_clock_levels(): no ovrBaseAPI object.");
-		return false;
-	else:
-		oculus_mobile_settings_cache["clock_levels_cpu"] = cpu_level;
-		oculus_mobile_settings_cache["clock_levels_gpu"] = gpu_level;
-		return ovrBaseAPI.set_clock_levels(cpu_level, gpu_level);
 
 
 ###############################################################################
@@ -744,22 +338,18 @@ func _check_for_scene_switch_and_fade(dt):
 	if (_target_scene_path != null && !_switch_performed):
 		if (_scene_switch_fade_out_time < _scene_switch_fade_out_duration):
 			var c = 1.0 - min(1.0, _scene_switch_fade_out_time / (_scene_switch_fade_out_duration*0.9));
-			set_default_layer_color_scale(Color(c, c, c, c));
 			_scene_switch_fade_out_time += dt;
 			switch_scene_in_progress = true;
-		else: # then swith scene when everything is black
-			set_default_layer_color_scale(Color(0, 0, 0, 0));
+		else:
 			_perform_switch_scene(_target_scene_path);
 			_switch_performed = true;
 			switch_scene_in_progress = true;
 	elif (_target_scene_path != null && _switch_performed):
 		if (_scene_switch_fade_in_time < _scene_switch_fade_in_duration):
 			var c = _scene_switch_fade_in_time / _scene_switch_fade_in_duration;
-			set_default_layer_color_scale(Color(c, c, c, c));
 			_scene_switch_fade_in_time += dt;
 			switch_scene_in_progress = true;
-		else: # everything done; full white again for color
-			set_default_layer_color_scale(Color(1, 1, 1, 1));
+		else:
 			_target_scene_path = null;
 
 
@@ -776,9 +366,6 @@ func _physics_process(_dt):
 func _process(dt):
 	frame_counter += 1;
 	
-	if (_need_settings_refresh):
-		_refresh_settings();
-		
 	_check_for_scene_switch_and_fade(dt);
 
 

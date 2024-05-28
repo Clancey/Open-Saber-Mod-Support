@@ -4,5 +4,5 @@ src_data
 
 # ignore exported APKs
 *.apk
-.godot/*
+.godot/
 android/build/*

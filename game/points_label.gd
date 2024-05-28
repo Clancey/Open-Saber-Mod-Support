@@ -1,12 +1,20 @@
 extends Node3D
 
-func _ready():
-	$points/mesh.material_override.albedo_texture = $SubViewport.get_texture()
+var text_mesh: TextMesh
+var player: AnimationPlayer
 
-func show_points(_position=Vector3(),value="x",color = Color(1,1,1)):
+func _ready():
+	player = $AnimationPlayer as AnimationPlayer
+	# gotta make a new text mesh for each one, otherwise they will all ref
+	# the same one.  the result of that is if you change the text of one, you
+	# change the text of all.
+	var instance := $mesh_instance as MeshInstance3D
+	instance.mesh = instance.mesh.duplicate(true) as TextMesh
+	text_mesh = instance.mesh as TextMesh
+
+func show_points(_position: Vector3, value: String, color: Color):
 	global_position = _position
-	$SubViewport/Label.text = str(value)
-	$SubViewport/Label.modulate = color
-	$AnimationPlayer.stop()
-	$AnimationPlayer.play("hit")
-	$update_once.update_once($SubViewport)
+	text_mesh.text = value
+	(text_mesh.material as StandardMaterial3D).albedo_color = color
+	player.stop()
+	player.play("hit")
