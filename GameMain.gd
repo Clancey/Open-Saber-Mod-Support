@@ -4,8 +4,8 @@
 
 extends Node
 
-func _ready():
+func _ready() -> void:
 	vr.initialize(1.0)
-	vr.scene_switch_root = self;
-	vr.switch_scene("res://game/GodotSplash.tscn", 0.0, 0.0);
-	vr.switch_scene("res://game/BeepSaber_Game.tscn", 0.1, 2.0);
+	vr.scene_switch_root = self
+	vr.switch_scene("res://game/GodotSplash.tscn", 0.0, 0.0)
+	vr.switch_scene("res://game/BeepSaber_Game.tscn", 0.1, 2.0)

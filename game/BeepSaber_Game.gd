@@ -3,6 +3,8 @@
 extends Node3D
 class_name BeepSaber_Game
 
+static var game: BeepSaber_Game
+
 var gamestate_bootup := GameState.new()
 var gamestate_mapcomplete := GameStateMapComplete.new()
 var gamestate_mapselection := GameStateMapSelection.new()
@@ -41,10 +43,9 @@ var gamestate: GameState = gamestate_bootup
 
 @onready var fps_label = $XROrigin3D/XRCamera3D/PlayerHead/FPS_Label
 
-@onready var cube_template = preload("res://game/BeepCube.tscn").instantiate();
-@onready var wall_template = preload("res://game/Wall/Wall.tscn").instantiate();
+@onready var cube_template = preload("res://game/BeepCube.tscn").instantiate()
+@onready var wall_template = preload("res://game/Wall/Wall.tscn").instantiate()
 @onready var LinkedList := preload("res://game/scripts/LinkedList.gd")
-@export var bomb_template: PackedScene
 
 @onready var _cube_pool := $BeepCubePool
 
@@ -106,43 +107,6 @@ var pause_position = 0.0;
 #settings
 var cube_cuts_falloff = true
 var bombs_enabled = true
-
-# structure of nodes that represent a cut piece of a cube (ie. one half)
-class CutPieceNodes:
-	extends RefCounted
-	
-	var rigid_body := RigidBody3D.new()
-	var mesh := MeshInstance3D.new()
-	var coll := CollisionShape3D.new()
-	
-	func _init():
-		rigid_body.add_to_group("cutted_cube")
-		rigid_body.collision_layer = 0
-		rigid_body.collision_mask = CollisionLayerConstants.Floor_mask
-		rigid_body.gravity_scale = 1
-		# set a phyiscs material for some more bouncy behaviour
-		rigid_body.physics_material_override = preload("res://game/BeepCube_Cut.phymat")
-		
-		coll.shape = BoxShape3D.new()
-		
-		rigid_body.add_child(coll)
-		rigid_body.add_child(mesh)
-		
-		rigid_body.set_script(preload("res://game/BeepCube_CutFadeout.gd"))
-
-# structure of nodes that are used to produce effects when cutting a cube
-class CutCubeResources:
-	extends RefCounted
-	
-	var particles : BeepCubeSliceParticles = null
-	var piece1 := CutPieceNodes.new()
-	var piece2 := CutPieceNodes.new()
-	
-	func _init():
-		particles = preload("res://game/BeepCube_SliceParticles.tscn").instantiate() as BeepCubeSliceParticles
-
-const MAX_CUT_CUBE_RESOURCES = 32
-@onready var _cut_cube_resources := LinkedList.new()
 
 func restart_map():
 	_audio_synced_after_restart = false
@@ -266,9 +230,9 @@ func _submit_highscore(player_name: String):
 			
 		_transition_game_state(gamestate_mapcomplete)
 
-const beat_distance = 4.0;
-const beats_ahead = 4.0;
-const CUBE_ROTATIONS = [180, 0, 270, 90, -135, 135, -45, 45, 0];
+const beat_distance := 4.0
+const beats_ahead := 4.0
+const CUBE_ROTATIONS: Array[float] = [180, 0, 270, 90, -135, 135, -45, 45, 0]
 
 func _get_color_left():
 	if disable_map_color: return COLOR_LEFT
@@ -313,31 +277,14 @@ func _check_and_update_saber(controller: BeepSaberController, saber: Area3D):
 			controller.simple_rumble(0.0, 0.1);
 
 
-var left_saber_end = Vector3()
-var right_saber_end = Vector3()
-var left_saber_end_past = Vector3()
-var right_saber_end_past = Vector3()
-var last_dt = 0.0
-
-
-func _update_saber_end_variabless(dt):
-	left_saber_end_past = left_saber_end
-	right_saber_end_past = right_saber_end
-	left_saber_end = left_controller.global_transform.origin + left_saber.global_transform.basis.y
-	right_saber_end = right_controller.global_transform.origin + right_saber.global_transform.basis.y
-	last_dt = dt
-
-
 func _physics_process(dt: float) -> void:
 	if fps_label.visible:
 		fps_label.set_label_text("FPS: %d" % Engine.get_frames_per_second())
 	
 	gamestate._physics_process(self, dt)
 	
-	_check_and_update_saber(left_controller, left_saber);
-	_check_and_update_saber(right_controller, right_saber);
-	
-	_update_saber_end_variabless(dt)
+	_check_and_update_saber(left_controller, left_saber)
+	_check_and_update_saber(right_controller, right_saber)
 
 var _main_menu = null
 var _lpf = null
@@ -354,14 +301,7 @@ func _ready():
 	if !vr.inVR:
 		$XROrigin3D.add_child(preload("res://OQ_Toolkit/OQ_ARVROrigin/Feature_VRSimulator.tscn").instantiate())
 	update_saber_colors()
-
-	# initialize list of cut cube resources
-	for _i in range(MAX_CUT_CUBE_RESOURCES):
-		var new_res := CutCubeResources.new()
-		add_child(new_res.particles)
-		add_child(new_res.piece1.rigid_body)
-		add_child(new_res.piece2.rigid_body)
-		_cut_cube_resources.push_back(new_res)
+	game = self
 
 	UI_AudioEngine.attach_children(highscore_keyboard)
 	UI_AudioEngine.attach_children(online_search_keyboard)
@@ -389,72 +329,13 @@ func disable_events(disabled):
 	else:
 		$event_driver.set_all_on()
 
-
-# cut the cube by creating two rigid bodies and using a CSGBox to create
-# the cut plane
-func _create_cut_rigid_body(_sign, cube : Node3D, cutplane : Plane, cut_distance, controller_speed, saber_ends, cut_res: CutCubeResources):
-	if not cube_cuts_falloff: 
-		return
-	
-	# this function gets run twice, one for each piece of the cube
-	var piece : CutPieceNodes = cut_res.piece1
-	if is_equal_approx(_sign,1):
-		piece = cut_res.piece2
-	
-	# make piece invisible and stop it's processing while we're updating it
-	piece.rigid_body.reset()
-	
-	# the original cube mesh
-	piece.mesh.mesh = cube._mesh;
-	piece.mesh.transform = cube._cube_mesh_orientation.transform;
-	piece.mesh.material_override = cube._mat.duplicate()
-	
-	# calculate angle and position of the cut
-	piece.mesh.material_override.set_shader_parameter("cutted",true)
-	piece.mesh.material_override.set_shader_parameter("inverted_cut",!bool((_sign+1)/2))
-	# TODO: cutplane is unused and replaced by this? what
-	var saber_end_mov = saber_ends[0]-saber_ends[1]
-	var saber_end_angle = rad_to_deg(Vector2(saber_end_mov.x,saber_end_mov.y).angle())
-	var saber_end_angle_rel = (int(((saber_end_angle+90)+(360-piece.mesh.rotation_degrees.z))+180)%360)-180
-	
-	var rot_dir = saber_end_angle_rel > 90 or saber_end_angle_rel < -90
-	var rot_dir_flt = (float(rot_dir)*2)-1
-	piece.mesh.material_override.set_shader_parameter("cut_pos",cut_distance*rot_dir_flt)
-	piece.mesh.material_override.set_shader_parameter("cut_angle",deg_to_rad(saber_end_angle_rel))
-
-	# transform the normal into the orientation of the actual cube mesh
-	var normal = piece.mesh.transform.basis.inverse() * cutplane.normal;
-	
-	# Next we are adding a simple collision cube to the rigid body. Note that
-	# his is really just a very crude approximation of the actual cut geometry
-	# but for now it's enough to give them some physics behaviour
-	piece.coll.shape.size = Vector3(0.25, 0.25, 0.125)
-	piece.coll.look_at_from_position(-cutplane.normal*_sign*0.125, cutplane.normal, Vector3(0,1,0))
-
-	piece.rigid_body.global_transform = cube.global_transform
-	piece.rigid_body.linear_velocity = Vector3.ZERO
-	piece.rigid_body.angular_velocity = Vector3.ZERO
-	# make piece visible and start its simulation
-	piece.rigid_body.fire()
-	
-	# some impulse so the cube half moves
-	var cutplane_2d = Vector3(saber_end_mov.x,saber_end_mov.y,0.0)
-	var splitplane_2d = cutplane_2d.cross(piece.mesh.transform.basis.z)
-	piece.rigid_body.apply_central_impulse((_sign * splitplane_2d * 15) + (cutplane_2d*10))
-	
-	# This function gets run twice so we don't want two particle effects
-	if is_equal_approx(_sign,1):
-		cut_res.particles.transform.origin = cube.global_transform.origin
-		cut_res.particles.rotation_degrees.z = saber_end_angle+90
-		cut_res.particles.fire()
-
 func _reset_combo():
 	_current_multiplier = 1;
 	_current_combo = 0;
 	_wrong_notes += 1.0;
 	_full_combo = false;
 	_display_points();
-	
+
 func _clear_track():
 	for c in track.get_children():
 		if c is BeepCube:
@@ -465,30 +346,26 @@ func _clear_track():
 			track.remove_child(c);
 			c.queue_free();
 
-func _update_points_from_cut(saber, cube, beat_accuracy, cut_angle_accuracy, cut_distance_accuracy, travel_distance_factor):
-	
-	#send data to saber for esthetics effects
-	saber.hit(cube) 
-	
+func _update_points_from_cut(saber_type: int, cube: BeepCube, beat_accuracy: float, cut_angle_accuracy: float, cut_distance_accuracy: float, travel_distance_factor: float):
 	# check if we hit the cube with the correctly colored saber
-	if (saber.type != cube._note._type):
-		_reset_combo();
+	if (saber_type != cube._note._type):
+		_reset_combo()
 		_wrong_notes += 1.0
 		$Points_label_driver.show_points(cube.transform.origin,"x")
-		return;
+		return
 
-	_current_combo += 1;
-	_current_multiplier = 1 + round(min((_current_combo / 10), 7.0));
+	_current_combo += 1
+	_current_multiplier = 1 + round(min((_current_combo / 10), 7.0))
 
 	# point computation based on the accuracy of the swing
-	var points = 0;
-	points += beat_accuracy * 50;
-	points += cut_angle_accuracy * 50;
-	points += cut_distance_accuracy * 50;
-	points += points * travel_distance_factor;
+	var points := 0.0
+	points += beat_accuracy * 50.0
+	points += cut_angle_accuracy * 50.0
+	points += cut_distance_accuracy * 50.0
+	points += points * travel_distance_factor
 
-	points = round(points);
-	_current_points += points * _current_multiplier;
+	points = roundf(points)
+	_current_points += points * _current_multiplier
 	
 	$Points_label_driver.show_points(cube.transform.origin,str(points))
 	# track acurracy percent
@@ -496,8 +373,7 @@ func _update_points_from_cut(saber, cube, beat_accuracy, cut_angle_accuracy, cut
 	_right_notes += normalized_points;
 	_wrong_notes += 1.0-normalized_points;
 
-	_display_points();
-	
+	_display_points()
 
 
 func _display_points():
@@ -510,62 +386,6 @@ func _display_points():
 	(point_label.mesh as TextMesh).text = "Score: %6d" % _current_points
 	(multiplier_label.mesh as TextMesh).text = "x %d\nCombo %d" % [_current_multiplier, _current_combo]
 	percent_indicator.update_percent(hit_rate)
-
-# perform the necessay computations to cut a cube with the saber
-func _cut_cube(controller : XRController3D, saber : Area3D, cube : Node3D):
-	_cut_cube_sw.start()
-	
-	# perform haptic feedback for the cut
-	controller.simple_rumble(0.75, 0.1);
-	var o = controller.global_transform.origin;
-	var saber_end : Vector3
-	var saber_end_past : Vector3
-	if(controller.tracker == "left_hand"): # Check if it's the left controller
-		saber_end = left_saber_end
-		saber_end_past = left_saber_end_past
-	else:
-		saber_end = right_saber_end
-		saber_end_past = right_saber_end_past
-	
-	var cutplane := Plane(o, saber_end, saber_end_past + (beat_distance *_current_info._beatsPerMinute * last_dt / 30) * Vector3(0, 0, 1)); # Account for relative position to track speed
-	var cut_distance = cutplane.distance_to(cube.global_transform.origin);
-	
-	var controller_speed : Vector3 = (saber_end - saber_end_past) / (5*last_dt) + 0.2*(beat_distance *_current_info._beatsPerMinute / 60) * Vector3(0, 0, 1) # Account for inertial track speed
-
-	# compute the angle between the cube orientation and the cut direction
-	var cut_direction_xy = -Vector3(controller_speed.x, controller_speed.y, 0.0).normalized();
-	var base_cut_angle_accuracy = cube._cube_mesh_orientation.global_transform.basis.y.dot(cut_direction_xy);
-	var cut_angle_accuracy = clamp((base_cut_angle_accuracy-0.7)/0.3, 0.0, 1.0);
-	if cube._note._cutDirection==8: #ignore angle if is a dot
-		cut_angle_accuracy = 1.0;
-	var cut_distance_accuracy = clamp((0.1 - abs(cut_distance))/0.1, 0.0, 1.0);
-	var travel_distance_factor = _controller_movement_aabb[controller.tracker].get_longest_axis_size();
-	travel_distance_factor = clamp((travel_distance_factor-0.5)/0.5, 0.0, 1.0);
-
-	_create_cut_pieces_sw.start()
-	# acquire oldest CutCubeResources to use for this event. we reused these
-	# resource for performance reasons. it gets placed onto the back of the
-	# list so that it won't get used again for a couple more cycles.
-	var cut_res : CutCubeResources = _cut_cube_resources.pop_front()
-	_cut_cube_resources.push_back(cut_res)
-	_create_cut_rigid_body(-1, cube, cutplane, cut_distance, controller_speed, [saber_end,saber_end_past], cut_res);
-	_create_cut_rigid_body( 1, cube, cutplane, cut_distance, controller_speed, [saber_end,saber_end_past], cut_res);
-	_create_cut_pieces_sw.stop()
-	
-	# allows a bit of save margin where the beat is considered 100% correct
-	var beat_accuracy = clamp((1.0 - abs(cube.global_transform.origin.z)) / 0.5, 0.0, 1.0);
-
-	_update_points_sw.start()
-	_update_points_from_cut(saber, cube, beat_accuracy, cut_angle_accuracy, cut_distance_accuracy, travel_distance_factor);
-	_update_points_sw.stop()
-
-	# reset the movement tracking volume for the next cut
-	_controller_movement_aabb[controller.tracker] = AABB(controller.global_transform.origin, Vector3(0,0,0));
-
-	#vr.show_dbg_info("cut_accuracy", str(beat_accuracy) + ", " + str(cut_angle_accuracy) + ", " + str(cut_distance_accuracy) + ", " + str(travel_distance_factor));
-	cube.release();
-	
-	_cut_cube_sw.stop()
 
 # quiets song when player enters into a wall
 func _quiet_song():
@@ -646,39 +466,11 @@ func _on_NameSelector_name_selected(name: String):
 	if gamestate == gamestate_newhighscore:
 		_submit_highscore(name)
 
-func _on_LeftLightSaber_cube_collide(cube: Node3D):
-	# check 'playing' to prevent cutting items while resuming from pause menu
-	# where items are visible at this point, but there a count down before the
-	# song starts to play again
-	if song_player.playing:
-		_cut_cube(left_controller, left_saber, cube);
-
-func _on_RightLightSaber_cube_collide(cube: Node3D):
-	# check 'playing' to prevent cutting items while resuming from pause menu
-	# where items are visible at this point, but there a count down before the
-	# song starts to play again
-	if song_player.playing:
-		_cut_cube(right_controller, right_saber, cube);
-
-func _on_LeftLightSaber_bomb_collide(bomb: Node3D):
-	# check 'playing' to prevent cutting items while resuming from pause menu
-	# where items are visible at this point, but there a count down before the
-	# song starts to play again
-	if song_player.playing:
-		_reset_combo()
-		$Points_label_driver.show_points(bomb.transform.origin,"x")
-		bomb.queue_free()
-		left_controller.simple_rumble(1.0, 0.15)
-
-func _on_RightLightSaber_bomb_collide(bomb: Node3D):
-	# check 'playing' to prevent cutting items while resuming from pause menu
-	# where items are visible at this point, but there a count down before the
-	# song starts to play again
-	if song_player.playing:
-		_reset_combo()
-		$Points_label_driver.show_points(bomb.transform.origin,"x")
-		bomb.queue_free()
-		right_controller.simple_rumble(1.0, 0.15)
+func bomb_collide(bomb: Bomb) -> void:
+	_reset_combo()
+	$Points_label_driver.show_points(bomb.transform.origin,"x")
+	bomb.queue_free()
+	left_controller.simple_rumble(1.0, 0.15)
 
 func _on_BeepCubePool_scene_instanced(cube: Node3D):
 	cube.visible = false

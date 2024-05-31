@@ -10,8 +10,6 @@ var controller: BeepSaberController = null
 @onready var ui_raycast_mesh := $RayCastPosition/RayCastMesh as MeshInstance3D
 @onready var ui_raycast_hitmarker := $RayCastPosition/RayCastHitMarker as MeshInstance3D
 
-const hand_click_button := vr.CONTROLLER_BUTTON.XA;
-
 var is_colliding := false;
 var colliding_with: Object = null
 

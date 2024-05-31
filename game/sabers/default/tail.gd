@@ -1,4 +1,5 @@
 extends Node3D
+class_name SaberTail
 
 @onready var mesh : MeshInstance3D = $Mesh
 @onready var imm_geo : ImmediateMesh = $Mesh.mesh

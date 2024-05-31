@@ -370,7 +370,6 @@ material_override = SubResource("StandardMaterial3D_4m7pm")
 mesh = SubResource("1")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-stream = ExtResource("6")
 volume_db = -4.0
 max_db = 5.0
 
@@ -413,5 +412,5 @@ attenuation_model = 3
 volume_db = 1.0
 
 [node name="tail" parent="." instance=ExtResource("8_m1jst")]
-transform = Transform3D(0.999998, 1.11022e-16, -1.84741e-13, -5.39674e-17, 0.999804, -0.0189659, -2.84217e-14, 0.0204336, 0.999809, -9.96203e-18, 0.048214, 2.27911e-10)
+transform = Transform3D(0.999998, -1.66533e-15, -1.77636e-13, -5.39681e-17, 0.9998, -0.0189659, -2.13163e-14, 0.0204335, 0.99981, -9.96204e-18, 0.048214, 2.27911e-10)
 size = 1.2

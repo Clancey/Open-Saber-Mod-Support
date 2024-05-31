@@ -31,8 +31,8 @@ func _physics_process(game: BeepSaber_Game, delta: float) -> void:
 			game._audio_synced_after_restart = true
 	elif game.song_player.playing:
 		_process_map(game, delta)
-		_update_controller_movement_aabb(game, game.left_controller)
-		_update_controller_movement_aabb(game, game.right_controller)
+		game.left_controller._update_movement_aabb()
+		game.right_controller._update_movement_aabb()
 
 var _proc_map_sw := StopwatchFactory.create("process_map",10,true)
 var _instance_cube_sw := StopwatchFactory.create("instance_cube",10,true)
@@ -41,9 +41,10 @@ var _add_cube_to_scene_sw := StopwatchFactory.create("add_cube_to_scene",10,true
 const CUBE_DISTANCE := 0.5
 const CUBE_HEIGHT_OFFSET := 0.4
 
-func _spawn_note(game: BeepSaber_Game, note, current_beat: float) -> void:
-	var note_node = null
-	var is_cube = true
+var bomb_template := preload("res://game/Bomb/Bomb.tscn") as PackedScene
+func _spawn_note(game: BeepSaber_Game, note: Dictionary, current_beat: float) -> void:
+	var note_node: Note
+	var is_cube := true
 	var color := game.COLOR_LEFT
 	if (note._type == 0):
 		_instance_cube_sw.start()
@@ -57,16 +58,13 @@ func _spawn_note(game: BeepSaber_Game, note, current_beat: float) -> void:
 		_instance_cube_sw.stop()
 	elif (note._type == 3) and game.bombs_enabled:
 		is_cube = false
-		note_node = game.bomb_template.instantiate()
+		note_node = bomb_template.instantiate()
 	else:
 		return
 	
 	if note_node == null:
 		print("Failed to acquire a new note from scene pool")
 		return
-	
-	# disable collision until it gets nearer to player (helps with performance)
-	note_node.collision_disabled = true
 	
 	if game.menu._map_difficulty_noteJumpMovementSpeed > 0:
 		note_node.speed = float(game.menu._map_difficulty_noteJumpMovementSpeed)/9
@@ -83,16 +81,15 @@ func _spawn_note(game: BeepSaber_Game, note, current_beat: float) -> void:
 		CUBE_HEIGHT_OFFSET + layer,
 		-distance * game.beat_distance)
 	
+	var is_dot: bool = note._cutDirection == 8
 	if is_cube:
-		var is_dot: bool = note._cutDirection == 8
-		note_node._cube_mesh_orientation.rotation.z = rotation_z;
-		note_node._cube_mesh_orientation.rotation.y = (PI if is_dot else 0)
+		note_node.rotation.z = rotation_z
 	
 	note_node._note = note
 	
 	if note_node is BeepCube:
 		_add_cube_to_scene_sw.start()
-		note_node.spawn(note._type, color)
+		note_node.spawn(note._type, color, is_dot)
 		_add_cube_to_scene_sw.stop()
 	else:
 		# spawn bombs by adding to track
@@ -147,7 +144,7 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 	var current_beat := current_time * (game._current_info._beatsPerMinute as float) / 60.0
 
 	# spawn notes
-	var n = game._current_map._notes
+	var n: Array = game._current_map._notes
 	while (game._current_note < n.size() && n[game._current_note]._time <= current_beat+game.beats_ahead):
 		_spawn_note(game, n[game._current_note], current_beat)
 		game._current_note += 1
@@ -158,7 +155,7 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 		_spawn_wall(game, o[game._current_obstacle], current_beat)
 		game._current_obstacle += 1;
 
-	var speed = Vector3(0.0, 0.0, game.beat_distance * game._current_info._beatsPerMinute / 60.0) * dt
+	var speed := Vector3(0.0, 0.0, game.beat_distance * game._current_info._beatsPerMinute / 60.0) * dt
 
 	for c_idx in game.track.get_child_count():
 		var c = game.track.get_child(c_idx)
@@ -174,12 +171,12 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 		else:
 			# enable bomb/cube collision when it gets closer enough to player
 			if c.global_transform.origin.z > -3.0:
-				c.collision_disabled = false
+				c.set_collision_disabled(false)
 
 		# remove children that go to far
 		if ((c.global_transform.origin.z - depth) > 2.0):
 			if c is BeepCube:
-				game._reset_combo();
+				game._reset_combo()
 				# cubes must be released() instead of queue_free() because they
 				# are part of a pool.
 				c.release()
@@ -195,9 +192,3 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 		game._on_song_ended()
 		
 	_proc_map_sw.stop()
-
-
-func _update_controller_movement_aabb(game: BeepSaber_Game, controller : XRController3D):
-	var id := controller.tracker
-	var aabb := (game._controller_movement_aabb[id] as AABB).expand(controller.global_transform.origin)
-	game._controller_movement_aabb[id] = aabb

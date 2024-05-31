@@ -73,7 +73,6 @@ depth = 0.0
 
 [node name="BeepSaber" type="Node3D" groups=["main_game"]]
 script = ExtResource("9")
-bomb_template = ExtResource("24")
 
 [node name="pre_renderer" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00581, -5.78464)
@@ -146,6 +145,7 @@ game_path = NodePath("..")
 
 [node name="MainMenu_OQ_UI2DCanvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1.5, -1)
+transparency = 0
 
 [node name="BeepSaberMainMenu" parent="MainMenu_OQ_UI2DCanvas" instance=ExtResource("11")]
 keyboard_path = NodePath("../../Keyboard_highscore")
@@ -170,6 +170,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.60386, -0.777581)
 [node name="PauseMenu_canvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(1.86849, 0, 0, 0, 1.86849, 0, 0, 0, 1.86849, 0, 1.43532, -0.756856)
 visible = false
+transparency = 0
 
 [node name="Pause_Panel" parent="PauseMenu_canvas" instance=ExtResource("18")]
 
@@ -182,6 +183,7 @@ font_size_multiplier = 4.587
 [node name="Settings_canvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(2.3178, 0, 0, 0, 2.3178, 0, 0, 0, 2.3178, 0, 1.5, -1)
 visible = false
+transparency = 0
 
 [node name="settings_Panel" parent="Settings_canvas" instance=ExtResource("19")]
 game_path = NodePath("../..")
@@ -194,6 +196,7 @@ transform = Transform3D(0.346575, 0, -0.938022, 0, 1, 0, 0.938022, 0, 0.346575, 
 
 [node name="MapDownload_Canvas" parent="MapSourceDialogs" instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+transparency = 0
 
 [node name="MapDownloadPanel" parent="MapSourceDialogs/MapDownload_Canvas" instance=ExtResource("28")]
 beat_saver_canvas_path = NodePath("../../BeatSaver_Canvas")
@@ -202,6 +205,7 @@ beat_sage_canvas_path = NodePath("../../BeatSage_Canvas")
 [node name="BeatSaver_Canvas" parent="MapSourceDialogs" instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 visible = false
+transparency = 0
 
 [node name="BeatSaverPanel" parent="MapSourceDialogs/BeatSaver_Canvas" instance=ExtResource("20")]
 game_path = NodePath("../../..")
@@ -210,6 +214,7 @@ keyboard_path = NodePath("../../../Keyboard_online_search")
 [node name="BeatSage_Canvas" parent="MapSourceDialogs" instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 visible = false
+transparency = 0
 
 [node name="BeatSageUI" parent="MapSourceDialogs/BeatSage_Canvas" instance=ExtResource("29")]
 youtube_ui = NodePath("../../YouTube_Canvas/YouTubeUI")
@@ -217,6 +222,7 @@ youtube_ui = NodePath("../../YouTube_Canvas/YouTubeUI")
 [node name="YouTube_Canvas" parent="MapSourceDialogs" instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0.01)
 visible = false
+transparency = 0
 
 [node name="YouTubeUI" parent="MapSourceDialogs/YouTube_Canvas" instance=ExtResource("26")]
 keyboard = NodePath("../../../Keyboard_online_search")
@@ -236,6 +242,7 @@ visible = false
 
 [node name="Highscores_Canvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(1, 0, 1.73205, 0, 2, 0, -1.73205, 0, 1, -2.29734, 1.42321, -0.236991)
+transparency = 0
 
 [node name="HighscorePanel" parent="Highscores_Canvas" instance=ExtResource("23")]
 offset_right = 752.0
@@ -245,7 +252,7 @@ show_song_info = false
 [node name="NameSelector_Canvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0.980611, -0.747554)
 visible = false
-transparent = true
+transparency = 0
 update_only_on_input = false
 
 [node name="NameSelector" parent="NameSelector_Canvas" instance=ExtResource("25")]
@@ -259,10 +266,6 @@ default_parent = NodePath("../Track")
 
 [connection signal="area_entered" from="XROrigin3D/XRCamera3D/PlayerHead" to="." method="_on_PlayerHead_area_entered"]
 [connection signal="area_exited" from="XROrigin3D/XRCamera3D/PlayerHead" to="." method="_on_PlayerHead_area_exited"]
-[connection signal="bomb_collide" from="XROrigin3D/LeftController/LeftLightSaber" to="." method="_on_LeftLightSaber_bomb_collide"]
-[connection signal="cube_collide" from="XROrigin3D/LeftController/LeftLightSaber" to="." method="_on_LeftLightSaber_cube_collide"]
-[connection signal="bomb_collide" from="XROrigin3D/RightController/RightLightSaber" to="." method="_on_RightLightSaber_bomb_collide"]
-[connection signal="cube_collide" from="XROrigin3D/RightController/RightLightSaber" to="." method="_on_RightLightSaber_cube_collide"]
 [connection signal="difficulty_changed" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_on_BeepSaberMainMenu_difficulty_changed"]
 [connection signal="settings_requested" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_on_BeepSaberMainMenu_settings_requested"]
 [connection signal="mainmenu" from="EndScore" to="." method="_on_EndScore_panel_goto_mainmenu"]

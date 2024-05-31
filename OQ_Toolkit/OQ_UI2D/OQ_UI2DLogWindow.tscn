@@ -8,6 +8,7 @@
 script = ExtResource("3")
 
 [node name="OQ_UI2DCanvas" parent="." instance=ExtResource("1")]
+transparency = 0
 
 [node name="ReferenceRect" type="ReferenceRect" parent="OQ_UI2DCanvas"]
 visible = false

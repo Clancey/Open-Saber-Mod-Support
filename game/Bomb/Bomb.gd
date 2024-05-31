@@ -1,15 +1,18 @@
 extends Note
+class_name Bomb
 
-@export var min_speed = 0.5;
-@onready var _anim = $BombAnimation/AnimationPlayer
+@export var min_speed := 0.5
+@onready var collision_shape := $Area3D/CollisionShape3D as CollisionShape3D
 
-var collision_disabled = false: set = _set_colision_disabled
-
-func _ready():
+func _ready() -> void:
+	var anim := $AnimationPlayer as AnimationPlayer
 	# play the spawn animation when this bomb enters the scene
-	_anim.speed_scale = max(min_speed,speed)
-	_anim.play("Spawn");
+	anim.speed_scale = maxf(min_speed,speed)
+	anim.play(&"Spawn")
 
-func _set_colision_disabled(value):
+func set_collision_disabled(value: bool) -> void:
 	collision_disabled = value
-	$BombAnimation/Area3D/CollisionShape3D.disabled = value
+	collision_shape.disabled = value
+
+func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: BeepSaberController) -> void:
+	BeepSaber_Game.game.bomb_collide(self)

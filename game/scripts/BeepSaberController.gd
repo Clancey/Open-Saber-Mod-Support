@@ -10,6 +10,8 @@ var by_last_frame := false
 var trigger := false
 var trigger_last_frame := false
 
+var movement_aabb := AABB()
+
 
 # Sets up everything as it is expected by the helper scripts in the vr singleton
 func _enter_tree() -> void:
@@ -80,6 +82,12 @@ func _update_buttons_and_sticks() -> void:
 	trigger_last_frame = trigger
 	trigger = is_button_pressed(&"trigger")
 
+func _update_movement_aabb() -> void:
+	movement_aabb = movement_aabb.expand(global_transform.origin)
+
+func reset_movement_aabb() -> void:
+	movement_aabb = AABB(global_transform.origin, Vector3.ZERO)
+
 var _rumble_intensity := 0.0
 var _rumble_duration := -128.0 #-1 means deactivated so applications can also set their own rumble
 
@@ -99,7 +107,7 @@ func _update_rumble(dt: float) -> void:
 		_rumble_duration = -128.0
 		simple_rumble(0.0, _rumble_duration)
 
-var first_time = true
+var first_time := true
 
 func _physics_process(dt: float) -> void:
 	if get_is_active(): # wait for active controller

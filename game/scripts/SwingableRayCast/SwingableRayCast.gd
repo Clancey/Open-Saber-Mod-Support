@@ -1,6 +1,7 @@
 # extend the RayCast node and add additional RayCasts that help detect
 # collisions with objects while swinging at high velocities.
 extends RayCast3D
+class_name SwingableRayCast
 
 signal area_collided(area)
 

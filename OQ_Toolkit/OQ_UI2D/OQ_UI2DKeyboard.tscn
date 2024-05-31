@@ -9,11 +9,13 @@
 script = ExtResource("3")
 
 [node name="OQ_UI2DCanvas_Keyboard" parent="." instance=ExtResource("1")]
+transparency = 0
 
 [node name="VirtualKeyboard" parent="OQ_UI2DCanvas_Keyboard" instance=ExtResource("2")]
 
 [node name="OQ_UI2DCanvas_TextInput" parent="." instance=ExtResource("1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+transparency = 0
 update_only_on_input = false
 
 [node name="TextEdit" type="TextEdit" parent="OQ_UI2DCanvas_TextInput"]
@@ -21,5 +23,6 @@ offset_right = 512.0
 offset_bottom = 48.0
 theme = ExtResource("4")
 
-[connection signal="visibility_changed" from="." to="." method="_on_OQ_UI2DKeyboard_visibility_changed"]
+[connection signal="cancel_pressed" from="OQ_UI2DCanvas_Keyboard/VirtualKeyboard" to="." method="_on_cancel"]
+[connection signal="enter_pressed" from="OQ_UI2DCanvas_Keyboard/VirtualKeyboard" to="." method="_on_enter"]
 [connection signal="text_changed" from="OQ_UI2DCanvas_TextInput/TextEdit" to="." method="_on_TextEdit_text_changed"]
