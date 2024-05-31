@@ -5,7 +5,7 @@ class_name UIRaycast
 @export var ui_raycast_length := 3.0
 @export var ui_mesh_length := 1.0
 
-var controller: BeepSaberController = null
+var controller: BeepSaberController
 @onready var ui_raycast := $RayCastPosition/RayCast3D as RayCast3D
 @onready var ui_raycast_mesh := $RayCastPosition/RayCastMesh as MeshInstance3D
 @onready var ui_raycast_hitmarker := $RayCastPosition/RayCastHitMarker as MeshInstance3D

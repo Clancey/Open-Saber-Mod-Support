@@ -120,7 +120,14 @@ func _update_keyboard(dt: float) -> void:
 	
 	var button_BY := Input.is_key_pressed(KEY_KP_7) || Input.is_key_pressed(KEY_7)
 	var button_AX := Input.is_key_pressed(KEY_KP_1) || Input.is_key_pressed(KEY_1)
-	var button_trigger :=  Input.is_key_pressed(KEY_KP_0) || Input.is_key_pressed(KEY_0) || Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+	var button_trigger := Input.is_key_pressed(KEY_KP_0) || Input.is_key_pressed(KEY_0) || Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+	
+	vr.leftController.trigger_last_frame = vr.leftController.trigger
+	vr.leftController.ax_last_frame = vr.leftController.ax
+	vr.leftController.by_last_frame = vr.leftController.by
+	vr.rightController.trigger_last_frame = vr.rightController.trigger
+	vr.rightController.ax_last_frame = vr.rightController.ax
+	vr.rightController.by_last_frame = vr.rightController.by
 	
 	vr.leftController.trigger = button_trigger
 	vr.leftController.by = button_BY
@@ -159,6 +166,6 @@ func _input(event: InputEvent) -> void:
 	_update_virtual_controller_position()
 
 
-func _process(dt: float) -> void:
+func _physics_process(dt: float) -> void:
 	info_rect.visible = info_label_visible
 	_update_keyboard(dt)

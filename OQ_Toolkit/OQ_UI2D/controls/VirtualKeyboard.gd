@@ -52,8 +52,7 @@ func _create_input_event(b: Button, pressed: bool) -> InputEventKey:
 		_toggle_symbols(b.button_pressed)
 		return
 	elif (b == _cancel_button):
-		@warning_ignore("return_value_discarded")
-		if (!pressed): emit_signal("cancel_pressed")
+		if (!pressed): cancel_pressed.emit()
 		return
 	elif (b == _shift_button):
 		if (pressed): 
@@ -63,8 +62,7 @@ func _create_input_event(b: Button, pressed: bool) -> InputEventKey:
 		keycode = KEY_BACKSPACE
 	elif (b == _enter_button):
 		keycode = KEY_ENTER
-		@warning_ignore("return_value_discarded")
-		if (!pressed): emit_signal("enter_pressed")
+		if (!pressed): enter_pressed.emit()
 		if (!allow_newline): return # no key event for enter in this case
 	elif (b == _space_button):
 		keycode = KEY_SPACE
@@ -121,9 +119,9 @@ func _create_button(parent: Node, text: String, x: float, y: float, w: float = 1
 	b.name = "button_"+text
 	
 	@warning_ignore("return_value_discarded")
-	b.connect(&"button_down", _on_button_down.bind(b))
+	b.button_down.connect(_on_button_down.bind(b))
 	@warning_ignore("return_value_discarded")
-	b.connect(&"button_up", _on_button_up.bind(b))
+	b.button_up.connect(_on_button_up.bind(b))
 	
 	parent.add_child(b)
 	return b
