@@ -112,14 +112,14 @@ func set_collision_disabled(value: bool) -> void:
 	collision_small.disabled = value
 
 func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: BeepSaberController) -> void:
-# compute the angle between the cube orientation and the cut direction
+	# compute the angle between the cube orientation and the cut direction
 	var cut_direction_xy := -Vector3(cut_speed.x, cut_speed.y, 0.0).normalized()
 	var base_cut_angle_accuracy := global_transform.basis.y.dot(cut_direction_xy)
 	var cut_angle_accuracy := clampf((base_cut_angle_accuracy-0.7)/0.3, 0.0, 1.0)
 	if _note._cutDirection==8: #ignore angle if is a dot
 		cut_angle_accuracy = 1.0
 	var cut_distance := cut_plane.distance_to(global_transform.origin)
-	var cut_distance_accuracy = clampf((0.1 - absf(cut_distance))/0.1, 0.0, 1.0)
+	var cut_distance_accuracy := clampf((0.1 - absf(cut_distance))/0.1, 0.0, 1.0)
 	var travel_distance_factor := (controller.movement_aabb as AABB).get_longest_axis_size()
 	travel_distance_factor = clamp((travel_distance_factor-0.5)/0.5, 0.0, 1.0)
 	
@@ -131,10 +131,13 @@ func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: Beep
 	_create_cut_rigid_body(-1, cut_plane, cut_distance, cut_speed, cut_res)
 	_create_cut_rigid_body( 1, cut_plane, cut_distance, cut_speed, cut_res)
 	
-	# allows a bit of save margin where the beat is considered 100% correct
-	var beat_accuracy := clampf((1.0 - absf(global_transform.origin.z)) / 0.5, 0.0, 1.0)
-	
-	BeepSaber_Game.game._update_points_from_cut(saber_type, self, beat_accuracy, cut_angle_accuracy, cut_distance_accuracy, travel_distance_factor)
+	if saber_type != _note._type:
+		Scoreboard.reset_combo()
+		Scoreboard.points_awarded.emit(transform.origin,"x")
+	else:
+		# allows a bit of save margin where the beat is considered 100% correct
+		var beat_accuracy := clampf((1.0 - absf(global_transform.origin.z)) / 0.5, 0.0, 1.0)
+		Scoreboard.update_points_from_cut(transform.origin, beat_accuracy, cut_angle_accuracy, cut_distance_accuracy, travel_distance_factor)
 	
 	# reset the movement tracking volume for the next cut
 	controller.reset_movement_aabb()

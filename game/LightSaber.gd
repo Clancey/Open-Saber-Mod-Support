@@ -112,10 +112,6 @@ func hit(note: Note) -> void:
 func _handle_area_collided(area: Variant):
 	if not area is Area3D: return
 	var cut_object := (area as Area3D).get_parent()
-	#if cut_object is BeepCube:
-	#	emit_signal(&"cube_collide", cut_object)
-	#elif cut_object is Bomb:
-	#	emit_signal(&"bomb_collide", cut_object)
 	if not cut_object is Note: return
 	var note := cut_object as Note
 	hit(note)
@@ -124,8 +120,8 @@ func _handle_area_collided(area: Variant):
 	var o := controller.global_transform.origin
 	
 	var controller_speed: Vector3 = (saber_end - saber_end_past) / last_dt
-	#var cutplane := Plane(o, saber_end, saber_end_past + (beat_distance * _current_info._beatsPerMinute * last_dt / 30) * Vector3(0, 0, 1)) # Account for relative position to track speed
-	var cutplane := Plane(o, saber_end, saber_end_past)
+	var cutplane := Plane(o, saber_end, saber_end_past + (BEAT_DISTANCE * _main_game._current_info._beatsPerMinute * last_dt / 30) * Vector3(0, 0, 1)) # Account for relative position to track speed
+	#var cutplane := Plane(o, saber_end, saber_end_past)
 	note.cut(type, controller_speed, cutplane, controller)
 
 func _on_AnimationPlayer_animation_started(anim_name):

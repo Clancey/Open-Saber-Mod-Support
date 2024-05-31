@@ -176,7 +176,7 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 		# remove children that go to far
 		if ((c.global_transform.origin.z - depth) > 2.0):
 			if c is BeepCube:
-				game._reset_combo()
+				Scoreboard.reset_combo()
 				# cubes must be released() instead of queue_free() because they
 				# are part of a pool.
 				c.release()

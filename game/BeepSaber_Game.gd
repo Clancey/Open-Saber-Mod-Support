@@ -33,6 +33,7 @@ var gamestate: GameState = gamestate_bootup
 @onready var name_selector_canvas := $NameSelector_Canvas as OQ_UI2DCanvas
 @onready var highscore_keyboard := $Keyboard_highscore as OQ_UI2DKeyboard
 @onready var endscore := $EndScore as EndScore
+@onready var points_label_driver := $Points_label_driver as PointsLabelDriver
 
 @onready var multiplier_label := $Multiplier_Label as MeshInstance3D
 @onready var point_label := $Point_Label as MeshInstance3D
@@ -91,15 +92,7 @@ var _current_diff_name := ""
 var _current_diff_rank := -1
 
 
-var _current_points := 0;
-var _current_multiplier = 1;
-var _current_combo = 0;
-
 var _in_wall = false;
-
-var _right_notes := 0.0;
-var _wrong_notes := 0.0;
-var _full_combo = true;
 
 #prevents the song for starting from the start when pausing and unpausing
 var pause_position = 0.0;
@@ -110,20 +103,13 @@ var bombs_enabled = true
 
 func restart_map():
 	_audio_synced_after_restart = false
-	song_player.play(0.0);
-	song_player.volume_db = 0.0;
-	_in_wall = false;
-	_current_note = 0;
-	_current_obstacle = 0;
-	_current_event = 0;
-	_current_points = 0;
-	_current_multiplier = 1;
-	_current_combo = 0;
-
-	#set_percent_to_null
-	_right_notes = 0.0
-	_wrong_notes = 0.0
-	_full_combo = true;
+	song_player.play(0.0)
+	song_player.volume_db = 0.0
+	_in_wall = false
+	_current_note = 0
+	_current_obstacle = 0
+	_current_event = 0
+	Scoreboard.restart()
 
 	_display_points()
 	percent_indicator.start_map()
@@ -194,15 +180,15 @@ func _on_song_ended():
 	var highscore = Highscores.get_highscore(_current_info,_current_diff_rank)
 	if highscore == null:
 		# no highscores exist yet
-		highscore = _current_points
-	elif _current_points > highscore:
+		highscore = Scoreboard.points
+	elif Scoreboard.points > highscore:
 		# player's score is the new highscore!
-		highscore = _current_points;
+		highscore = Scoreboard.points
 		new_record = true
 
-	var current_percent := _right_notes/(_right_notes+_wrong_notes)
+	var current_percent := Scoreboard.right_notes/(Scoreboard.right_notes+Scoreboard.wrong_notes)
 	endscore.show_score(
-		_current_points,
+		Scoreboard.points,
 		highscore,
 		current_percent,
 		"%s By %s\n%s     Map author: %s" % [
@@ -210,11 +196,11 @@ func _on_song_ended():
 			_current_info["_songAuthorName"],
 			menu._map_difficulty_name,
 			_current_info["_levelAuthorName"]],
-		_full_combo,
+		Scoreboard.full_combo,
 		new_record
 	)
 	
-	if Highscores.is_new_highscore(_current_info,_current_diff_rank,_current_points):
+	if Highscores.is_new_highscore(_current_info,_current_diff_rank,Scoreboard.points):
 		_transition_game_state(gamestate_newhighscore)
 	else:
 		_transition_game_state(gamestate_mapcomplete)
@@ -226,7 +212,7 @@ func _submit_highscore(player_name: String):
 			_current_info,
 			_current_diff_rank,
 			player_name,
-			_current_points)
+			Scoreboard.points)
 			
 		_transition_game_state(gamestate_mapcomplete)
 
@@ -244,15 +230,6 @@ func _get_color_right():
 
 func _spawn_event(data,beat):
 	$event_driver.procces_event(data,beat)
-
-
-# with this variable we track the movement volume of the controller
-# since the last cut (used to give a higher score when moved a lot)
-var _controller_movement_aabb = {
-	"left_hand" = AABB(),
-	"right_hand" = AABB(),
-}
-
 
 func _check_and_update_saber(controller: BeepSaberController, saber: Area3D):
 	# to allow extending/sheething the saber while not playing a song
@@ -289,7 +266,7 @@ func _physics_process(dt: float) -> void:
 var _main_menu = null
 var _lpf = null
 
-func _ready():
+func _ready() -> void:
 	_main_menu = main_menu.find_child("BeepSaberMainMenu", true, false)
 	_main_menu.initialize(self);
 	$MapSourceDialogs/BeatSaver_Canvas.ui_control.main_menu_node = _main_menu
@@ -297,15 +274,15 @@ func _ready():
 	vr.vrCamera = $XROrigin3D/XRCamera3D
 	vr.leftController = left_controller
 	vr.rightController = right_controller
-
+	
 	if !vr.inVR:
 		$XROrigin3D.add_child(preload("res://OQ_Toolkit/OQ_ARVROrigin/Feature_VRSimulator.tscn").instantiate())
 	update_saber_colors()
 	game = self
-
+	
 	UI_AudioEngine.attach_children(highscore_keyboard)
 	UI_AudioEngine.attach_children(online_search_keyboard)
-
+	
 	_transition_game_state(gamestate_mapselection)
 	
 	#render common assets for a couple of frames to prevent performance issues when loading them mid game
@@ -314,6 +291,9 @@ func _ready():
 	await get_tree().process_frame
 	await get_tree().process_frame
 	$pre_renderer.queue_free()
+	
+	Scoreboard.score_changed.connect(_display_points)
+	Scoreboard.points_awarded.connect(points_label_driver.show_points)
 
 func update_saber_colors():
 	left_saber.set_color(COLOR_LEFT)
@@ -329,13 +309,6 @@ func disable_events(disabled):
 	else:
 		$event_driver.set_all_on()
 
-func _reset_combo():
-	_current_multiplier = 1;
-	_current_combo = 0;
-	_wrong_notes += 1.0;
-	_full_combo = false;
-	_display_points();
-
 func _clear_track():
 	for c in track.get_children():
 		if c is BeepCube:
@@ -346,45 +319,15 @@ func _clear_track():
 			track.remove_child(c);
 			c.queue_free();
 
-func _update_points_from_cut(saber_type: int, cube: BeepCube, beat_accuracy: float, cut_angle_accuracy: float, cut_distance_accuracy: float, travel_distance_factor: float):
-	# check if we hit the cube with the correctly colored saber
-	if (saber_type != cube._note._type):
-		_reset_combo()
-		_wrong_notes += 1.0
-		$Points_label_driver.show_points(cube.transform.origin,"x")
-		return
-
-	_current_combo += 1
-	_current_multiplier = 1 + round(min((_current_combo / 10), 7.0))
-
-	# point computation based on the accuracy of the swing
-	var points := 0.0
-	points += beat_accuracy * 50.0
-	points += cut_angle_accuracy * 50.0
-	points += cut_distance_accuracy * 50.0
-	points += points * travel_distance_factor
-
-	points = roundf(points)
-	_current_points += points * _current_multiplier
-	
-	$Points_label_driver.show_points(cube.transform.origin,str(points))
-	# track acurracy percent
-	var normalized_points = clamp(points/80, 0.0, 1.0);
-	_right_notes += normalized_points;
-	_wrong_notes += 1.0-normalized_points;
-
-	_display_points()
-
-
 func _display_points():
 	var hit_rate: float
-	if _right_notes+_wrong_notes > 0:
-		hit_rate = _right_notes/(_right_notes+_wrong_notes)
+	if Scoreboard.right_notes+Scoreboard.wrong_notes > 0:
+		hit_rate = Scoreboard.right_notes/(Scoreboard.right_notes+Scoreboard.wrong_notes)
 	else:
 		hit_rate = 1.0
 	
-	(point_label.mesh as TextMesh).text = "Score: %6d" % _current_points
-	(multiplier_label.mesh as TextMesh).text = "x %d\nCombo %d" % [_current_multiplier, _current_combo]
+	(point_label.mesh as TextMesh).text = "Score: %6d" % Scoreboard.points
+	(multiplier_label.mesh as TextMesh).text = "x %d\nCombo %d" % [Scoreboard.multiplier, Scoreboard.combo]
 	percent_indicator.update_percent(hit_rate)
 
 # quiets song when player enters into a wall
@@ -465,12 +408,6 @@ func _on_Keyboard_highscore_text_input_enter(text: String):
 func _on_NameSelector_name_selected(name: String):
 	if gamestate == gamestate_newhighscore:
 		_submit_highscore(name)
-
-func bomb_collide(bomb: Bomb) -> void:
-	_reset_combo()
-	$Points_label_driver.show_points(bomb.transform.origin,"x")
-	bomb.queue_free()
-	left_controller.simple_rumble(1.0, 0.15)
 
 func _on_BeepCubePool_scene_instanced(cube: Node3D):
 	cube.visible = false

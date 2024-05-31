@@ -15,4 +15,6 @@ func set_collision_disabled(value: bool) -> void:
 	collision_shape.disabled = value
 
 func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: BeepSaberController) -> void:
-	BeepSaber_Game.game.bomb_collide(self)
+	Scoreboard.reset_combo()
+	Scoreboard.points_awarded.emit(transform.origin, "x")
+	queue_free()
