@@ -339,14 +339,20 @@ func _physics_process(dt: float) -> void:
 	
 	_update_saber_end_variabless(dt)
 
-var _main_menu = null;
-var _lpf = null;
+var _main_menu = null
+var _lpf = null
 
 func _ready():
-	_main_menu = main_menu.find_child("BeepSaberMainMenu", true, false);
+	_main_menu = main_menu.find_child("BeepSaberMainMenu", true, false)
 	_main_menu.initialize(self);
 	$MapSourceDialogs/BeatSaver_Canvas.ui_control.main_menu_node = _main_menu
+	vr.vrOrigin = $XROrigin3D
+	vr.vrCamera = $XROrigin3D/XRCamera3D
+	vr.leftController = left_controller
+	vr.rightController = right_controller
 
+	if !vr.inVR:
+		$XROrigin3D.add_child(preload("res://OQ_Toolkit/OQ_ARVROrigin/Feature_VRSimulator.tscn").instantiate())
 	update_saber_colors()
 
 	# initialize list of cut cube resources
