@@ -77,13 +77,13 @@ func get_records(map_info,diff_rank):
 	var hs_key = SongUtils.get_key(map_info)
 	return _get_records(hs_key,diff_rank)
 	
-# return : the overall highscore for the given map + difficulty. null is
+# return : the overall highscore for the given map + difficulty. -1 is
 # returned if no record exist for this song yet
-func get_highscore(map_info,diff_rank):
+func get_highscore(map_info,diff_rank) -> int:
 	var hs_key = SongUtils.get_key(map_info)
 	var records = _get_records(hs_key,diff_rank)
 	if records.size() == 0:
-		return null
+		return -1
 	else:
 		return records[0]['score']
 	

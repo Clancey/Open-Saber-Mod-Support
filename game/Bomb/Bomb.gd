@@ -15,6 +15,5 @@ func set_collision_disabled(value: bool) -> void:
 	collision_shape.disabled = value
 
 func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: BeepSaberController) -> void:
-	Scoreboard.reset_combo()
-	Scoreboard.points_awarded.emit(transform.origin, "x")
+	Scoreboard.bad_cut(transform.origin)
 	queue_free()

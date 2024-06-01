@@ -7,7 +7,7 @@ class_name BeepCube
 signal scene_released()
 
 # the animation player contains the span animation that is applied to the CubeMeshAnimation node
-@onready var _anim := $CubeMeshAnimation/AnimationPlayer as AnimationPlayer
+@onready var _anim := $AnimationPlayer as AnimationPlayer
 @onready var _big_coll_area := $BeepCube_Big as Area3D
 @onready var _small_coll_area := $BeepCube_Small as Area3D
 @onready var collision_big := $BeepCube_Big/CollisionBig as CollisionShape3D
@@ -17,11 +17,11 @@ signal scene_released()
 class CutPieceNodes:
 	extends RefCounted
 	
-	var rigid_body := RigidBody3D.new()
+	var rigid_body := BeepCubeCut.new()
 	var mesh := MeshInstance3D.new()
 	var coll := CollisionShape3D.new()
 	
-	func _init():
+	func _init() -> void:
 		rigid_body.add_to_group(&"cutted_cube")
 		rigid_body.collision_layer = 0
 		rigid_body.collision_mask = CollisionLayerConstants.Floor_mask
@@ -33,18 +33,16 @@ class CutPieceNodes:
 		
 		rigid_body.add_child(coll)
 		rigid_body.add_child(mesh)
-		
-		rigid_body.set_script(preload("res://game/BeepCube_CutFadeout.gd"))
 
 # structure of nodes that are used to produce effects when cutting a cube
 class CutCubeResources:
 	extends RefCounted
 	
-	var particles : BeepCubeSliceParticles = null
+	var particles: BeepCubeSliceParticles
 	var piece1 := CutPieceNodes.new()
 	var piece2 := CutPieceNodes.new()
 	
-	func _init():
+	func _init() -> void:
 		particles = preload("res://game/BeepCube_SliceParticles.tscn").instantiate() as BeepCubeSliceParticles
 
 
@@ -59,7 +57,7 @@ var _mat: ShaderMaterial
 @export var min_speed := 0.5
 
 func _ready() -> void:
-	var mi := $CubeMeshAnimation/BeepCube_Mesh as MeshInstance3D
+	var mi := $BeepCubeMesh as MeshInstance3D
 	_mat = mi.material_override.duplicate(true) as ShaderMaterial
 	mi.mesh = mi.mesh.duplicate() as Mesh
 	mi.material_override = _mat
@@ -73,9 +71,6 @@ func _ready() -> void:
 			get_tree().get_root().add_child(new_res.piece1.rigid_body)
 			get_tree().get_root().add_child(new_res.piece2.rigid_body)
 			_cut_cube_resources.push_back(new_res)
-
-func update_color_only(color : Color) -> void:
-	_mat.set_shader_parameter(&"color",color);
 
 # note_type: 0 -> left, 1 -> right
 func spawn(note_type: int, color: Color, is_dot: bool) -> void:
@@ -103,8 +98,7 @@ func spawn(note_type: int, color: Color, is_dot: bool) -> void:
 func release() -> void:
 	visible = false
 	set_collision_disabled(true)
-	@warning_ignore("return_value_discarded")
-	emit_signal(&"scene_released")
+	scene_released.emit()
 
 func set_collision_disabled(value: bool) -> void:
 	collision_disabled = value
@@ -115,29 +109,28 @@ func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: Beep
 	# compute the angle between the cube orientation and the cut direction
 	var cut_direction_xy := -Vector3(cut_speed.x, cut_speed.y, 0.0).normalized()
 	var base_cut_angle_accuracy := global_transform.basis.y.dot(cut_direction_xy)
-	var cut_angle_accuracy := clampf((base_cut_angle_accuracy-0.7)/0.3, 0.0, 1.0)
-	if _note._cutDirection==8: #ignore angle if is a dot
-		cut_angle_accuracy = 1.0
 	var cut_distance := cut_plane.distance_to(global_transform.origin)
-	var cut_distance_accuracy := clampf((0.1 - absf(cut_distance))/0.1, 0.0, 1.0)
-	var travel_distance_factor := (controller.movement_aabb as AABB).get_longest_axis_size()
-	travel_distance_factor = clamp((travel_distance_factor-0.5)/0.5, 0.0, 1.0)
 	
 	# acquire oldest CutCubeResources to use for this event. we reused these
 	# resource for performance reasons. it gets placed onto the back of the
 	# list so that it won't get used again for a couple more cycles.
-	var cut_res : CutCubeResources = _cut_cube_resources.pop_front()
+	var cut_res: CutCubeResources = _cut_cube_resources.pop_front()
 	_cut_cube_resources.push_back(cut_res)
-	_create_cut_rigid_body(-1, cut_plane, cut_distance, cut_speed, cut_res)
-	_create_cut_rigid_body( 1, cut_plane, cut_distance, cut_speed, cut_res)
+	_create_cut_rigid_body(-1, cut_plane, cut_distance, cut_res)
+	_create_cut_rigid_body( 1, cut_plane, cut_distance, cut_res)
 	
-	if saber_type != _note._type:
-		Scoreboard.reset_combo()
-		Scoreboard.points_awarded.emit(transform.origin,"x")
-	else:
+	if saber_type == _note._type:
+		var cut_angle_accuracy := clampf((base_cut_angle_accuracy-0.7)/0.3, 0.0, 1.0)
+		if _note._cutDirection==8: #ignore angle if is a dot
+			cut_angle_accuracy = 1.0
+		var cut_distance_accuracy := clampf((0.1 - absf(cut_distance))/0.1, 0.0, 1.0)
+		var travel_distance_factor := (controller.movement_aabb as AABB).get_longest_axis_size()
+		travel_distance_factor = clampf((travel_distance_factor-0.5)/0.5, 0.0, 1.0)
 		# allows a bit of save margin where the beat is considered 100% correct
 		var beat_accuracy := clampf((1.0 - absf(global_transform.origin.z)) / 0.5, 0.0, 1.0)
 		Scoreboard.update_points_from_cut(transform.origin, beat_accuracy, cut_angle_accuracy, cut_distance_accuracy, travel_distance_factor)
+	else:
+		Scoreboard.bad_cut(transform.origin)
 	
 	# reset the movement tracking volume for the next cut
 	controller.reset_movement_aabb()
@@ -146,7 +139,7 @@ func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: Beep
 
 # cut the cube by creating two rigid bodies and using a CSGBox to create
 # the cut plane
-func _create_cut_rigid_body(_sign: int, cutplane: Plane, cut_distance: float, controller_speed: Vector3, cut_res: CutCubeResources) -> void:
+func _create_cut_rigid_body(_sign: int, cutplane: Plane, cut_distance: float, cut_res: CutCubeResources) -> void:
 	# this function gets run twice, one for each piece of the cube
 	var piece: CutPieceNodes = cut_res.piece1
 	if _sign == 1:
@@ -157,11 +150,10 @@ func _create_cut_rigid_body(_sign: int, cutplane: Plane, cut_distance: float, co
 	
 	# the original cube mesh
 	piece.mesh.mesh = _mesh
-	piece.mesh.material_override = _mat.duplicate()
+	var piece_mat := _mat.duplicate() as ShaderMaterial
 	
 	# calculate angle and position of the cut
-	piece.mesh.material_override.set_shader_parameter(&"cutted", true)
-	piece.mesh.material_override.set_shader_parameter(&"inverted_cut", true)
+	piece_mat.set_shader_parameter(&"cutted", true)
 	# TODO: cutplane is unused and replaced by this? what
 	#var saber_end_mov = saber_ends[0]-saber_ends[1]
 	#var saber_end_angle = rad_to_deg(Vector2(saber_end_mov.x,saber_end_mov.y).angle())
@@ -174,18 +166,17 @@ func _create_cut_rigid_body(_sign: int, cutplane: Plane, cut_distance: float, co
 	
 	var rot_dir := float(angle_rel > 90 or angle_rel < -90)
 	#piece.mesh.material_override.set_shader_parameter(&"cut_pos",cut_distance*rot_dir_flt)
-	piece.mesh.material_override.set_shader_parameter(&"cut_pos", cut_distance * rot_dir)
-	piece.mesh.material_override.set_shader_parameter(&"cut_angle", deg_to_rad(angle_rel))
-	#piece.mesh.material_override.set_shader_parameter(&"cut_pos", 0)
-	#piece.mesh.material_override.set_shader_parameter(&"cut_angle", 0)
+	piece_mat.set_shader_parameter(&"cut_pos", cut_distance * rot_dir)
+	piece_mat.set_shader_parameter(&"cut_angle", deg_to_rad(angle_rel))
+	piece.mesh.material_override = piece_mat
 
 	# transform the normal into the orientation of the actual cube mesh
-	var normal = piece.mesh.transform.basis.inverse() * cutplane.normal
+	var normal := piece.mesh.transform.basis.inverse() * cutplane.normal
 	
 	# Next we are adding a simple collision cube to the rigid body. Note that
 	# his is really just a very crude approximation of the actual cut geometry
 	# but for now it's enough to give them some physics behaviour
-	piece.coll.shape.size = Vector3(0.25, 0.25, 0.125)
+	(piece.coll.shape as BoxShape3D).size = Vector3(0.25, 0.25, 0.125)
 	piece.coll.look_at_from_position(-cutplane.normal*_sign*0.125, cutplane.normal, Vector3(0,1,0))
 
 	piece.rigid_body.global_transform = global_transform
@@ -195,12 +186,12 @@ func _create_cut_rigid_body(_sign: int, cutplane: Plane, cut_distance: float, co
 	piece.rigid_body.fire()
 	
 	# some impulse so the cube half moves
-	var cutplane_2d = Vector3(cutplane.x,cutplane.y,0.0) * 2.0
-	var splitplane_2d = cutplane_2d.cross(piece.mesh.transform.basis.z)
+	var cutplane_2d := Vector3(cutplane.x,cutplane.y,0.0) * 2.0
+	var splitplane_2d := cutplane_2d.cross(piece.mesh.transform.basis.z)
 	piece.rigid_body.apply_central_impulse((_sign * splitplane_2d) + (cutplane_2d))
 	
 	# This function gets run twice so we don't want two particle effects
-	if is_equal_approx(_sign,1):
+	if _sign == 1:
 		cut_res.particles.transform.origin = global_transform.origin
 		cut_res.particles.rotation_degrees.z = angle+90
 		cut_res.particles.fire()

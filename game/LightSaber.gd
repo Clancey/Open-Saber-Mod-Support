@@ -24,7 +24,7 @@ var saber_end := Vector3.ZERO
 var saber_end_past := Vector3.ZERO
 var last_dt := 0.0
 
-func _show():
+func _show() -> void:
 	if (!is_extended()):
 		_anim.play(&"Show")
 		saber_visual._show()
@@ -40,13 +40,13 @@ func _hide() -> void:
 		_anim.play(&"Hide")
 		saber_visual._hide()
 
-func set_thickness(value: float):
+func set_thickness(value: float) -> void:
 	saber_visual.set_thickness(value)
 
-func set_color(color: Color):
+func set_color(color: Color) -> void:
 	saber_visual.set_color(color)
 	
-func set_trail(enabled: bool = true):
+func set_trail(enabled: bool = true) -> void:
 	saber_visual.set_trail(enabled)
 
 # toggle between the Area3D (legacy) or SwingableRaycast cube/bomb collision
@@ -54,20 +54,20 @@ func set_trail(enabled: bool = true):
 # detect collisions with items even when the saber is swung at a high velocity.
 # There shouldn't be a reason to not use SwingableRaycast, but it was nice to
 # have option to toggle and compare performance when developing the feature.
-func set_collision_mechanism(use_swingable_raycast: bool) -> void:
+#func set_collision_mechanism(use_swingable_raycast: bool) -> void:
 	# prevent SwingableRaycase from processing anything
-	_swing_cast.enabled = use_swingable_raycast
-	_swing_cast.set_process(use_swingable_raycast)
-	_swing_cast.set_physics_process(use_swingable_raycast)
+	#_swing_cast.enabled = use_swingable_raycast
+	#_swing_cast.set_process(use_swingable_raycast)
+	#_swing_cast.set_physics_process(use_swingable_raycast)
 	
-	await get_tree().physics_frame
-	if type == 0:
-		_swing_cast._set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, use_swingable_raycast)
-		set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, ! use_swingable_raycast)
-	else:
-		_swing_cast._set_collision_mask_value(CollisionLayerConstants.RightNote_bit, use_swingable_raycast)
-		set_collision_mask_value(CollisionLayerConstants.RightNote_bit, ! use_swingable_raycast)
-	_swing_cast._set_collision_mask_value(CollisionLayerConstants.Bombs_bit, true)
+	#await get_tree().physics_frame
+	#if type == 0:
+	#	_swing_cast._set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, use_swingable_raycast)
+	#	set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, ! use_swingable_raycast)
+	#else:
+	#	_swing_cast._set_collision_mask_value(CollisionLayerConstants.RightNote_bit, use_swingable_raycast)
+	#	set_collision_mask_value(CollisionLayerConstants.RightNote_bit, ! use_swingable_raycast)
+	#_swing_cast._set_collision_mask_value(CollisionLayerConstants.Bombs_bit, true)
 
 func _ready() -> void:
 #	set_saber("res://game/sabers/particles/particles_saber.tscn")
@@ -77,7 +77,12 @@ func _ready() -> void:
 	saber_visual.quickhide()
 	
 	# default to using SwingableRaycast collision detection
-	set_collision_mechanism(true)
+	#set_collision_mechanism(true)
+	if type == 0:
+		_swing_cast._set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, true)
+	else:
+		_swing_cast._set_collision_mask_value(CollisionLayerConstants.RightNote_bit, true)
+	_swing_cast._set_collision_mask_value(CollisionLayerConstants.Bombs_bit, true)
 	
 func _physics_process(delta: float) -> void:
 	position = offset_pos + extra_offset_pos
@@ -91,44 +96,39 @@ func _physics_process(delta: float) -> void:
 		_ray_cast.force_raycast_update()
 		var raycoli := _ray_cast.get_collider()
 		if raycoli is Floor:
-			var floor := raycoli as Floor
+			var floor_body := raycoli as Floor
 			var colipoint := _ray_cast.get_collision_point()
-			floor.burn_mark(colipoint,type)
+			floor_body.burn_mark(colipoint,type)
 
 func set_saber(saber_path: String) -> void:
 	var newsaber := (load(saber_path) as PackedScene).instantiate()
-	for i in $saber_holder.get_children():
-		i.queue_free()
-	saber_visual = newsaber
-	$saber_holder.add_child(newsaber)
+	if newsaber is DefaultSaber:
+		for i in $saber_holder.get_children():
+			i.queue_free()
+		saber_visual = newsaber as DefaultSaber
+		$saber_holder.add_child(newsaber)
 
-func hit(note: Note) -> void:
-	var time_offset: float = (
-		(note._note._time/_main_game._current_info._beatsPerMinute * 60.0)-
-		_main_game.song_player.get_playback_position()
-		)
-	saber_visual.hit(time_offset)
-
-func _handle_area_collided(area: Variant):
+func _handle_area_collided(area: Variant) -> void:
 	if not area is Area3D: return
 	var cut_object := (area as Area3D).get_parent()
 	if not cut_object is Note: return
 	var note := cut_object as Note
-	hit(note)
-	const BEAT_DISTANCE := 4.0
-	controller.simple_rumble(0.75, 0.1)
-	var o := controller.global_transform.origin
 	
+	var time_offset: float = (
+		(note._note._time/MapInfo.beats_per_minute * 60.0)-
+		_main_game.song_player.get_playback_position()
+	)
+	saber_visual.hit(time_offset)
+	controller.simple_rumble(0.75, 0.1)
+	
+	var o := controller.global_transform.origin
 	var controller_speed: Vector3 = (saber_end - saber_end_past) / last_dt
-	var cutplane := Plane(o, saber_end, saber_end_past + (BEAT_DISTANCE * _main_game._current_info._beatsPerMinute * last_dt / 30) * Vector3(0, 0, 1)) # Account for relative position to track speed
-	#var cutplane := Plane(o, saber_end, saber_end_past)
+	const BEAT_DISTANCE := 4.0
+	var cutplane := Plane(o, saber_end, saber_end_past + Vector3(0, 0, BEAT_DISTANCE * MapInfo.beats_per_minute * last_dt / 30)) # Account for relative position to track speed
 	note.cut(type, controller_speed, cutplane, controller)
 
-func _on_AnimationPlayer_animation_started(anim_name):
+func _on_AnimationPlayer_animation_started(anim_name: StringName) -> void:
 	_swing_cast.adjust_segments = true
 
-func _on_AnimationPlayer_animation_finished(anim_name):
+func _on_AnimationPlayer_animation_finished(anim_name: StringName) -> void:
 	_swing_cast.adjust_segments = false
-
-func _on_LightSaber_area_entered(area):
-	_handle_area_collided(area)

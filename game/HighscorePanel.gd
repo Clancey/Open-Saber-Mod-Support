@@ -29,7 +29,7 @@ func load_highscores(map_info: Dictionary, diff_rank: int):
 	# populate song info
 	_song_info.text = """Artist: %s
 		Song: %s
-		Map Author: %s""" % [map_info._songAuthorName, map_info._songName, map_info._levelAuthorName]
+		Map Author: %s""" % [MapInfo.song_author_name, MapInfo.song_name, MapInfo.level_author_name]
 		
 	# TODO populate song artwork
 		

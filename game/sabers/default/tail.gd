@@ -11,7 +11,7 @@ func _ready():
 	imm_geo = imm_geo.duplicate()
 	mesh.mesh = imm_geo
 	remove_child(mesh)
-	get_tree().get_root().add_child(mesh)
+	get_tree().get_root().add_child.call_deferred(mesh)
 
 func set_color(color):
 	#mesh.material_override.set_shader_parameter("color", color);

@@ -33,7 +33,7 @@ func remove_map(map_info):
 # diff_rank : difficulty rank (1,3,etc.) that the score was set on
 #
 # return : None
-func increment_play_count(map_info,diff_rank):
+func increment_play_count(map_info: Dictionary, diff_rank: int) -> void:
 	var song_key = SongUtils.get_key(map_info)
 	if not _pc_table.has(song_key):
 		_pc_table[song_key] = {}
@@ -45,9 +45,9 @@ func increment_play_count(map_info,diff_rank):
 	_pc_table[song_key][diff_str] += 1
 	
 	save_table()
-		
+
 # return : the map's play count for the given difficulty
-func get_play_count(map_info,diff_rank):
+func get_play_count(map_info: Dictionary, diff_rank: int):
 	var song_key = SongUtils.get_key(map_info)
 	if not _pc_table.has(song_key):
 		return 0

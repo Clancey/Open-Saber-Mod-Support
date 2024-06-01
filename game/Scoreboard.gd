@@ -26,9 +26,14 @@ func reset_combo() -> void:
 	full_combo = false
 	score_changed.emit()
 
+func bad_cut(position: Vector3) -> void:
+	reset_combo()
+	points_awarded.emit(position, "x")
+
 func update_points_from_cut(position: Vector3, beat_accuracy: float, cut_angle_accuracy: float, cut_distance_accuracy: float, travel_distance_factor: float) -> void:
 	combo += 1
-	multiplier = 1 + roundi(mini((combo / 10), 7))
+	@warning_ignore("integer_division")
+	multiplier = 1 + mini((combo / 10), 7)
 	
 	# point computation based on the accuracy of the swing
 	var points_new := 0.0
@@ -42,7 +47,7 @@ func update_points_from_cut(position: Vector3, beat_accuracy: float, cut_angle_a
 	
 	points_awarded.emit(position, str(points_new))
 	score_changed.emit()
-	# track acurracy percent
-	var normalized_points := clampf(points/80, 0.0, 1.0);
+	# track accuracy percent
+	var normalized_points := clampf(float(points)/80.0, 0.0, 1.0);
 	right_notes += normalized_points
 	wrong_notes += 1.0-normalized_points

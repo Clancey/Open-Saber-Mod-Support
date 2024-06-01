@@ -7,14 +7,15 @@ extends Panel
 class_name MainMenu
 
 # emitted when a new map is selected
-signal map_changed(map_info);
+signal map_changed(map_info)
 # emitted when a new map difficulty is selected
-signal difficulty_changed(map_info,diff_name,diff_rank);
+signal difficulty_changed(map_info: Dictionary, diff_name: String, diff_rank: int)
 # emitted when the settings button is pressed
 signal settings_requested()
+signal start_map(info: Dictionary, data: Dictionary, difficulty: int)
 
 # we need the main game class here to trigger game start/restart/continue
-var _beepsaber = null;
+#var _beepsaber = null;
 var _cover_file_load_sw := StopwatchFactory.create("cover_file_load",10,true)
 var _cover_texture_create_sw := StopwatchFactory.create("cover_texture_create",10,true)
 
@@ -35,17 +36,14 @@ const PLAYLIST_ITEMS = {
 	PlaylistOptions.MostPlayed : "Most Played"
 }
 
-func initialize(beepsaber_game):
-	_beepsaber = beepsaber_game;
-
 
 
 var path = "res://game/data/maps/";
 var dlpath = str(OS.get_system_dir(3))+"/";
 #var bspath = "/sdcard/OpenSaber/";
 var bspath = "user://OpenSaber/";
-@export var keyboard_path: NodePath;
-var keyboard;
+@export var keyboard_path: NodePath
+var keyboard: OQ_UI2DKeyboard
 
 var _playlists
 
@@ -54,12 +52,11 @@ var _all_songs = []
 var _recently_added_songs = []# newest is first, oldest is last
 var _most_played_songs = []# most played is first, least played is last
 
-func refresh_playlist():
+func refresh_playlist() -> void:
 	var id = playlist_selector.get_selected_id()
 	_on_PlaylistSelector_item_selected(id)
 
-func _load_playlists():
-	
+func _load_playlists() -> void:
 	_playlists = [];
 	
 	#copy sample songs to main playlist folder on first run
@@ -270,16 +267,16 @@ func play_preview(filepath_or_buffer, start_time = 0, duration = -1, buffer_data
 		await _on_stop_prev_timeout()
 	
 	# start the requested preview
-	if not _beepsaber.song_player.playing:
-		song_prev.stream = stream;
-		var song_prev_Tween = song_prev.create_tween()
-		song_prev_Tween.set_trans(Tween.TRANS_LINEAR)
-		song_prev_Tween.set_ease(Tween.EASE_IN_OUT)
-		song_prev_Tween.tween_property(song_prev, "volume_db", 0, song_prev_transition_time)
-		song_prev_Tween.play()
-		
-		song_prev.play(float(start_time))
-		$song_prev/stop_prev.start(float(duration))
+	#if not _beepsaber.song_player.playing:
+	song_prev.stream = stream;
+	var song_prev_Tween = song_prev.create_tween()
+	song_prev_Tween.set_trans(Tween.TRANS_LINEAR)
+	song_prev_Tween.set_ease(Tween.EASE_IN_OUT)
+	song_prev_Tween.tween_property(song_prev, "volume_db", 0, song_prev_transition_time)
+	song_prev_Tween.play()
+	
+	song_prev.play(float(start_time))
+	$song_prev/stop_prev.start(float(duration))
 
 # a loaded beat map will have an info dictionary; this is a global variable here
 # to later extend it to load different maps
@@ -382,7 +379,7 @@ func _load_map_and_start():
 	if (map_data == null):
 		vr.log_error("Could not read map data from " + map_filename)
 	
-	_beepsaber.start_map(_map_info, map_data, _map_difficulty)
+	start_map.emit(_map_info, map_data, _map_difficulty)
 	
 	return true;
 
@@ -416,25 +413,22 @@ func _delete_map():
 			vr.log_info("Error removing song "+_map_path);
 		_on_LoadPlaylists_Button_pressed()
 
-func _ready():
+func _ready() -> void:
 	UI_AudioEngine.attach_children(self)
 	#if OS.get_name() != "Android":
 		#bspath = dlpath+"BeepSaber/";
-	vr.log_info("BeepSaber search path is " + bspath);
+	vr.log_info("BeepSaber search path is " + bspath)
 	
 	playlist_selector.clear()
 	for option in PLAYLIST_ITEMS.keys():
 		playlist_selector.add_item(PLAYLIST_ITEMS[option],option)
 	
-	keyboard = get_node(keyboard_path);
+	_load_playlists()
+	
+	keyboard = get_node(keyboard_path)
 	if keyboard:
 		keyboard.connect("text_input_enter", Callable(self, "_text_input_enter"))
 		keyboard.connect("text_input_cancel", Callable(self, "_text_input_cancel"))
-
-	_load_playlists();
-	
-	await get_tree().physics_frame
-	if keyboard:
 		keyboard._text_edit.connect("text_changed", Callable(self, "_text_input_changed"))
 		keyboard._text_edit.connect("focus_exited", Callable(self, "_text_input_enter"))
 
@@ -482,7 +476,7 @@ func _check_and_request_permission():
 		return true;
 
 
-func _on_LoadPlaylists_Button_pressed():
+func _on_LoadPlaylists_Button_pressed() -> void:
 	# Note: this call is non-blocking; so a user has to click again after
 	#       granting the permissions; we need to find a solutio for this
 	#       maybe polling after the button press?
@@ -490,17 +484,18 @@ func _on_LoadPlaylists_Button_pressed():
 	_load_playlists()
 
 
-func _on_Search_Button_button_up():
+func _on_Search_Button_button_up() -> void:
 	keyboard.visible=true
 	keyboard._text_edit.grab_focus();
 
-func _text_input_enter(text):
+func _text_input_enter(text) -> void:
 	keyboard.visible=false
-func _text_input_cancel():
+
+func _text_input_cancel() -> void:
 	keyboard.visible=false
 	_clean_search()
-	
-func _text_input_changed():
+
+func _text_input_changed() -> void:
 	var text = keyboard._text_edit.text
 	$Search_Button/Label.text = text
 	if text == "":
@@ -512,7 +507,7 @@ func _text_input_changed():
 		if similarity > most_similar:
 			most_similar = similarity
 			$SongsMenu.move_item(song,0)
-	
+
 func _clean_search():
 	$SongsMenu.sort_items_by_text()
 	$Search_Button/Label.text = ""

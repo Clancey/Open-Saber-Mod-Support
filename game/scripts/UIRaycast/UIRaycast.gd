@@ -31,11 +31,11 @@ func _update_raycasts() -> void:
 		var click := controller.trigger_just_pressed()
 		var release := controller.trigger_just_released()
 		
-		var position := ui_raycast.get_collision_point()
+		var pos := ui_raycast.get_collision_point()
 		ui_raycast_hitmarker.visible = true
-		ui_raycast_hitmarker.global_transform.origin = position
+		ui_raycast_hitmarker.global_transform.origin = pos
 		
-		(c as UIRaycastTarget).ui_raycast_hit_event(position, click, release)
+		(c as UIRaycastTarget).ui_raycast_hit_event(pos, click, release)
 		is_colliding = true
 	else:
 		is_colliding = false

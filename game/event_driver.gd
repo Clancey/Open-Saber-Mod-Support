@@ -1,75 +1,68 @@
 extends Node3D
+class_name EventDriver
 
-@export var game_path: NodePath;
-var game;
+var ring_rot_speed := 0.0
+var ring_rot_inv_dir := false
+var rings_in := false
 
-var ring_rot_speed = 0.0;
-var ring_rot_inv_dir = false;
-var rings_in = false;
+@export var disabled := false
 
-@export var disabled = false
-
-func _ready():
+func _ready() -> void:
 	if not RenderingServer.get_rendering_device():
 		$Level/Sphere.material_override.set_shader_parameter("contrast", 1)
 		for im in range(5):
 			$Level/Sphere.material_override.set_shader_parameter("bg_%s_intensity_mult"%[im], 
 			$Level/Sphere.material_override.get_shader_parameter("bg_%s_intensity_mult"%[im]) * 2.2)
-	if not game:
-		game = get_node(game_path);
-	update_colors()
+	#update_colors()
 
-func _process(delta):
-	_update_level(delta);
-	
-# update the level animations
-func _update_level(dt):
+func _process(delta: float) -> void:
+	# update the level animations
 	#procces ring rotations
 	if ring_rot_speed > 0:
 		for ring in $Level/rings.get_children():
 			if ring is Node3D:
 				var rot = ring_rot_speed
 				if ring_rot_inv_dir: rot *= -1
-				ring.rotate_z((rot * dt) * (float(ring.get_index()+1)/5))
+				(ring as Node3D).rotate_z((rot * delta) * (float(ring.get_index()+1)/5))
 
-func update_colors():
+func update_colors(left: Color, right: Color) -> void:
 	for i in [0,2,3]:
-		change_light_color(i,game.COLOR_LEFT)
+		change_light_color(i,left)
 	for i in [1,4]:
-		change_light_color(i,game.COLOR_RIGHT)
+		change_light_color(i,right)
 		
-func set_all_off():
+func set_all_off() -> void:
 	if not disabled:
-		for i in [0,1,2,3,4]:
+		for i in range(5):
 			change_light_color(i,-1)
 	else:
-		update_colors()
-		for i in [1,2,3]:
+		for i in range(1,4):
 			change_light_color(i,-1)
 		$Level/rings.visible = false
-func set_all_on():
-		update_colors()
+
+func set_all_on(left: Color, right: Color) -> void:
+		update_colors(left, right)
 		$Level/rings.visible = true
 
-func procces_event(data,beat):
+func process_event(data,beat, left: Color, right: Color) -> void:
 	if disabled: return
 #	print(data)
-	if int(data._type) in [0,1,2,3,4]:
+	if int(data._type) in range(0,5):
 		match int(data._value):
 			0:
 				change_light_color(data._type,-1)
 			1:
-				change_light_color(data._type,game.COLOR_RIGHT)
+				change_light_color(data._type,right)
 			2:
-				change_light_color(data._type,game.COLOR_RIGHT,1)
+				change_light_color(data._type,right,1)
 			3:
-				change_light_color(data._type,game.COLOR_RIGHT,2)
+				change_light_color(data._type,right,2)
 			5:
-				change_light_color(data._type,game.COLOR_LEFT)
+				change_light_color(data._type,left)
 			6:
-				change_light_color(data._type,game.COLOR_LEFT,1)
+				change_light_color(data._type,left,1)
 			7:
-				change_light_color(data._type,game.COLOR_LEFT,2)
+				change_light_color(data._type,left,2)
 	else:
 		match int(data._type):
 			8:
@@ -98,13 +91,13 @@ func procces_event(data,beat):
 				$Level/t3/AnimationPlayer.speed_scale = val
 				$Level/t3/AnimationPlayer.seek(randf_range(0,$Level/t3/AnimationPlayer.current_animation_length),true)
 
-func stop_prev_tween(type):
+func stop_prev_tween(type) -> void:
 	if prev_tweeners[type] != null:
 		prev_tweeners[type].kill()
 		prev_tweeners[type] = null
 
 var prev_tweeners = [null,null,null,null,null]
-func change_light_color(type,color=-1,transition_mode=0):
+func change_light_color(type,color=-1,transition_mode=0) -> void:
 	var group : Node3D
 	var material = []
 	var shader = []
@@ -181,16 +174,6 @@ func change_light_color(type,color=-1,transition_mode=0):
 				tween.kill()
 				_on_Tween_tween_step(Color.BLACK, type)
 
-func _on_Tween_tween_step(value : Color, id):
+func _on_Tween_tween_step(value : Color, id) -> void:
 	if id == null: return
 	$Level/Sphere.material_override.set_shader_parameter("bg_%d_intensity"%id,value.v)
-
-
-
-
-
-
-
-
-
-

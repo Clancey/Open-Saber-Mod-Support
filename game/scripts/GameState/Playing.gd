@@ -21,7 +21,7 @@ func _ready(game: BeepSaber_Game) -> void:
 	game.online_search_keyboard._hide()
 
 func _physics_process(game: BeepSaber_Game, delta: float) -> void:
-	if game.non_dominant_hand.by_just_pressed():
+	if game.left_controller.by_just_pressed():
 		game._transition_game_state(game.gamestate_paused)
 	if game.song_player.playing and not game._audio_synced_after_restart:
 		# 0.5 seconds is a pretty concervative number to use for the audio
@@ -48,12 +48,12 @@ func _spawn_note(game: BeepSaber_Game, note: Dictionary, current_beat: float) ->
 	var color := game.COLOR_LEFT
 	if (note._type == 0):
 		_instance_cube_sw.start()
-		note_node = game._cube_pool.acquire(game.track)
+		note_node = game.cube_pool.acquire()
 		color = game.COLOR_LEFT
 		_instance_cube_sw.stop()
 	elif (note._type == 1):
 		_instance_cube_sw.start()
-		note_node = game._cube_pool.acquire(game.track)
+		note_node = game.cube_pool.acquire()
 		color = game.COLOR_RIGHT
 		_instance_cube_sw.stop()
 	elif (note._type == 3) and game.bombs_enabled:
@@ -141,29 +141,29 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 	
 	var current_time := game.song_player.get_playback_position()
 	
-	var current_beat := current_time * (game._current_info._beatsPerMinute as float) / 60.0
-
+	var current_beat := current_time * (MapInfo.beats_per_minute as float) / 60.0
+	
 	# spawn notes
-	var n: Array = game._current_map._notes
-	while (game._current_note < n.size() && n[game._current_note]._time <= current_beat+game.beats_ahead):
-		_spawn_note(game, n[game._current_note], current_beat)
-		game._current_note += 1
-
+	var n: Array = MapInfo.notes
+	while (MapInfo.current_note < n.size() && n[MapInfo.current_note]._time <= current_beat+game.beats_ahead):
+		_spawn_note(game, n[MapInfo.current_note], current_beat)
+		MapInfo.current_note += 1
+	
 	# spawn obstacles (walls)
-	var o = game._current_map._obstacles
-	while (game._current_obstacle < o.size() && o[game._current_obstacle]._time <= current_beat+game.beats_ahead):
-		_spawn_wall(game, o[game._current_obstacle], current_beat)
-		game._current_obstacle += 1;
-
-	var speed := Vector3(0.0, 0.0, game.beat_distance * game._current_info._beatsPerMinute / 60.0) * dt
-
+	var o = MapInfo.obstacles
+	while (MapInfo.current_obstacle < o.size() && o[MapInfo.current_obstacle]._time <= current_beat+game.beats_ahead):
+		_spawn_wall(game, o[MapInfo.current_obstacle], current_beat)
+		MapInfo.current_obstacle += 1
+	
+	var speed := Vector3(0.0, 0.0, game.beat_distance * MapInfo.beats_per_minute / 60.0) * dt
+	
 	for c_idx in game.track.get_child_count():
 		var c = game.track.get_child(c_idx)
 		if ! c.visible:
 			continue
 		
 		c.translate(speed)
-
+	
 		var depth = CUBE_DISTANCE
 		if c is Wall:
 			# compute wall's depth based on duration
@@ -172,7 +172,7 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 			# enable bomb/cube collision when it gets closer enough to player
 			if c.global_transform.origin.z > -3.0:
 				c.set_collision_disabled(false)
-
+	
 		# remove children that go to far
 		if ((c.global_transform.origin.z - depth) > 2.0):
 			if c is BeepCube:
@@ -182,13 +182,13 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 				c.release()
 			else:
 				c.queue_free()
-
-	var e = game._current_map._events;
-	while (game._current_event < e.size() && e[game._current_event]._time <= current_beat):
-		game._spawn_event(e[game._current_event], current_beat)
-		game._current_event += 1
-
+	
+	var e = MapInfo.events
+	while (MapInfo.current_event < e.size() && e[MapInfo.current_event]._time <= current_beat):
+		game._spawn_event(e[MapInfo.current_event], current_beat)
+		MapInfo.current_event += 1
+	
 	if (game.song_player.get_playback_position() >= game.song_player.stream.get_length()-1):
 		game._on_song_ended()
-		
+	
 	_proc_map_sw.stop()

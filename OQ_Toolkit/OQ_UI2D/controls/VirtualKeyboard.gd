@@ -3,29 +3,26 @@ class_name VirtualKeyboard
 
 
 @onready var _reference_button := $ReferenceButton as Button
-@onready var _container_letters := $Container_Letters as Control
-@onready var _container_symbols := $Container_Symbols as Control
+@onready var _container_letters := $Container_Letters as Container
+@onready var _container_symbols := $Container_Symbols as Container
 
 @export var allow_newline := false
 
 const B_SIZE := 48
 
-const NUMBER_LAYOUT: Array[String] = ["1","2","3","4","5","6","7","8","9","0"]
+var NUMBER_LAYOUT := PackedStringArray(["1","2","3","4","5","6","7","8","9","0"])
 
-# TODO: nested arrays currently don't support strong-typing.
-# change the next two arrays' type to Array[Array[String]] if strong-typed
-# nested arrays become supported in the future.
-const BUTTON_LAYOUT_ENGLISH: Array[Array] = [
-["q","w","e","r","t","y","u","i","o","p"],
-["a","s","d","f","g","h","j","k","l",":"],
-["@","z","x","c","v","b","n","m","!","."],
-["/"],
+var BUTTON_LAYOUT_ENGLISH: Array[PackedStringArray] = [
+	PackedStringArray(["q","w","e","r","t","y","u","i","o","p"]),
+	PackedStringArray(["a","s","d","f","g","h","j","k","l",":"]),
+	PackedStringArray(["@","z","x","c","v","b","n","m","!","."]),
+	PackedStringArray(["/"])
 ]
 
-const BUTTON_LAYOUT_SYMBOLS: Array[Array] = [
-["!","@","#","$","%","^","&","*","(",")"],
-[".",'"',"'",",","-","?",":",";","{","}"],
-["+","_","=","|","/","\\","<",">","[","]"],
+var BUTTON_LAYOUT_SYMBOLS: Array[PackedStringArray] = [
+	PackedStringArray(["!","@","#","$","%","^","&","*","(",")"]),
+	PackedStringArray([".",'"',"'",",","-","?",":",";","{","}"]),
+	PackedStringArray(["+","_","=","|","/","\\","<",">","[","]"])
 ]
 
 
@@ -36,12 +33,8 @@ signal cancel_pressed
 var _all_letter_buttons: Array[Button] = []
 
 func _toggle_symbols(show_symbols: bool) -> void:
-	if (show_symbols):
-		_container_letters.visible = false
-		_container_symbols.visible = true
-	else:
-		_container_letters.visible = true
-		_container_symbols.visible = false
+	_container_letters.visible = not show_symbols
+	_container_symbols.visible = show_symbols
 
 func _create_input_event(b: Button, pressed: bool) -> InputEventKey:
 	var keycode := KEY_NONE

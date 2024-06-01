@@ -9,7 +9,6 @@ uniform float roughness;
 uniform float sub_emission_energy;
 
 uniform bool cutted = false;
-uniform bool inverted_cut = false;
 uniform float cut_pos = 0.0;
 uniform float cut_vanish = 0.0;
 uniform float cut_angle = 0.0;
@@ -31,10 +30,12 @@ mat3 rotation3dZ(float angle) {
 
 varying float cut_interp;
 void vertex() {
-	vec3 cut_init = cut_pos+(VERTEX*rotation3dZ(cut_angle));
-	cut_interp = cut_init.x;
-	if (inverted_cut)	cut_interp *= -1.0;
-	cut_interp += cut_vanish;
+	if (cutted) {
+		vec3 cut_init = cut_pos+(VERTEX*rotation3dZ(cut_angle));
+		cut_interp = cut_init.x;
+		cut_interp *= -1.0;
+		cut_interp += cut_vanish;
+	}
 }
 
 void fragment() {

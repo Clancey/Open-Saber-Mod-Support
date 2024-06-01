@@ -24,7 +24,7 @@ var ui_size := Vector2.ZERO
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if (ui_control == null): return PackedStringArray(["Need a Control node as child."])
-	return PackedStringArray([''])
+	return PackedStringArray()
 
 
 func _input(event: InputEvent) -> void:

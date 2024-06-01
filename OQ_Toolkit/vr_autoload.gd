@@ -13,12 +13,6 @@ var active_arvr_interface_name := "Unknown"
 # so make sure to always use this if instancing nodes/features via code
 @onready var oq_base_dir := (get_script() as Script).get_path().get_base_dir()
 
-# a global counter for frames; incremented in the process of vr
-# usefule for remembering time-stamps when sth. happened
-var frame_counter := 0
-
-var physics_frame_counter := 0
-
 ###############################################################################
 # VR logging systems
 ###############################################################################
@@ -138,97 +132,36 @@ func _notification(what: int) -> void:
 	if (what == NOTIFICATION_APPLICATION_RESUMED):
 		_need_settings_refresh = true
 
-
 ###############################################################################
 # Scene Switching Helper Logic
 ###############################################################################
 
 var _active_scene_path: String # this assumes that only a single scene will ever be switched
 var scene_switch_root: Node
-
-# helper function to switch different scenes; this will be in the
-# future extend to allow for some transtioning to happen as well as maybe some shader caching
-func _perform_switch_scene(scene_path: String) -> void:
-	print("_perform_switch_scene to " + scene_path)
-	
-	if scene_switch_root != null:
-		for s in scene_switch_root.get_children():
-			scene_switch_root.remove_child(s)
-			s.queue_free()
-
-		var next_scene_resource := load(scene_path)
-		if (next_scene_resource and next_scene_resource is PackedScene):
-			var next_scene_packed := next_scene_resource as PackedScene
-			_active_scene_path = scene_path
-			var next_scene := next_scene_packed.instantiate()
-			log_info("    switching to scene '%s'" % scene_path)
-			scene_switch_root.add_child(next_scene)
-		else:
-			log_error("could not load scene '%s'" % scene_path)
-	else:
-		if get_tree().change_scene_to_file(scene_path) != OK:
-			log_error("could not load scene '%s'" % scene_path)
-
-
-var _target_scene_path: String = ""
-var _scene_switch_fade_out_duration := 0.0
-var _scene_switch_fade_out_time := 0.0
-var _scene_switch_fade_in_duration := 0.0
-var _scene_switch_fade_in_time := 0.0
-var _switch_performed := false
-
 var switch_scene_in_progress := false
 
-func switch_scene(scene_path: String, fade_time: float = 0.1, wait_time: float = 0.0) -> void:
-	if (wait_time > 0.0 && _active_scene_path != null):
-		await get_tree().create_timer(wait_time).timeout
-
-	if (scene_switch_root == null):
-		log_error("vr.switch_scene(...) called but no scene_switch_root configured. Will use default scene change.")
-	if (_active_scene_path == scene_path): return
-
-	if (fade_time <= 0.0):
-		_perform_switch_scene(scene_path)
+func switch_scene(scene_path: String) -> void:
+	if (_active_scene_path == scene_path):
 		return
-	_target_scene_path = scene_path
+	print("switch_scene to " + scene_path)
 	
-	_scene_switch_fade_out_duration = fade_time
-	_scene_switch_fade_in_duration = fade_time
-	_scene_switch_fade_out_time = 0.0
-	_scene_switch_fade_in_time = 0.0
-	_switch_performed = false
+	for s in scene_switch_root.get_children():
+		scene_switch_root.remove_child(s)
+		s.queue_free()
 	
-
-func _check_for_scene_switch_and_fade(dt: float) -> void:
-	# first fade out before switch
-	switch_scene_in_progress = false
-	if (_target_scene_path != "" && !_switch_performed):
-		if (_scene_switch_fade_out_time < _scene_switch_fade_out_duration):
-			_scene_switch_fade_out_time += dt
-			switch_scene_in_progress = true
-		else:
-			_perform_switch_scene(_target_scene_path)
-			_switch_performed = true
-			switch_scene_in_progress = true
-	elif (_target_scene_path != "" && _switch_performed):
-		if (_scene_switch_fade_in_time < _scene_switch_fade_in_duration):
-			_scene_switch_fade_in_time += dt
-			switch_scene_in_progress = true
-		else:
-			_target_scene_path = ""
-
+	var next_scene_resource := load(scene_path)
+	if next_scene_resource is PackedScene:
+		var next_scene_packed := next_scene_resource as PackedScene
+		_active_scene_path = scene_path
+		var next_scene := next_scene_packed.instantiate()
+		log_info("    switching to scene '%s'" % scene_path)
+		scene_switch_root.add_child(next_scene)
+	else:
+		log_error("could not load scene '%s'" % scene_path)
 
 ###############################################################################
 # Main Funcitonality for initialize and process
 ###############################################################################
-
-func _physics_process(_dt: float) -> void:
-	physics_frame_counter += 1
-
-func _process(dt: float) -> void:
-	frame_counter += 1
-	_check_for_scene_switch_and_fade(dt)
-
 
 var webxr_initializer: CanvasLayer
 var xr_interface: OpenXRInterface
@@ -252,10 +185,10 @@ func initialize(render_scale: float = 1.0) -> void:
 			var max_fps: Variant = fps[fps.size() - 1]
 			if max_fps is float:
 				xr_interface.set_display_refresh_rate(max_fps as float)
-
+		
 		# Turn off v-sync!
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
-
+		
 		# Change our main viewport to output to the HMD
 		get_viewport().use_xr = true
 		inVR = true

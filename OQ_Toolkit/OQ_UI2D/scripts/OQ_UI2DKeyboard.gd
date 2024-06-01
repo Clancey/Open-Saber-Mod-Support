@@ -13,8 +13,10 @@ class_name OQ_UI2DKeyboard
 # capitalized
 @export var is_name_input := false
 
-var _text_edit: TextEdit
-var _keyboard: VirtualKeyboard
+# due to how OQ_UI2DCanvas moves items around the scene tree,
+# a regular path $Like/This returns null
+@onready var _text_edit := $OQ_UI2DCanvas_TextInput.find_child("TextEdit", true, false) as TextEdit
+@onready var _keyboard := $OQ_UI2DCanvas_Keyboard.find_child("VirtualKeyboard", true, false) as VirtualKeyboard
 
 signal text_input_cancel()
 signal text_input_enter(text: String)
@@ -33,8 +35,8 @@ func _on_enter() -> void:
 
 
 func _ready() -> void:
-	_text_edit = $OQ_UI2DCanvas_TextInput.find_child("TextEdit", true, false) as TextEdit
-	_keyboard = $OQ_UI2DCanvas_Keyboard.find_child("VirtualKeyboard", true, false) as VirtualKeyboard
+	#_text_edit = $OQ_UI2DCanvas_TextInput.find_child("TextEdit", true, false) as TextEdit
+	#_keyboard = $OQ_UI2DCanvas_Keyboard.find_child("VirtualKeyboard", true, false) as VirtualKeyboard
 	_keyboard.set_cancelable(cancelable)
 	
 	# force update of things that based on the text input
