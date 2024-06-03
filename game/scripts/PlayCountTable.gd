@@ -22,19 +22,19 @@ func clear_table():
 	_pc_table = {}
 	
 # removes a given map from the table, effectively resetting that map's counters
-func remove_map(map_info):
-	var song_key = SongUtils.get_key(map_info)
+func remove_map(map_info: MapInfo.Map) -> void:
+	var song_key := map_info.get_key()
 	_pc_table.erase(song_key)
 	save_table()
-	
+
 # increments the maps play count by 1.
 #
 # map_info : data structure as read for map's info.dat file
 # diff_rank : difficulty rank (1,3,etc.) that the score was set on
 #
 # return : None
-func increment_play_count(map_info: Dictionary, diff_rank: int) -> void:
-	var song_key = SongUtils.get_key(map_info)
+func increment_play_count(map_info: MapInfo.Map, diff_rank: int) -> void:
+	var song_key = map_info.get_key()
 	if not _pc_table.has(song_key):
 		_pc_table[song_key] = {}
 		
@@ -47,8 +47,8 @@ func increment_play_count(map_info: Dictionary, diff_rank: int) -> void:
 	save_table()
 
 # return : the map's play count for the given difficulty
-func get_play_count(map_info: Dictionary, diff_rank: int):
-	var song_key = SongUtils.get_key(map_info)
+func get_play_count(map_info: MapInfo.Map, diff_rank: int) -> int:
+	var song_key = map_info.get_key()
 	if not _pc_table.has(song_key):
 		return 0
 		
@@ -59,12 +59,12 @@ func get_play_count(map_info: Dictionary, diff_rank: int):
 	return _pc_table[song_key][diff_str]
 
 # return : the map's total play count accros all difficulties
-func get_total_play_count(map_info):
-	var song_key = SongUtils.get_key(map_info)
+func get_total_play_count(map_info: MapInfo.Map) -> int:
+	var song_key := map_info.get_key()
 	if not _pc_table.has(song_key):
 		return 0
-		
-	var total = 0
+	
+	var total := 0
 	for count in _pc_table[song_key].values():
 		total += count
 	return total
@@ -82,8 +82,8 @@ func load_table():
 		print("WARN: Failed to open %s (might not exist yet)" % PLAY_COUNT_FILEPATH)
 
 # saves play count table to filesystem
-func save_table():
-	var file = FileAccess.open(PLAY_COUNT_FILEPATH,FileAccess.WRITE)
+func save_table() -> void:
+	var file := FileAccess.open(PLAY_COUNT_FILEPATH,FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(_pc_table,"   ",true))
 		file.close()

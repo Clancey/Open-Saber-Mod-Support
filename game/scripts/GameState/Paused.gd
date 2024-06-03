@@ -17,13 +17,15 @@ func _ready(game: BeepSaber_Game) -> void:
 	game.right_ui_raycast.visible = true
 	game.highscore_keyboard._hide()
 	game.online_search_keyboard._hide()
+	game.left_saber.set_swingcast_enabled(false)
+	game.right_saber.set_swingcast_enabled(false)
 	
 	game.pause_position = game.song_player.get_playback_position()
 	game.song_player.stop()
 	(game.pause_menu.ui_control as PausePanel).set_pause_text(
 		"%s By %s\nMap author: %s" % [
-		MapInfo.song_name,
-		MapInfo.song_author_name,
-		MapInfo.level_author_name
+		MapInfo.current_map.song_name,
+		MapInfo.current_map.song_author_name,
+		MapInfo.current_map.level_author_name
 		], game.menu._map_difficulty_name
 	)

@@ -46,7 +46,6 @@ class CutCubeResources:
 		particles = preload("res://game/BeepCube_SliceParticles.tscn").instantiate() as BeepCubeSliceParticles
 
 
-static var LinkedList := preload("res://game/scripts/LinkedList.gd")
 const MAX_CUT_CUBE_RESOURCES := 32
 static var _cut_cube_resources := LinkedList.new()
 

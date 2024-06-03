@@ -24,22 +24,22 @@ const MAX_RECORDS_PER_KEY = 10
 # }
 var _hs_table = {}
 
-func _ready():
+func _ready() -> void:
 	load_hs_table()
-	
+
 # clears the whole highscore table
 func clear_table():
 	_hs_table = {}
 	
 # removes a given map from the table, effectively resetting that map's records
-func remove_map(map_info):
-	var hs_key = SongUtils.get_key(map_info)
+func remove_map(map_info: MapInfo.Map) -> void:
+	var hs_key := map_info.get_key()
 	_hs_table.erase(hs_key)
 	save_hs_table()
 	
 # returns true if score is a new highscore in the table, false otherwise
-func is_new_highscore(map_info,diff_rank,score):
-	var hs_key = SongUtils.get_key(map_info)
+func is_new_highscore(map_info: MapInfo.Map,diff_rank: int, score: int) -> bool:
+	var hs_key := map_info.get_key()
 	return _is_new_highscore(hs_key,diff_rank,score)
 	
 # adds a new score record to the table. if the score is not a highscore
@@ -51,15 +51,15 @@ func is_new_highscore(map_info,diff_rank,score):
 # score : integer score to store
 #
 # return : None
-func add_highscore(map_info,diff_rank,player_name,score):
+func add_highscore(map_info: MapInfo.Map, diff_rank: int ,player_name: String, score: int):
 	# get existing records for song + difficulty
-	var hs_key = SongUtils.get_key(map_info)
-	var records = _get_records(hs_key,diff_rank)
+	var hs_key := map_info.get_key()
+	var records := _get_records(hs_key,diff_rank)
 	
 	# construct a new record and resort the list
-	var record = _make_record(score,player_name)
+	var record := _make_record(score,player_name)
 	records.append(record)
-	records.sort_custom(Callable(self, "_highest_and_oldest"))
+	records.sort_custom(_highest_and_oldest)
 	
 	# remove the lowest ranking score
 	if records.size() > MAX_RECORDS_PER_KEY:
@@ -71,16 +71,16 @@ func add_highscore(map_info,diff_rank,player_name,score):
 	_hs_table[hs_key][str(diff_rank)] = records
 	
 	save_hs_table()
-		
+
 # return : the list of records for the given map + difficulty
-func get_records(map_info,diff_rank):
-	var hs_key = SongUtils.get_key(map_info)
+func get_records(map_info: MapInfo.Map, diff_rank: int) -> Array:
+	var hs_key := map_info.get_key()
 	return _get_records(hs_key,diff_rank)
 	
 # return : the overall highscore for the given map + difficulty. -1 is
 # returned if no record exist for this song yet
-func get_highscore(map_info,diff_rank) -> int:
-	var hs_key = SongUtils.get_key(map_info)
+func get_highscore(map_info: MapInfo.Map, diff_rank: int) -> int:
+	var hs_key = map_info.get_key()
 	var records = _get_records(hs_key,diff_rank)
 	if records.size() == 0:
 		return -1
@@ -98,12 +98,12 @@ func get_all_player_names():
 				if ! unique_names.has(player_name):
 					unique_names.append(player_name)
 	return unique_names
-	
+
 # restores highscore table from filesystem
-func load_hs_table():
-	var file = FileAccess.open(HIGHSCORES_FILEPATH,FileAccess.READ)
+func load_hs_table() -> void:
+	var file := FileAccess.open(HIGHSCORES_FILEPATH,FileAccess.READ)
 	if file:
-		var text = file.get_as_text()
+		var text := file.get_as_text()
 		file.close()
 		var json_res = JSON.parse_string(text)
 		if json_res:
@@ -112,8 +112,8 @@ func load_hs_table():
 		print("WARN: Failed to open %s (might not exist yet)" % HIGHSCORES_FILEPATH)
 
 # saves highscore table to filesystem
-func save_hs_table():
-	var file = FileAccess.open(HIGHSCORES_FILEPATH,FileAccess.WRITE)
+func save_hs_table() -> void:
+	var file := FileAccess.open(HIGHSCORES_FILEPATH,FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(_hs_table,"   ",true))
 		file.close()
@@ -121,7 +121,7 @@ func save_hs_table():
 		print("ERROR: Failed to open %s" % HIGHSCORES_FILEPATH)
 
 # internal function used to lookup records for a given song + diffculty
-func _get_records(hs_key,diff_rank):
+func _get_records(hs_key: String, diff_rank: int) -> Array:
 	var records = []
 	
 	if _hs_table.has(hs_key):
@@ -132,14 +132,14 @@ func _get_records(hs_key,diff_rank):
 	return records
 
 # internal function used too check if a score is a new highscore
-func _is_new_highscore(hs_key,diff_rank,score):
+func _is_new_highscore(hs_key: String, diff_rank: int, score: int) -> bool:
 	var records = _get_records(hs_key,diff_rank)
 	# make a temporary record just for lookup purposes
 	var temp_record = _make_record(score,"**TEMP_PLAYER**")
 	return _get_insert_index(records,temp_record) < MAX_RECORDS_PER_KEY
 
 # creates a "record" structure for storage in the highscore table
-func _make_record(score,player_name):
+func _make_record(score: int, player_name: String) -> Dictionary:
 	return {
 		"score" : score,
 		"player_name" : player_name,
@@ -148,10 +148,10 @@ func _make_record(score,player_name):
 
 # records: the list of records for a given (song + diff_rank)
 # record: the score record to request the insertion index for
-func _get_insert_index(records,record):
+func _get_insert_index(records: Array, record: Dictionary) -> int:
 	return records.bsearch_custom(record,_highest_and_oldest,false)
 
-static func _highest_and_oldest(lhs, rhs):
+static func _highest_and_oldest(lhs, rhs) -> bool:
 	if lhs.score > rhs.score:
 		return true
 	elif lhs.score < rhs.score:
@@ -162,5 +162,3 @@ static func _highest_and_oldest(lhs, rhs):
 		if lhs.epoch_time < rhs.epoch_time:
 			return true
 	return false
-
-

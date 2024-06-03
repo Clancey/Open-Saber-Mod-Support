@@ -57,6 +57,5 @@ func _ready() -> void:
 
 # we use the physics process here be in sync with the controller position
 func _physics_process(_dt: float) -> void:
-	if (!active): return
-	if (!visible): return
-	_update_raycasts()
+	if active and visible:
+		_update_raycasts()

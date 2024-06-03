@@ -28,6 +28,7 @@ font_size = 4
 depth = 0.0
 
 [node name="RaycastButton" type="Area3D"]
+collision_layer = 2
 collision_mask = 0
 script = ExtResource("1_xb2lf")
 size = Vector2(0.25, 0.063)

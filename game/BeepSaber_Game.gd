@@ -44,7 +44,6 @@ var gamestate: GameState = gamestate_bootup
 
 @onready var cube_template := preload("res://game/BeepCube.tscn").instantiate() as BeepCube
 @onready var wall_template := preload("res://game/Wall/Wall.tscn").instantiate() as Wall
-@onready var LinkedList := preload("res://game/scripts/LinkedList.gd")
 
 @onready var track := $Track as Node3D
 
@@ -58,9 +57,6 @@ var COLOR_RIGHT := Color(0.1, 0.1, 1.0, 1.0) : get = _get_color_right
 var COLOR_LEFT_ONCE: Color = Color.TRANSPARENT
 var COLOR_RIGHT_ONCE: Color = Color.TRANSPARENT
 var disable_map_color := false
-
-var _current_map := {}
-var _current_info := {}
 
 
 # There's an interesting issue where the AudioStreamPlayer's playback_position
@@ -103,7 +99,7 @@ func restart_map() -> void:
 	_display_points()
 	percent_indicator.start_map()
 	update_saber_colors()
-	if _current_map.has("_events") and _current_map._events.size() > 0:
+	if MapInfo.events.size() > 0:
 		event_driver.set_all_off()
 	else:
 		event_driver.set_all_on(COLOR_LEFT, COLOR_RIGHT)
@@ -111,37 +107,36 @@ func restart_map() -> void:
 	_clear_track()
 	_transition_game_state(gamestate_playing)
 
-func start_map(info: Dictionary, map_data: Dictionary, map_difficulty: int) -> void:
-	if !map_data.has("_notes"): 
+func start_map(info: MapInfo.Map, map_data: Dictionary, map_difficulty: int) -> void:
+	if not map_data.has("_notes"):
 		print("Map has no '_notes'")
 		return
-	_current_map = map_data
-	MapInfo.notes = map_data.get("_notes")
-	MapInfo.obstacles = map_data.get("_obstacles")
-	MapInfo.events = map_data.get("_events")
-	_current_info = info
-	MapInfo.beats_per_minute = info.get("_beatsPerMinute")
-	MapInfo.song_name = info.get("_songName")
-	MapInfo.song_author_name = info.get("_songAuthorName")
-	MapInfo.level_author_name = info.get("_levelAuthorName")
+	MapInfo.current_map = info
+	MapInfo.notes = map_data._notes
+	if map_data.has("_obstacles"):
+		MapInfo.obstacles = map_data._obstacles
+	else:
+		MapInfo.obstacles = []
+	if map_data.has("_events"):
+		MapInfo.events = map_data._events
+	else:
+		MapInfo.events = []
 	
 	set_colors_from_map(info, map_difficulty)
 	
-	print("loading: ",info._path + info._songFilename)
-	var stream := AudioStreamOggVorbis.load_from_file(info._path + info._songFilename)
+	print("loading: ",info.filepath + info.song_filename)
+	var stream := AudioStreamOggVorbis.load_from_file(info.filepath + info.song_filename)
 	
 	song_player.stream = stream
 	restart_map()
 
-func set_colors_from_map(info: Dictionary, map_difficulty: int) -> void:
+func set_colors_from_map(info: MapInfo.Map, map_difficulty: int) -> void:
 	COLOR_LEFT_ONCE = Color.TRANSPARENT
 	COLOR_RIGHT_ONCE = Color.TRANSPARENT
 	var roots := []
 	for color_name in ["_envColor%sBoost", "_envColor%s", "_color%s"]:
-		if info.has("_customData"): 
-			roots.append(info["_customData"])
-		if info["_difficultyBeatmapSets"][0]["_difficultyBeatmaps"][map_difficulty].has("_customData"): 
-			roots.append(info["_difficultyBeatmapSets"][0]["_difficultyBeatmaps"][map_difficulty]["_customData"])
+		roots.append(info.custom_data)
+		roots.append(info.difficulty_beatmaps[map_difficulty].custom_data)
 		for r in roots:
 			if r.has(color_name%["Right"]) and r.has(color_name%["Left"]):
 				COLOR_LEFT_ONCE = Color(
@@ -170,10 +165,10 @@ func show_MapSourceDialogs(showing: bool = true) -> void:
 # the high score
 func _on_song_ended() -> void:
 	song_player.stop()
-	PlayCount.increment_play_count(_current_info,_current_diff_rank)
+	PlayCount.increment_play_count(MapInfo.current_map,_current_diff_rank)
 	
 	var new_record := false
-	var highscore := Highscores.get_highscore(_current_info,_current_diff_rank)
+	var highscore := Highscores.get_highscore(MapInfo.current_map,_current_diff_rank)
 	if highscore == -1:
 		# no highscores exist yet
 		highscore = Scoreboard.points
@@ -188,15 +183,15 @@ func _on_song_ended() -> void:
 		highscore,
 		current_percent,
 		"%s By %s\n%s     Map author: %s" % [
-			MapInfo.song_name,
-			MapInfo.song_author_name,
+			MapInfo.current_map.song_name,
+			MapInfo.current_map.song_author_name,
 			menu._map_difficulty_name,
-			MapInfo.level_author_name],
+			MapInfo.current_map.level_author_name],
 		Scoreboard.full_combo,
 		new_record
 	)
 	
-	if Highscores.is_new_highscore(_current_info,_current_diff_rank,Scoreboard.points):
+	if Highscores.is_new_highscore(MapInfo.current_map,_current_diff_rank,Scoreboard.points):
 		_transition_game_state(gamestate_newhighscore)
 	else:
 		_transition_game_state(gamestate_mapcomplete)
@@ -205,7 +200,7 @@ func _on_song_ended() -> void:
 func _submit_highscore(player_name: String) -> void:
 	if gamestate == gamestate_newhighscore:
 		Highscores.add_highscore(
-			_current_info,
+			MapInfo.current_map,
 			_current_diff_rank,
 			player_name,
 			Scoreboard.points)
@@ -238,11 +233,11 @@ func _check_and_update_saber(controller: BeepSaberController, saber: LightSaber)
 	# check for saber rumble (only when extended and not already rumbling)
 	# this check is necessary to not overwrite a rumble set from somewhere else
 	# (in this case it can come from cutting cubes)
-	if (!controller.is_simple_rumbling()): 
-		if (_in_wall):
+	if not controller.is_simple_rumbling(): 
+		if _in_wall:
 			# weak rumble on both controllers when player is inside wall
 			controller.simple_rumble(0.1, 0.1)
-		elif (saber.get_overlapping_areas().size() > 0 || saber.get_overlapping_bodies().size() > 0):
+		elif saber.get_overlapping_areas().size() > 0 or saber.get_overlapping_bodies().size() > 0:
 			# strong rumble when saber is cutting into wall or other saber
 			controller.simple_rumble(0.5, 0.1)
 		else:
@@ -377,7 +372,7 @@ func _on_Pause_Panel_continue_button() -> void:
 	song_player.play(pause_position)
 	_transition_game_state(gamestate_playing)
 
-func _on_BeepSaberMainMenu_difficulty_changed(map_info: Dictionary, diff_name: String, diff_rank: int) -> void:
+func _on_BeepSaberMainMenu_difficulty_changed(map_info: MapInfo.Map, diff_name: String, diff_rank: int) -> void:
 	_current_diff_name = diff_name
 	_current_diff_rank = diff_rank
 	

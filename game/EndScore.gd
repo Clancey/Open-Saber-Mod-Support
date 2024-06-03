@@ -17,11 +17,15 @@ func _ready() -> void:
 	set_buttons_disabled(true)
 
 func _show() -> void:
-	raycast_area.collision_layer = 1
+	raycast_area.collision_layer = CollisionLayerConstants.Ui_mask
+	($Repeat as UIRaycastButton).collision_layer = CollisionLayerConstants.Ui_mask
+	($MainMenu as UIRaycastButton).collision_layer = CollisionLayerConstants.Ui_mask
 	show()
 
 func _hide() -> void:
 	raycast_area.collision_layer = 0
+	($Repeat as UIRaycastButton).collision_layer = 0
+	($MainMenu as UIRaycastButton).collision_layer = 0
 	hide()
 
 func show_score(score: int, record: int, percent: float, song_string: String, is_full_combo: bool, is_new_record: bool) -> void:

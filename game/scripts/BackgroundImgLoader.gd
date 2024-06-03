@@ -3,14 +3,13 @@ extends Object
 class ImgLoadRequest:
 	extends RefCounted
 	
-	var filepath : String = ""
-	var callback_obj : Object = null
-	var callback_func : String = ""
+	var filepath: String
+	var callback_obj: Object
+	var callback_func: String
 	var callback_args := []
 	var thread := Thread.new()
-	
-var LinkedList := preload("res://game/scripts/LinkedList.gd")
-var _img_load_request_queue = LinkedList.new()
+
+var _img_load_request_queue := LinkedList.new()
 
 # variable used to keep track of how many threads are currently loading images
 var _img_load_mutex := Mutex.new()

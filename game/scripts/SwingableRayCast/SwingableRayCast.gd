@@ -3,13 +3,12 @@
 extends RayCast3D
 class_name SwingableRayCast
 
-signal area_collided(area)
+signal area_collided(area: Area3D)
 
 @export var num_collision_raycasts = 8
 
 const DEBUG = false
 const DEBUG_TRAIL_SEGMENTS = 5
-const LinkedList = preload("res://game/scripts/LinkedList.gd")
 
 # this constant is used to prevent unnecessary raycast collision computations
 # when the ray's 'cast_to' vector length is below this threshold. it seems like
@@ -20,10 +19,10 @@ const MIN_SWEPT_LENGTH_THRESHOLD = 0.035
 
 var core_ray_collision_count = 0;
 var aux_ray_collision_count = 0;
-var adjust_segments = true;
+var adjust_segments := true
 
 var _prev_ray_positions = [];
-var _rays = [];
+var _rays: Array[RayCast3D]
 var _debug_curr_balls = [];
 var _debug_raycast_trail := LinkedList.new();
 @onready var _sw := StopwatchFactory.create(name, 10, true);
@@ -60,10 +59,13 @@ func _set_collision_mask_value(bit: int, value: bool):
 	for ray in _rays:
 		#ray.collision_mask = 0x0
 		ray.set_collision_mask_value(bit,value)
-		
+
 func reset_counters():
 	core_ray_collision_count = 0
 	aux_ray_collision_count = 0
+
+func set_raycasts_enabled(value: bool) -> void:
+	enabled = value
 
 func _update_element_positions():
 	# generate new locations for ray casters
@@ -83,13 +85,14 @@ func _update_element_positions():
 			
 		next_local_pos += step_dist
 
-func _physics_process(_delta):
+func _physics_process(_delta: float) -> void:
+	if not enabled: return
 	_sw.start()
 	# see if 'core' ray is colliding with anything
-	var coll = get_collider()
+	var coll := get_collider()
 	if coll is Area3D:
 		core_ray_collision_count += 1
-		emit_signal("area_collided",coll)
+		area_collided.emit(coll)
 	
 	# ---------------------
 	
@@ -98,7 +101,7 @@ func _physics_process(_delta):
 		_update_element_positions()
 	
 	for i in range(num_collision_raycasts):
-		var ray : RayCast3D = _rays[i]
+		var ray: RayCast3D = _rays[i]
 			
 		# cast a ray to the newest location and check for collisions
 		ray.target_position = ray.to_local(_prev_ray_positions[i])
@@ -107,7 +110,7 @@ func _physics_process(_delta):
 			coll = ray.get_collider()
 			if coll is Area3D:
 				aux_ray_collision_count += 1
-				emit_signal("area_collided",coll)
+				area_collided.emit(coll)
 		
 		_prev_ray_positions[i] = ray.global_transform.origin
 		
@@ -122,7 +125,7 @@ func _physics_process(_delta):
 		_debug_raycast_trail.push_front(old_slice)
 	_sw.stop()
 
-func _on_SwingableRayCast_tree_entered():
+func _on_SwingableRayCast_tree_entered() -> void:
 	if DEBUG:
 		var root = get_tree().get_root()
 		var scene_root = root.get_child(root.get_child_count() - 1)

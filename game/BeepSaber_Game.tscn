@@ -144,6 +144,7 @@ ui_raycast_length = 5.0
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1.5, -1)
 
 [node name="BeepSaberMainMenu" parent="MainMenu_OQ_UI2DCanvas" instance=ExtResource("11")]
+keyboard_path = NodePath("../../Keyboard_highscore")
 
 [node name="Multiplier_Label" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 1.375, -2.5)

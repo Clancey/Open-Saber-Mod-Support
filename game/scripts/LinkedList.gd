@@ -1,4 +1,5 @@
 extends RefCounted
+class_name LinkedList
 
 class LinkedListItem:
 	extends RefCounted

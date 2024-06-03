@@ -19,6 +19,8 @@ func _ready(game: BeepSaber_Game) -> void:
 	game.right_ui_raycast.visible = false
 	game.highscore_keyboard._hide()
 	game.online_search_keyboard._hide()
+	game.left_saber.set_swingcast_enabled(true)
+	game.right_saber.set_swingcast_enabled(true)
 
 func _physics_process(game: BeepSaber_Game, delta: float) -> void:
 	if game.left_controller.by_just_pressed():
@@ -134,14 +136,14 @@ func _spawn_wall(game: BeepSaber_Game, obstacle, current_beat: float) -> void:
 	wall._obstacle = obstacle;
 
 func _process_map(game: BeepSaber_Game, dt: float) -> void:
-	if (game._current_map == null):
+	if (MapInfo.current_map == null):
 		return
 	
 	_proc_map_sw.start()
 	
 	var current_time := game.song_player.get_playback_position()
 	
-	var current_beat := current_time * (MapInfo.beats_per_minute as float) / 60.0
+	var current_beat := current_time * (MapInfo.current_map.beats_per_minute as float) / 60.0
 	
 	# spawn notes
 	var n: Array = MapInfo.notes
@@ -155,7 +157,7 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 		_spawn_wall(game, o[MapInfo.current_obstacle], current_beat)
 		MapInfo.current_obstacle += 1
 	
-	var speed := Vector3(0.0, 0.0, game.beat_distance * MapInfo.beats_per_minute / 60.0) * dt
+	var speed := Vector3(0.0, 0.0, game.beat_distance * MapInfo.current_map.beats_per_minute / 60.0) * dt
 	
 	for c_idx in game.track.get_child_count():
 		var c = game.track.get_child(c_idx)
