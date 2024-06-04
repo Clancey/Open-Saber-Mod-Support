@@ -136,28 +136,28 @@ func _spawn_wall(game: BeepSaber_Game, obstacle, current_beat: float) -> void:
 	wall._obstacle = obstacle;
 
 func _process_map(game: BeepSaber_Game, dt: float) -> void:
-	if (MapInfo.current_map == null):
+	if (Map.current_info == null):
 		return
 	
 	_proc_map_sw.start()
 	
 	var current_time := game.song_player.get_playback_position()
 	
-	var current_beat := current_time * (MapInfo.current_map.beats_per_minute as float) / 60.0
+	var current_beat := current_time * (Map.current_info.beats_per_minute as float) / 60.0
 	
 	# spawn notes
-	var n: Array = MapInfo.notes
-	while (MapInfo.current_note < n.size() && n[MapInfo.current_note]._time <= current_beat+game.beats_ahead):
-		_spawn_note(game, n[MapInfo.current_note], current_beat)
-		MapInfo.current_note += 1
+	var n := Map.notes
+	while (Map.current_note < n.size() && n[Map.current_note]._time <= current_beat+game.beats_ahead):
+		_spawn_note(game, n[Map.current_note], current_beat)
+		Map.current_note += 1
 	
 	# spawn obstacles (walls)
-	var o = MapInfo.obstacles
-	while (MapInfo.current_obstacle < o.size() && o[MapInfo.current_obstacle]._time <= current_beat+game.beats_ahead):
-		_spawn_wall(game, o[MapInfo.current_obstacle], current_beat)
-		MapInfo.current_obstacle += 1
+	var o := Map.obstacles
+	while (Map.current_obstacle < o.size() && o[Map.current_obstacle]._time <= current_beat+game.beats_ahead):
+		_spawn_wall(game, o[Map.current_obstacle], current_beat)
+		Map.current_obstacle += 1
 	
-	var speed := Vector3(0.0, 0.0, game.beat_distance * MapInfo.current_map.beats_per_minute / 60.0) * dt
+	var speed := Vector3(0.0, 0.0, game.beat_distance * Map.current_info.beats_per_minute / 60.0) * dt
 	
 	for c_idx in game.track.get_child_count():
 		var c = game.track.get_child(c_idx)
@@ -185,10 +185,10 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 			else:
 				c.queue_free()
 	
-	var e = MapInfo.events
-	while (MapInfo.current_event < e.size() && e[MapInfo.current_event]._time <= current_beat):
-		game._spawn_event(e[MapInfo.current_event], current_beat)
-		MapInfo.current_event += 1
+	var e = Map.events
+	while (Map.current_event < e.size() && e[Map.current_event]._time <= current_beat):
+		game._spawn_event(e[Map.current_event], current_beat)
+		Map.current_event += 1
 	
 	if (game.song_player.get_playback_position() >= game.song_player.stream.get_length()-1):
 		game._on_song_ended()

@@ -99,6 +99,7 @@ offset_bottom = 640.0
 theme = ExtResource("1")
 theme_override_styles/panel = SubResource("1")
 script = ExtResource("3")
+keyboard_path = null
 
 [node name="Play_Button" type="Button" parent="."]
 layout_mode = 0

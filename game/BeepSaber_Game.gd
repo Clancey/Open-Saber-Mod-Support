@@ -91,15 +91,15 @@ func restart_map() -> void:
 	song_player.play(0.0)
 	song_player.volume_db = 0.0
 	_in_wall = false
-	MapInfo.current_note = 0
-	MapInfo.current_obstacle = 0
-	MapInfo.current_event = 0
+	Map.current_note = 0
+	Map.current_obstacle = 0
+	Map.current_event = 0
 	Scoreboard.restart()
 
 	_display_points()
 	percent_indicator.start_map()
 	update_saber_colors()
-	if MapInfo.events.size() > 0:
+	if Map.events.size() > 0:
 		event_driver.set_all_off()
 	else:
 		event_driver.set_all_on(COLOR_LEFT, COLOR_RIGHT)
@@ -107,20 +107,20 @@ func restart_map() -> void:
 	_clear_track()
 	_transition_game_state(gamestate_playing)
 
-func start_map(info: MapInfo.Map, map_data: Dictionary, map_difficulty: int) -> void:
+func start_map(info: Map.Info, map_data: Dictionary, map_difficulty: int) -> void:
 	if not map_data.has("_notes"):
 		print("Map has no '_notes'")
 		return
-	MapInfo.current_map = info
-	MapInfo.notes = map_data._notes
+	Map.current_info = info
+	Map.notes = map_data._notes
 	if map_data.has("_obstacles"):
-		MapInfo.obstacles = map_data._obstacles
+		Map.obstacles = map_data._obstacles
 	else:
-		MapInfo.obstacles = []
+		Map.obstacles = []
 	if map_data.has("_events"):
-		MapInfo.events = map_data._events
+		Map.events = map_data._events
 	else:
-		MapInfo.events = []
+		Map.events = []
 	
 	set_colors_from_map(info, map_difficulty)
 	
@@ -130,7 +130,7 @@ func start_map(info: MapInfo.Map, map_data: Dictionary, map_difficulty: int) -> 
 	song_player.stream = stream
 	restart_map()
 
-func set_colors_from_map(info: MapInfo.Map, map_difficulty: int) -> void:
+func set_colors_from_map(info: Map.Info, map_difficulty: int) -> void:
 	COLOR_LEFT_ONCE = Color.TRANSPARENT
 	COLOR_RIGHT_ONCE = Color.TRANSPARENT
 	var roots := []
@@ -165,10 +165,10 @@ func show_MapSourceDialogs(showing: bool = true) -> void:
 # the high score
 func _on_song_ended() -> void:
 	song_player.stop()
-	PlayCount.increment_play_count(MapInfo.current_map,_current_diff_rank)
+	PlayCount.increment_play_count(Map.current_info,_current_diff_rank)
 	
 	var new_record := false
-	var highscore := Highscores.get_highscore(MapInfo.current_map,_current_diff_rank)
+	var highscore := Highscores.get_highscore(Map.current_info,_current_diff_rank)
 	if highscore == -1:
 		# no highscores exist yet
 		highscore = Scoreboard.points
@@ -183,15 +183,15 @@ func _on_song_ended() -> void:
 		highscore,
 		current_percent,
 		"%s By %s\n%s     Map author: %s" % [
-			MapInfo.current_map.song_name,
-			MapInfo.current_map.song_author_name,
+			Map.current_info.song_name,
+			Map.current_info.song_author_name,
 			menu._map_difficulty_name,
-			MapInfo.current_map.level_author_name],
+			Map.current_info.level_author_name],
 		Scoreboard.full_combo,
 		new_record
 	)
 	
-	if Highscores.is_new_highscore(MapInfo.current_map,_current_diff_rank,Scoreboard.points):
+	if Highscores.is_new_highscore(Map.current_info,_current_diff_rank,Scoreboard.points):
 		_transition_game_state(gamestate_newhighscore)
 	else:
 		_transition_game_state(gamestate_mapcomplete)
@@ -200,7 +200,7 @@ func _on_song_ended() -> void:
 func _submit_highscore(player_name: String) -> void:
 	if gamestate == gamestate_newhighscore:
 		Highscores.add_highscore(
-			MapInfo.current_map,
+			Map.current_info,
 			_current_diff_rank,
 			player_name,
 			Scoreboard.points)
@@ -372,7 +372,7 @@ func _on_Pause_Panel_continue_button() -> void:
 	song_player.play(pause_position)
 	_transition_game_state(gamestate_playing)
 
-func _on_BeepSaberMainMenu_difficulty_changed(map_info: MapInfo.Map, diff_name: String, diff_rank: int) -> void:
+func _on_BeepSaberMainMenu_difficulty_changed(map_info: Map.Info, diff_name: String, diff_rank: int) -> void:
 	_current_diff_name = diff_name
 	_current_diff_rank = diff_rank
 	

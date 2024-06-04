@@ -7,10 +7,10 @@ extends Panel
 class_name MainMenu
 
 # emitted when a new map difficulty is selected
-signal difficulty_changed(map_info: MapInfo.Map, diff_name: String, diff_rank: int)
+signal difficulty_changed(map_info: Map.Info, diff_name: String, diff_rank: int)
 # emitted when the settings button is pressed
 signal settings_requested()
-signal start_map(info: MapInfo.Map, data: Dictionary, difficulty: int)
+signal start_map(info: Map.Info, data: Dictionary, difficulty: int)
 
 # we need the main game class here to trigger game start/restart/continue
 #var _beepsaber = null;
@@ -45,9 +45,9 @@ var bspath := "user://OpenSaber/"
 var _playlists: Array
 
 # [{id:<song_dir_name>, source:<path_to_song?>},...]
-var _all_songs: Array[MapInfo.Map]
-var _recently_added_songs: Array[MapInfo.Map] # newest is first, oldest is last
-var _most_played_songs: Array[MapInfo.Map] # most played is first, least played is last
+var _all_songs: Array[Map.Info]
+var _recently_added_songs: Array[Map.Info] # newest is first, oldest is last
+var _most_played_songs: Array[Map.Info] # most played is first, least played is last
 
 func refresh_playlist() -> void:
 	var id := playlist_selector.get_selected_id()
@@ -119,8 +119,8 @@ class TupleCompare:
 		else:
 			return a[idx] > b[idx]
 		
-func _discover_all_songs(seek_path: String) -> Array[MapInfo.Map]:
-	var songlist: Array[MapInfo.Map]
+func _discover_all_songs(seek_path: String) -> Array[Map.Info]:
+	var songlist: Array[Map.Info]
 	var dir := DirAccess.open(seek_path)
 	if dir:
 		dir.list_dir_begin()
@@ -128,13 +128,13 @@ func _discover_all_songs(seek_path: String) -> Array[MapInfo.Map]:
 		while not file_name.is_empty():
 			if dir.current_is_dir(): # TODO: or file_name.ends_with(".zip"):
 				var new_dir := seek_path+file_name+"/"
-				var song := _load_song_info(new_dir)
+				var song := Map.load_info_from_folder(new_dir)
 				if song:
 					songlist.append(song)
 			file_name = dir.get_next()
 	return songlist
 
-func _set_cur_playlist(songs: Array[MapInfo.Map]) -> void:
+func _set_cur_playlist(songs: Array[Map.Info]) -> void:
 	var current_id := songs_menu.get_selected_items()
 	
 	songs_menu.clear()
@@ -154,81 +154,6 @@ func _set_cur_playlist(songs: Array[MapInfo.Map]) -> void:
 		_select_song(selected_id)
 
 var default_song_icon = preload("res://game/data/beepsaber_logo.png")
-
-func _load_song_info(load_path: String) -> MapInfo.Map:
-	var map_info := vr.load_json_file(load_path + "Info.dat")
-	if (map_info == {}):
-		map_info = vr.load_json_file(load_path + "info.dat")
-		#because android is case sensitive and some maps have it lowercase, some not
-		if (map_info == {}):
-			vr.log_error("Invalid info.dat found in " + load_path)
-			return null
-		
-	if (map_info._difficultyBeatmapSets.size() == 0):
-		vr.log_error("No _difficultyBeatmapSets in info.dat")
-		return null
-	
-	var map := MapInfo.Map.new()
-	map.filepath = load_path
-	if map_info.has("_version"):
-		map.version = map_info._version
-	if map_info.has("_songName"):
-		map.song_name = map_info._songName
-	if map_info.has("_songSubName"):
-		map.song_sub_name = map_info._songSubName
-	if map_info.has("_songAuthorName"):
-		map.song_author_name = map_info._songAuthorName
-	if map_info.has("_levelAuthorName"):
-		map.level_author_name = map_info._levelAuthorName
-	if map_info.has("_beatsPerMinute"):
-		map.beats_per_minute = map_info._beatsPerMinute
-	# shuffle and shuffle period maybe in the future?
-	if map_info.has("_previewStartTime"):
-		map.preview_start_time = map_info._previewStartTime
-	if map_info.has("_previewDuration"):
-		map.preview_duration = map_info._previewDuration
-	if map_info.has("_songFilename"):
-		map.song_filename = map_info._songFilename
-	if map_info.has("_coverImageFilename"):
-		map.cover_image_filename = map_info._coverImageFilename
-	if map_info.has("_environmentName"):
-		map.environment_name = map_info._environmentName
-	if map_info.has("_songTimeOffset"):
-		map.song_time_offset = map_info._songTimeOffset
-	if map_info.has("_customData"):
-		map.custom_data = map_info._customData
-	map.difficulty_beatmaps = mix_difficulty_sets(map_info._difficultyBeatmapSets)
-	
-	return map
-
-# mix all the difficulty sets into a single one
-func mix_difficulty_sets(difficulty_beatmap_sets: Array) -> Array[MapInfo.Difficulty]:
-	var newset: Array[MapInfo.Difficulty]
-	for difficulty_set in difficulty_beatmap_sets:
-		for difficulty in difficulty_set._difficultyBeatmaps:
-			var custom_data: Dictionary
-			var diff := MapInfo.Difficulty.new()
-			if difficulty.has("_difficulty"):
-				diff.difficulty = difficulty._difficulty
-			if difficulty.has("_difficultyRank"):
-				diff.difficulty_rank = difficulty._difficultyRank
-			if difficulty.has("_beatmapFilename"):
-				diff.beatmap_filename = difficulty._beatmapFilename
-			if difficulty.has("_noteJumpMovementSpeed"):
-				diff.note_jump_movement_speed = difficulty._noteJumpMovementSpeed
-			if difficulty.has("_noteJumpStartBeatOffset"):
-				diff.note_jump_start_beat_offset = difficulty._noteJumpStartBeatOffset
-			if difficulty.has("_customData"):
-				diff.custom_data = difficulty._customData
-			if difficulty_set._beatmapCharacteristicName != "Standard":
-				if difficulty.has("_customData") and difficulty._customData.has("_difficultyLabel"):
-					difficulty._customData._difficultyLabel = (
-						str(difficulty_set._beatmapCharacteristicName)+" "+difficulty._customData._difficultyLabel)
-			newset.append(diff)
-	#difficulty_beatmap_sets = {
-	#	"_beatmapCharacteristicName": "Lightshow",
-	#	"_difficultyBeatmaps": newset_old}
-	return newset
 
 # callback from ImageUtils when background image loading is complete. if image
 # failed to load, tex will be null
@@ -299,30 +224,31 @@ func _select_song(id: int) -> void:
 	var map := _all_songs[id]
 	_map_path = map.filepath
 	$Delete_Button.disabled = false
-	MapInfo.current_map = _load_song_info(_map_path)
+	Map.current_info = Map.load_info_from_folder(_map_path)
 	
-	var play_count := PlayCount.get_total_play_count(MapInfo.current_map)
+	var play_count := PlayCount.get_total_play_count(Map.current_info)
 	($SongInfo_Label as Label).text = """Song Author: %s
 	Song Title: %s
 	Beatmap Author: %s
 	Play Count: %d""" % [
-		MapInfo.current_map.song_author_name,
-		MapInfo.current_map.song_name,
-		MapInfo.current_map.level_author_name,
+		Map.current_info.song_author_name,
+		Map.current_info.song_name,
+		Map.current_info.level_author_name,
 		play_count
 	]
 
 	# load cover in background to avoid freezing UI
-	var filepath := MapInfo.current_map.filepath + MapInfo.current_map.cover_image_filename
+	var filepath := Map.current_info.filepath + Map.current_info.cover_image_filename
 	_bg_img_loader.load_texture(filepath, self, "_on_cover_loaded", [true,-1])
 	
 	$DifficultyMenu.clear()
-	for ii_dif in range(MapInfo.current_map.difficulty_beatmaps.size()):
-		var diff_name := MapInfo.current_map.difficulty_beatmaps[ii_dif].difficulty
+	for ii_dif in range(Map.current_info.difficulty_beatmaps.size()):
+		var diff_name := Map.current_info.difficulty_beatmaps[ii_dif].difficulty
 		var diff_display_name := ""
-		if ((not MapInfo.current_map.difficulty_beatmaps[ii_dif].custom_data.is_empty()) and
-			MapInfo.current_map.difficulty_beatmaps[ii_dif].custom_data.has("_difficultyLabel")):
-				diff_display_name = MapInfo.current_map.difficulty_beatmaps[ii_dif].custom_data._difficultyLabel
+		var diff_custom_data := Map.current_info.difficulty_beatmaps[ii_dif].custom_data
+		if ((not diff_custom_data.is_empty()) and
+			diff_custom_data.has("_difficultyLabel")):
+				diff_display_name = diff_custom_data._difficultyLabel
 		if diff_display_name.is_empty():
 			diff_display_name = diff_name
 		$DifficultyMenu.add_item(diff_display_name)
@@ -331,9 +257,9 @@ func _select_song(id: int) -> void:
 	
 	_select_difficulty(0)
 	
-	# preview song
-	var song_filepath := MapInfo.current_map.filepath + MapInfo.current_map.song_filename
-	play_preview(song_filepath,MapInfo.current_map.preview_start_time,MapInfo.current_map.preview_duration)
+	# preview songg
+	var song_filepath := Map.current_info.filepath + Map.current_info.song_filename
+	play_preview(song_filepath, Map.current_info.preview_start_time, Map.current_info.preview_duration)
 
 func _on_stop_prev_timeout():
 	var song_prev_Tween = song_prev.create_tween()
@@ -356,27 +282,27 @@ func _select_difficulty(id):
 	$DifficultyMenu.select(id)
 	
 	# notify listeners that difficulty has changed
-	var difficulty = MapInfo.current_map.difficulty_beatmaps[id]
-	difficulty_changed.emit(MapInfo.current_map, difficulty.difficulty, difficulty.difficulty_rank)
+	var difficulty := Map.current_info.difficulty_beatmaps[id]
+	difficulty_changed.emit(Map.current_info, difficulty.difficulty, difficulty.difficulty_rank)
 
 
 func _load_map_and_start() -> void:
-	if MapInfo.current_map.is_empty(): return
+	if Map.current_info.is_empty(): return
 	
-	var set0 := MapInfo.current_map.difficulty_beatmaps
+	var set0 := Map.current_info.difficulty_beatmaps
 	if (set0.size() == 0):
 		vr.log_error("No _difficultyBeatmaps in set")
 		return
 		
-	var map_info := set0[_map_difficulty]
-	var map_filename := MapInfo.current_map.filepath + map_info.beatmap_filename
+	var diff_info := set0[_map_difficulty]
+	var map_filename := Map.current_info.filepath + diff_info.beatmap_filename
 	var map_data := vr.load_json_file(map_filename)
 	_map_difficulty_noteJumpMovementSpeed = set0[_map_difficulty].note_jump_movement_speed
 	
 	if (map_data == null):
 		vr.log_error("Could not read map data from " + map_filename)
 	
-	start_map.emit(MapInfo.current_map, map_data, _map_difficulty)
+	start_map.emit(Map.current_info, map_data, _map_difficulty)
 
 func _on_Delete_Button_button_up():
 	if $Delete_Button.text != "Sure?":
@@ -388,9 +314,9 @@ func _on_Delete_Button_button_up():
 		_delete_map();
 	
 func _delete_map():
-	if MapInfo.current_map:
-		Highscores.remove_map(MapInfo.current_map)
-		PlayCount.remove_map(MapInfo.current_map)
+	if Map.current_info:
+		Highscores.remove_map(Map.current_info)
+		PlayCount.remove_map(Map.current_info)
 		
 	if not _map_path.is_empty():
 		var dir = DirAccess.open(_map_path);

@@ -95,7 +95,7 @@ func _handle_area_collided(area: Area3D) -> void:
 	var note := cut_object as Note
 	
 	var time_offset: float = (
-		(note._note._time/MapInfo.current_map.beats_per_minute * 60.0)-
+		(note._note._time/Map.current_info.beats_per_minute * 60.0)-
 		_main_game.song_player.get_playback_position()
 	)
 	saber_visual.hit(time_offset)
@@ -104,7 +104,7 @@ func _handle_area_collided(area: Area3D) -> void:
 	var o := controller.global_transform.origin
 	var controller_speed: Vector3 = (saber_end - saber_end_past) / last_dt
 	const BEAT_DISTANCE := 4.0
-	var cutplane := Plane(o, saber_end, saber_end_past + Vector3(0, 0, BEAT_DISTANCE * MapInfo.current_map.beats_per_minute * last_dt / 30)) # Account for relative position to track speed
+	var cutplane := Plane(o, saber_end, saber_end_past + Vector3(0, 0, BEAT_DISTANCE * Map.current_info.beats_per_minute * last_dt / 30)) # Account for relative position to track speed
 	note.cut(type, controller_speed, cutplane, controller)
 
 func _on_AnimationPlayer_animation_started(anim_name: StringName) -> void:

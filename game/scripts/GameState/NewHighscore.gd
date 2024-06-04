@@ -4,7 +4,7 @@ class_name GameStateNewHighScore
 func _ready(game: BeepSaber_Game) -> void:
 	# populate highscore panel with records
 	game.highscore_panel.load_highscores(
-		MapInfo.current_map,game._current_diff_rank)
+		Map.current_info,game._current_diff_rank)
 	
 	game.endscore.set_buttons_disabled(true)
 	
