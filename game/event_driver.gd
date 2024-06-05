@@ -44,7 +44,7 @@ func set_all_on(left: Color, right: Color) -> void:
 		update_colors(left, right)
 		$Level/rings.visible = true
 
-func process_event(data,beat, left: Color, right: Color) -> void:
+func process_event(data, left: Color, right: Color) -> void:
 	if disabled: return
 #	print(data)
 	if int(data._type) in range(0,5):

@@ -9,6 +9,7 @@ var multiplier: int
 var right_notes: float
 var wrong_notes: float
 var full_combo: bool
+var paused: bool
 
 func restart() -> void:
 	points = 0

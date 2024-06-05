@@ -90,12 +90,13 @@ func set_swingcast_enabled(value: bool) -> void:
 	_swing_cast.set_raycasts_enabled(value)
 
 func _handle_area_collided(area: Area3D) -> void:
+	if Scoreboard.paused: return
 	var cut_object := area.get_parent()
-	if not cut_object is Note: return
-	var note := cut_object as Note
+	if not cut_object is Cuttable: return
+	var note := cut_object as Cuttable
 	
 	var time_offset: float = (
-		(note._note._time/Map.current_info.beats_per_minute * 60.0)-
+		(note.beat/Map.current_info.beats_per_minute * 60.0)-
 		_main_game.song_player.get_playback_position()
 	)
 	saber_visual.hit(time_offset)

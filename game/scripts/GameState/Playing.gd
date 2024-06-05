@@ -21,6 +21,7 @@ func _ready(game: BeepSaber_Game) -> void:
 	game.online_search_keyboard._hide()
 	game.left_saber.set_swingcast_enabled(true)
 	game.right_saber.set_swingcast_enabled(true)
+	Scoreboard.paused = false
 
 func _physics_process(game: BeepSaber_Game, delta: float) -> void:
 	if game.left_controller.by_just_pressed():
@@ -32,110 +33,38 @@ func _physics_process(game: BeepSaber_Game, delta: float) -> void:
 		if game.song_player.get_playback_position() < 0.5:
 			game._audio_synced_after_restart = true
 	elif game.song_player.playing:
-		_process_map(game, delta)
+		_process_map(game)
 		game.left_controller._update_movement_aabb()
 		game.right_controller._update_movement_aabb()
 
 var _proc_map_sw := StopwatchFactory.create("process_map",10,true)
-var _instance_cube_sw := StopwatchFactory.create("instance_cube",10,true)
-var _add_cube_to_scene_sw := StopwatchFactory.create("add_cube_to_scene",10,true)
 
-const CUBE_DISTANCE := 0.5
-const CUBE_HEIGHT_OFFSET := 0.4
-
-var bomb_template := preload("res://game/Bomb/Bomb.tscn") as PackedScene
-func _spawn_note(game: BeepSaber_Game, note: Dictionary, current_beat: float) -> void:
-	var note_node: Note
-	var is_cube := true
-	var color := game.COLOR_LEFT
-	if (note._type == 0):
-		_instance_cube_sw.start()
-		note_node = game.cube_pool.acquire()
-		color = game.COLOR_LEFT
-		_instance_cube_sw.stop()
-	elif (note._type == 1):
-		_instance_cube_sw.start()
-		note_node = game.cube_pool.acquire()
-		color = game.COLOR_RIGHT
-		_instance_cube_sw.stop()
-	elif (note._type == 3) and game.bombs_enabled:
-		is_cube = false
-		note_node = bomb_template.instantiate()
-	else:
-		return
+func _spawn_note(game: BeepSaber_Game, note: Map.ColorNoteInfo, current_beat: float) -> void:
+	var note_node := game.cube_pool.acquire()
 	
 	if note_node == null:
 		print("Failed to acquire a new note from scene pool")
 		return
 	
-	if game.menu._map_difficulty_noteJumpMovementSpeed > 0:
-		note_node.speed = float(game.menu._map_difficulty_noteJumpMovementSpeed)/9
-	
-	var line: float = -(CUBE_DISTANCE * 3.0 / 2.0) + note._lineIndex * CUBE_DISTANCE
-	var layer: float = CUBE_DISTANCE + note._lineLayer * CUBE_DISTANCE
-	
-	var rotation_z := deg_to_rad(game.CUBE_ROTATIONS[note._cutDirection])
-	
-	var distance: float = note._time - current_beat
-	
-	note_node.transform.origin = Vector3(
-		line,
-		CUBE_HEIGHT_OFFSET + layer,
-		-distance * game.beat_distance)
-	
-	var is_dot: bool = note._cutDirection == 8
-	if is_cube:
-		note_node.rotation.z = rotation_z
-	
-	note_node._note = note
-	
-	if note_node is BeepCube:
-		_add_cube_to_scene_sw.start()
-		note_node.spawn(note._type, color, is_dot)
-		_add_cube_to_scene_sw.stop()
-	else:
-		# spawn bombs by adding to track
-		game.track.add_child(note_node)
+	var color := game.COLOR_LEFT if note.color == 0 else game.COLOR_RIGHT
+	note_node.spawn(note, current_beat, color)
 
-# constants used to interpret the '_type' field in map obstacles
-const WALL_TYPE_FULL_HEIGHT := 0
-const WALL_TYPE_CROUCH := 1
+var bomb_template := load("res://game/Bomb/Bomb.tscn") as PackedScene
+func _spawn_bomb(game: BeepSaber_Game, bomb_info: Map.BombInfo, current_beat: float) -> void:
+	var bomb := bomb_template.instantiate() as Bomb
+	game.track.add_child(bomb)
+	bomb.spawn(bomb_info, current_beat)
 
-const WALL_HEIGHT := 3.0
-
-func _spawn_wall(game: BeepSaber_Game, obstacle, current_beat: float) -> void:
-	# instantiate new wall from template
-	var wall = game.wall_template.duplicate()
-	wall.duplicate_create() # gives it its own unique mesh and collision shape
-	
-	var height := 0.0
-	
-	if (obstacle._type == WALL_TYPE_FULL_HEIGHT):
-		wall.height = WALL_HEIGHT
-		height = 0.0
-	elif (obstacle._type == WALL_TYPE_CROUCH):
-		wall.height = WALL_HEIGHT / 2.0
-		height = WALL_HEIGHT / 2.0
-	else:
-		return
-	
+var wall_template := load("res://game/Wall/Wall.tscn") as PackedScene
+func _spawn_wall(game: BeepSaber_Game, wall_info: Map.ObstacleInfo, current_beat: float) -> void:
+	var wall := wall_template.instantiate() as Wall
 	game.track.add_child(wall)
-	
-	var line = -(CUBE_DISTANCE * 3.0 / 2.0) + obstacle._lineIndex * CUBE_DISTANCE
-	
-	var distance = obstacle._time - current_beat
-	
-	wall.transform.origin = Vector3(line,height,-distance * game.beat_distance)
-	wall.depth = game.beat_distance * obstacle._duration
-	wall.width = CUBE_DISTANCE * obstacle._width
-	
-	# walls have slightly difference origins offsets than cubes do, so we must
-	# translate them by half a cube distance to correct for the misalignment.
-	wall.translate(Vector3(-CUBE_DISTANCE/2.0,-CUBE_DISTANCE/2.0,0.0))
-	
-	wall._obstacle = obstacle;
+	wall.spawn(wall_info, current_beat)
 
-func _process_map(game: BeepSaber_Game, dt: float) -> void:
+func _spawn_event(game: BeepSaber_Game, data) -> void:
+	game.event_driver.process_event(data, game.COLOR_LEFT, game.COLOR_RIGHT)
+
+func _process_map(game: BeepSaber_Game) -> void:
 	if (Map.current_info == null):
 		return
 	
@@ -143,51 +72,26 @@ func _process_map(game: BeepSaber_Game, dt: float) -> void:
 	
 	var current_time := game.song_player.get_playback_position()
 	
-	var current_beat := current_time * (Map.current_info.beats_per_minute as float) / 60.0
+	var current_beat := current_time * Map.current_info.beats_per_minute / 60.0
 	
 	# spawn notes
-	var n := Map.notes
-	while (Map.current_note < n.size() && n[Map.current_note]._time <= current_beat+game.beats_ahead):
-		_spawn_note(game, n[Map.current_note], current_beat)
+	while Map.current_note < Map.notes.size() and Map.notes[Map.current_note].beat <= current_beat+game.beats_ahead:
+		_spawn_note(game, Map.notes[Map.current_note], current_beat)
 		Map.current_note += 1
 	
+	# spawn bombs
+	while Map.current_bomb < Map.bombs.size() and Map.bombs[Map.current_bomb].beat <= current_beat+game.beats_ahead:
+		_spawn_bomb(game, Map.bombs[Map.current_bomb], current_beat)
+		Map.current_bomb += 1
+	
 	# spawn obstacles (walls)
-	var o := Map.obstacles
-	while (Map.current_obstacle < o.size() && o[Map.current_obstacle]._time <= current_beat+game.beats_ahead):
-		_spawn_wall(game, o[Map.current_obstacle], current_beat)
+	while Map.current_obstacle < Map.obstacles.size() and Map.obstacles[Map.current_obstacle].beat <= current_beat+game.beats_ahead:
+		_spawn_wall(game, Map.obstacles[Map.current_obstacle], current_beat)
 		Map.current_obstacle += 1
 	
-	var speed := Vector3(0.0, 0.0, game.beat_distance * Map.current_info.beats_per_minute / 60.0) * dt
-	
-	for c_idx in game.track.get_child_count():
-		var c = game.track.get_child(c_idx)
-		if ! c.visible:
-			continue
-		
-		c.translate(speed)
-	
-		var depth = CUBE_DISTANCE
-		if c is Wall:
-			# compute wall's depth based on duration
-			depth = game.beat_distance * c._obstacle._duration
-		else:
-			# enable bomb/cube collision when it gets closer enough to player
-			if c.global_transform.origin.z > -3.0:
-				c.set_collision_disabled(false)
-	
-		# remove children that go to far
-		if ((c.global_transform.origin.z - depth) > 2.0):
-			if c is BeepCube:
-				Scoreboard.reset_combo()
-				# cubes must be released() instead of queue_free() because they
-				# are part of a pool.
-				c.release()
-			else:
-				c.queue_free()
-	
-	var e = Map.events
-	while (Map.current_event < e.size() && e[Map.current_event]._time <= current_beat):
-		game._spawn_event(e[Map.current_event], current_beat)
+	var e := Map.events
+	while Map.current_event < e.size() and e[Map.current_event]._time <= current_beat:
+		_spawn_event(game, e[Map.current_event])
 		Map.current_event += 1
 	
 	if (game.song_player.get_playback_position() >= game.song_player.stream.get_length()-1):

@@ -43,7 +43,6 @@ var gamestate: GameState = gamestate_bootup
 @onready var fps_label := $XROrigin3D/XRCamera3D/PlayerHead/FPS_Label as OQ_UI2DLabel
 
 @onready var cube_template := preload("res://game/BeepCube.tscn").instantiate() as BeepCube
-@onready var wall_template := preload("res://game/Wall/Wall.tscn").instantiate() as Wall
 
 @onready var track := $Track as Node3D
 
@@ -70,12 +69,6 @@ var disable_map_color := false
 # AudioStreamPlayer has reset it's playback_position to zero. This flag is set
 # to false once the AudioStreamPlayer reset is detected.
 var _audio_synced_after_restart := false
-
-# current difficulty name (Easy, Normal, Hard, etc.)
-var _current_diff_name := ""
-# current difficulty rank (1,3,5,etc.)
-var _current_diff_rank := -1
-
 
 var _in_wall := false
 
@@ -112,9 +105,9 @@ func start_map(info: Map.Info, map_data: Dictionary, map_difficulty: int) -> voi
 		print("Map has no '_notes'")
 		return
 	Map.current_info = info
-	Map.notes = map_data._notes
+	Map.load_note_info_v2(map_data._notes)
 	if map_data.has("_obstacles"):
-		Map.obstacles = map_data._obstacles
+		Map.load_obstacle_info_v2(map_data._obstacles)
 	else:
 		Map.obstacles = []
 	if map_data.has("_events"):
@@ -165,10 +158,10 @@ func show_MapSourceDialogs(showing: bool = true) -> void:
 # the high score
 func _on_song_ended() -> void:
 	song_player.stop()
-	PlayCount.increment_play_count(Map.current_info,_current_diff_rank)
+	PlayCount.increment_play_count(Map.current_info,Map.current_difficulty.difficulty_rank)
 	
 	var new_record := false
-	var highscore := Highscores.get_highscore(Map.current_info,_current_diff_rank)
+	var highscore := Highscores.get_highscore(Map.current_info,Map.current_difficulty.difficulty_rank)
 	if highscore == -1:
 		# no highscores exist yet
 		highscore = Scoreboard.points
@@ -191,7 +184,7 @@ func _on_song_ended() -> void:
 		new_record
 	)
 	
-	if Highscores.is_new_highscore(Map.current_info,_current_diff_rank,Scoreboard.points):
+	if Highscores.is_new_highscore(Map.current_info,Map.current_difficulty.difficulty_rank,Scoreboard.points):
 		_transition_game_state(gamestate_newhighscore)
 	else:
 		_transition_game_state(gamestate_mapcomplete)
@@ -201,7 +194,7 @@ func _submit_highscore(player_name: String) -> void:
 	if gamestate == gamestate_newhighscore:
 		Highscores.add_highscore(
 			Map.current_info,
-			_current_diff_rank,
+			Map.current_difficulty.difficulty_rank,
 			player_name,
 			Scoreboard.points)
 			
@@ -218,9 +211,6 @@ func _get_color_left() -> Color:
 func _get_color_right() -> Color:
 	if disable_map_color: return COLOR_RIGHT
 	return COLOR_RIGHT_ONCE if COLOR_RIGHT_ONCE != Color.TRANSPARENT else COLOR_RIGHT
-
-func _spawn_event(data,beat) -> void:
-	event_driver.process_event(data,beat, COLOR_LEFT, COLOR_RIGHT)
 
 func _check_and_update_saber(controller: BeepSaberController, saber: LightSaber) -> void:
 	# to allow extending/sheething the saber while not playing a song
@@ -373,8 +363,11 @@ func _on_Pause_Panel_continue_button() -> void:
 	_transition_game_state(gamestate_playing)
 
 func _on_BeepSaberMainMenu_difficulty_changed(map_info: Map.Info, diff_name: String, diff_rank: int) -> void:
-	_current_diff_name = diff_name
-	_current_diff_rank = diff_rank
+	Map.current_difficulty = null
+	for diff in Map.current_info.difficulty_beatmaps:
+		if diff_rank == diff.difficulty_rank:
+			Map.current_difficulty = diff
+			break
 	
 	# menu loads playlist in _ready(), must yield until scene is loaded
 	if not highscore_canvas:

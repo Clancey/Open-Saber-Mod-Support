@@ -1,5 +1,5 @@
 # BeepCube is the standard cube that will get cut by the sabers
-extends Note
+extends Cuttable
 class_name BeepCube
 
 # emitted when the cube is 'destroyed'. this signal is required by ScenePool to
@@ -12,6 +12,9 @@ signal scene_released()
 @onready var _small_coll_area := $BeepCube_Small as Area3D
 @onready var collision_big := $BeepCube_Big/CollisionBig as CollisionShape3D
 @onready var collision_small := $BeepCube_Small/CollisionSmall as CollisionShape3D
+
+var which_saber: int
+var is_dot: bool
 
 # structure of nodes that represent a cut piece of a cube (ie. one half)
 class CutPieceNodes:
@@ -71,16 +74,37 @@ func _ready() -> void:
 			get_tree().get_root().add_child(new_res.piece2.rigid_body)
 			_cut_cube_resources.push_back(new_res)
 
-# note_type: 0 -> left, 1 -> right
-func spawn(note_type: int, color: Color, is_dot: bool) -> void:
+const CUBE_DISTANCE := 0.5
+const CUBE_HEIGHT_OFFSET := 0.4
+func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> void:
+	beat = note_info.beat
+	which_saber = note_info.color
+	
+	if Map.current_difficulty.note_jump_movement_speed > 0:
+		speed = float(Map.current_difficulty.note_jump_movement_speed)/9
+	
+	var line: float = -(CUBE_DISTANCE * 3.0 / 2.0) + note_info.line_index * CUBE_DISTANCE
+	var layer: float = CUBE_DISTANCE + note_info.line_layer * CUBE_DISTANCE
+	
+	var rotation_z := deg_to_rad(BeepSaber_Game.CUBE_ROTATIONS[note_info.cut_direction])
+	
+	var distance: float = note_info.beat - current_beat
+	
+	transform.origin = Vector3(
+		line,
+		CUBE_HEIGHT_OFFSET + layer,
+		-distance * BeepSaber_Game.beat_distance)
+	
+	rotation.z = rotation_z
+	
 	_mat.set_shader_parameter(&"color",color)
-	_mat.set_shader_parameter(&"is_dot", is_dot)
+	_mat.set_shader_parameter(&"is_dot", note_info.cut_direction == 8)
 	
 	# separate cube collision layers to allow a diferent collider on right/wrong cuts.
 	# opposing collision layers (ie. right note & left saber) will be placed on the
 	# smalling collision shape, while similar collision layers (ie right note &
 	# right saber) are placed on the larger collision shape.
-	var is_left_note := note_type == 0
+	var is_left_note := note_info.color == 0
 	_big_coll_area.collision_layer = 0x0
 	_big_coll_area.set_collision_layer_value(CollisionLayerConstants.LeftNote_bit, is_left_note)
 	_big_coll_area.set_collision_layer_value(CollisionLayerConstants.RightNote_bit, not is_left_note)
@@ -99,12 +123,17 @@ func release() -> void:
 	set_collision_disabled(true)
 	scene_released.emit()
 
+func on_miss() -> void:
+	Scoreboard.reset_combo()
+	release()
+
 func set_collision_disabled(value: bool) -> void:
-	collision_disabled = value
 	collision_big.disabled = value
 	collision_small.disabled = value
 
 func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: BeepSaberController) -> void:
+	set_collision_disabled(true)
+	
 	# compute the angle between the cube orientation and the cut direction
 	var cut_direction_xy := -Vector3(cut_speed.x, cut_speed.y, 0.0).normalized()
 	var base_cut_angle_accuracy := global_transform.basis.y.dot(cut_direction_xy)
@@ -118,9 +147,9 @@ func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: Beep
 	_create_cut_rigid_body(-1, cut_plane, cut_distance, cut_res)
 	_create_cut_rigid_body( 1, cut_plane, cut_distance, cut_res)
 	
-	if saber_type == _note._type:
+	if saber_type == which_saber:
 		var cut_angle_accuracy := clampf((base_cut_angle_accuracy-0.7)/0.3, 0.0, 1.0)
-		if _note._cutDirection==8: #ignore angle if is a dot
+		if is_dot: #ignore angle if is a dot
 			cut_angle_accuracy = 1.0
 		var cut_distance_accuracy := clampf((0.1 - absf(cut_distance))/0.1, 0.0, 1.0)
 		var travel_distance_factor := (controller.movement_aabb as AABB).get_longest_axis_size()

@@ -81,8 +81,6 @@ visible = false
 [node name="Bomb" parent="pre_renderer" instance=ExtResource("24")]
 
 [node name="Wall" parent="pre_renderer" instance=ExtResource("3_73652")]
-height = 1
-depth = 1
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." groups=["enviroment"]]
 environment = SubResource("1")

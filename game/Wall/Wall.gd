@@ -1,66 +1,46 @@
-@tool
 extends Node3D
 class_name Wall
 
-# copy of 'obstacle' struct from map data
-var _obstacle;
+var info: Map.ObstacleInfo
+var depth: float
 
-# width of wall in meters
-@export var width = 1: set = _set_width
-# height of wall in meters
-@export var height = 1: set = _set_height
-# depth of wall in meters (can be negative)
-@export var depth = 1: set = _set_depth
+@onready var _anim := $AnimationPlayer as AnimationPlayer
 
-@onready var _anim = $WallMeshOrientation/AnimationPlayer
-@onready var _mesh_orientation = $WallMeshOrientation
-@onready var _mesh = $WallMeshOrientation/WallMesh
-@onready var _coll = $WallMeshOrientation/WallArea/CollisionShape3D
-
-func _ready():
+#func _ready() -> void:
 	# play the spawn animation when wall enters the scene
-	_anim.play("Spawn")
+	#_anim.play(&"Spawn")
 
-func _set_width(value):
-	width = value
+func _physics_process(delta: float) -> void:
+	if Scoreboard.paused or not Map.current_info: return
+	var speed := Vector3(0.0, 0.0, BeepSaber_Game.beat_distance * Map.current_info.beats_per_minute / 60.0) * delta
+	translate(speed)
 	
-	if not _mesh:
-		await self.ready
-		
-	_mesh.mesh.size.x = width
-	_coll.shape.size.x = width #/ 2.0
-	_mesh_orientation.position.x = width / 2.0
-	update_material()
-	
-func _set_height(value):
-	height = value
-	
-	if not _mesh:
-		await self.ready
-		
-	_mesh.mesh.size.y = height
-	_coll.shape.size.y = height #/ 2.0
-	_mesh_orientation.position.y = height / 2.0
-	update_material()
-	
-func _set_depth(value):
-	depth = value
-	
-	if not _mesh:
-		await self.ready
-		
-	_mesh.mesh.size.z = depth
-	_coll.shape.size.z = depth #/ 2.0
-	_mesh_orientation.position.z = -1 * depth / 2.0
-	update_material()
+	# remove children that go to far
+	if global_transform.origin.z - (depth * 0.5) > 3.0:
+		queue_free()
 
-func update_material():
-	_mesh.material_override.set_shader_parameter("size", Vector3(width, height, depth))
+func spawn(wall_info: Map.ObstacleInfo, current_beat: float) -> void:
+	info = wall_info
 	
-func duplicate_create():
-	if not _mesh:
-		await self.ready
+	var mesh := get_node(^"WallMeshOrientation/WallMesh") as MeshInstance3D
+	var coll := get_node(^"WallMeshOrientation/WallArea/CollisionShape3D") as CollisionShape3D
+	_anim.play(&"Spawn")
 	
-	_mesh.mesh = _mesh.mesh.duplicate();
-	_mesh.material_override = _mesh.material_override.duplicate()
-	_coll.shape = _coll.shape.duplicate()
+	const CUBE_DISTANCE := 0.5
+	var x := wall_info.width * CUBE_DISTANCE
+	var y := wall_info.height * CUBE_DISTANCE
+	var z := wall_info.duration * BeepSaber_Game.beat_distance
+	mesh.mesh.size.x = x
+	coll.shape.size.x = x
+	mesh.mesh.size.y = y
+	coll.shape.size.y = y
+	mesh.mesh.size.z = z
+	coll.shape.size.z = z
+	depth = z * 0.5
+	mesh.material_override.set_shader_parameter(&"size", Vector3(x, y, z))
+	
+	transform.origin = Vector3(
+		(wall_info.line_index - ((4 - wall_info.width) * 0.5)) * CUBE_DISTANCE,
+		(wall_info.line_layer + (wall_info.height * 0.5)) *  CUBE_DISTANCE,
+		(current_beat - wall_info.beat) * BeepSaber_Game.beat_distance - depth
+	)

@@ -44,13 +44,36 @@ class Info:
 			level_author_name
 		]
 
-var current_info: Info
+class ColorNoteInfo:
+	var beat: float
+	var line_index: int
+	var line_layer: int
+	var color: int # 0=left, 1=right
+	var cut_direction: int
 
-var notes: Array
-var obstacles: Array
+class BombInfo:
+	var beat: float
+	var line_index: int
+	var line_layer: int
+
+class ObstacleInfo:
+	var beat: float
+	var duration: float
+	var line_index: int
+	var line_layer: int
+	var width: int
+	var height: int
+
+var current_info: Info
+var current_difficulty: Difficulty
+
+var notes: Array[ColorNoteInfo]
+var bombs: Array[BombInfo]
+var obstacles: Array[ObstacleInfo]
 var events: Array
 
 var current_note: int
+var current_bomb: int
 var current_obstacle: int
 var current_event: int
 
@@ -125,3 +148,61 @@ func load_info_from_folder(load_path: String) -> Info:
 	map.difficulty_beatmaps = mix_difficulty_sets(info_dict._difficultyBeatmapSets)
 	
 	return map
+
+func load_note_info_v2(note_data: Array) -> void:
+	notes.clear()
+	bombs.clear()
+	current_note = 0
+	current_bomb = 0
+	for note in note_data:
+		if not note.has("_type"):
+			continue
+		elif note._type == 3: # bombs are stored as note type 3 in v2
+			var new_bomb := BombInfo.new()
+			if note.has("_time"):
+				new_bomb.beat = note._time
+			if note.has("_lineIndex"):
+				new_bomb.line_index = note._lineIndex
+			if note.has("_lineLayer"):
+				new_bomb.line_layer = note._lineLayer
+			bombs.append(new_bomb)
+		else:
+			var new_note := ColorNoteInfo.new()
+			if note.has("_time"):
+				new_note.beat = note._time
+			if note.has("_lineIndex"):
+				new_note.line_index = note._lineIndex
+			if note.has("_lineLayer"):
+				new_note.line_layer = note._lineLayer
+			new_note.color = note._type
+			if note.has("_cutDirection"):
+				new_note.cut_direction = note._cutDirection
+			notes.append(new_note)
+
+func load_obstacle_info_v2(obstacle_data: Array) -> void:
+	obstacles.clear()
+	current_obstacle = 0
+	for obstacle in obstacle_data:
+		var new_obstacle := ObstacleInfo.new()
+		if obstacle.has("_time"):
+			new_obstacle.beat = obstacle._time
+		if obstacle.has("_duration"):
+			new_obstacle.duration = obstacle._duration
+		if obstacle.has("_lineIndex"):
+			new_obstacle.line_index = obstacle._lineIndex
+		if obstacle.has("_width"):
+			new_obstacle.width = obstacle._width
+		if obstacle.has("_type"):
+			match obstacle._type as int:
+				0: # full height
+					new_obstacle.line_layer = 0
+					new_obstacle.height = 5
+				1: # crouch
+					new_obstacle.line_layer = 2
+					new_obstacle.height = 3
+				2: # free
+					if obstacle_data.has("_lineLayer"):
+						new_obstacle.line_layer = obstacle._lineLayer
+					if obstacle_data.has("_height"):
+						new_obstacle.height = obstacle._height
+		obstacles.append(new_obstacle)
