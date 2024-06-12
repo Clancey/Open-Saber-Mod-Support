@@ -79,28 +79,14 @@ var pause_position := 0.0
 var cube_cuts_falloff := true
 var bombs_enabled := true
 
-func restart_map() -> void:
-	_audio_synced_after_restart = false
-	song_player.play(0.0)
-	song_player.volume_db = 0.0
-	_in_wall = false
-	Map.current_note = 0
-	Map.current_obstacle = 0
-	Map.current_event = 0
-	Scoreboard.restart()
-
-	_display_points()
-	percent_indicator.start_map()
-	update_saber_colors()
-	if Map.events.size() > 0:
-		event_driver.set_all_off()
-	else:
-		event_driver.set_all_on(COLOR_LEFT, COLOR_RIGHT)
+func start_map(info: Map.Info, map_difficulty: int) -> void:
+	var set0 := info.difficulty_beatmaps
+	if (set0.size() == 0):
+		vr.log_error("No _difficultyBeatmaps in set")
+		return
+	Map.current_difficulty_index = map_difficulty
 	
-	_clear_track()
-	_transition_game_state(gamestate_playing)
-
-func start_map(info: Map.Info, map_data: Dictionary, map_difficulty: int) -> void:
+	var map_data := vr.load_json_file(info.filepath + set0[map_difficulty].beatmap_filename)
 	if not map_data.has("_notes"):
 		print("Map has no '_notes'")
 		return
@@ -108,12 +94,8 @@ func start_map(info: Map.Info, map_data: Dictionary, map_difficulty: int) -> voi
 	Map.load_note_info_v2(map_data._notes)
 	if map_data.has("_obstacles"):
 		Map.load_obstacle_info_v2(map_data._obstacles)
-	else:
-		Map.obstacles = []
 	if map_data.has("_events"):
-		Map.events = map_data._events
-	else:
-		Map.events = []
+		Map.load_event_info_v2(map_data._events)
 	
 	set_colors_from_map(info, map_difficulty)
 	
@@ -121,7 +103,22 @@ func start_map(info: Map.Info, map_data: Dictionary, map_difficulty: int) -> voi
 	var stream := AudioStreamOggVorbis.load_from_file(info.filepath + info.song_filename)
 	
 	song_player.stream = stream
-	restart_map()
+	_audio_synced_after_restart = false
+	song_player.play(0.0)
+	song_player.volume_db = 0.0
+	_in_wall = false
+	Scoreboard.restart()
+	
+	_display_points()
+	percent_indicator.start_map()
+	update_saber_colors()
+	if Map.event_stack.size() > 0:
+		event_driver.set_all_off()
+	else:
+		event_driver.set_all_on(COLOR_LEFT, COLOR_RIGHT)
+	
+	_clear_track()
+	_transition_game_state(gamestate_playing)
 
 func set_colors_from_map(info: Map.Info, map_difficulty: int) -> void:
 	COLOR_LEFT_ONCE = Color.TRANSPARENT
@@ -336,7 +333,7 @@ func _on_PlayerHead_area_exited(area: Area3D) -> void:
 
 
 func _on_EndScore_panel_repeat() -> void:
-	restart_map()
+	start_map(Map.current_info, Map.current_difficulty_index)
 	endscore.visible = false
 	pause_menu.visible = false
 
@@ -364,7 +361,7 @@ func _on_Pause_Panel_continue_button() -> void:
 
 func _on_BeepSaberMainMenu_difficulty_changed(map_info: Map.Info, diff_name: String, diff_rank: int) -> void:
 	Map.current_difficulty = null
-	for diff in Map.current_info.difficulty_beatmaps:
+	for diff in map_info.difficulty_beatmaps:
 		if diff_rank == diff.difficulty_rank:
 			Map.current_difficulty = diff
 			break

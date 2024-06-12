@@ -22,6 +22,8 @@ var _cover_texture_create_sw := StopwatchFactory.create("cover_texture_create",1
 @onready var diff_menu := $DifficultyMenu as ItemList
 @onready var delete_button := $Delete_Button as Button
 
+var current_selected: Map.Info
+
 enum PlaylistOptions {
 	AllSongs,
 	RecentlyAdded,
@@ -195,8 +197,6 @@ func play_preview(buffer: PackedByteArray, start_time: float = 0.0, duration: fl
 	song_prev.play(float(start_time))
 	($song_prev/stop_prev as Timer).start(float(duration))
 
-var _map_path: String
-
 @onready var song_prev := $song_prev as AudioStreamPlayer
 var song_prev_transition_time := 1.0
 
@@ -204,30 +204,29 @@ func _select_song(id: int) -> void:
 	songs_menu.select(id)
 	songs_menu.ensure_current_is_visible()
 	var map := _all_songs[id]
-	_map_path = map.filepath
 	delete_button.disabled = false
-	Map.current_info = Map.load_info_from_folder(_map_path)
+	current_selected = Map.load_info_from_folder(map.filepath)
 	
-	var play_count := PlayCount.get_total_play_count(Map.current_info)
+	var play_count := PlayCount.get_total_play_count(current_selected)
 	($SongInfo_Label as Label).text = """Song Author: %s
 	Song Title: %s
 	Beatmap Author: %s
 	Play Count: %d""" % [
-		Map.current_info.song_author_name,
-		Map.current_info.song_name,
-		Map.current_info.level_author_name,
+		current_selected.song_author_name,
+		current_selected.song_name,
+		current_selected.level_author_name,
 		play_count
 	]
 
 	# load cover in background to avoid freezing UI
-	var filepath := Map.current_info.filepath + Map.current_info.cover_image_filename
+	var filepath := current_selected.filepath + current_selected.cover_image_filename
 	_bg_img_loader.load_texture(filepath, _on_cover_loaded, true, -1)
 	
 	diff_menu.clear()
-	for ii_dif in range(Map.current_info.difficulty_beatmaps.size()):
-		var diff_name := Map.current_info.difficulty_beatmaps[ii_dif].difficulty
+	for ii_dif in range(current_selected.difficulty_beatmaps.size()):
+		var diff_name := current_selected.difficulty_beatmaps[ii_dif].difficulty
 		var diff_display_name := ""
-		var diff_custom_data := Map.current_info.difficulty_beatmaps[ii_dif].custom_data
+		var diff_custom_data := current_selected.difficulty_beatmaps[ii_dif].custom_data
 		if ((not diff_custom_data.is_empty()) and
 			diff_custom_data.has("_difficultyLabel")):
 				diff_display_name = diff_custom_data._difficultyLabel
@@ -241,9 +240,9 @@ func _select_song(id: int) -> void:
 	_select_difficulty(0)
 	
 	# preview songg
-	var song_filepath := Map.current_info.filepath + Map.current_info.song_filename
+	var song_filepath := current_selected.filepath + current_selected.song_filename
 	var song_data := FileAccess.get_file_as_bytes(song_filepath)
-	play_preview(song_data, Map.current_info.preview_start_time, Map.current_info.preview_duration)
+	play_preview(song_data, current_selected.preview_start_time, current_selected.preview_duration)
 
 func _on_stop_prev_timeout() -> void:
 	var song_prev_Tween := song_prev.create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
@@ -265,27 +264,27 @@ func _select_difficulty(id: int) -> void:
 	diff_menu.select(id)
 	
 	# notify listeners that difficulty has changed
-	var difficulty := Map.current_info.difficulty_beatmaps[id]
-	difficulty_changed.emit(Map.current_info, difficulty.difficulty, difficulty.difficulty_rank)
+	var difficulty := current_selected.difficulty_beatmaps[id]
+	difficulty_changed.emit(current_selected, difficulty.difficulty, difficulty.difficulty_rank)
 
 
-func _load_map_and_start() -> void:
-	if Map.current_info.is_empty(): return
+func _load_map_and_start(map: Map.Info) -> void:
+	if map.is_empty(): return
 	
-	var set0 := Map.current_info.difficulty_beatmaps
+	var set0 := map.difficulty_beatmaps
 	if (set0.size() == 0):
 		vr.log_error("No _difficultyBeatmaps in set")
 		return
-		
+	
 	var diff_info := set0[_map_difficulty]
-	var map_filename := Map.current_info.filepath + diff_info.beatmap_filename
+	var map_filename := map.filepath + diff_info.beatmap_filename
 	var map_data := vr.load_json_file(map_filename)
 	_map_difficulty_noteJumpMovementSpeed = set0[_map_difficulty].note_jump_movement_speed
 	
 	if (map_data == null):
 		vr.log_error("Could not read map data from " + map_filename)
 	
-	start_map.emit(Map.current_info, map_data, _map_difficulty)
+	start_map.emit(map, _map_difficulty)
 
 func _on_Delete_Button_button_up() -> void:
 	if delete_button.text != "Sure?":
@@ -294,30 +293,29 @@ func _on_Delete_Button_button_up() -> void:
 		delete_button.text = "Delete"
 	else:
 		delete_button.text = "Delete"
-		_delete_map()
+		_delete_map(current_selected)
 	
-func _delete_map() -> void:
-	if Map.current_info:
-		Highscores.remove_map(Map.current_info)
-		PlayCount.remove_map(Map.current_info)
+func _delete_map(map: Map.Info) -> void:
+	if map:
+		Highscores.remove_map(map)
+		PlayCount.remove_map(map)
 	
-	if not _map_path.is_empty():
-		var dir := DirAccess.open(_map_path)
+	if not map.filepath.is_empty():
+		var dir := DirAccess.open(map.filepath)
 		if dir:
 			@warning_ignore("return_value_discarded")
 			dir.list_dir_begin()
 			var current_file := dir.get_next()
 			while current_file != "":
 				@warning_ignore("return_value_discarded")
-				DirAccess.remove_absolute(_map_path+current_file)
+				DirAccess.remove_absolute(map.filepath+current_file)
 				current_file = dir.get_next()
 			@warning_ignore("return_value_discarded")
-			DirAccess.remove_absolute(_map_path)
-			vr.log_info(_map_path+" Removed")
-			_map_path = ""
+			DirAccess.remove_absolute(map.filepath)
+			vr.log_info(map.filepath+" Removed")
 			delete_button.disabled = true
 		else:
-			vr.log_info("Error removing song "+_map_path)
+			vr.log_info("Error removing song " + map.filepath)
 		_on_LoadPlaylists_Button_pressed()
 
 func _ready() -> void:
@@ -344,7 +342,7 @@ func _ready() -> void:
 
 func _on_Play_Button_pressed() -> void:
 	song_prev.stop()
-	_load_map_and_start()
+	_load_map_and_start(current_selected)
 
 
 func _on_Exit_Button_pressed() -> void:

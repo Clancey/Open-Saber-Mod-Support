@@ -44,27 +44,26 @@ func set_all_on(left: Color, right: Color) -> void:
 		update_colors(left, right)
 		$Level/rings.visible = true
 
-func process_event(data, left: Color, right: Color) -> void:
+func process_event(data: Map.EventInfo, left: Color, right: Color) -> void:
 	if disabled: return
-#	print(data)
-	if int(data._type) in range(0,5):
-		match int(data._value):
+	if data.type in range(0,5):
+		match data.value:
 			0:
-				change_light_color(data._type,-1)
+				change_light_color(data.type,-1)
 			1:
-				change_light_color(data._type,right)
+				change_light_color(data.type,right)
 			2:
-				change_light_color(data._type,right,1)
+				change_light_color(data.type,right,1)
 			3:
-				change_light_color(data._type,right,2)
+				change_light_color(data.type,right,2)
 			5:
-				change_light_color(data._type,left)
+				change_light_color(data.type,left)
 			6:
-				change_light_color(data._type,left,1)
+				change_light_color(data.type,left,1)
 			7:
-				change_light_color(data._type,left,2)
+				change_light_color(data.type,left,2)
 	else:
-		match int(data._type):
+		match data.type:
 			8:
 				var ringtween = $Level/rings.create_tween()
 				if abs(ring_rot_speed) < 1:
@@ -83,11 +82,11 @@ func process_event(data, left: Color, right: Color) -> void:
 					rings_in = false
 					
 			12:
-				var val = float(data._value)/8
+				var val = float(data.value)/8
 				$Level/t2/AnimationPlayer.speed_scale = val
 				$Level/t2/AnimationPlayer.seek(randf_range(0,$Level/t2/AnimationPlayer.current_animation_length),true)
 			13:
-				var val = float(data._value)/8
+				var val = float(data.value)/8
 				$Level/t3/AnimationPlayer.speed_scale = val
 				$Level/t3/AnimationPlayer.seek(randf_range(0,$Level/t3/AnimationPlayer.current_animation_length),true)
 
@@ -97,7 +96,7 @@ func stop_prev_tween(type) -> void:
 		prev_tweeners[type] = null
 
 var prev_tweeners = [null,null,null,null,null]
-func change_light_color(type,color=-1,transition_mode=0) -> void:
+func change_light_color(type: int,color=-1,transition_mode=0) -> void:
 	var group : Node3D
 	var material = []
 	var shader = []

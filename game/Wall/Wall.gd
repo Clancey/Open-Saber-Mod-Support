@@ -4,20 +4,18 @@ class_name Wall
 var depth: float
 var speed: float
 
-@onready var _anim := $AnimationPlayer as AnimationPlayer
-
 func _physics_process(delta: float) -> void:
 	if Scoreboard.paused: return
 	transform.origin.z += speed * delta
 	
 	# remove children that go to far
-	if global_transform.origin.z - depth > 3.0:
+	if transform.origin.z - depth > 3.0:
 		queue_free()
 
 func spawn(wall_info: Map.ObstacleInfo, current_beat: float) -> void:
-	var mesh := get_node(^"WallMeshOrientation/WallMesh") as MeshInstance3D
+	var mesh := $WallMeshOrientation/WallMesh as MeshInstance3D
 	var m := mesh.mesh as BoxMesh
-	var shape := (get_node(^"WallMeshOrientation/WallArea/CollisionShape3D") as CollisionShape3D).shape as BoxShape3D
+	var shape := ($WallMeshOrientation/WallArea/CollisionShape3D as CollisionShape3D).shape as BoxShape3D
 	
 	const CUBE_DISTANCE := 0.5
 	var x := wall_info.width * CUBE_DISTANCE

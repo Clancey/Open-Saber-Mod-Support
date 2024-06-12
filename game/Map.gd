@@ -64,18 +64,20 @@ class ObstacleInfo:
 	var width: int
 	var height: int
 
+class EventInfo:
+	var beat: float
+	var type: int
+	var value: int
+	var float_value: float
+
 var current_info: Info
 var current_difficulty: Difficulty
+var current_difficulty_index: int
 
-var notes: Array[ColorNoteInfo]
-var bombs: Array[BombInfo]
-var obstacles: Array[ObstacleInfo]
-var events: Array
-
-var current_note: int
-var current_bomb: int
-var current_obstacle: int
-var current_event: int
+var note_stack: Array[ColorNoteInfo]
+var bomb_stack: Array[BombInfo]
+var obstacle_stack: Array[ObstacleInfo]
+var event_stack: Array[EventInfo]
 
 # mix all the difficulty sets into a single one
 func mix_difficulty_sets(difficulty_beatmap_sets: Array) -> Array[Difficulty]:
@@ -150,11 +152,10 @@ func load_info_from_folder(load_path: String) -> Info:
 	return map
 
 func load_note_info_v2(note_data: Array) -> void:
-	notes.clear()
-	bombs.clear()
-	current_note = 0
-	current_bomb = 0
-	for note: Dictionary in note_data:
+	note_stack.clear()
+	bomb_stack.clear()
+	while not note_data.is_empty():
+		var note: Dictionary = note_data.pop_back()
 		if not note.has("_type"):
 			continue
 		elif note._type == 3: # bombs are stored as note type 3 in v2
@@ -165,7 +166,7 @@ func load_note_info_v2(note_data: Array) -> void:
 				new_bomb.line_index = note._lineIndex
 			if note.has("_lineLayer"):
 				new_bomb.line_layer = note._lineLayer
-			bombs.append(new_bomb)
+			bomb_stack.append(new_bomb)
 		else:
 			var new_note := ColorNoteInfo.new()
 			if note.has("_time"):
@@ -177,12 +178,12 @@ func load_note_info_v2(note_data: Array) -> void:
 			new_note.color = note._type
 			if note.has("_cutDirection"):
 				new_note.cut_direction = note._cutDirection
-			notes.append(new_note)
+			note_stack.append(new_note)
 
 func load_obstacle_info_v2(obstacle_data: Array) -> void:
-	obstacles.clear()
-	current_obstacle = 0
-	for obstacle in obstacle_data:
+	obstacle_stack.clear()
+	while not obstacle_data.is_empty():
+		var obstacle: Dictionary = obstacle_data.pop_back()
 		var new_obstacle := ObstacleInfo.new()
 		if obstacle.has("_time"):
 			new_obstacle.beat = obstacle._time
@@ -205,4 +206,21 @@ func load_obstacle_info_v2(obstacle_data: Array) -> void:
 						new_obstacle.line_layer = obstacle._lineLayer
 					if obstacle_data.has("_height"):
 						new_obstacle.height = obstacle._height
-		obstacles.append(new_obstacle)
+		obstacle_stack.append(new_obstacle)
+
+func load_event_info_v2(event_data: Array) -> void:
+	event_stack.clear()
+	while not event_data.is_empty():
+		var event: Dictionary = event_data.pop_back()
+		var new_event := EventInfo.new()
+		if event.has("_time"):
+			new_event.beat = event._time
+		if event.has("_type"):
+			new_event.type = event._type
+		if event.has("_value"):
+			new_event.value = event._value
+		if event.has("_floatValue"):
+			new_event.float_value = event._floatValue
+		else:
+			new_event.float_value = -1
+		event_stack.append(new_event)

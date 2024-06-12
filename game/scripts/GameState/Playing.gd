@@ -52,16 +52,16 @@ func _spawn_note(game: BeepSaber_Game, note: Map.ColorNoteInfo, current_beat: fl
 var bomb_template := load("res://game/Bomb/Bomb.tscn") as PackedScene
 func _spawn_bomb(game: BeepSaber_Game, bomb_info: Map.BombInfo, current_beat: float) -> void:
 	var bomb := bomb_template.instantiate() as Bomb
-	game.track.add_child(bomb)
 	bomb.spawn(bomb_info, current_beat)
+	game.track.add_child(bomb)
 
 var wall_template := load("res://game/Wall/Wall.tscn") as PackedScene
 func _spawn_wall(game: BeepSaber_Game, wall_info: Map.ObstacleInfo, current_beat: float) -> void:
 	var wall := wall_template.instantiate() as Wall
-	game.track.add_child(wall)
 	wall.spawn(wall_info, current_beat)
+	game.track.add_child(wall)
 
-func _spawn_event(game: BeepSaber_Game, data) -> void:
+func _spawn_event(game: BeepSaber_Game, data: Map.EventInfo) -> void:
 	game.event_driver.process_event(data, game.COLOR_LEFT, game.COLOR_RIGHT)
 
 func _process_map(game: BeepSaber_Game) -> void:
@@ -75,24 +75,23 @@ func _process_map(game: BeepSaber_Game) -> void:
 	var current_beat := current_time * Map.current_info.beats_per_minute / 60.0
 	
 	# spawn notes
-	while Map.current_note < Map.notes.size() and Map.notes[Map.current_note].beat <= current_beat+game.beats_ahead:
-		_spawn_note(game, Map.notes[Map.current_note], current_beat)
-		Map.current_note += 1
+	while not Map.note_stack.is_empty() and Map.note_stack[-1].beat <= current_beat+game.beats_ahead:
+		_spawn_note(game, Map.note_stack[-1], current_beat)
+		Map.note_stack.pop_back()
 	
 	# spawn bombs
-	while Map.current_bomb < Map.bombs.size() and Map.bombs[Map.current_bomb].beat <= current_beat+game.beats_ahead:
-		_spawn_bomb(game, Map.bombs[Map.current_bomb], current_beat)
-		Map.current_bomb += 1
+	while not Map.bomb_stack.is_empty() and Map.bomb_stack[-1].beat <= current_beat+game.beats_ahead:
+		_spawn_bomb(game, Map.bomb_stack[-1], current_beat)
+		Map.bomb_stack.pop_back()
 	
 	# spawn obstacles (walls)
-	while Map.current_obstacle < Map.obstacles.size() and Map.obstacles[Map.current_obstacle].beat <= current_beat+game.beats_ahead:
-		_spawn_wall(game, Map.obstacles[Map.current_obstacle], current_beat)
-		Map.current_obstacle += 1
+	while not Map.obstacle_stack.is_empty() and Map.obstacle_stack[-1].beat <= current_beat+game.beats_ahead:
+		_spawn_wall(game, Map.obstacle_stack[-1], current_beat)
+		Map.obstacle_stack.pop_back()
 	
-	var e := Map.events
-	while Map.current_event < e.size() and e[Map.current_event]._time <= current_beat:
-		_spawn_event(game, e[Map.current_event])
-		Map.current_event += 1
+	while not Map.event_stack.is_empty() and Map.event_stack[-1].beat <= current_beat:
+		_spawn_event(game, Map.event_stack[-1])
+		Map.event_stack.pop_back()
 	
 	if (game.song_player.get_playback_position() >= game.song_player.stream.get_length()-1):
 		game._on_song_ended()

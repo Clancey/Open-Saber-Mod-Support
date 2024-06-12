@@ -4,12 +4,6 @@ class_name Bomb
 @export var min_speed := 0.5
 @onready var collision_shape := $Area3D/CollisionShape3D as CollisionShape3D
 
-func _ready() -> void:
-	var anim := $AnimationPlayer as AnimationPlayer
-	# play the spawn animation when this bomb enters the scene
-	anim.speed_scale = maxf(min_speed,speed)
-	anim.play(&"Spawn")
-
 func set_collision_disabled(value: bool) -> void:
 	collision_shape.disabled = value
 
@@ -32,4 +26,9 @@ func spawn(info: Map.BombInfo, current_beat: float) -> void:
 	transform.origin = Vector3(
 		line,
 		CUBE_HEIGHT_OFFSET + layer,
-		-distance * BeepSaber_Game.beat_distance)
+		-distance * BeepSaber_Game.beat_distance
+	)
+	
+	var anim := $AnimationPlayer as AnimationPlayer
+	anim.speed_scale = maxf(min_speed, speed)
+	anim.play(&"Spawn")
