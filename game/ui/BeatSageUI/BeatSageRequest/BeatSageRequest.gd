@@ -1,9 +1,10 @@
 extends Node
+class_name BeatSageRequest
 
-signal progress_update(progress, max_progress)
-signal download_complete(filepath)
+signal progress_update(progress: int, max_progress: int)
+signal download_complete(filepath: String)
 signal request_failed()
-signal youtube_metadata_available(metadata)
+signal youtube_metadata_available(metadata: Dictionary)
 signal youtube_metadata_request_failed()
 
 enum State {
@@ -24,42 +25,42 @@ enum State {
 	eDownloading
 }
 
-@onready var create_request_ := $CreateRequest
-@onready var heartbeat_request_ := $HeartbeatRequest
-@onready var download_request_ := $DownloadRequest
-@onready var youtube_metadata_request_ := $YouTubeMetadataRequest
-@onready var heartbeat_timer_ := $HeartbeatTimer
+@onready var create_request_ := $CreateRequest as HTTPRequest
+@onready var heartbeat_request_ := $HeartbeatRequest as HTTPRequest
+@onready var download_request_ := $DownloadRequest as HTTPRequest
+@onready var youtube_metadata_request_ := $YouTubeMetadataRequest as HTTPRequest
+@onready var heartbeat_timer_ := $HeartbeatTimer as Timer
 
 # request heartbeat from BeatSage every couple seconds when song is processing
 # Note: BeatSage website itself seems to use ~3s request rate so we will too
-const HEARTBEAT_PERIOD = 3
+const HEARTBEAT_PERIOD := 3
 
-var state_ = State.eIdle
-var request_id_ = null
-var download_dir = ""
+var state_ := State.eIdle
+var request_id_ := ""
+var download_dir := ""
 
 # the name of the zip file for the current request
 # Note: cleared once return back to idle state
-var _zip_filename = ""
+var _zip_filename := ""
 
 # seconds into song processing
-var _progress = 0
+var _progress := 0
 # for now assume 2mins max for processing time
-var _progress_max = 120
+var _progress_max := 120
 
-func _ready():
+func _ready() -> void:
 	_transition_state(State.eIdle)
 
-func request_custom_level(request_obj):
-	var okay = true
-	var data_to_send = _build_request_data(request_obj)
-	var headers = ["Content-Type: multipart/form-data; boundary=boundary"]
+func request_custom_level(request_obj: Dictionary) -> bool:
+	var okay := true
+	var data_to_send := _build_request_data(request_obj)
+	var headers := PackedStringArray(["Content-Type: multipart/form-data; boundary=boundary"])
 	_zip_filename = _get_zipname(request_obj)
 	# sanatize filepath
 	_zip_filename = _zip_filename.replace('/','')
 	
 	# initiate request
-	var res = create_request_.request(
+	var res := create_request_.request(
 		"https://beatsage.com/beatsaber_custom_level_create",
 		headers,
 		#false,# use ssl
@@ -75,18 +76,18 @@ func request_custom_level(request_obj):
 	if okay:
 		_transition_state(State.eRequested)
 	else:
-		emit_signal("request_failed")
+		request_failed.emit()
 		_transition_state(State.eIdle)
 	
 	return okay
-	
-func request_youtube_metadata(youtube_url):
-	var okay = true
-	var data_to_send = '{"youtube_url": "%s"}' % youtube_url
-	var headers = ["Content-Type: text/plain;charset=UTF-8"]
+
+func request_youtube_metadata(youtube_url: String) -> bool:
+	var okay := true
+	var data_to_send := '{"youtube_url": "%s"}' % youtube_url
+	var headers := PackedStringArray(["Content-Type: text/plain;charset=UTF-8"])
 	
 	# initiate request
-	var res = youtube_metadata_request_.request(
+	var res := youtube_metadata_request_.request(
 		"https://beatsage.com/youtube_metadata",
 		headers,
 		#false,# use ssl
@@ -98,28 +99,28 @@ func request_youtube_metadata(youtube_url):
 		vr.log_error("Failed to request youtube metadata")
 		okay = false
 	
-	if ! okay:
-		emit_signal("youtube_metadata_request_failed")
+	if not okay:
+		youtube_metadata_request_failed.emit()
 	
 	return okay
-	
-func cancel_custom_level_request():
+
+func cancel_custom_level_request() -> void:
 	create_request_.cancel_request()
 	heartbeat_request_.cancel_request()
 	download_request_.cancel_request()
 	heartbeat_timer_.stop()
 	_transition_state(State.eIdle)
-	
-func cancel_youtube_metadata_request():
+
+func cancel_youtube_metadata_request() -> void:
 	youtube_metadata_request_.cancel_request()
 
-func _get_zipname(request_obj):
-	var filename = "BeatSage_"
-	filename += request_obj['audio_metadata_title'] + " - "
-	filename += request_obj['audio_metadata_artist'] + " ("
-	filename += request_obj['system_tag'] + " "
+func _get_zipname(request_obj: Dictionary) -> String:
+	var filename := "BeatSage_"
+	filename += request_obj.audio_metadata_title + " - "
+	filename += request_obj.audio_metadata_artist + " ("
+	filename += request_obj.system_tag + " "
 	
-	for diff in request_obj['difficulties'].split(','):
+	for diff in request_obj.difficulties.split(','):
 		if diff == "Hard":
 			filename += 'H'
 		elif diff == "Expert":
@@ -130,7 +131,7 @@ func _get_zipname(request_obj):
 			filename += 'E+'
 	filename += ','
 	
-	for mode in request_obj['modes'].split(','):
+	for mode in request_obj.modes.split(','):
 		if mode == 'Standard':
 			filename += 'S'
 		elif mode == 'NoArrows':
@@ -139,7 +140,7 @@ func _get_zipname(request_obj):
 			filename += 'O'
 	filename += ','
 	
-	for event in request_obj['events'].split(','):
+	for event in request_obj.events.split(','):
 		if event == 'DotBlocks':
 			filename += 'D'
 		elif event == 'Obstacles':
@@ -150,8 +151,8 @@ func _get_zipname(request_obj):
 	
 	return filename
 
-func _build_request_data(request_obj):
-	var request_data = ""
+func _build_request_data(request_obj: Dictionary) -> String:
+	var request_data := ""
 	for key in request_obj.keys():
 		var value = request_obj[key]
 		request_data += "--boundary\n"
@@ -162,11 +163,11 @@ func _build_request_data(request_obj):
 	
 	return request_data
 
-func _transition_state(next_state):
-	match (next_state):
+func _transition_state(next_state: State) -> void:
+	match next_state:
 		State.eIdle:
 			heartbeat_timer_.stop()
-			request_id_ = null
+			request_id_ = ""
 			_zip_filename = ""
 			_progress = 0
 		State.eRequested:
@@ -176,23 +177,22 @@ func _transition_state(next_state):
 		State.eDownloading:
 			heartbeat_timer_.stop()
 
-func _on_CreateRequest_request_completed(result, response_code, headers, body):
-	var okay = true
+func _on_CreateRequest_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	var okay := true
 	
 	if response_code == HTTPClient.RESPONSE_OK:
-		var res_str = body.get_string_from_utf8()
-		var json = JSON.parse_string(res_str)
+		var res_str := body.get_string_from_utf8()
+		var json: Dictionary = JSON.parse_string(res_str)
 		if json:
-			var json_res = json
-			if json_res.has('id'):
-				request_id_ = json_res['id']
+			if json.has('id'):
+				request_id_ = json.id
 			else:
 				vr.log_error("No BeatSage response id received!")
-				print(json_res)
-				okay = false;
+				print(json)
+				okay = false
 		else:
 			vr.log_error("Received JSON error %s" % json)
-			okay = false;
+			okay = false
 	else:
 		vr.log_error("Received server error from BeatSage create custom song request!")
 		print('result = %s' % result)
@@ -205,23 +205,20 @@ func _on_CreateRequest_request_completed(result, response_code, headers, body):
 	if okay:
 		_transition_state(State.ePending)
 	else:
-		emit_signal("request_failed")
+		request_failed.emit()
 		_transition_state(State.eIdle)
-		
-	return okay
 
-func _on_HeartbeatRequest_request_completed(result, response_code, headers, body):
-	var song_ready = false
-	var okay = true
+func _on_HeartbeatRequest_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	var song_ready := false
+	var okay := true
 	
 	# handle results
 	if response_code == HTTPClient.RESPONSE_OK:
-		var res_str = body.get_string_from_utf8()
-		var json = JSON.parse_string(res_str)
+		var res_str := body.get_string_from_utf8()
+		var json: Dictionary = JSON.parse_string(res_str)
 		if json:
-			var json_res = json
-			if json_res.has('status'):
-				var status = json_res['status']
+			if json.has('status'):
+				var status: String = json.status
 				if status == "PENDING":
 					# keep waiting...
 					pass
@@ -232,11 +229,11 @@ func _on_HeartbeatRequest_request_completed(result, response_code, headers, body
 					okay = false
 			else:
 				vr.log_error("Received unexpected heartbeat response from BeatSage!")
-				print(json_res)
-				okay = false;
+				print(json)
+				okay = false
 		else:
 			vr.log_error("Received JSON error %s" % json)
-			okay = false;
+			okay = false
 	else:
 		vr.log_error("Received server error from BeatSage heartbeat request!")
 		print('result = %s' % result)
@@ -246,14 +243,14 @@ func _on_HeartbeatRequest_request_completed(result, response_code, headers, body
 		okay = false
 	
 	# handle transitions
-	if okay && ! song_ready:
+	if okay and not song_ready:
 		# song isn't ready yet, so schedule another heartbeat request
 		heartbeat_timer_.start(HEARTBEAT_PERIOD)
-	elif okay && song_ready:
+	elif okay and song_ready:
 		# request download of custom song
-		var res = download_request_.request(
+		var res := download_request_.request(
 			'http://beatsage.com/beatsaber_custom_level_download/%s' % request_id_)
-			
+		
 		# check response
 		if res == HTTPRequest.RESULT_SUCCESS:
 			_transition_state(State.eDownloading)
@@ -261,23 +258,21 @@ func _on_HeartbeatRequest_request_completed(result, response_code, headers, body
 			vr.log_error("Failed to request download for request_id_ %s" % request_id_)
 			okay = false
 	
-	if ! okay:
-		emit_signal("request_failed")
+	if not okay:
+		request_failed.emit()
 		_transition_state(State.eIdle)
-		
-	return okay
 
-func _on_DownloadRequest_request_completed(result, response_code, headers, body):
-	var okay = true
+func _on_DownloadRequest_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	var okay := true
 	
 	if response_code == HTTPClient.RESPONSE_OK:
 		# store downloaded song data
-		var zippath = download_dir + _zip_filename
-		var file = FileAccess.open(zippath,FileAccess.WRITE)
+		var zippath := download_dir + _zip_filename
+		var file := FileAccess.open(zippath,FileAccess.WRITE)
 		if file:
 			file.store_buffer(body)
 			file.close()
-			emit_signal("download_complete",zippath)
+			download_complete.emit(zippath)
 		else:
 			vr.log_error(
 				"Failed to save song zip to '%s'" % zippath)
@@ -290,25 +285,23 @@ func _on_DownloadRequest_request_completed(result, response_code, headers, body)
 		print('body = %s' % body)
 		okay = false
 		
-	if ! okay:
-		emit_signal("request_failed")
-		
+	if not okay:
+		request_failed.emit()
+	
 	_transition_state(State.eIdle)
 
-func _on_YouTubeMetadataRequest_request_completed(result, response_code, headers, body):
-	var song_ready = false
-	var okay = true
+func _on_YouTubeMetadataRequest_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	var okay := true
 	
 	# handle results
 	if response_code == HTTPClient.RESPONSE_OK:
-		var res_str = body.get_string_from_utf8()
-		var json = JSON.parse_string(res_str)
+		var res_str := body.get_string_from_utf8()
+		var json: Dictionary = JSON.parse_string(res_str)
 		if json:
-			var json_res = json
-			emit_signal("youtube_metadata_available", json_res)
+			youtube_metadata_available.emit(json)
 		else:
 			vr.log_error("Received JSON error %s" % json)
-			okay = false;
+			okay = false
 	else:
 		vr.log_error("Received server error from youtube metadata request!")
 		print('result = %s' % result)
@@ -317,28 +310,21 @@ func _on_YouTubeMetadataRequest_request_completed(result, response_code, headers
 		print('body = %s' % body.get_string_from_utf8())
 		okay = false
 		
-	if ! okay:
-		emit_signal("youtube_metadata_request_failed")
+	if not okay:
+		youtube_metadata_request_failed.emit()
 
-func _on_HeartbeatTimer_timeout():
-	var okay = true
-	
+func _on_HeartbeatTimer_timeout() -> void:
 	# notify caller of progress being made
 	_progress += HEARTBEAT_PERIOD
-	_progress = min(_progress, _progress_max)# saturate to max
-	emit_signal("progress_update", _progress, _progress_max)
+	_progress = mini(_progress, _progress_max)# saturate to max
+	progress_update.emit(_progress, _progress_max)
 	
 	# request another heartbeat from server
-	var res = heartbeat_request_.request(
+	var res := heartbeat_request_.request(
 		'http://beatsage.com/beatsaber_custom_level_heartbeat/%s' % request_id_)
 	
 	# check response
 	if res != HTTPRequest.RESULT_SUCCESS:
 		vr.log_error("Failed to request BeatSage heartbeat for request_id_ %s" % request_id_)
-		okay = false
-	
-	if ! okay:
-		emit_signal("request_failed")
+		request_failed.emit()
 		_transition_state(State.eIdle)
-		
-	return okay

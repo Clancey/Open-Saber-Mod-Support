@@ -246,7 +246,7 @@ func _physics_process(dt: float) -> void:
 func _ready() -> void:
 	#var _main_menu := $MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu as MainMenu
 	#_main_menu.initialize(self)
-	#($MapSourceDialogs/BeatSaver_Canvas as OQ_UI2DCanvas).ui_control.main_menu_node = _main_menu
+	(($MapSourceDialogs/BeatSaver_Canvas as OQ_UI2DCanvas).ui_control as BeatSaverPanel).main_menu_node = main_menu.ui_control as MainMenu
 	vr.vrOrigin = $XROrigin3D as XROrigin3D
 	vr.vrCamera = $XROrigin3D/XRCamera3D as XRCamera3D
 	vr.leftController = left_controller

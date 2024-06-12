@@ -13,9 +13,9 @@ func attach_children(node: Node, include_buttons: bool = true, include_texture_b
 		attach_children(child, include_buttons)
 
 func attach_button(button: BaseButton) -> void:
-	#button.connect("mouse_entered", Callable(self, "_on_button_hovered").bind(button))
-	#button.connect("pressed", Callable(self, "_on_button_pressed"))
+	@warning_ignore("return_value_discarded")
 	button.mouse_entered.connect(_on_button_hovered.bind(button))
+	@warning_ignore("return_value_discarded")
 	button.pressed.connect(_on_button_pressed)
 
 func play_click() -> void:

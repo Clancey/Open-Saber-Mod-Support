@@ -79,10 +79,10 @@ var current_event: int
 
 # mix all the difficulty sets into a single one
 func mix_difficulty_sets(difficulty_beatmap_sets: Array) -> Array[Difficulty]:
-	var newset: Array[Difficulty]
+	var newset: Array[Difficulty] = []
 	for difficulty_set in difficulty_beatmap_sets:
-		for difficulty in difficulty_set._difficultyBeatmaps:
-			var custom_data: Dictionary
+		for difficulty: Dictionary in difficulty_set._difficultyBeatmaps:
+			var custom_data: Dictionary = {}
 			var diff := Difficulty.new()
 			if difficulty.has("_difficulty"):
 				diff.difficulty = difficulty._difficulty
@@ -154,7 +154,7 @@ func load_note_info_v2(note_data: Array) -> void:
 	bombs.clear()
 	current_note = 0
 	current_bomb = 0
-	for note in note_data:
+	for note: Dictionary in note_data:
 		if not note.has("_type"):
 			continue
 		elif note._type == 3: # bombs are stored as note type 3 in v2

@@ -12,18 +12,19 @@ const PLAY_COUNT_FILEPATH = "user://play_count.json"
 #       "3" : 10 # play count at diffucultyRank 3
 #   }
 # }
-var _pc_table = {}
+var _pc_table: Dictionary = {}
 
-func _ready():
+func _ready() -> void:
 	load_table()
-	
+
 # clears the whole play count table
-func clear_table():
+func clear_table() -> void:
 	_pc_table = {}
 	
 # removes a given map from the table, effectively resetting that map's counters
 func remove_map(map_info: Map.Info) -> void:
 	var song_key := map_info.get_key()
+	@warning_ignore("return_value_discarded")
 	_pc_table.erase(song_key)
 	save_table()
 
@@ -34,28 +35,28 @@ func remove_map(map_info: Map.Info) -> void:
 #
 # return : None
 func increment_play_count(map_info: Map.Info, diff_rank: int) -> void:
-	var song_key = map_info.get_key()
+	var song_key := map_info.get_key()
 	if not _pc_table.has(song_key):
 		_pc_table[song_key] = {}
-		
-	var diff_str = str(diff_rank)
+	
+	var diff_str := str(diff_rank)
 	if not _pc_table[song_key].has(diff_str):
 		_pc_table[song_key][diff_str] = 0
-		
+	
 	_pc_table[song_key][diff_str] += 1
 	
 	save_table()
 
 # return : the map's play count for the given difficulty
 func get_play_count(map_info: Map.Info, diff_rank: int) -> int:
-	var song_key = map_info.get_key()
+	var song_key := map_info.get_key()
 	if not _pc_table.has(song_key):
 		return 0
-		
-	var diff_str = str(diff_rank)
+	
+	var diff_str := str(diff_rank)
 	if not _pc_table[song_key].has(diff_str):
 		return 0
-		
+	
 	return _pc_table[song_key][diff_str]
 
 # return : the map's total play count accros all difficulties
@@ -70,12 +71,12 @@ func get_total_play_count(map_info: Map.Info) -> int:
 	return total
 
 # restores play count table from filesystem
-func load_table():
-	var file = FileAccess.open(PLAY_COUNT_FILEPATH,FileAccess.READ)
+func load_table() -> void:
+	var file := FileAccess.open(PLAY_COUNT_FILEPATH,FileAccess.READ)
 	if file:
-		var text = file.get_as_text()
+		var text := file.get_as_text()
 		file.close()
-		var json_res = JSON.parse_string(text)
+		var json_res := JSON.parse_string(text) as Dictionary
 		if json_res:
 			_pc_table = json_res
 	else:

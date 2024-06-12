@@ -1,4 +1,5 @@
 extends Panel
+class_name YoutubeUI
 
 signal song_selected(video_metadata)
 
@@ -139,5 +140,3 @@ func _on_keybaord_text_input_enter(text):
 	# probably handle this a litte more ellegantly at some point...
 	if visible:
 		search_line_edit.text = text
-
-
