@@ -25,7 +25,7 @@ func on_miss() -> void:
 
 func _physics_process(delta: float) -> void:
 	if Scoreboard.paused or not is_visible_in_tree() or not Map.current_info: return
-	var speed := Vector3(0.0, 0.0, BeepSaber_Game.beat_distance * Map.current_info.beats_per_minute / 60.0) * delta
+	var speed := Vector3(0.0, 0.0, Constants.BEAT_DISTANCE * Map.current_info.beats_per_minute / 60.0) * delta
 	translate(speed)
 	
 	var depth := 0.5

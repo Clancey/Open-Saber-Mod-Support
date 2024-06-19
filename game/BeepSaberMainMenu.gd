@@ -32,8 +32,7 @@ enum PlaylistOptions {
 
 #var bspath = "/sdcard/OpenSaber/"
 var bspath := "user://OpenSaber/"
-@export var keyboard_path: NodePath
-@onready var keyboard := get_node(keyboard_path) as OQ_UI2DKeyboard
+@export var keyboard: OQ_UI2DKeyboard
 
 var _playlists: Array
 

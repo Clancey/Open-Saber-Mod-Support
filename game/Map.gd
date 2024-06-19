@@ -1,6 +1,6 @@
-extends Node
+extends Object
 
-class Difficulty:
+class Difficulty extends RefCounted:
 	var difficulty: String
 	var difficulty_rank: int
 	var beatmap_filename: String
@@ -8,7 +8,7 @@ class Difficulty:
 	var note_jump_start_beat_offset: float
 	var custom_data: Dictionary
 
-class Info:
+class Info extends RefCounted:
 	var version: String
 	var song_name: String
 	var song_sub_name: String
@@ -44,19 +44,19 @@ class Info:
 			level_author_name
 		]
 
-class ColorNoteInfo:
+class ColorNoteInfo extends RefCounted:
 	var beat: float
 	var line_index: int
 	var line_layer: int
 	var color: int # 0=left, 1=right
 	var cut_direction: int
 
-class BombInfo:
+class BombInfo extends RefCounted:
 	var beat: float
 	var line_index: int
 	var line_layer: int
 
-class ObstacleInfo:
+class ObstacleInfo extends RefCounted:
 	var beat: float
 	var duration: float
 	var line_index: int
@@ -64,7 +64,7 @@ class ObstacleInfo:
 	var width: int
 	var height: int
 
-class EventInfo:
+class EventInfo extends RefCounted:
 	var beat: float
 	var type: int
 	var value: int

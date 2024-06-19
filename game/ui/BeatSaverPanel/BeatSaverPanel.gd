@@ -4,7 +4,7 @@ class_name BeatSaverPanel
 var song_data := []
 var current_list := 0
 # reference to the main main node (used for playing downloadable song previews)
-var main_menu_node: MainMenu
+@export var main_menu_ref: MainMenu
 # the next requestable pages for the current list; null if prev/next page is
 # not requestable (ie. reached end of the list)
 var prev_page_available = null
@@ -43,15 +43,10 @@ var prev_request := {
 	# "uploader_id" = ""
 }
 
-@export var game_path: NodePath
-var game: BeepSaber_Game
-@export var keyboard_path: NodePath
-var keyboard: OQ_UI2DKeyboard
+@export var keyboard: OQ_UI2DKeyboard
 
 func _ready() -> void:
 	UI_AudioEngine.attach_children(self)
-	game = get_node(game_path) as BeepSaber_Game
-	keyboard = get_node(keyboard_path)
 	$back.visible = false
 	v_scroll.value_changed.connect(_on_ListV_Scroll_value_changed)
 	
@@ -76,7 +71,7 @@ func _ready() -> void:
 		parent_canvas.visibility_changed.connect(_on_BeatSaverPanel_visibility_changed)
 	
 # override hide() method to handle case where UI is inside a OQ_UI2DCanvas
-func _hide():
+func _hide() -> void:
 	var parent_canvas = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
@@ -87,9 +82,9 @@ func _hide():
 		self.visible = false
 	else:
 		parent_canvas.hide()
-		
+
 # override show() method to handle case where UI is inside a OQ_UI2DCanvas
-func _show():
+func _show() -> void:
 	var parent_canvas = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
@@ -102,7 +97,7 @@ func _show():
 		parent_canvas.show()
 	_on_BeatSaverPanel_visibility_changed()
 
-func update_list(request):
+func update_list(request) -> void:
 	var page = request.page
 	$mode.disabled = true
 	if page == 0:
@@ -134,7 +129,7 @@ func update_list(request):
 			httpreq.request("https://beatsaver.com/api/maps/uploader/%s/%s" % [uploader_id,page])
 		_:
 			vr.log_warning("Unsupported request type '%s'" % request.type)
-			
+
 func _add_to_back_stack(request: Dictionary) -> void:
 	back_stack.push_back(request)
 	if back_stack.size() > MAX_BACK_STACK_DEPTH:
@@ -236,7 +231,7 @@ func _on_HTTPRequest_download_completed(result: int, response_code: int, headers
 #	$download.disabled = false
 	if result == 0:
 		var has_error = false
-		var tempdir = game.menu.bspath+"temp"
+		var tempdir = main_menu_ref.bspath+"temp"
 		var error = DirAccess.make_dir_recursive_absolute(tempdir)
 		if error != OK: 
 			vr.log_error(
@@ -247,7 +242,7 @@ func _on_HTTPRequest_download_completed(result: int, response_code: int, headers
 		# sanitize path separators from song directory name
 		var song_dir_name: String = downloading[0][0].replace('/','')
 		
-		var zippath := game.menu.bspath+"temp/%s.zip"%song_dir_name
+		var zippath := main_menu_ref.bspath+"temp/%s.zip"%song_dir_name
 		if not has_error:
 			var file = FileAccess.open(zippath,FileAccess.WRITE)
 			if file:
@@ -259,7 +254,7 @@ func _on_HTTPRequest_download_completed(result: int, response_code: int, headers
 					"Failed to save song zip to '%s'" % zippath)
 				has_error = true
 		
-		var song_out_dir := game.menu.bspath+("Songs/%s/"%song_dir_name)
+		var song_out_dir := main_menu_ref.bspath+("Songs/%s/"%song_dir_name)
 		if not has_error:
 			error = DirAccess.make_dir_recursive_absolute(song_out_dir)
 			if error != OK: 
@@ -276,7 +271,7 @@ func _on_HTTPRequest_download_completed(result: int, response_code: int, headers
 		downloading.remove_at(0)
 		
 		if not downloading.size() > 0:
-			game.menu._on_LoadPlaylists_Button_pressed()
+			main_menu_ref._on_LoadPlaylists_Button_pressed()
 			$Label.text = "All downloaded"
 	else:
 		$Label.text = "Download error"
@@ -289,8 +284,8 @@ func _on_HTTPRequest_download_completed(result: int, response_code: int, headers
 func _on_preview_download_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result == 0:
 		# request preview to be played by the main menu node
-		if main_menu_node != null:
-			main_menu_node.play_preview(
+		if main_menu_ref != null:
+			main_menu_ref.play_preview(
 				body, # song data buffer
 				0,    # start previous at time 0
 				-1,   # play preview song for entire duration

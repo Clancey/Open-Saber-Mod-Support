@@ -113,7 +113,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 1.5, -0.5)
 tracker = &"left_hand"
 script = ExtResource("8_5lcn1")
 
-[node name="LeftLightSaber" parent="XROrigin3D/LeftController" instance=ExtResource("10")]
+[node name="LeftLightSaber" parent="XROrigin3D/LeftController" node_paths=PackedStringArray("song_player_ref") instance=ExtResource("10")]
+song_player_ref = NodePath("../../../SongPlayer")
 
 [node name="UIRaycast" parent="XROrigin3D/LeftController" instance=ExtResource("12")]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
@@ -125,8 +126,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.5, -0.5)
 tracker = &"right_hand"
 script = ExtResource("8_5lcn1")
 
-[node name="RightLightSaber" parent="XROrigin3D/RightController" instance=ExtResource("10")]
+[node name="RightLightSaber" parent="XROrigin3D/RightController" node_paths=PackedStringArray("song_player_ref") instance=ExtResource("10")]
 type = 1
+song_player_ref = NodePath("../../../SongPlayer")
 
 [node name="UIRaycast" parent="XROrigin3D/RightController" instance=ExtResource("12")]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
@@ -141,8 +143,8 @@ ui_raycast_length = 5.0
 [node name="MainMenu_OQ_UI2DCanvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1.5, -1)
 
-[node name="BeepSaberMainMenu" parent="MainMenu_OQ_UI2DCanvas" instance=ExtResource("11")]
-keyboard_path = NodePath("../../Keyboard_highscore")
+[node name="BeepSaberMainMenu" parent="MainMenu_OQ_UI2DCanvas" node_paths=PackedStringArray("keyboard") instance=ExtResource("11")]
+keyboard = NodePath("../../Keyboard_highscore")
 
 [node name="Multiplier_Label" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 1.375, -2.5)
@@ -197,9 +199,9 @@ beat_sage_canvas_path = NodePath("../../BeatSage_Canvas")
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 visible = false
 
-[node name="BeatSaverPanel" parent="MapSourceDialogs/BeatSaver_Canvas" instance=ExtResource("20")]
-game_path = NodePath("../../..")
-keyboard_path = NodePath("../../../Keyboard_online_search")
+[node name="BeatSaverPanel" parent="MapSourceDialogs/BeatSaver_Canvas" node_paths=PackedStringArray("main_menu_ref", "keyboard") instance=ExtResource("20")]
+main_menu_ref = NodePath("../../../MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu")
+keyboard = NodePath("../../../Keyboard_online_search")
 
 [node name="BeatSage_Canvas" parent="MapSourceDialogs" instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)

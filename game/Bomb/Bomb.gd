@@ -26,7 +26,7 @@ func spawn(info: Map.BombInfo, current_beat: float) -> void:
 	transform.origin = Vector3(
 		line,
 		CUBE_HEIGHT_OFFSET + layer,
-		-distance * BeepSaber_Game.beat_distance
+		-distance * Constants.BEAT_DISTANCE
 	)
 	
 	var anim := $AnimationPlayer as AnimationPlayer

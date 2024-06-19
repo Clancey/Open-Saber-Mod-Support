@@ -7,9 +7,6 @@ class_name BeepCube
 signal scene_released()
 
 # the animation player contains the span animation that is applied to the CubeMeshAnimation node
-@onready var _anim := $AnimationPlayer as AnimationPlayer
-@onready var _big_coll_area := $BeepCube_Big as Area3D
-@onready var _small_coll_area := $BeepCube_Small as Area3D
 @onready var collision_big := $BeepCube_Big/CollisionBig as CollisionShape3D
 @onready var collision_small := $BeepCube_Small/CollisionSmall as CollisionShape3D
 
@@ -76,24 +73,24 @@ func _ready() -> void:
 
 const CUBE_DISTANCE := 0.5
 const CUBE_HEIGHT_OFFSET := 0.4
+static var CUBE_ROTATIONS := PackedFloat64Array([180.0, 0.0, 270.0, 90.0, -135.0, 135.0, -45.0, 45.0, 0.0])
 func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> void:
 	beat = note_info.beat
 	which_saber = note_info.color
 	
 	if Map.current_difficulty.note_jump_movement_speed > 0:
-		speed = float(Map.current_difficulty.note_jump_movement_speed)/9
+		speed = float(Map.current_difficulty.note_jump_movement_speed)/9.0
 	
 	var line: float = -(CUBE_DISTANCE * 3.0 / 2.0) + note_info.line_index * CUBE_DISTANCE
 	var layer: float = CUBE_DISTANCE + note_info.line_layer * CUBE_DISTANCE
 	
-	var rotation_z := deg_to_rad(BeepSaber_Game.CUBE_ROTATIONS[note_info.cut_direction])
+	var rotation_z := deg_to_rad(CUBE_ROTATIONS[note_info.cut_direction])
 	
 	var distance: float = note_info.beat - current_beat
 	
-	transform.origin = Vector3(
-		line,
-		CUBE_HEIGHT_OFFSET + layer,
-		-distance * BeepSaber_Game.beat_distance)
+	transform.origin.x = line
+	transform.origin.y = CUBE_HEIGHT_OFFSET + layer
+	transform.origin.z = -distance * Constants.BEAT_DISTANCE
 	
 	rotation.z = rotation_z
 	
@@ -105,18 +102,21 @@ func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> v
 	# smalling collision shape, while similar collision layers (ie right note &
 	# right saber) are placed on the larger collision shape.
 	var is_left_note := note_info.color == 0
-	_big_coll_area.collision_layer = 0x0
-	_big_coll_area.set_collision_layer_value(CollisionLayerConstants.LeftNote_bit, is_left_note)
-	_big_coll_area.set_collision_layer_value(CollisionLayerConstants.RightNote_bit, not is_left_note)
-	_small_coll_area.collision_layer = 0x0
-	_small_coll_area.set_collision_layer_value(CollisionLayerConstants.LeftNote_bit, not is_left_note)
-	_small_coll_area.set_collision_layer_value(CollisionLayerConstants.RightNote_bit, is_left_note)
+	var big_coll_area := $BeepCube_Big as Area3D
+	big_coll_area.collision_layer = 0x0
+	big_coll_area.set_collision_layer_value(CollisionLayerConstants.LeftNote_bit, is_left_note)
+	big_coll_area.set_collision_layer_value(CollisionLayerConstants.RightNote_bit, not is_left_note)
+	var small_coll_area := $BeepCube_Small as Area3D
+	small_coll_area.collision_layer = 0x0
+	small_coll_area.set_collision_layer_value(CollisionLayerConstants.LeftNote_bit, not is_left_note)
+	small_coll_area.set_collision_layer_value(CollisionLayerConstants.RightNote_bit, is_left_note)
 	
 	visible = true
 	
 	# play the spawn animation when this cube enters the scene
-	_anim.speed_scale = maxf(min_speed,speed)
-	_anim.play(&"Spawn")
+	var anim := $AnimationPlayer as AnimationPlayer
+	anim.speed_scale = maxf(min_speed,speed)
+	anim.play(&"Spawn")
 
 func release() -> void:
 	visible = false

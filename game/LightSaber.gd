@@ -6,12 +6,12 @@ class_name LightSaber
 
 # the type of note this saber can cut (0 -> left, 1 -> right)
 @export var type := 0 # (int, 0, 1)
+@export var song_player_ref: AudioStreamPlayer
 
 # store the saber material in a variable so the main game can set the color on initialize
 @onready var _anim := $AnimationPlayer as AnimationPlayer
 @onready var _ray_cast := $RayCast3D as RayCast3D
 @onready var _swing_cast := $SwingableRayCast as SwingableRayCast
-@onready var _main_game: BeepSaber_Game
 @onready var saber_visual := $saber_holder.get_child(0) as DefaultSaber
 @onready var controller := get_parent() as BeepSaberController
 
@@ -51,8 +51,6 @@ func set_trail(enabled: bool = true) -> void:
 
 func _ready() -> void:
 #	set_saber("res://game/sabers/particles/particles_saber.tscn")
-	if get_tree().get_nodes_in_group(&"main_game"):
-		_main_game = get_tree().get_nodes_in_group(&"main_game")[0] as BeepSaber_Game
 	_anim.play(&"QuickHide")
 	saber_visual.quickhide()
 	
@@ -61,7 +59,7 @@ func _ready() -> void:
 	else:
 		_swing_cast._set_collision_mask_value(CollisionLayerConstants.RightNote_bit, true)
 	_swing_cast._set_collision_mask_value(CollisionLayerConstants.Bombs_bit, true)
-	
+
 func _physics_process(delta: float) -> void:
 	position = offset_pos + extra_offset_pos
 	rotation_degrees = offset_rot + extra_offset_rot
@@ -97,7 +95,7 @@ func _handle_area_collided(area: Area3D) -> void:
 	
 	var time_offset: float = (
 		(note.beat/Map.current_info.beats_per_minute * 60.0)-
-		_main_game.song_player.get_playback_position()
+		song_player_ref.get_playback_position()
 	)
 	saber_visual.hit(time_offset)
 	controller.simple_rumble(0.75, 0.1)

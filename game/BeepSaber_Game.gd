@@ -151,41 +151,6 @@ func show_MapSourceDialogs(showing: bool = true) -> void:
 	if showing:
 		map_source_dialogs.get_child(0)._show()
 
-# when the song ended we want to display the current score and
-# the high score
-func _on_song_ended() -> void:
-	song_player.stop()
-	PlayCount.increment_play_count(Map.current_info,Map.current_difficulty.difficulty_rank)
-	
-	var new_record := false
-	var highscore := Highscores.get_highscore(Map.current_info,Map.current_difficulty.difficulty_rank)
-	if highscore == -1:
-		# no highscores exist yet
-		highscore = Scoreboard.points
-	elif Scoreboard.points > highscore:
-		# player's score is the new highscore!
-		highscore = Scoreboard.points
-		new_record = true
-
-	var current_percent := Scoreboard.right_notes/(Scoreboard.right_notes+Scoreboard.wrong_notes)
-	endscore.show_score(
-		Scoreboard.points,
-		highscore,
-		current_percent,
-		"%s By %s\n%s     Map author: %s" % [
-			Map.current_info.song_name,
-			Map.current_info.song_author_name,
-			menu._map_difficulty_name,
-			Map.current_info.level_author_name],
-		Scoreboard.full_combo,
-		new_record
-	)
-	
-	if Highscores.is_new_highscore(Map.current_info,Map.current_difficulty.difficulty_rank,Scoreboard.points):
-		_transition_game_state(gamestate_newhighscore)
-	else:
-		_transition_game_state(gamestate_mapcomplete)
-
 # call this method to submit a new highscore to the database
 func _submit_highscore(player_name: String) -> void:
 	if gamestate == gamestate_newhighscore:
@@ -196,10 +161,6 @@ func _submit_highscore(player_name: String) -> void:
 			Scoreboard.points)
 			
 		_transition_game_state(gamestate_mapcomplete)
-
-const beat_distance := 4.0
-const beats_ahead := 4.0
-const CUBE_ROTATIONS: Array[float] = [180, 0, 270, 90, -135, 135, -45, 45, 0]
 
 func _get_color_left() -> Color:
 	if disable_map_color: return COLOR_LEFT
@@ -241,9 +202,6 @@ func _physics_process(dt: float) -> void:
 	_check_and_update_saber(right_controller, right_saber)
 
 func _ready() -> void:
-	#var _main_menu := $MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu as MainMenu
-	#_main_menu.initialize(self)
-	(($MapSourceDialogs/BeatSaver_Canvas as OQ_UI2DCanvas).ui_control as BeatSaverPanel).main_menu_node = main_menu.ui_control as MainMenu
 	vr.vrOrigin = $XROrigin3D as XROrigin3D
 	vr.vrCamera = $XROrigin3D/XRCamera3D as XRCamera3D
 	vr.leftController = left_controller

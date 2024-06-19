@@ -12,35 +12,6 @@ var trigger_last_frame := false
 
 var movement_aabb := AABB()
 
-
-# Sets up everything as it is expected by the helper scripts in the vr singleton
-func _enter_tree() -> void:
-	if (tracker == "left_hand"):
-		if (vr.leftController != null):
-			vr.log_warning(" in OQ_ARVRController._enter_tree(): left controller already set; overwriting it")
-		vr.leftController = self
-	elif (tracker == "right_hand"):
-		if (vr.rightController != null):
-			vr.log_warning(" in OQ_ARVRController._enter_tree(): right controller already set; overwriting it")
-		vr.rightController = self
-	else:
-		vr.log_error(" in OQ_ARVRController._enter_tree(): unexpected controller id %s" % tracker)
-
-# Reset when we exit the tree
-func _exit_tree() -> void:
-	if (tracker == "left_hand"):
-		if (vr.leftController != self):
-			vr.log_warning(" in OQ_ARVRController._exit_tree(): left controller different")
-			return
-		vr.leftController = null
-	elif (tracker == "right_hand"):
-		if (vr.rightController != self):
-			vr.log_warning(" in OQ_ARVRController._exit_tree(): right controller different")
-			return
-		vr.rightController = null
-	else:
-		vr.log_error(" in OQ_ARVRController._exit_tree(): unexpected controller id %d" % tracker)
-
 func ax_pressed() -> bool:
 	return ax
 
@@ -104,11 +75,14 @@ func _update_rumble(dt: float) -> void:
 var first_time := true
 
 func _physics_process(dt: float) -> void:
+	if not Scoreboard.paused:
+		_update_movement_aabb()
+	
 	if get_is_active(): # wait for active controller
 		_update_rumble(dt)
 		_update_buttons_and_sticks()
 		# this avoid getting just_pressed events when a key is pressed and the controller becomes
 		# active (like it happens on vr.scene_change!)
-		if (first_time):
+		if first_time:
 			_update_buttons_and_sticks()
 			first_time = false

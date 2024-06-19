@@ -23,6 +23,7 @@ buses/default_bus_layout="res://audiobuslayout.tres"
 
 [autoload]
 
+Constants="*res://game/Constants.gd"
 Scoreboard="*res://game/Scoreboard.gd"
 Map="*res://game/Map.gd"
 vr="*res://OQ_Toolkit/vr_autoload.gd"

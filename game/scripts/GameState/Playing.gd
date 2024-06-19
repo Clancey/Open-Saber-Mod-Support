@@ -26,16 +26,14 @@ func _ready(game: BeepSaber_Game) -> void:
 func _physics_process(game: BeepSaber_Game, delta: float) -> void:
 	if game.left_controller.by_just_pressed():
 		game._transition_game_state(game.gamestate_paused)
-	if game.song_player.playing and not game._audio_synced_after_restart:
+	if game._audio_synced_after_restart:
+		_process_map(game)
+	else:
 		# 0.5 seconds is a pretty concervative number to use for the audio
 		# resync check. Having this duration be this long might only be an
 		# issue for maps that spawn notes extremely early into the song.
 		if game.song_player.get_playback_position() < 0.5:
 			game._audio_synced_after_restart = true
-	elif game.song_player.playing:
-		_process_map(game)
-		game.left_controller._update_movement_aabb()
-		game.right_controller._update_movement_aabb()
 
 var _proc_map_sw := StopwatchFactory.create("process_map",10,true)
 
@@ -64,6 +62,43 @@ func _spawn_wall(game: BeepSaber_Game, wall_info: Map.ObstacleInfo, current_beat
 func _spawn_event(game: BeepSaber_Game, data: Map.EventInfo) -> void:
 	game.event_driver.process_event(data, game.COLOR_LEFT, game.COLOR_RIGHT)
 
+# when the song ended we want to display the current score and
+# the high score
+func _on_song_ended(game: BeepSaber_Game) -> void:
+	game.song_player.stop()
+	PlayCount.increment_play_count(Map.current_info,Map.current_difficulty.difficulty_rank)
+	
+	var new_record := false
+	var highscore := Highscores.get_highscore(Map.current_info,Map.current_difficulty.difficulty_rank)
+	if highscore == -1:
+		# no highscores exist yet
+		highscore = Scoreboard.points
+	elif Scoreboard.points > highscore:
+		# player's score is the new highscore!
+		highscore = Scoreboard.points
+		new_record = true
+
+	var current_percent := Scoreboard.right_notes/(Scoreboard.right_notes+Scoreboard.wrong_notes)
+	game.endscore.show_score(
+		Scoreboard.points,
+		highscore,
+		current_percent,
+		"%s By %s\n%s     Map author: %s" % [
+			Map.current_info.song_name,
+			Map.current_info.song_author_name,
+			game.menu._map_difficulty_name,
+			Map.current_info.level_author_name],
+		Scoreboard.full_combo,
+		new_record
+	)
+	
+	if Highscores.is_new_highscore(Map.current_info,Map.current_difficulty.difficulty_rank,Scoreboard.points):
+		game._transition_game_state(game.gamestate_newhighscore)
+	else:
+		game._transition_game_state(game.gamestate_mapcomplete)
+
+const BEATS_AHEAD := 4.0
+
 func _process_map(game: BeepSaber_Game) -> void:
 	if (Map.current_info == null):
 		return
@@ -75,17 +110,17 @@ func _process_map(game: BeepSaber_Game) -> void:
 	var current_beat := current_time * Map.current_info.beats_per_minute / 60.0
 	
 	# spawn notes
-	while not Map.note_stack.is_empty() and Map.note_stack[-1].beat <= current_beat+game.beats_ahead:
+	while not Map.note_stack.is_empty() and Map.note_stack[-1].beat <= current_beat+BEATS_AHEAD:
 		_spawn_note(game, Map.note_stack[-1], current_beat)
 		Map.note_stack.pop_back()
 	
 	# spawn bombs
-	while not Map.bomb_stack.is_empty() and Map.bomb_stack[-1].beat <= current_beat+game.beats_ahead:
+	while not Map.bomb_stack.is_empty() and Map.bomb_stack[-1].beat <= current_beat+BEATS_AHEAD:
 		_spawn_bomb(game, Map.bomb_stack[-1], current_beat)
 		Map.bomb_stack.pop_back()
 	
 	# spawn obstacles (walls)
-	while not Map.obstacle_stack.is_empty() and Map.obstacle_stack[-1].beat <= current_beat+game.beats_ahead:
+	while not Map.obstacle_stack.is_empty() and Map.obstacle_stack[-1].beat <= current_beat+BEATS_AHEAD:
 		_spawn_wall(game, Map.obstacle_stack[-1], current_beat)
 		Map.obstacle_stack.pop_back()
 	
@@ -94,6 +129,6 @@ func _process_map(game: BeepSaber_Game) -> void:
 		Map.event_stack.pop_back()
 	
 	if (game.song_player.get_playback_position() >= game.song_player.stream.get_length()-1):
-		game._on_song_ended()
+		_on_song_ended(game)
 	
 	_proc_map_sw.stop()
