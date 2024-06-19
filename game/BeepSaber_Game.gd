@@ -81,7 +81,7 @@ var bombs_enabled := true
 
 func start_map(info: Map.Info, map_difficulty: int) -> void:
 	var set0 := info.difficulty_beatmaps
-	if (set0.size() == 0):
+	if (set0.is_empty()):
 		vr.log_error("No _difficultyBeatmaps in set")
 		return
 	Map.current_difficulty_index = map_difficulty
@@ -91,11 +91,7 @@ func start_map(info: Map.Info, map_difficulty: int) -> void:
 		print("Map has no '_notes'")
 		return
 	Map.current_info = info
-	Map.load_note_info_v2(map_data._notes)
-	if map_data.has("_obstacles"):
-		Map.load_obstacle_info_v2(map_data._obstacles)
-	if map_data.has("_events"):
-		Map.load_event_info_v2(map_data._events)
+	Map.load_beatmap_v2(map_data)
 	
 	set_colors_from_map(info.custom_data, info.difficulty_beatmaps[map_difficulty].custom_data)
 	
@@ -207,7 +203,7 @@ func _physics_process(dt: float) -> void:
 	if fps_label.visible:
 		fps_label.set_label_text("FPS: %d" % Engine.get_frames_per_second())
 	
-	gamestate._physics_process(self, dt)
+	gamestate._physics_process(self)
 	
 	_check_and_update_saber(left_controller, left_saber)
 	_check_and_update_saber(right_controller, right_saber)

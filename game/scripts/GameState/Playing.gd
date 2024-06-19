@@ -23,7 +23,7 @@ func _ready(game: BeepSaber_Game) -> void:
 	game.right_saber.set_swingcast_enabled(true)
 	Scoreboard.paused = false
 
-func _physics_process(game: BeepSaber_Game, delta: float) -> void:
+func _physics_process(game: BeepSaber_Game) -> void:
 	if game.left_controller.by_just_pressed():
 		game._transition_game_state(game.gamestate_paused)
 	if game._audio_synced_after_restart:

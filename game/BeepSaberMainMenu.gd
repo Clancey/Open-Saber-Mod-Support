@@ -120,7 +120,7 @@ func _discover_all_songs(seek_path: String) -> Array[Map.Info]:
 		while not file_name.is_empty():
 			if dir.current_is_dir(): # TODO: or file_name.ends_with(".zip"):
 				var new_dir := seek_path+file_name+"/"
-				var song := Map.load_info_from_folder(new_dir)
+				var song := Map.load_map_info_v2(new_dir)
 				if song:
 					songlist.append(song)
 			file_name = dir.get_next()
@@ -204,7 +204,7 @@ func _select_song(id: int) -> void:
 	songs_menu.ensure_current_is_visible()
 	var map := _all_songs[id]
 	delete_button.disabled = false
-	current_selected = Map.load_info_from_folder(map.filepath)
+	current_selected = Map.load_map_info_v2(map.filepath)
 	
 	var play_count := PlayCount.get_total_play_count(current_selected)
 	($SongInfo_Label as Label).text = """Song Author: %s

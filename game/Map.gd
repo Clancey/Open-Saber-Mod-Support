@@ -82,42 +82,56 @@ var event_stack: Array[EventInfo]
 # type safety, just in case a wrongly-made beatmap comes through
 func get_str(dict: Dictionary, key: String, default: String) -> String:
 		if dict.has(key) and dict[key] is String:
-			return dict.get(key, default) as String
+			return dict[key] as String
 		return default
 
 func get_float(dict: Dictionary, key: String, default: float) -> float:
 	if dict.has(key) and dict[key] is float:
-		return dict.get(key, default) as float
+		return dict[key] as float
+	return default
+
+func get_array(dict: Dictionary, key: String, default: Array) -> Array:
+	if dict.has(key) and dict[key] is Array:
+		return dict[key] as Array
+	return default
+
+func get_dict(dict: Dictionary, key: String, default: Dictionary) -> Dictionary:
+	if dict.has(key) and dict[key] is Dictionary:
+		return dict[key] as Dictionary
 	return default
 
 # no get_int because godot dictionaries made from json only have floats
 
 # mix all the difficulty sets into a single one
-func mix_difficulty_sets(difficulty_beatmap_sets: Array) -> Array[Difficulty]:
+func mix_difficulty_sets_v2(difficulty_beatmap_sets: Array) -> Array[Difficulty]:
 	var newset: Array[Difficulty] = []
 	for difficulty_set in difficulty_beatmap_sets:
-		for diff_dict: Dictionary in difficulty_set._difficultyBeatmaps:
-			var custom_data: Dictionary = {}
+		if not difficulty_set is Dictionary: continue
+		var beatmaps := get_array(difficulty_set as Dictionary, "_difficultyBeatmaps", [])
+		for i in beatmaps:
+			if not i is Dictionary: continue
+			var diff_dict := i as Dictionary
 			var diff := Difficulty.new()
 			diff.difficulty = get_str(diff_dict, "_difficulty", "")
 			diff.difficulty_rank = int(get_float(diff_dict, "_difficultyRank", 0))
 			diff.beatmap_filename = get_str(diff_dict, "_beatmapFilename", "")
 			diff.note_jump_movement_speed = get_float(diff_dict, "_noteJumpMovementSpeed", 1.0)
 			diff.note_jump_start_beat_offset = get_float(diff_dict, "_noteJumpStartBeatOffset", 0.0)
-			diff.custom_data = diff_dict.get("_customData", {})
+			diff.custom_data = get_dict(diff_dict, "_customData", {})
 			newset.append(diff)
 	return newset
 
-func load_info_from_folder(load_path: String) -> Info:
+func load_map_info_v2(load_path: String) -> Info:
 	var info_dict := vr.load_json_file(load_path + "Info.dat")
-	if (info_dict == {}):
+	if (info_dict.is_empty()):
 		info_dict = vr.load_json_file(load_path + "info.dat")
 		#because android is case sensitive and some maps have it lowercase, some not
-		if (info_dict == {}):
+		if (info_dict.is_empty()):
 			vr.log_error("Invalid info.dat found in " + load_path)
 			return null
-		
-	if (info_dict._difficultyBeatmapSets.size() == 0):
+	
+	var beatmap_sets := get_array(info_dict, "_difficultyBeatmapSets", [])
+	if (beatmap_sets.is_empty()):
 		vr.log_error("No _difficultyBeatmapSets in info.dat")
 		return null
 	
@@ -136,8 +150,8 @@ func load_info_from_folder(load_path: String) -> Info:
 	map.cover_image_filename = get_str(info_dict, "_coverImageFilename", "")
 	map.environment_name = get_str(info_dict, "_environmentName", "")
 	map.song_time_offset = get_float(info_dict, "_songTimeOffset", 0.0)
-	map.custom_data = info_dict.get("_customData", {})
-	map.difficulty_beatmaps = mix_difficulty_sets(info_dict._difficultyBeatmapSets)
+	map.custom_data = get_dict(info_dict, "_customData", {})
+	map.difficulty_beatmaps = mix_difficulty_sets_v2(beatmap_sets)
 	
 	return map
 
@@ -145,17 +159,18 @@ func load_note_info_v2(note_data: Array) -> void:
 	note_stack.clear()
 	bomb_stack.clear()
 	while not note_data.is_empty():
-		var note: Dictionary = note_data.pop_back()
+		var i: Variant = note_data.pop_back()
+		if not i is Dictionary: continue
+		var note := i as Dictionary
+		
 		var note_type := int(get_float(note, "_type", -1.0))
-		if note_type == -1:
-			continue
-		elif note_type == 3: # bombs are stored as note type 3 in v2
+		if note_type == 3: # bombs are stored as note type 3 in v2
 			var new_bomb := BombInfo.new()
 			new_bomb.beat = get_float(note, "_time", 0.0)
 			new_bomb.line_index = int(get_float(note, "_lineIndex", 0))
 			new_bomb.line_layer = int(get_float(note, "_lineLayer", 0))
 			bomb_stack.append(new_bomb)
-		else:
+		elif note_type == 0 or note_type == 1:
 			var new_note := ColorNoteInfo.new()
 			new_note.beat = get_float(note, "_time", 0.0)
 			new_note.line_index = int(get_float(note, "_lineIndex", 0))
@@ -167,7 +182,10 @@ func load_note_info_v2(note_data: Array) -> void:
 func load_obstacle_info_v2(obstacle_data: Array) -> void:
 	obstacle_stack.clear()
 	while not obstacle_data.is_empty():
-		var obstacle: Dictionary = obstacle_data.pop_back()
+		var i: Variant = obstacle_data.pop_back()
+		if not i is Dictionary: continue
+		var obstacle := i as Dictionary
+		
 		var new_obstacle := ObstacleInfo.new()
 		new_obstacle.beat = get_float(obstacle, "_time", 0.0)
 		new_obstacle.duration = get_float(obstacle, "_duration", 0.0)
@@ -189,10 +207,18 @@ func load_obstacle_info_v2(obstacle_data: Array) -> void:
 func load_event_info_v2(event_data: Array) -> void:
 	event_stack.clear()
 	while not event_data.is_empty():
-		var event: Dictionary = event_data.pop_back()
+		var i: Variant = event_data.pop_back()
+		if not i is Dictionary: continue
+		var event := i as Dictionary
+		
 		var new_event := EventInfo.new()
 		new_event.beat = get_float(event, "_time", 0.0)
 		new_event.type = int(get_float(event, "_type", 0))
 		new_event.value = int(get_float(event, "_value", 0))
 		new_event.float_value = get_float(event, "_floatValue", -1.0)
 		event_stack.append(new_event)
+
+func load_beatmap_v2(map_data: Dictionary) -> void:
+	load_note_info_v2(get_array(map_data, "_notes", []))
+	load_obstacle_info_v2(get_array(map_data, "_obstacles", []))
+	load_event_info_v2(get_array(map_data, "_events", []))
