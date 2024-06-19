@@ -97,7 +97,7 @@ func start_map(info: Map.Info, map_difficulty: int) -> void:
 	if map_data.has("_events"):
 		Map.load_event_info_v2(map_data._events)
 	
-	set_colors_from_map(info, map_difficulty)
+	set_colors_from_map(info.custom_data, info.difficulty_beatmaps[map_difficulty].custom_data)
 	
 	print("loading: ",info.filepath + info.song_filename)
 	var stream := AudioStreamOggVorbis.load_from_file(info.filepath + info.song_filename)
@@ -120,23 +120,34 @@ func start_map(info: Map.Info, map_difficulty: int) -> void:
 	_clear_track()
 	_transition_game_state(gamestate_playing)
 
-func set_colors_from_map(info: Map.Info, map_difficulty: int) -> void:
+func set_colors_from_map(info_data: Dictionary, diff_data: Dictionary) -> void:
+	var set_colors := func(data: Dictionary, color_name: String) -> void:
+		var left_name := color_name % "Left"
+		var right_name := color_name % "Right"
+		if (
+			data.has(left_name) and data.has(right_name)
+			and data[left_name] is Dictionary and data[right_name] is Dictionary
+		):
+			var left := data[left_name] as Dictionary
+			var right := data[right_name] as Dictionary
+			COLOR_LEFT_ONCE = Color(
+				Map.get_float(left, "r", COLOR_LEFT.r),
+				Map.get_float(left, "g", COLOR_LEFT.g),
+				Map.get_float(left, "b", COLOR_LEFT.b)
+			)
+			COLOR_RIGHT_ONCE = Color(
+				Map.get_float(right, "r", COLOR_RIGHT.r),
+				Map.get_float(right, "g", COLOR_RIGHT.g),
+				Map.get_float(right, "b", COLOR_RIGHT.b)
+			)
 	COLOR_LEFT_ONCE = Color.TRANSPARENT
 	COLOR_RIGHT_ONCE = Color.TRANSPARENT
-	var roots := []
-	for color_name in ["_envColor%sBoost", "_envColor%s", "_color%s"]:
-		roots.append(info.custom_data)
-		roots.append(info.difficulty_beatmaps[map_difficulty].custom_data)
-		for r in roots:
-			if r.has(color_name%["Right"]) and r.has(color_name%["Left"]):
-				COLOR_LEFT_ONCE = Color(
-					r[color_name%["Left"]].get("r",COLOR_LEFT.r),
-					r[color_name%["Left"]].get("g",COLOR_LEFT.g),
-					r[color_name%["Left"]].get("b",COLOR_LEFT.b))
-				COLOR_RIGHT_ONCE = Color(
-					r[color_name%["Right"]].get("r",COLOR_RIGHT.r),
-					r[color_name%["Right"]].get("g",COLOR_RIGHT.g),
-					r[color_name%["Right"]].get("b",COLOR_RIGHT.b))
+	set_colors.call(info_data, "_envColor%sBoost")
+	set_colors.call(diff_data, "_envColor%sBoost")
+	set_colors.call(info_data, "_envColor%s")
+	set_colors.call(diff_data, "_envColor%s")
+	set_colors.call(info_data, "_color%s")
+	set_colors.call(diff_data, "_color%s")
 
 # This function will transitioning the game from it's current state into
 # the provided 'next_state'.

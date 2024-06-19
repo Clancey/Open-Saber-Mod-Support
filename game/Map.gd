@@ -1,4 +1,4 @@
-extends Object
+extends Node
 
 class Difficulty extends RefCounted:
 	var difficulty: String
@@ -79,29 +79,32 @@ var bomb_stack: Array[BombInfo]
 var obstacle_stack: Array[ObstacleInfo]
 var event_stack: Array[EventInfo]
 
+# type safety, just in case a wrongly-made beatmap comes through
+func get_str(dict: Dictionary, key: String, default: String) -> String:
+		if dict.has(key) and dict[key] is String:
+			return dict.get(key, default) as String
+		return default
+
+func get_float(dict: Dictionary, key: String, default: float) -> float:
+	if dict.has(key) and dict[key] is float:
+		return dict.get(key, default) as float
+	return default
+
+# no get_int because godot dictionaries made from json only have floats
+
 # mix all the difficulty sets into a single one
 func mix_difficulty_sets(difficulty_beatmap_sets: Array) -> Array[Difficulty]:
 	var newset: Array[Difficulty] = []
 	for difficulty_set in difficulty_beatmap_sets:
-		for difficulty: Dictionary in difficulty_set._difficultyBeatmaps:
+		for diff_dict: Dictionary in difficulty_set._difficultyBeatmaps:
 			var custom_data: Dictionary = {}
 			var diff := Difficulty.new()
-			if difficulty.has("_difficulty"):
-				diff.difficulty = difficulty._difficulty
-			if difficulty.has("_difficultyRank"):
-				diff.difficulty_rank = difficulty._difficultyRank
-			if difficulty.has("_beatmapFilename"):
-				diff.beatmap_filename = difficulty._beatmapFilename
-			if difficulty.has("_noteJumpMovementSpeed"):
-				diff.note_jump_movement_speed = difficulty._noteJumpMovementSpeed
-			if difficulty.has("_noteJumpStartBeatOffset"):
-				diff.note_jump_start_beat_offset = difficulty._noteJumpStartBeatOffset
-			if difficulty.has("_customData"):
-				diff.custom_data = difficulty._customData
-			if difficulty_set._beatmapCharacteristicName != "Standard":
-				if difficulty.has("_customData") and difficulty._customData.has("_difficultyLabel"):
-					difficulty._customData._difficultyLabel = (
-						str(difficulty_set._beatmapCharacteristicName)+" "+difficulty._customData._difficultyLabel)
+			diff.difficulty = get_str(diff_dict, "_difficulty", "")
+			diff.difficulty_rank = int(get_float(diff_dict, "_difficultyRank", 0))
+			diff.beatmap_filename = get_str(diff_dict, "_beatmapFilename", "")
+			diff.note_jump_movement_speed = get_float(diff_dict, "_noteJumpMovementSpeed", 1.0)
+			diff.note_jump_start_beat_offset = get_float(diff_dict, "_noteJumpStartBeatOffset", 0.0)
+			diff.custom_data = diff_dict.get("_customData", {})
 			newset.append(diff)
 	return newset
 
@@ -120,33 +123,20 @@ func load_info_from_folder(load_path: String) -> Info:
 	
 	var map := Info.new()
 	map.filepath = load_path
-	if info_dict.has("_version"):
-		map.version = info_dict._version
-	if info_dict.has("_songName"):
-		map.song_name = info_dict._songName
-	if info_dict.has("_songSubName"):
-		map.song_sub_name = info_dict._songSubName
-	if info_dict.has("_songAuthorName"):
-		map.song_author_name = info_dict._songAuthorName
-	if info_dict.has("_levelAuthorName"):
-		map.level_author_name = info_dict._levelAuthorName
-	if info_dict.has("_beatsPerMinute"):
-		map.beats_per_minute = info_dict._beatsPerMinute
+	map.version = get_str(info_dict, "_version", "v2.0.0")
+	map.song_name = get_str(info_dict, "_songName", "")
+	map.song_sub_name = get_str(info_dict, "_songSubName", "")
+	map.song_author_name = get_str(info_dict, "_songAuthorName", "")
+	map.level_author_name = get_str(info_dict, "_levelAuthorName", "")
+	map.beats_per_minute = get_float(info_dict, "_beatsPerMinute", 60.0)
 	# shuffle and shuffle period maybe in the future?
-	if info_dict.has("_previewStartTime"):
-		map.preview_start_time = info_dict._previewStartTime
-	if info_dict.has("_previewDuration"):
-		map.preview_duration = info_dict._previewDuration
-	if info_dict.has("_songFilename"):
-		map.song_filename = info_dict._songFilename
-	if info_dict.has("_coverImageFilename"):
-		map.cover_image_filename = info_dict._coverImageFilename
-	if info_dict.has("_environmentName"):
-		map.environment_name = info_dict._environmentName
-	if info_dict.has("_songTimeOffset"):
-		map.song_time_offset = info_dict._songTimeOffset
-	if info_dict.has("_customData"):
-		map.custom_data = info_dict._customData
+	map.preview_start_time = get_float(info_dict, "_previewStartTime", 0.0)
+	map.preview_duration = get_float(info_dict, "_previewDuration", 0.0)
+	map.song_filename = get_str(info_dict, "_songFilename", "")
+	map.cover_image_filename = get_str(info_dict, "_coverImageFilename", "")
+	map.environment_name = get_str(info_dict, "_environmentName", "")
+	map.song_time_offset = get_float(info_dict, "_songTimeOffset", 0.0)
+	map.custom_data = info_dict.get("_customData", {})
 	map.difficulty_beatmaps = mix_difficulty_sets(info_dict._difficultyBeatmapSets)
 	
 	return map
@@ -156,28 +146,22 @@ func load_note_info_v2(note_data: Array) -> void:
 	bomb_stack.clear()
 	while not note_data.is_empty():
 		var note: Dictionary = note_data.pop_back()
-		if not note.has("_type"):
+		var note_type := int(get_float(note, "_type", -1.0))
+		if note_type == -1:
 			continue
-		elif note._type == 3: # bombs are stored as note type 3 in v2
+		elif note_type == 3: # bombs are stored as note type 3 in v2
 			var new_bomb := BombInfo.new()
-			if note.has("_time"):
-				new_bomb.beat = note._time
-			if note.has("_lineIndex"):
-				new_bomb.line_index = note._lineIndex
-			if note.has("_lineLayer"):
-				new_bomb.line_layer = note._lineLayer
+			new_bomb.beat = get_float(note, "_time", 0.0)
+			new_bomb.line_index = int(get_float(note, "_lineIndex", 0))
+			new_bomb.line_layer = int(get_float(note, "_lineLayer", 0))
 			bomb_stack.append(new_bomb)
 		else:
 			var new_note := ColorNoteInfo.new()
-			if note.has("_time"):
-				new_note.beat = note._time
-			if note.has("_lineIndex"):
-				new_note.line_index = note._lineIndex
-			if note.has("_lineLayer"):
-				new_note.line_layer = note._lineLayer
-			new_note.color = note._type
-			if note.has("_cutDirection"):
-				new_note.cut_direction = note._cutDirection
+			new_note.beat = get_float(note, "_time", 0.0)
+			new_note.line_index = int(get_float(note, "_lineIndex", 0))
+			new_note.line_layer = int(get_float(note, "_lineLayer", 0))
+			new_note.color = note_type
+			new_note.cut_direction = int(get_float(note, "_cutDirection", 0))
 			note_stack.append(new_note)
 
 func load_obstacle_info_v2(obstacle_data: Array) -> void:
@@ -185,27 +169,21 @@ func load_obstacle_info_v2(obstacle_data: Array) -> void:
 	while not obstacle_data.is_empty():
 		var obstacle: Dictionary = obstacle_data.pop_back()
 		var new_obstacle := ObstacleInfo.new()
-		if obstacle.has("_time"):
-			new_obstacle.beat = obstacle._time
-		if obstacle.has("_duration"):
-			new_obstacle.duration = obstacle._duration
-		if obstacle.has("_lineIndex"):
-			new_obstacle.line_index = obstacle._lineIndex
-		if obstacle.has("_width"):
-			new_obstacle.width = obstacle._width
-		if obstacle.has("_type"):
-			match obstacle._type as int:
-				0: # full height
-					new_obstacle.line_layer = 0
-					new_obstacle.height = 5
-				1: # crouch
-					new_obstacle.line_layer = 2
-					new_obstacle.height = 3
-				2: # free
-					if obstacle_data.has("_lineLayer"):
-						new_obstacle.line_layer = obstacle._lineLayer
-					if obstacle_data.has("_height"):
-						new_obstacle.height = obstacle._height
+		new_obstacle.beat = get_float(obstacle, "_time", 0.0)
+		new_obstacle.duration = get_float(obstacle, "_duration", 0.0)
+		new_obstacle.line_index = int(get_float(obstacle, "_lineIndex", 0))
+		new_obstacle.width = int(get_float(obstacle, "_width", 0))
+		var type := int(get_float(obstacle, "_type", 0))
+		match type:
+			0: # full height
+				new_obstacle.line_layer = 0
+				new_obstacle.height = 5
+			1: # crouch
+				new_obstacle.line_layer = 2
+				new_obstacle.height = 3
+			2: # free
+				new_obstacle.line_layer = int(get_float(obstacle, "_lineLayer", 0))
+				new_obstacle.height = int(get_float(obstacle, "_height", 0))
 		obstacle_stack.append(new_obstacle)
 
 func load_event_info_v2(event_data: Array) -> void:
@@ -213,14 +191,8 @@ func load_event_info_v2(event_data: Array) -> void:
 	while not event_data.is_empty():
 		var event: Dictionary = event_data.pop_back()
 		var new_event := EventInfo.new()
-		if event.has("_time"):
-			new_event.beat = event._time
-		if event.has("_type"):
-			new_event.type = event._type
-		if event.has("_value"):
-			new_event.value = event._value
-		if event.has("_floatValue"):
-			new_event.float_value = event._floatValue
-		else:
-			new_event.float_value = -1
+		new_event.beat = get_float(event, "_time", 0.0)
+		new_event.type = int(get_float(event, "_type", 0))
+		new_event.value = int(get_float(event, "_value", 0))
+		new_event.float_value = get_float(event, "_floatValue", -1.0)
 		event_stack.append(new_event)

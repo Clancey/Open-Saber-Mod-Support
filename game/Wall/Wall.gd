@@ -17,9 +17,8 @@ func spawn(wall_info: Map.ObstacleInfo, current_beat: float) -> void:
 	var m := mesh.mesh as BoxMesh
 	var shape := ($WallMeshOrientation/WallArea/CollisionShape3D as CollisionShape3D).shape as BoxShape3D
 	
-	const CUBE_DISTANCE := 0.5
-	var x := wall_info.width * CUBE_DISTANCE
-	var y := wall_info.height * CUBE_DISTANCE
+	var x := wall_info.width * Constants.CUBE_DISTANCE
+	var y := wall_info.height * Constants.CUBE_DISTANCE
 	var z := wall_info.duration * Constants.BEAT_DISTANCE
 	m.size.x = x
 	shape.size.x = x
@@ -30,8 +29,8 @@ func spawn(wall_info: Map.ObstacleInfo, current_beat: float) -> void:
 	depth = z * 0.5
 	(mesh.material_override as ShaderMaterial).set_shader_parameter(&"size", Vector3(x, y, z))
 	
-	transform.origin.x = (wall_info.line_index - ((4 - wall_info.width) * 0.5)) * CUBE_DISTANCE
-	transform.origin.y = (wall_info.line_layer + (wall_info.height * 0.5)) *  CUBE_DISTANCE
+	transform.origin.x = (wall_info.line_index - ((4 - wall_info.width) * 0.5)) * Constants.CUBE_DISTANCE
+	transform.origin.y = (wall_info.line_layer + (wall_info.height * 0.5)) *  Constants.CUBE_DISTANCE
 	transform.origin.z = (current_beat - wall_info.beat) * Constants.BEAT_DISTANCE - depth
 	
 	speed = Constants.BEAT_DISTANCE * Map.current_info.beats_per_minute / 60.0

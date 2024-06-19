@@ -71,31 +71,30 @@ func _ready() -> void:
 			get_tree().get_root().add_child(new_res.piece2.rigid_body)
 			_cut_cube_resources.push_back(new_res)
 
-const CUBE_DISTANCE := 0.5
-const CUBE_HEIGHT_OFFSET := 0.4
 static var CUBE_ROTATIONS := PackedFloat64Array([180.0, 0.0, 270.0, 90.0, -135.0, 135.0, -45.0, 45.0, 0.0])
 func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> void:
 	beat = note_info.beat
 	which_saber = note_info.color
+	is_dot = note_info.cut_direction == 8
 	
-	if Map.current_difficulty.note_jump_movement_speed > 0:
-		speed = float(Map.current_difficulty.note_jump_movement_speed)/9.0
+	if Map.current_difficulty.note_jump_movement_speed > 0.0:
+		speed = Map.current_difficulty.note_jump_movement_speed / 9.0
 	
-	var line: float = -(CUBE_DISTANCE * 3.0 / 2.0) + note_info.line_index * CUBE_DISTANCE
-	var layer: float = CUBE_DISTANCE + note_info.line_layer * CUBE_DISTANCE
+	var line: float = (note_info.line_index - 1.5) * Constants.CUBE_DISTANCE
+	var layer: float = (note_info.line_layer + 1) * Constants.CUBE_DISTANCE
 	
 	var rotation_z := deg_to_rad(CUBE_ROTATIONS[note_info.cut_direction])
 	
 	var distance: float = note_info.beat - current_beat
 	
 	transform.origin.x = line
-	transform.origin.y = CUBE_HEIGHT_OFFSET + layer
+	transform.origin.y = Constants.CUBE_HEIGHT_OFFSET + layer
 	transform.origin.z = -distance * Constants.BEAT_DISTANCE
 	
 	rotation.z = rotation_z
 	
 	_mat.set_shader_parameter(&"color",color)
-	_mat.set_shader_parameter(&"is_dot", note_info.cut_direction == 8)
+	_mat.set_shader_parameter(&"is_dot", is_dot)
 	
 	# separate cube collision layers to allow a diferent collider on right/wrong cuts.
 	# opposing collision layers (ie. right note & left saber) will be placed on the
