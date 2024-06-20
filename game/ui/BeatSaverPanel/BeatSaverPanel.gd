@@ -5,13 +5,13 @@ var song_data := []
 var current_list := 0
 # reference to the main main node (used for playing downloadable song previews)
 @export var main_menu_ref: MainMenu
-# the next requestable pages for the current list; null if prev/next page is
+# the next requestable pages for the current list; -1 if prev/next page is
 # not requestable (ie. reached end of the list)
-var prev_page_available = null
-var next_page_available = null
+var prev_page_available := -1
+var next_page_available := -1
 # Older API used to support more lists. temporarily limiting to ones that still work
 #var list_modes = ["hot","rating","latest","downloads","plays"]
-var list_modes = ["plays"]
+var list_modes: Array[String] = ["plays"]
 var search_word := ""
 var item_selected := -1
 var downloading := []#[["name","version_info"]]
@@ -25,29 +25,20 @@ var downloading := []#[["name","version_info"]]
 
 const MAX_BACK_STACK_DEPTH := 10
 # series of previous requests that you can go back to
-var back_stack := []
+var back_stack: Array[BeatSaverRequest] = []
 
 # structure representing the previous HTTP request we made to beatsaver
-var prev_request := {
-	# required fields
-	"type" : "list",# can be "list","text_search", or "uploader"
-	"page" : 0,
-	
-	# type-specific fields when type is "list"
-	"list" : "plays"
-	
-	# type-specific fields when type is "text_search"
-	# "search_text" = ""
-	
-	# type-specific fields when type is "uploader"
-	# "uploader_id" = ""
-}
+class BeatSaverRequest extends RefCounted:
+	var page: int
+	var type: String
+	var data: String
+var prev_request: BeatSaverRequest
 
 @export var keyboard: OQ_UI2DKeyboard
 
 func _ready() -> void:
 	UI_AudioEngine.attach_children(self)
-	$back.visible = false
+	($back as Button).visible = false
 	v_scroll.value_changed.connect(_on_ListV_Scroll_value_changed)
 	
 	var is_web := OS.get_name() == "Web"
@@ -62,47 +53,44 @@ func _ready() -> void:
 		keyboard.text_input_enter.connect(_text_input_enter)
 		keyboard.text_input_cancel.connect(_text_input_cancel)
 	
-	var parent_canvas = self
+	var parent_canvas: Node = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
+			(parent_canvas as OQ_UI2DCanvas).visibility_changed.connect(_on_BeatSaverPanel_visibility_changed)
 			break
 		parent_canvas = parent_canvas.get_parent()
-	if parent_canvas != null:
-		parent_canvas.visibility_changed.connect(_on_BeatSaverPanel_visibility_changed)
-	
+
 # override hide() method to handle case where UI is inside a OQ_UI2DCanvas
 func _hide() -> void:
-	var parent_canvas = self
+	var parent_canvas: Node = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
+			(parent_canvas as OQ_UI2DCanvas).hide()
 			break
 		parent_canvas = parent_canvas.get_parent()
 		
 	if parent_canvas == null:
 		self.visible = false
-	else:
-		parent_canvas.hide()
 
 # override show() method to handle case where UI is inside a OQ_UI2DCanvas
 func _show() -> void:
-	var parent_canvas = self
+	var parent_canvas: Node = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
+			(parent_canvas as OQ_UI2DCanvas).show()
 			break
 		parent_canvas = parent_canvas.get_parent()
 		
 	if parent_canvas == null:
 		self.visible = true
-	else:
-		parent_canvas.show()
 	_on_BeatSaverPanel_visibility_changed()
 
-func update_list(request) -> void:
-	var page = request.page
-	$mode.disabled = true
-	if page == 0:
+func update_list(req: BeatSaverRequest) -> void:
+	var mode_button := $mode as Button
+	mode_button.disabled = true
+	if req.page == 0:
 		# brand new request, clear list to prep for reload
-		$ItemList.clear()
+		($ItemList as ItemList).clear()
 		if goto_maps_by:
 			goto_maps_by.visible = false
 		song_data = []
@@ -111,26 +99,26 @@ func update_list(request) -> void:
 		return
 	httpcoverdownload.cancel_request()
 	httpreq.cancel_request()
-	prev_page_available = page
-	next_page_available = null
+	prev_page_available = req.page
+	next_page_available = -1
 	
-	match request.type:
+	match req.type:
 		"list":
-			var list : String = request.list
-			$mode.text = list.substr(0,1).capitalize() + list.substr(1)
-			httpreq.request("https://beatsaver.com/api/maps/%s/%s" % [list,page])
+			var list := req.data
+			mode_button.text = list.substr(0,1).capitalize() + list.substr(1)
+			httpreq.request("https://beatsaver.com/api/maps/%s/%s" % [list,req.page])
 		"text_search":
-			var search_text = request.search_text
-			$mode.text = search_text
-			httpreq.request("https://beatsaver.com/api/search/text/%s?q=%s&sortOrder=Relevance&automapper=true" % [page,search_text.uri_encode()])
+			var search_text := req.data
+			mode_button.text = search_text
+			httpreq.request("https://beatsaver.com/api/search/text/%s?q=%s&sortOrder=Relevance&automapper=true" % [req.page,search_text.uri_encode()])
 		"uploader":
-			var uploader_id = request.uploader_id
-			$mode.text = "Uploader"
-			httpreq.request("https://beatsaver.com/api/maps/uploader/%s/%s" % [uploader_id,page])
+			var uploader_id := req.data
+			mode_button.text = "Uploader"
+			httpreq.request("https://beatsaver.com/api/maps/uploader/%s/%s" % [uploader_id,req.page])
 		_:
-			vr.log_warning("Unsupported request type '%s'" % request.type)
+			vr.log_warning("Unsupported request type '%s'" % req.type)
 
-func _add_to_back_stack(request: Dictionary) -> void:
+func _add_to_back_stack(request: BeatSaverRequest) -> void:
 	back_stack.push_back(request)
 	if back_stack.size() > MAX_BACK_STACK_DEPTH:
 		back_stack.pop_front()
@@ -147,22 +135,26 @@ func _on_HTTPRequest_request_completed(result: int, response_code: int, headers:
 		next_page_available = prev_page_available + 1
 		
 		if json_data.has("docs"):
-			json_data = json_data["docs"]
-			_current_cover_to_download = song_data.size()
-			for song in json_data:
-				song_data.insert(song_data.size(),song)
-				$ItemList.add_item(song["name"])
-				var tooltip = "Map author: %s" % song["metadata"]["levelAuthorName"]
-				$ItemList.set_item_tooltip($ItemList.get_item_count()-1,tooltip)
-				$ItemList.set_item_icon($ItemList.get_item_count()-1,placeholder_cover)
+			var docs = json_data["docs"]
+			if docs is Array:
+				var docs_array := docs as Array
+				_current_cover_to_download = song_data.size()
+				for i in docs_array:
+					if not i is Dictionary: continue
+					var song := i as Dictionary
+					song_data.append(song)
+					$ItemList.add_item(song["name"])
+					var tooltip = "Map author: %s" % song["metadata"]["levelAuthorName"]
+					$ItemList.set_item_tooltip($ItemList.get_item_count()-1,tooltip)
+					$ItemList.set_item_icon($ItemList.get_item_count()-1,placeholder_cover)
 	else:
 		vr.log_error("request error "+str(result))
-	$mode.disabled = false
-	$back.visible = back_stack.size() > 0
+	($mode as Button).disabled = false
+	($back as Button).visible = back_stack.size() > 0
 	_scroll_page_request_pending = false
 	
-	var canvas = get_parent().get_parent()
-	if canvas.has_method("_input_update"): canvas._input_update()
+	var canvas := get_parent().get_parent()
+	if canvas is OQ_UI2DCanvas: (canvas as OQ_UI2DCanvas)._input_update()
 	
 	_update_all_covers()
 
@@ -170,13 +162,12 @@ func _on_HTTPRequest_request_completed(result: int, response_code: int, headers:
 func _on_mode_button_up() -> void:
 	current_list += 1
 	current_list %= list_modes.size()
-	$mode.text = list_modes[current_list].capitalize()
+	($mode as Button).text = list_modes[current_list].capitalize()
 	_add_to_back_stack(prev_request)
-	prev_request = {
-		"type" : "list",
-		"page" : 0,
-		"list" : list_modes[current_list]
-	}
+	prev_request = BeatSaverRequest.new()
+	prev_request.page = 0
+	prev_request.type = "list"
+	prev_request.data = list_modes[current_list]
 	update_list(prev_request)
 
 
@@ -212,20 +203,18 @@ Difficulties:%s
 
 	httppreviewdownload.request(selected_data['versions'][0]['previewURL'])
 
-func _on_download_button_up():
+func _on_download_button_up() -> void:
 	OS.request_permissions()
 	if item_selected == -1: return
 	var version_info = song_data[item_selected]['versions'][0]
 	downloading.insert(downloading.size(),[song_data[item_selected]["name"],version_info])
 	download_next()
-	
-	
-func download_next():
+
+func download_next() -> void:
 	if downloading.size() > 0:
 		httpdownload.request(downloading[0][1]['downloadURL'])
 		$Label.text = "Downloading: %s - %d left" % [str(downloading[0][0]),downloading.size()-1]
 		$Label.visible = true
-		
 
 func _on_HTTPRequest_download_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 #	$download.disabled = false
@@ -301,11 +290,10 @@ func _text_input_enter(text: String) -> void:
 	$mode.text = search_word
 	current_list = -1
 	_add_to_back_stack(prev_request)
-	prev_request = {
-		"type" : "text_search",
-		"page" : 0,
-		"search_text" : search_word
-	}
+	prev_request = BeatSaverRequest.new()
+	prev_request.page = 0
+	prev_request.type = "text_search"
+	prev_request.data = search_word
 	update_list(prev_request)
 	
 func _text_input_cancel() -> void:
@@ -331,41 +319,40 @@ func update_next_cover() -> void:
 
 func _update_cover(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result == 0:
-		var img = Image.new()
+		var img := Image.new()
 		if not img.load_jpg_from_buffer(body) == 0:
 			img.load_png_from_buffer(body)
-		var img_tex = ImageTexture.create_from_image(img)
+		var img_tex := ImageTexture.create_from_image(img)
 		$ItemList.set_item_icon(_current_cover_to_download,img_tex)
 	_current_cover_to_download += 1
 	
-	var canvas = get_parent().get_parent()
-	if canvas.has_method("_input_update"): canvas._input_update()
+	var canvas := get_parent().get_parent()
+	if canvas is OQ_UI2DCanvas: (canvas as OQ_UI2DCanvas)._input_update()
 	
 	update_next_cover()
 
-func _on_gotoMapsBy_pressed():
-	var selected_song = _get_selected_song()
+func _on_gotoMapsBy_pressed() -> void:
+	var selected_song := _get_selected_song()
 	if not selected_song.has("uploader"): return
 	_add_to_back_stack(prev_request)
-	prev_request = {
-		"type" : "uploader",
-		"page" : 0,
-		"uploader_id" : selected_song["uploader"]["id"]
-	}
+	prev_request = BeatSaverRequest.new()
+	prev_request.page = 0
+	prev_request.type = "uploader"
+	prev_request.data = selected_song["uploader"]["id"]
 	update_list(prev_request)
 	
 # SCROLL_TO_FETCH_THRESHOLD
 # Range: 0.0 to 1.0
 # Description: Used to request the next page of songs from the current list
 # once the user scrolls past this threshold
-const SCROLL_TO_FETCH_THRESHOLD = 0.9
-var _scroll_page_request_pending = false
-	
+const SCROLL_TO_FETCH_THRESHOLD := 0.9
+var _scroll_page_request_pending := false
+
 func _on_ListV_Scroll_value_changed(new_value: float) -> void:
 	var scroll_range = v_scroll.max_value - v_scroll.min_value
 	var scroll_ratio = (new_value + v_scroll.page) / scroll_range
 	if scroll_ratio > SCROLL_TO_FETCH_THRESHOLD:
-		if next_page_available == null:
+		if next_page_available == -1:
 			# no next page to load
 			return
 		
@@ -378,18 +365,18 @@ func _on_ListV_Scroll_value_changed(new_value: float) -> void:
 		update_list(prev_request)
 		_scroll_page_request_pending = true
 
-func _on_back_pressed():
+func _on_back_pressed() -> void:
 	if back_stack.is_empty():
 		return
-		
+	
 	# re-request latest entry
 	prev_request = back_stack.back()
 	prev_request.page = 0
 	back_stack.pop_back()
 	update_list(prev_request)
 	
-	$back.visible = back_stack.size() > 0
-	
+	($back as Button).visible = back_stack.size() > 0
+
 func _get_cover_url_from_song_data(song_data: Dictionary) -> String:
 	var song_versions = song_data['versions']
 	var version_data := {}
@@ -404,12 +391,16 @@ func _get_cover_url_from_song_data(song_data: Dictionary) -> String:
 		
 	return version_data['coverURL']
 
-func _on_CloseButton_pressed():
+func _on_CloseButton_pressed() -> void:
 	self._hide()
 
-var _is_first_show = true
-func _on_BeatSaverPanel_visibility_changed():
+var _is_first_show := true
+func _on_BeatSaverPanel_visibility_changed() -> void:
 	if _is_first_show:
 		# populate initial list of songs with most played on BeatSaver
-		update_list({"type":"list","page":0,"list":"plays"})
+		var first_req := BeatSaverRequest.new()
+		first_req.page = 0
+		first_req.type = "list"
+		first_req.data = "plays"
+		update_list(first_req)
 		_is_first_show = false

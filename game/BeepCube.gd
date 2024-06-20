@@ -73,12 +73,10 @@ func _ready() -> void:
 
 static var CUBE_ROTATIONS := PackedFloat64Array([180.0, 0.0, 270.0, 90.0, -135.0, 135.0, -45.0, 45.0, 0.0])
 func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> void:
+	speed = Constants.BEAT_DISTANCE * Map.current_info.beats_per_minute / 60.0
 	beat = note_info.beat
 	which_saber = note_info.color
 	is_dot = note_info.cut_direction == 8
-	
-	if Map.current_difficulty.note_jump_movement_speed > 0.0:
-		speed = Map.current_difficulty.note_jump_movement_speed / 9.0
 	
 	var line: float = (note_info.line_index - 1.5) * Constants.CUBE_DISTANCE
 	var layer: float = (note_info.line_layer + 1) * Constants.CUBE_DISTANCE
@@ -114,7 +112,8 @@ func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> v
 	
 	# play the spawn animation when this cube enters the scene
 	var anim := $AnimationPlayer as AnimationPlayer
-	anim.speed_scale = maxf(min_speed,speed)
+	var anim_speed := Map.current_difficulty.note_jump_movement_speed / 9.0
+	anim.speed_scale = maxf(min_speed,anim_speed)
 	anim.play(&"Spawn")
 
 func release() -> void:

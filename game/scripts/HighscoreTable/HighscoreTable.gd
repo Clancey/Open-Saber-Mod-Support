@@ -126,7 +126,9 @@ func _get_records(hs_key: String, diff_rank: int) -> Array:
 	var records: Array = []
 	
 	if _hs_table.has(hs_key):
-		var hs_row: Variant = _hs_table[hs_key]
+		var i: Variant = _hs_table[hs_key]
+		if not i is Dictionary: return []
+		var hs_row := i as Dictionary
 		if hs_row.has(str(diff_rank)):
 			records = hs_row[str(diff_rank)]
 	

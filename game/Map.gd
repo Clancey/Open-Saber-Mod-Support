@@ -1,5 +1,9 @@
 extends Node
 
+# this would have basically been impossible to figure out without constantly
+# referencing the beat saber modding group wiki.
+# https://bsmg.wiki/mapping/map-format.html
+
 class Difficulty extends RefCounted:
 	var difficulty: String
 	var difficulty_rank: int
@@ -137,7 +141,7 @@ func load_map_info_v2(load_path: String) -> Info:
 	
 	var map := Info.new()
 	map.filepath = load_path
-	map.version = get_str(info_dict, "_version", "v2.0.0")
+	map.version = get_str(info_dict, "_version", "2.0.0")
 	map.song_name = get_str(info_dict, "_songName", "")
 	map.song_sub_name = get_str(info_dict, "_songSubName", "")
 	map.song_author_name = get_str(info_dict, "_songAuthorName", "")
