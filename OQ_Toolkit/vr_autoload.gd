@@ -213,6 +213,7 @@ func initialize(render_scale: float = 1.0) -> void:
 			var max_fps: Variant = fps[fps.size() - 1]
 			if max_fps is float:
 				xr_interface.set_display_refresh_rate(max_fps as float)
+				Engine.set_physics_ticks_per_second(max_fps as int)
 		
 		# Turn off v-sync!
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
