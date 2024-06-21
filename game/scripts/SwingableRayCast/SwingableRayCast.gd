@@ -5,29 +5,29 @@ class_name SwingableRayCast
 
 signal area_collided(area: Area3D)
 
-@export var num_collision_raycasts = 8
+@export var num_collision_raycasts: int = 8
 
-const DEBUG = false
-const DEBUG_TRAIL_SEGMENTS = 5
+const DEBUG := false
+const DEBUG_TRAIL_SEGMENTS := 5
 
 # this constant is used to prevent unnecessary raycast collision computations
 # when the ray's 'cast_to' vector length is below this threshold. it seems like
 # Godot's physics engine never picks up on collisions when the vector's length
 # is below this threshold. this vlaue was imperically found by logging the
 # minimum length when using the node in-game.
-const MIN_SWEPT_LENGTH_THRESHOLD = 0.035
+const MIN_SWEPT_LENGTH_THRESHOLD := 0.035
 
-var core_ray_collision_count = 0;
-var aux_ray_collision_count = 0;
+var core_ray_collision_count := 0
+var aux_ray_collision_count := 0
 var adjust_segments := true
 
-var _prev_ray_positions = [];
+var _prev_ray_positions: Array[Vector3] = []
 var _rays: Array[RayCast3D]
-var _debug_curr_balls = [];
-var _debug_raycast_trail := LinkedList.new();
-@onready var _sw := StopwatchFactory.create(name, 10, true);
+var _debug_curr_balls: Array[MeshInstance3D] = []
+var _debug_raycast_trail := LinkedList.new()
+@onready var _sw := StopwatchFactory.create(name, 10, true)
 
-func _ready():
+func _ready() -> void:
 	await get_tree().physics_frame
 	
 	# use discrete RayCasts for continuous collision detection between _physics_process()
@@ -43,7 +43,7 @@ func _ready():
 		_rays.append(new_ray)
 		
 		if DEBUG:
-			var new_ball := $debug_ball.duplicate()
+			var new_ball := $debug_ball.duplicate() as MeshInstance3D
 			new_ball.visible = true
 			add_child(new_ball)
 			_debug_curr_balls.append(new_ball)
@@ -52,7 +52,7 @@ func _ready():
 	remove_child($debug_ball)
 
 # override so that we can update child segments too
-func _set_collision_mask_value(bit: int, value: bool):
+func _set_collision_mask_value(bit: int, value: bool) -> void:
 	#collision_mask = 0x0
 	#collision_mask = collision_mask | (int(value) << bit)
 	set_collision_mask_value(bit, value)
@@ -60,22 +60,22 @@ func _set_collision_mask_value(bit: int, value: bool):
 		#ray.collision_mask = 0x0
 		ray.set_collision_mask_value(bit,value)
 
-func reset_counters():
+func reset_counters() -> void:
 	core_ray_collision_count = 0
 	aux_ray_collision_count = 0
 
 func set_raycasts_enabled(value: bool) -> void:
 	enabled = value
 
-func _update_element_positions():
+func _update_element_positions() -> void:
 	# generate new locations for ray casters
-	var saber_base = transform.origin
-	var saber_tip = saber_base + target_position
-	var step_dist = (saber_tip - saber_base) / (num_collision_raycasts - 1)
+	var saber_base := transform.origin
+	var saber_tip := saber_base + target_position
+	var step_dist := (saber_tip - saber_base) / (num_collision_raycasts - 1)
 	
-	var next_local_pos = transform.origin
+	var next_local_pos := transform.origin
 	for i in range(num_collision_raycasts):
-		var next_global_pos = global_transform * (next_local_pos)
+		var next_global_pos := global_transform * (next_local_pos)
 			
 		# update ray's newest location for next physics frame processing
 		var ray : RayCast3D = _rays[i]
@@ -115,7 +115,7 @@ func _physics_process(_delta: float) -> void:
 		_prev_ray_positions[i] = ray.global_transform.origin
 		
 	if DEBUG:
-		var old_slice = _debug_raycast_trail.pop_back()
+		var old_slice := _debug_raycast_trail.pop_back() as Array[RayCast3D]
 
 		# update oldest slide with newest ray casts
 		for i in range(num_collision_raycasts):
@@ -127,10 +127,10 @@ func _physics_process(_delta: float) -> void:
 
 func _on_SwingableRayCast_tree_entered() -> void:
 	if DEBUG:
-		var root = get_tree().get_root()
-		var scene_root = root.get_child(root.get_child_count() - 1)
+		var root := get_tree().get_root()
+		var scene_root := root.get_child(root.get_child_count() - 1)
 		for _t in range(DEBUG_TRAIL_SEGMENTS):
-			var trail_slice = []
+			var trail_slice: Array[RayCast3D] = []
 			for _i in range(num_collision_raycasts):
 				var new_ray := RayCast3D.new()
 				new_ray.enabled = true

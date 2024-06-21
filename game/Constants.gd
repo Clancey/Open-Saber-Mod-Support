@@ -1,4 +1,4 @@
-extends Object
+extends Node
 
 const BEAT_DISTANCE := 4.0
 const CUBE_DISTANCE := 0.5

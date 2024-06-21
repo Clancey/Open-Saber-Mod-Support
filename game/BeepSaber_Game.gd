@@ -23,6 +23,7 @@ var gamestate: GameState = gamestate_bootup
 @onready var main_menu := $MainMenu_OQ_UI2DCanvas as OQ_UI2DCanvas
 @onready var pause_menu := $PauseMenu_canvas as OQ_UI2DCanvas
 @onready var settings_canvas := $Settings_canvas as OQ_UI2DCanvas
+@onready var settings_panel := settings_canvas.ui_control as SettingsPanel
 @onready var highscore_canvas := $Highscores_Canvas as OQ_UI2DCanvas
 @onready var highscore_panel := highscore_canvas.ui_control as HighscorePanel
 @onready var name_selector_canvas := $NameSelector_Canvas as OQ_UI2DCanvas
@@ -50,13 +51,6 @@ var gamestate: GameState = gamestate_bootup
 
 @onready var menu := main_menu.ui_control as MainMenu
 
-var COLOR_LEFT := Color(1.0, 0.1, 0.1, 1.0) : get = _get_color_left
-var COLOR_RIGHT := Color(0.1, 0.1, 1.0, 1.0) : get = _get_color_right
-
-var COLOR_LEFT_ONCE: Color = Color.TRANSPARENT
-var COLOR_RIGHT_ONCE: Color = Color.TRANSPARENT
-var disable_map_color := false
-
 
 # There's an interesting issue where the AudioStreamPlayer's playback_position
 # doesn't immediately return to 0.0 after restarting the song_player. This
@@ -75,10 +69,6 @@ var _in_wall := false
 #prevents the song for starting from the start when pausing and unpausing
 var pause_position := 0.0
 
-#settings
-var cube_cuts_falloff := true
-var bombs_enabled := true
-
 func start_map(info: Map.Info, map_difficulty: int) -> void:
 	var set0 := info.difficulty_beatmaps
 	if (set0.is_empty()):
@@ -93,7 +83,13 @@ func start_map(info: Map.Info, map_difficulty: int) -> void:
 	Map.current_info = info
 	Map.load_beatmap_v2(map_data)
 	
-	set_colors_from_map(info.custom_data, info.difficulty_beatmaps[map_difficulty].custom_data)
+	if not Settings.disable_map_color:
+		Map.set_colors_from_custom_data(info.custom_data, info.difficulty_beatmaps[map_difficulty].custom_data, Settings.color_left, Settings.color_right)
+	update_colors(Map.color_left, Map.color_right)
+	if Map.event_stack.is_empty():
+		event_driver.set_all_on(Map.color_left, Map.color_right)
+	else:
+		event_driver.set_all_off()
 	
 	print("loading: ",info.filepath + info.song_filename)
 	var stream := AudioStreamOggVorbis.load_from_file(info.filepath + info.song_filename)
@@ -107,43 +103,9 @@ func start_map(info: Map.Info, map_difficulty: int) -> void:
 	
 	_display_points()
 	percent_indicator.start_map()
-	update_saber_colors()
-	if Map.event_stack.size() > 0:
-		event_driver.set_all_off()
-	else:
-		event_driver.set_all_on(COLOR_LEFT, COLOR_RIGHT)
 	
 	_clear_track()
 	_transition_game_state(gamestate_playing)
-
-func set_colors_from_map(info_data: Dictionary, diff_data: Dictionary) -> void:
-	var set_colors := func(data: Dictionary, color_name: String) -> void:
-		var left_name := color_name % "Left"
-		var right_name := color_name % "Right"
-		if (
-			data.has(left_name) and data.has(right_name)
-			and data[left_name] is Dictionary and data[right_name] is Dictionary
-		):
-			var left := data[left_name] as Dictionary
-			var right := data[right_name] as Dictionary
-			COLOR_LEFT_ONCE = Color(
-				Map.get_float(left, "r", COLOR_LEFT.r),
-				Map.get_float(left, "g", COLOR_LEFT.g),
-				Map.get_float(left, "b", COLOR_LEFT.b)
-			)
-			COLOR_RIGHT_ONCE = Color(
-				Map.get_float(right, "r", COLOR_RIGHT.r),
-				Map.get_float(right, "g", COLOR_RIGHT.g),
-				Map.get_float(right, "b", COLOR_RIGHT.b)
-			)
-	COLOR_LEFT_ONCE = Color.TRANSPARENT
-	COLOR_RIGHT_ONCE = Color.TRANSPARENT
-	set_colors.call(info_data, "_envColor%sBoost")
-	set_colors.call(diff_data, "_envColor%sBoost")
-	set_colors.call(info_data, "_envColor%s")
-	set_colors.call(diff_data, "_envColor%s")
-	set_colors.call(info_data, "_color%s")
-	set_colors.call(diff_data, "_color%s")
 
 # This function will transitioning the game from it's current state into
 # the provided 'next_state'.
@@ -168,14 +130,6 @@ func _submit_highscore(player_name: String) -> void:
 			Scoreboard.points)
 			
 		_transition_game_state(gamestate_mapcomplete)
-
-func _get_color_left() -> Color:
-	if disable_map_color: return COLOR_LEFT
-	return COLOR_LEFT_ONCE if COLOR_LEFT_ONCE != Color.TRANSPARENT else COLOR_LEFT
-
-func _get_color_right() -> Color:
-	if disable_map_color: return COLOR_RIGHT
-	return COLOR_RIGHT_ONCE if COLOR_RIGHT_ONCE != Color.TRANSPARENT else COLOR_RIGHT
 
 func _check_and_update_saber(controller: BeepSaberController, saber: LightSaber) -> void:
 	# to allow extending/sheething the saber while not playing a song
@@ -214,9 +168,12 @@ func _ready() -> void:
 	vr.leftController = left_controller
 	vr.rightController = right_controller
 	
+	left_saber.set_saber(Settings.SABER_VISUALS[Settings.saber_visual][1])
+	right_saber.set_saber(Settings.SABER_VISUALS[Settings.saber_visual][1])
+	
 	if !vr.inVR:
 		$XROrigin3D.add_child(preload("res://OQ_Toolkit/OQ_ARVROrigin/Feature_VRSimulator.tscn").instantiate())
-	update_saber_colors()
+	set_colors_from_settings()
 	
 	UI_AudioEngine.attach_children(highscore_keyboard)
 	UI_AudioEngine.attach_children(online_search_keyboard)
@@ -233,19 +190,24 @@ func _ready() -> void:
 	await get_tree().process_frame
 	($pre_renderer as Node3D).queue_free()
 
-func update_saber_colors() -> void:
-	left_saber.set_color(COLOR_LEFT)
-	right_saber.set_color(COLOR_RIGHT)
+func set_colors_from_settings() -> void:
+	update_colors(Settings.color_left, Settings.color_right)
+
+func update_colors(left: Color, right: Color) -> void:
+	Map.color_left = left
+	Map.color_right = right
+	left_saber.set_color(left)
+	right_saber.set_color(right)
 	#also updates map colors
-	event_driver.update_colors(COLOR_LEFT, COLOR_RIGHT)
-	($StandingGround as Floor).update_colors(COLOR_LEFT,COLOR_RIGHT)
+	event_driver.update_colors(left, right)
+	($StandingGround as Floor).update_colors(left, right)
 
 func disable_events(disabled: bool) -> void:
 	event_driver.disabled = disabled
 	if disabled:
 		event_driver.set_all_off()
 	else:
-		event_driver.set_all_on(COLOR_LEFT, COLOR_RIGHT)
+		event_driver.set_all_on(Settings.color_left, Settings.color_right)
 
 func _clear_track() -> void:
 	for c in track.get_children():
@@ -342,6 +304,7 @@ func _on_BeepSaberMainMenu_settings_requested() -> void:
 	_transition_game_state(gamestate_settings)
 
 func _on_settings_Panel_apply() -> void:
+	set_colors_from_settings()
 	_transition_game_state(gamestate_mapselection)
 
 func _on_Keyboard_highscore_text_input_enter(text: String) -> void:

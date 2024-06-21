@@ -64,8 +64,7 @@ func _physics_process(delta: float) -> void:
 	position = offset_pos + extra_offset_pos
 	rotation_degrees = offset_rot + extra_offset_rot
 	saber_end_past = saber_end
-	#saber_end = (get_parent() as Node3D).global_transform.origin + global_transform.basis.y
-	saber_end = saber_visual.tip.global_position
+	saber_end = saber_visual.tip.global_transform.origin
 	last_dt = delta
 	if is_extended():
 		#check floor collision for burn mark

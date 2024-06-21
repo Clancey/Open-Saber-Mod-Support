@@ -9,7 +9,7 @@ uniform float roughness;
 uniform float sub_emission_energy;
 
 uniform bool cutted = false;
-uniform float cut_pos = 0.0;
+uniform float cut_dist_from_center = 0.0;
 uniform float cut_vanish = 0.0;
 uniform float cut_angle = 0.0;
 uniform float cut_white_margin = 0.04;
@@ -31,10 +31,9 @@ mat3 rotation3dZ(float angle) {
 varying float cut_interp;
 void vertex() {
 	if (cutted) {
-		vec3 cut_init = cut_pos+(VERTEX*rotation3dZ(cut_angle));
-		cut_interp = cut_init.x;
-		cut_interp *= -1.0;
-		cut_interp += cut_vanish;
+		float cut_line = cut_dist_from_center+(VERTEX*rotation3dZ(cut_angle)).x;
+		cut_interp = cut_line;
+		cut_interp -= cut_vanish;
 	}
 }
 
@@ -49,11 +48,11 @@ void fragment() {
 	
 	if (cutted){
 		// Discard all pixels "in the cut"
-		if (cut_interp > 0.0)	discard;
+		if (cut_interp < 0.0) discard;
 		
 		// soft white margin
-		EMISSION += vec3( smoothstep(cut_white_margin+0.01,cut_white_margin,-cut_interp) );
+		EMISSION += vec3( smoothstep(cut_white_margin+0.01,cut_white_margin,cut_interp) );
 		// hard white margin
-//		EMISSION += vec3( float(-cut_white_margin < cut_interp) );
+		//EMISSION += vec3( float(cut_white_margin < cut_interp) );
 	}
 }

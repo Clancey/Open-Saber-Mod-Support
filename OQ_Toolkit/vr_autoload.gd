@@ -68,6 +68,33 @@ func log_error(s: String) -> void:
 	_append_to_log(VRLogType.ERROR, s);
 	print("ERROR: : ", s);
 
+func log_file_error(error: Error, filename: String, where: String) -> void:
+	var message := "[color=red]Uh oh, you messed up[/color] [rainbow]real bad![/rainbow]\nError with file [color=cyan][url]%s[/url][/color] in [color=yellow]%s[/color]:\n[color=magenta]" % [filename, where]
+	match error:
+		ERR_FILE_ALREADY_IN_USE:
+			message += "File already in use"
+		ERR_FILE_BAD_DRIVE:
+			message += "Bad drive"
+		ERR_FILE_BAD_PATH:
+			message += "Bad path"
+		ERR_FILE_CANT_OPEN:
+			message += "Can't open"
+		ERR_FILE_CANT_READ:
+			message += "Can't read"
+		ERR_FILE_CANT_WRITE:
+			message += "Can't write"
+		ERR_FILE_CORRUPT:
+			message += "File is corrupt"
+		ERR_FILE_NOT_FOUND:
+			message += "File not found"
+		ERR_FILE_NO_PERMISSION:
+			message += "No permission"
+		_:
+			message += "Turbo-screwed! Unrecognized error code %s" % error
+	message += "[/color]"
+	_append_to_log(VRLogType.ERROR, message)
+	print_rich(message)
+
 
 # returns the current player height based on the difference between
 # the height of origin and camera; this assumes that tracking is floor level
@@ -93,6 +120,7 @@ func load_json_file(filename: String) -> Dictionary:
 		return r
 	else:
 		#vr.log_error("Could not load_json_file from " + filename);
+		log_file_error(FileAccess.get_open_error(), filename, "load_json_file in vr_autoload.gd")
 		return {}
 
 ###############################################################################

@@ -83,6 +83,9 @@ var bomb_stack: Array[BombInfo]
 var obstacle_stack: Array[ObstacleInfo]
 var event_stack: Array[EventInfo]
 
+var color_left: Color
+var color_right: Color
+
 # type safety, just in case a wrongly-made beatmap comes through
 func get_str(dict: Dictionary, key: String, default: String) -> String:
 		if dict.has(key) and dict[key] is String:
@@ -106,6 +109,33 @@ func get_dict(dict: Dictionary, key: String, default: Dictionary) -> Dictionary:
 
 # no get_int because godot dictionaries made from json only have floats
 
+func set_colors_from_custom_data(info_data: Dictionary, diff_data: Dictionary, default_left: Color, default_right: Color) -> void:
+	var set_colors := func(data: Dictionary, color_name: String) -> void:
+		var left_name := color_name % "Left"
+		var right_name := color_name % "Right"
+		if (
+			data.has(left_name) and data.has(right_name)
+			and data[left_name] is Dictionary and data[right_name] is Dictionary
+		):
+			var left := data[left_name] as Dictionary
+			var right := data[right_name] as Dictionary
+			color_left = Color(
+				get_float(left, "r", default_left.r),
+				get_float(left, "g", default_left.g),
+				get_float(left, "b", default_left.b)
+			)
+			color_right = Color(
+				get_float(right, "r", default_right.r),
+				get_float(right, "g", default_right.g),
+				get_float(right, "b", default_right.b)
+			)
+	set_colors.call(info_data, "_envColor%sBoost")
+	set_colors.call(diff_data, "_envColor%sBoost")
+	set_colors.call(info_data, "_envColor%s")
+	set_colors.call(diff_data, "_envColor%s")
+	set_colors.call(info_data, "_color%s")
+	set_colors.call(diff_data, "_color%s")
+
 # mix all the difficulty sets into a single one
 func mix_difficulty_sets_v2(difficulty_beatmap_sets: Array) -> Array[Difficulty]:
 	var newset: Array[Difficulty] = []
@@ -126,13 +156,14 @@ func mix_difficulty_sets_v2(difficulty_beatmap_sets: Array) -> Array[Difficulty]
 	return newset
 
 func load_map_info_v2(load_path: String) -> Info:
-	var info_dict := vr.load_json_file(load_path + "Info.dat")
-	if (info_dict.is_empty()):
+	var info_dict := {}
+	if FileAccess.file_exists(load_path + "Info.dat"):
+		info_dict = vr.load_json_file(load_path + "Info.dat")
+	elif FileAccess.file_exists(load_path + "info.dat"):
 		info_dict = vr.load_json_file(load_path + "info.dat")
-		#because android is case sensitive and some maps have it lowercase, some not
-		if (info_dict.is_empty()):
-			vr.log_error("Invalid info.dat found in " + load_path)
-			return null
+	if (info_dict.is_empty()):
+		vr.log_error("Invalid info.dat found in " + load_path)
+		return null
 	
 	var beatmap_sets := get_array(info_dict, "_difficultyBeatmapSets", [])
 	if (beatmap_sets.is_empty()):

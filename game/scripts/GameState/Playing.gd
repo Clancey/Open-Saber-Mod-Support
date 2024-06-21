@@ -44,7 +44,7 @@ func _spawn_note(game: BeepSaber_Game, note: Map.ColorNoteInfo, current_beat: fl
 		print("Failed to acquire a new note from scene pool")
 		return
 	
-	var color := game.COLOR_LEFT if note.color == 0 else game.COLOR_RIGHT
+	var color := Map.color_left if note.color == 0 else Map.color_right
 	note_node.spawn(note, current_beat, color)
 
 var bomb_template := load("res://game/Bomb/Bomb.tscn") as PackedScene
@@ -60,7 +60,7 @@ func _spawn_wall(game: BeepSaber_Game, wall_info: Map.ObstacleInfo, current_beat
 	game.track.add_child(wall)
 
 func _spawn_event(game: BeepSaber_Game, data: Map.EventInfo) -> void:
-	game.event_driver.process_event(data, game.COLOR_LEFT, game.COLOR_RIGHT)
+	game.event_driver.process_event(data, Map.color_left, Map.color_right)
 
 # when the song ended we want to display the current score and
 # the high score

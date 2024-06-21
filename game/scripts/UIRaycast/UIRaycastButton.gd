@@ -28,7 +28,7 @@ func _ready() -> void:
 	text_mesh.mesh = text_mesh.mesh.duplicate(true) as TextMesh
 	(text_mesh.mesh as TextMesh).text = text
 
-func ui_raycast_hit_event(position: Vector3, click: bool, release: bool) -> void:
+func ui_raycast_hit_event(_pos: Vector3, click: bool, release: bool) -> void:
 	if click:
 		if not held:
 			pressed.emit()
