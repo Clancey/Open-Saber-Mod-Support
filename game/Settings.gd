@@ -32,9 +32,7 @@ func _ready() -> void:
 func reload() -> void:
 	var file := FileAccess.open(config_path,FileAccess.READ)
 	if not file:
-		var error := FileAccess.get_open_error()
-		if error != ERR_FILE_NOT_FOUND:
-			vr.log_file_error(error, config_path, "load() in Settings.gd")
+		vr.log_file_error(FileAccess.get_open_error(), config_path, "load() in Settings.gd")
 		return
 	thickness = file.get_float()
 	color_left = Color(file.get_float(), file.get_float(), file.get_float(), file.get_float())

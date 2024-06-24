@@ -4,53 +4,49 @@ class_name YoutubeUI
 signal song_selected(video_metadata)
 
 # path to a Oculus Quest toolkit keyboard (search for searching youtube)
-@export_node_path() var keyboard
+@export var keyboard: OQ_UI2DKeyboard
 
 @onready var api := $YouTubeAPI
-@onready var search_line_edit := $SearchLineEdit
-@onready var search_button := $SearchButton
-@onready var results_list := $ResultsList
-@onready var select_song_button := $SelectSongButton
+@onready var search_line_edit := $SearchLineEdit as LineEdit
+@onready var search_button := $SearchButton as Button
+@onready var results_list := $ResultsList as ItemList
+@onready var select_song_button := $SelectSongButton as Button
 @onready var thumbnail_request_pool := $ThumbnailRequestPool
 
-var _video_idx_by_id = {}
+var _video_idx_by_id := {}
 
 var selected_video_metadata = null
 
-func _ready():
+func _ready() -> void:
 	UI_AudioEngine.attach_children(self)
 	# setup keybaord reference and text input signal handler
-	keyboard = get_node(keyboard)
-	if is_instance_valid(keyboard):
-		keyboard.connect("text_input_enter", Callable(self, "_on_keybaord_text_input_enter"))
+	keyboard.text_input_enter.connect(_on_keybaord_text_input_enter)
 
 # override hide() method to handle case where UI is inside a OQ_UI2DCanvas
-func _hide():
-	var parent_canvas = self
+func _hide() -> void:
+	var parent_canvas: Node = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
+			(parent_canvas as OQ_UI2DCanvas).hide()
 			break
 		parent_canvas = parent_canvas.get_parent()
-		
+	
 	if parent_canvas == null:
 		self.visible = false
-	else:
-		parent_canvas.hide()
 
 # override show() method to handle case where UI is inside a OQ_UI2DCanvas
-func _show():
-	var parent_canvas = self
+func _show() -> void:
+	var parent_canvas: Node = self
 	while parent_canvas != null:
 		if parent_canvas is OQ_UI2DCanvas:
+			(parent_canvas as OQ_UI2DCanvas).show()
 			break
 		parent_canvas = parent_canvas.get_parent()
 		
 	if parent_canvas == null:
 		self.visible = true
-	else:
-		parent_canvas.show()
 
-func _on_SearchButton_pressed():
+func _on_SearchButton_pressed() -> void:
 	select_song_button.disabled = true
 	results_list.clear()
 	_video_idx_by_id.clear()
@@ -59,11 +55,11 @@ func _on_SearchButton_pressed():
 	var search_text = search_line_edit.text
 	api.search(search_text)
 
-func _on_YouTubeAPI_failed_request():
+func _on_YouTubeAPI_failed_request() -> void:
 	search_button.disabled = false
 	vr.log_error('Search failed!')
 
-func _on_YouTubeAPI_search_complete(videos):
+func _on_YouTubeAPI_search_complete(videos) -> void:
 	search_button.disabled = false
 	
 	for video in videos:
@@ -99,9 +95,9 @@ func _on_YouTubeAPI_search_complete(videos):
 			if token < 0:
 				vr.log_error('failed to request thumbnail')
 
-func _on_ThumbnailRequestPool_request_complete(result, response_code, headers, body, token, user_data):
+func _on_ThumbnailRequestPool_request_complete(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray, token: int, user_data: Dictionary) -> void:
 	if response_code == HTTPClient.RESPONSE_OK:
-		var img = ImageUtils.get_img_from_buffer(body)
+		var img := ImageUtils.get_img_from_buffer(body)
 		if img == null:
 			vr.log_error('failed to parse valid image data for video %s' % user_data['id'])
 			# leave default thumbnail
@@ -109,9 +105,9 @@ func _on_ThumbnailRequestPool_request_complete(result, response_code, headers, b
 		
 		var img_tex := ImageTexture.new()
 		img_tex.create_from_image(img)
-		var size = img.get_size()
+		var size := img.get_size()
 		size = size * 100.0 / img.get_height()# resize to max height of 100px
-		img_tex.set_size_2d_override(size)
+		img_tex.set_size_override(size)
 		
 		var item_idx = _video_idx_by_id[user_data['id']]
 		results_list.set_item_icon(item_idx, img_tex)
@@ -119,22 +115,21 @@ func _on_ThumbnailRequestPool_request_complete(result, response_code, headers, b
 		vr.log_error('received error code from thumbnail request' % response_code)
 
 
-func _on_SelectSongButton_pressed():
-	emit_signal("song_selected",selected_video_metadata)
+func _on_SelectSongButton_pressed() -> void:
+	song_selected.emit(selected_video_metadata)
 	self.hide()
 
-func _on_BackButton_pressed():
+func _on_BackButton_pressed() -> void:
 	self.hide()
 
-func _on_ResultsList_item_selected(index):
+func _on_ResultsList_item_selected(index: int) -> void:
 	selected_video_metadata = results_list.get_item_metadata(index)
 	select_song_button.disabled = false
 
-func _on_SearchLineEdit_focus_entered():
-	if is_instance_valid(keyboard):
-		keyboard._show()
+func _on_SearchLineEdit_focus_entered() -> void:
+	keyboard._show()
 
-func _on_keybaord_text_input_enter(text):
+func _on_keybaord_text_input_enter(text: String) -> void:
 	# only handle text inputs while the UI is visible
 	# Note: we could be sharing the keyboard with other dialogs too. Should
 	# probably handle this a litte more ellegantly at some point...

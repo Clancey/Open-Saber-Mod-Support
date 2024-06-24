@@ -7,7 +7,7 @@ extends Panel
 class_name MainMenu
 
 # emitted when a new map difficulty is selected
-signal difficulty_changed(map_info: Map.Info, diff_name: String, diff_rank: int)
+signal difficulty_changed(map_info: Map.Info, diff_rank: int)
 # emitted when the settings button is pressed
 signal settings_requested()
 signal start_map(info: Map.Info, data: Dictionary, difficulty: int)
@@ -264,7 +264,7 @@ func _select_difficulty(id: int) -> void:
 	
 	# notify listeners that difficulty has changed
 	var difficulty := current_selected.difficulty_beatmaps[id]
-	difficulty_changed.emit(current_selected, difficulty.difficulty, difficulty.difficulty_rank)
+	difficulty_changed.emit(current_selected, difficulty.difficulty_rank)
 
 
 func _load_map_and_start(map: Map.Info) -> void:

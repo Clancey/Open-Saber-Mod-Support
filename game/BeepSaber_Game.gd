@@ -22,6 +22,7 @@ var gamestate: GameState = gamestate_bootup
 
 @onready var main_menu := $MainMenu_OQ_UI2DCanvas as OQ_UI2DCanvas
 @onready var pause_menu := $PauseMenu_canvas as OQ_UI2DCanvas
+@onready var pause_countdown := $Pause_countdown as OQ_UI2DLabel
 @onready var settings_canvas := $Settings_canvas as OQ_UI2DCanvas
 @onready var settings_panel := settings_canvas.ui_control as SettingsPanel
 @onready var highscore_canvas := $Highscores_Canvas as OQ_UI2DCanvas
@@ -116,9 +117,12 @@ func _transition_game_state(next_state: GameState) -> void:
 func show_MapSourceDialogs(showing: bool = true) -> void:
 	map_source_dialogs.visible = showing
 	for c in map_source_dialogs.get_children():
-		c._hide()
+		if c is OQ_UI2DCanvas:
+			(c as OQ_UI2DCanvas)._hide()
 	if showing:
-		map_source_dialogs.get_child(0)._show()
+		var first_dialog := map_source_dialogs.get_child(0)
+		if first_dialog is OQ_UI2DCanvas:
+			(first_dialog as OQ_UI2DCanvas)._show()
 
 # call this method to submit a new highscore to the database
 func _submit_highscore(player_name: String) -> void:
@@ -153,7 +157,7 @@ func _check_and_update_saber(controller: BeepSaberController, saber: LightSaber)
 			controller.simple_rumble(0.0, 0.1)
 
 
-func _physics_process(dt: float) -> void:
+func _physics_process(_dt: float) -> void:
 	if fps_label.visible:
 		fps_label.set_label_text("FPS: %d" % Engine.get_frames_per_second())
 	
@@ -170,8 +174,9 @@ func _ready() -> void:
 	
 	left_saber.set_saber(Settings.SABER_VISUALS[Settings.saber_visual][1])
 	right_saber.set_saber(Settings.SABER_VISUALS[Settings.saber_visual][1])
+	fps_label.visible = Settings.show_fps
 	
-	if !vr.inVR:
+	if not vr.inVR:
 		$XROrigin3D.add_child(preload("res://OQ_Toolkit/OQ_ARVROrigin/Feature_VRSimulator.tscn").instantiate())
 	set_colors_from_settings()
 	
@@ -215,11 +220,9 @@ func _clear_track() -> void:
 			var b := c as BeepCube
 			if b.visible:
 				b.release()
-		elif c is Node3D:
-			var n := c as Node3D
-			n.visible = false
-			track.remove_child(n)
-			n.queue_free()
+		else:
+			track.remove_child(c)
+			c.queue_free()
 
 func _display_points() -> void:
 	var hit_rate: float
@@ -232,61 +235,81 @@ func _display_points() -> void:
 	(multiplier_label.mesh as TextMesh).text = "x %d\nCombo %d" % [Scoreboard.multiplier, Scoreboard.combo]
 	percent_indicator.update_percent(hit_rate)
 
-# quiets song when player enters into a wall
-func _quiet_song() -> void:
-	song_player.volume_db = -15.0
-
-# restores song volume when player leaves wall
-func _louden_song() -> void:
-	song_player.volume_db = 0.0
-
 # accessor method for the player name selector UI element
 func _name_selector() -> NameSelector:
 	return name_selector_canvas.ui_control
 
 func _on_PlayerHead_area_entered(area: Area3D) -> void:
 	if area.is_in_group(&"wall"):
-		if not _in_wall:
-			_quiet_song()
-		
+		song_player.volume_db = -15.0
 		_in_wall = true
 
 func _on_PlayerHead_area_exited(area: Area3D) -> void:
 	if area.is_in_group(&"wall"):
-		if _in_wall:
-			_louden_song()
-		
+		song_player.volume_db = 0.0
 		_in_wall = false
 
+# when the song ended we want to display the current score and
+# the high score
+func _on_song_ended() -> void:
+	song_player.stop()
+	PlayCount.increment_play_count(Map.current_info,Map.current_difficulty.difficulty_rank)
+	
+	var new_record := false
+	var highscore := Highscores.get_highscore(Map.current_info,Map.current_difficulty.difficulty_rank)
+	if highscore == -1:
+		# no highscores exist yet
+		highscore = Scoreboard.points
+	elif Scoreboard.points > highscore:
+		# player's score is the new highscore!
+		highscore = Scoreboard.points
+		new_record = true
 
-func _on_EndScore_panel_repeat() -> void:
+	var current_percent := Scoreboard.right_notes/(Scoreboard.right_notes+Scoreboard.wrong_notes)
+	endscore.show_score(
+		Scoreboard.points,
+		highscore,
+		current_percent,
+		"%s By %s\n%s     Map author: %s" % [
+			Map.current_info.song_name,
+			Map.current_info.song_author_name,
+			menu._map_difficulty_name,
+			Map.current_info.level_author_name],
+		Scoreboard.full_combo,
+		new_record
+	)
+	
+	if Highscores.is_new_highscore(Map.current_info,Map.current_difficulty.difficulty_rank,Scoreboard.points):
+		_transition_game_state(gamestate_newhighscore)
+	else:
+		_transition_game_state(gamestate_mapcomplete)
+
+func _restart_button() -> void:
 	start_map(Map.current_info, Map.current_difficulty_index)
 	endscore.visible = false
 	pause_menu.visible = false
 
-
-func _on_EndScore_panel_goto_mainmenu() -> void:
+func _main_menu_button() -> void:
 	_clear_track()
 	_transition_game_state(gamestate_mapselection)
 
-
-func _on_Pause_Panel_continue_button() -> void:
+func _unpause_button() -> void:
 	pause_menu.visible = false
-	$Pause_countdown.visible = true
+	pause_countdown.visible = true
 	track.visible = true
-	$Pause_countdown.set_label_text("3")
+	pause_countdown.set_label_text("3")
 	await get_tree().create_timer(0.5).timeout
-	$Pause_countdown.set_label_text("2")
+	pause_countdown.set_label_text("2")
 	await get_tree().create_timer(0.5).timeout
-	$Pause_countdown.set_label_text("1")
+	pause_countdown.set_label_text("1")
 	await get_tree().create_timer(0.5).timeout
-	$Pause_countdown.visible = false
+	pause_countdown.visible = false
 	
 	# continue game play
 	song_player.play(pause_position)
 	_transition_game_state(gamestate_playing)
 
-func _on_BeepSaberMainMenu_difficulty_changed(map_info: Map.Info, diff_name: String, diff_rank: int) -> void:
+func _on_BeepSaberMainMenu_difficulty_changed(map_info: Map.Info, diff_rank: int) -> void:
 	Map.current_difficulty = null
 	for diff in map_info.difficulty_beatmaps:
 		if diff_rank == diff.difficulty_rank:
@@ -300,7 +323,7 @@ func _on_BeepSaberMainMenu_difficulty_changed(map_info: Map.Info, diff_name: Str
 	highscore_canvas._show()
 	highscore_panel.load_highscores(map_info,diff_rank)
 
-func _on_BeepSaberMainMenu_settings_requested() -> void:
+func _settings_button() -> void:
 	_transition_game_state(gamestate_settings)
 
 func _on_settings_Panel_apply() -> void:

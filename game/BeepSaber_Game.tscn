@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=33 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
@@ -23,7 +23,6 @@
 [ext_resource type="PackedScene" uid="uid://cj71atwq2eow8" path="res://game/ui/NameSelector/NameSelector.tscn" id="25"]
 [ext_resource type="PackedScene" uid="uid://cb8ftj7lpxrfy" path="res://game/ui/YouTubeUI/YouTubeUI.tscn" id="26"]
 [ext_resource type="PackedScene" uid="uid://cjirr6sfxfhhd" path="res://game/scripts/ScenePool/ScenePool.tscn" id="27"]
-[ext_resource type="PackedScene" uid="uid://dvj8dorx2l7s0" path="res://game/BeepCube.tscn" id="27_j1vep"]
 [ext_resource type="PackedScene" uid="uid://dkqqtux44xxe7" path="res://game/ui/MapDownloadPanel/MapDownloadPanel.tscn" id="28"]
 [ext_resource type="PackedScene" uid="uid://bmdbiqndkvcm6" path="res://game/ui/BeatSageUI/BeatSageUI.tscn" id="29"]
 [ext_resource type="PackedScene" uid="uid://cgfj82g2xp1ne" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLogWindow.tscn" id="31"]
@@ -116,10 +115,11 @@ script = ExtResource("8_5lcn1")
 [node name="LeftLightSaber" parent="XROrigin3D/LeftController" node_paths=PackedStringArray("song_player_ref") instance=ExtResource("10")]
 song_player_ref = NodePath("../../../SongPlayer")
 
-[node name="UIRaycast" parent="XROrigin3D/LeftController" instance=ExtResource("12")]
+[node name="UIRaycast" parent="XROrigin3D/LeftController" node_paths=PackedStringArray("controller") instance=ExtResource("12")]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 active = false
 ui_raycast_length = 5.0
+controller = NodePath("..")
 
 [node name="RightController" type="XRController3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.5, -0.5)
@@ -130,9 +130,10 @@ script = ExtResource("8_5lcn1")
 type = 1
 song_player_ref = NodePath("../../../SongPlayer")
 
-[node name="UIRaycast" parent="XROrigin3D/RightController" instance=ExtResource("12")]
+[node name="UIRaycast" parent="XROrigin3D/RightController" node_paths=PackedStringArray("controller") instance=ExtResource("12")]
 transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
 ui_raycast_length = 5.0
+controller = NodePath("..")
 
 [node name="Track" type="Node3D" parent="."]
 
@@ -216,7 +217,7 @@ visible = false
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0.01)
 visible = false
 
-[node name="YouTubeUI" parent="MapSourceDialogs/YouTube_Canvas" instance=ExtResource("26")]
+[node name="YouTubeUI" parent="MapSourceDialogs/YouTube_Canvas" node_paths=PackedStringArray("keyboard") instance=ExtResource("26")]
 keyboard = NodePath("../../../Keyboard_online_search")
 
 [node name="Keyboard_online_search" parent="." instance=ExtResource("21")]
@@ -239,13 +240,9 @@ visible = false
 update_only_on_input = false
 
 [node name="NameSelector" parent="NameSelector_Canvas" instance=ExtResource("25")]
-layout_mode = 3
-anchors_preset = 0
 mouse_filter = 1
 
-[node name="BeepCubePool" parent="." node_paths=PackedStringArray("track") instance=ExtResource("27")]
-scene = ExtResource("27_j1vep")
-track = NodePath("../Track")
+[node name="BeepCubePool" parent="." instance=ExtResource("27")]
 
 [node name="Keyboard_highscore" parent="." instance=ExtResource("21")]
 transform = Transform3D(2.40442, 0, 0, 0, 2.37659, 0.364816, 0, -0.364816, 2.37659, -0.00735812, 0.350501, -0.67319)
@@ -254,16 +251,17 @@ cancelable = false
 min_chars_to_enable_enter = 1
 is_name_input = true
 
+[connection signal="finished" from="SongPlayer" to="." method="_on_song_ended"]
 [connection signal="area_entered" from="XROrigin3D/XRCamera3D/PlayerHead" to="." method="_on_PlayerHead_area_entered"]
 [connection signal="area_exited" from="XROrigin3D/XRCamera3D/PlayerHead" to="." method="_on_PlayerHead_area_exited"]
 [connection signal="difficulty_changed" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_on_BeepSaberMainMenu_difficulty_changed"]
-[connection signal="settings_requested" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_on_BeepSaberMainMenu_settings_requested"]
+[connection signal="settings_requested" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="_settings_button"]
 [connection signal="start_map" from="MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu" to="." method="start_map"]
-[connection signal="mainmenu" from="EndScore" to="." method="_on_EndScore_panel_goto_mainmenu"]
-[connection signal="repeat" from="EndScore" to="." method="_on_EndScore_panel_repeat"]
-[connection signal="continue_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_on_Pause_Panel_continue_button"]
-[connection signal="mainmenu_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_on_EndScore_panel_goto_mainmenu"]
-[connection signal="restart_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_on_EndScore_panel_repeat"]
+[connection signal="mainmenu" from="EndScore" to="." method="_main_menu_button"]
+[connection signal="repeat" from="EndScore" to="." method="_restart_button"]
+[connection signal="continue_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_unpause_button"]
+[connection signal="mainmenu_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_main_menu_button"]
+[connection signal="restart_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_restart_button"]
 [connection signal="apply" from="Settings_canvas/settings_Panel" to="." method="_on_settings_Panel_apply"]
 [connection signal="name_selected" from="NameSelector_Canvas/NameSelector" to="." method="_on_NameSelector_name_selected"]
 [connection signal="scene_instanced" from="BeepCubePool" to="." method="_on_BeepCubePool_scene_instanced"]

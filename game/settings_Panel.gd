@@ -39,7 +39,7 @@ var _play_ui_sound_demo := false
 func _ready() -> void:
 	UI_AudioEngine.attach_children(self)
 	
-	if OS.get_name() in ["Web"] and game:
+	if OS.get_name() in ["Web"]:
 		#savedata.saber_tail = false
 		#savedata.cube_cuts_falloff = false
 		Settings.glare = false

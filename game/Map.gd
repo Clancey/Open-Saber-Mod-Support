@@ -86,6 +86,23 @@ var event_stack: Array[EventInfo]
 var color_left: Color
 var color_right: Color
 
+# some simple multithreading, since larger maps can take a very long time to
+# load.  one particulary notable outlier is the beatmap of shrek, which took
+# around 48 milliseconds to load before even on a 7800x3d, and now takes around
+# 29 milliseconds.  takes just over half as long as before, very worth the
+# nightmare code i've written.
+#
+# long story short, each beatmap-element loading func splits into two threads:
+# one for parsing the top half of the array of dicts, and one for parsing the
+# bottom half.  these run concurrently, not quite halfing the time, but
+# getting pretty close to halfing it.
+var note_thread_0 := Thread.new()
+var note_thread_1 := Thread.new()
+var obstacle_thread_0 := Thread.new()
+var obstacle_thread_1 := Thread.new()
+var event_thread_0 := Thread.new()
+var event_thread_1 := Thread.new()
+
 # type safety, just in case a wrongly-made beatmap comes through
 func get_str(dict: Dictionary, key: String, default: String) -> String:
 		if dict.has(key) and dict[key] is String:
@@ -139,10 +156,10 @@ func set_colors_from_custom_data(info_data: Dictionary, diff_data: Dictionary, d
 # mix all the difficulty sets into a single one
 func mix_difficulty_sets_v2(difficulty_beatmap_sets: Array) -> Array[Difficulty]:
 	var newset: Array[Difficulty] = []
-	for difficulty_set in difficulty_beatmap_sets:
+	for difficulty_set: Variant in difficulty_beatmap_sets:
 		if not difficulty_set is Dictionary: continue
 		var beatmaps := get_array(difficulty_set as Dictionary, "_difficultyBeatmaps", [])
-		for i in beatmaps:
+		for i: Variant in beatmaps:
 			if not i is Dictionary: continue
 			var diff_dict := i as Dictionary
 			var diff := Difficulty.new()
@@ -190,70 +207,94 @@ func load_map_info_v2(load_path: String) -> Info:
 	
 	return map
 
+# speed for the speed gods.  please forgive me for this.
+# - steve hocktail
 func load_note_info_v2(note_data: Array) -> void:
-	note_stack.clear()
-	bomb_stack.clear()
-	while not note_data.is_empty():
-		var i: Variant = note_data.pop_back()
-		if not i is Dictionary: continue
-		var note := i as Dictionary
-		
-		var note_type := int(get_float(note, "_type", -1.0))
-		if note_type == 3: # bombs are stored as note type 3 in v2
-			var new_bomb := BombInfo.new()
-			new_bomb.beat = get_float(note, "_time", 0.0)
-			new_bomb.line_index = int(get_float(note, "_lineIndex", 0))
-			new_bomb.line_layer = int(get_float(note, "_lineLayer", 0))
-			bomb_stack.append(new_bomb)
-		elif note_type == 0 or note_type == 1:
-			var new_note := ColorNoteInfo.new()
-			new_note.beat = get_float(note, "_time", 0.0)
-			new_note.line_index = int(get_float(note, "_lineIndex", 0))
-			new_note.line_layer = int(get_float(note, "_lineLayer", 0))
-			new_note.color = note_type
-			new_note.cut_direction = int(get_float(note, "_cutDirection", 0))
-			note_stack.append(new_note)
+	var load_range := func(start: int, end: int) -> Array[Array]:
+		var note_array: Array[ColorNoteInfo] = []
+		var bomb_array: Array[BombInfo] = []
+		for i in range(start, end):
+			if not note_data[i] is Dictionary: continue
+			var note_dict := note_data[i] as Dictionary
+			var note_type := int(get_float(note_dict, "_type", -1.0))
+			if note_type == 3 and Settings.bombs_enabled:
+				var new_bomb := BombInfo.new()
+				new_bomb.beat = get_float(note_dict, "_time", 0.0)
+				new_bomb.line_index = int(get_float(note_dict, "_lineIndex", 0))
+				new_bomb.line_layer = int(get_float(note_dict, "_lineLayer", 0))
+				bomb_array.append(new_bomb)
+			elif note_type == 0 or note_type == 1:
+				var new_note := ColorNoteInfo.new()
+				new_note.beat = get_float(note_dict, "_time", 0.0)
+				new_note.line_index = int(get_float(note_dict, "_lineIndex", 0))
+				new_note.line_layer = int(get_float(note_dict, "_lineLayer", 0))
+				new_note.color = note_type
+				new_note.cut_direction = int(get_float(note_dict, "_cutDirection", 0))
+				note_array.append(new_note)
+		return [note_array, bomb_array]
+	@warning_ignore("integer_division")
+	var midpoint := note_data.size() / 2
+	note_thread_1.start(load_range.bind(0, midpoint))
+	var total_second_half := load_range.bind(midpoint, note_data.size()).call() as Array[Array]
+	var total_first_half := note_thread_1.wait_to_finish() as Array[Array]
+	note_stack = total_first_half[0] + total_second_half[0]
+	bomb_stack = total_first_half[1] + total_second_half[1]
+	note_stack.reverse()
+	bomb_stack.reverse()
 
 func load_obstacle_info_v2(obstacle_data: Array) -> void:
-	obstacle_stack.clear()
-	while not obstacle_data.is_empty():
-		var i: Variant = obstacle_data.pop_back()
-		if not i is Dictionary: continue
-		var obstacle := i as Dictionary
-		
-		var new_obstacle := ObstacleInfo.new()
-		new_obstacle.beat = get_float(obstacle, "_time", 0.0)
-		new_obstacle.duration = get_float(obstacle, "_duration", 0.0)
-		new_obstacle.line_index = int(get_float(obstacle, "_lineIndex", 0))
-		new_obstacle.width = int(get_float(obstacle, "_width", 0))
-		var type := int(get_float(obstacle, "_type", 0))
-		match type:
-			0: # full height
-				new_obstacle.line_layer = 0
-				new_obstacle.height = 5
-			1: # crouch
-				new_obstacle.line_layer = 2
-				new_obstacle.height = 3
-			2: # free
-				new_obstacle.line_layer = int(get_float(obstacle, "_lineLayer", 0))
-				new_obstacle.height = int(get_float(obstacle, "_height", 0))
-		obstacle_stack.append(new_obstacle)
+	var last_index := obstacle_data.size() - 1
+	var load_range := func(start: int, end: int) -> void:
+		for i in range(start, end):
+			if not obstacle_data[i] is Dictionary: continue
+			var obstacle_dict := obstacle_data[i] as Dictionary
+			var new_obstacle := ObstacleInfo.new()
+			new_obstacle.beat = get_float(obstacle_dict, "_time", 0.0)
+			new_obstacle.duration = get_float(obstacle_dict, "_duration", 0.0)
+			new_obstacle.line_index = int(get_float(obstacle_dict, "_lineIndex", 0))
+			new_obstacle.width = int(get_float(obstacle_dict, "_width", 0))
+			var type := int(get_float(obstacle_dict, "_type", 0))
+			match type:
+				0: # full height
+					new_obstacle.line_layer = 0
+					new_obstacle.height = 5
+				1: # crouch
+					new_obstacle.line_layer = 2
+					new_obstacle.height = 3
+				2: # free
+					new_obstacle.line_layer = int(get_float(obstacle_dict, "_lineLayer", 0))
+					new_obstacle.height = int(get_float(obstacle_dict, "_height", 0))
+			obstacle_stack[last_index - i] = new_obstacle
+	@warning_ignore("integer_division")
+	var midpoint := obstacle_data.size() / 2
+	obstacle_stack.resize(obstacle_data.size())
+	obstacle_thread_1.start(load_range.bind(0, midpoint))
+	load_range.bind(midpoint, obstacle_data.size()).call()
+	obstacle_thread_1.wait_to_finish()
 
 func load_event_info_v2(event_data: Array) -> void:
-	event_stack.clear()
-	while not event_data.is_empty():
-		var i: Variant = event_data.pop_back()
-		if not i is Dictionary: continue
-		var event := i as Dictionary
-		
-		var new_event := EventInfo.new()
-		new_event.beat = get_float(event, "_time", 0.0)
-		new_event.type = int(get_float(event, "_type", 0))
-		new_event.value = int(get_float(event, "_value", 0))
-		new_event.float_value = get_float(event, "_floatValue", -1.0)
-		event_stack.append(new_event)
+	var last_index := event_data.size() - 1
+	var load_range := func(start: int, end: int) -> void:
+		for i in range(start, end):
+			if not event_data[i] is Dictionary: continue
+			var event_dict := event_data[i] as Dictionary
+			var new_event := EventInfo.new()
+			new_event.beat = get_float(event_dict, "_time", 0.0)
+			new_event.type = int(get_float(event_dict, "_type", 0))
+			new_event.value = int(get_float(event_dict, "_value", 0))
+			new_event.float_value = get_float(event_dict, "_floatValue", -1.0)
+			event_stack[last_index - i] = new_event
+	@warning_ignore("integer_division")
+	var midpoint := event_data.size() / 2
+	event_stack.resize(event_data.size())
+	event_thread_1.start(load_range.bind(0, midpoint))
+	load_range.bind(midpoint, event_data.size()).call()
+	event_thread_1.wait_to_finish()
 
 func load_beatmap_v2(map_data: Dictionary) -> void:
-	load_note_info_v2(get_array(map_data, "_notes", []))
-	load_obstacle_info_v2(get_array(map_data, "_obstacles", []))
-	load_event_info_v2(get_array(map_data, "_events", []))
+	note_thread_0.start(load_note_info_v2.bind(get_array(map_data, "_notes", [])))
+	obstacle_thread_0.start(load_obstacle_info_v2.bind(get_array(map_data, "_obstacles", [])))
+	event_thread_0.start(load_event_info_v2.bind(get_array(map_data, "_events", [])))
+	note_thread_0.wait_to_finish()
+	obstacle_thread_0.wait_to_finish()
+	event_thread_0.wait_to_finish()

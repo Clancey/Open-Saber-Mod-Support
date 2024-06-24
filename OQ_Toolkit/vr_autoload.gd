@@ -119,7 +119,6 @@ func load_json_file(filename: String) -> Dictionary:
 		save.close()
 		return r
 	else:
-		#vr.log_error("Could not load_json_file from " + filename);
 		log_file_error(FileAccess.get_open_error(), filename, "load_json_file in vr_autoload.gd")
 		return {}
 

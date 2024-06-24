@@ -4,7 +4,7 @@ class_name BeepCube
 
 # emitted when the cube is 'destroyed'. this signal is required by ScenePool to
 # manage when an instanced scene is free again.
-signal scene_released()
+signal scene_released(this: BeepCube)
 
 # the animation player contains the span animation that is applied to the CubeMeshAnimation node
 @onready var collision_big := $BeepCube_Big/CollisionBig as CollisionShape3D
@@ -58,25 +58,18 @@ func _ready() -> void:
 	mi.material_override = _mat
 	_mesh = mi.mesh
 
-static var CUBE_ROTATIONS := PackedFloat64Array([180.0, 0.0, 270.0, 90.0, -135.0, 135.0, -45.0, 45.0, 0.0])
+static var CUBE_ROTATIONS := PackedFloat64Array([PI, 0.0, TAU*0.75, TAU*0.25, -TAU*0.375, TAU*0.375, -TAU*0.125, TAU*0.125, 0.0])
 func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> void:
 	speed = Constants.BEAT_DISTANCE * Map.current_info.beats_per_minute / 60.0
 	beat = note_info.beat
 	which_saber = note_info.color
 	is_dot = note_info.cut_direction == 8
 	
-	var line: float = (note_info.line_index - 1.5) * Constants.CUBE_DISTANCE
-	var layer: float = (note_info.line_layer + 1) * Constants.CUBE_DISTANCE
+	transform.origin.x = (note_info.line_index - 1.5) * Constants.CUBE_DISTANCE
+	transform.origin.y = Constants.CUBE_HEIGHT_OFFSET + ((note_info.line_layer + 1) * Constants.CUBE_DISTANCE)
+	transform.origin.z = -(note_info.beat - current_beat) * Constants.BEAT_DISTANCE
 	
-	var rotation_z := deg_to_rad(CUBE_ROTATIONS[note_info.cut_direction])
-	
-	var distance: float = note_info.beat - current_beat
-	
-	transform.origin.x = line
-	transform.origin.y = Constants.CUBE_HEIGHT_OFFSET + layer
-	transform.origin.z = -distance * Constants.BEAT_DISTANCE
-	
-	rotation.z = rotation_z
+	rotation.z = CUBE_ROTATIONS[note_info.cut_direction]
 	
 	_mat.set_shader_parameter(&"color",color)
 	_mat.set_shader_parameter(&"is_dot", is_dot)
@@ -106,7 +99,7 @@ func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> v
 func release() -> void:
 	visible = false
 	set_collision_disabled(true)
-	scene_released.emit()
+	scene_released.emit(self)
 
 func on_miss() -> void:
 	Scoreboard.reset_combo()

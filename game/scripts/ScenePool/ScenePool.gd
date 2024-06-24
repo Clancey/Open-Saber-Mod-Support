@@ -2,30 +2,18 @@ extends Node
 class_name BeepCubePool
 
 # emitted when the pool intances a scene for the first time
-signal scene_instanced(scene: BeepCube)
+signal scene_instanced(cube: BeepCube)
 
-@export var scene: PackedScene
+var scene := load("res://game/BeepCube.tscn") as PackedScene
 var _free_list: Array[BeepCube] = []
-@export var track: Node3D
-
-var pre_pool := 100
 
 func _ready() -> void:
-	#if default_parent:
-	#	default_parent = get_node(default_parent)
-	#else:
-	#	default_parent = self
-	if scene == null:
-		push_error("Scene is null ('%s' ScenePool)" % name)
-		return
-	
-	
 	print("creating initial cube pool")
 	await get_tree().process_frame
-	track.visible = true
 	var init_cubes: Array[BeepCube] = []
-	for pp in range(pre_pool):
-		var cube = acquire(true)
+	const pre_pool := 100
+	for pp in pre_pool:
+		var cube := acquire()
 		cube.visible = true
 		cube.position.z = -2
 		init_cubes.append(cube)
@@ -36,22 +24,15 @@ func _ready() -> void:
 		cube.release()
 	print("cubes in pool: ",_free_list.size())
 
-func acquire(force = false) -> BeepCube:
-	var cube := _free_list.pop_front() as BeepCube if not force else null
+func acquire() -> BeepCube:
+	var cube := _free_list.pop_back() as BeepCube
 	if not cube:
-		var new_scene := scene.instantiate() as BeepCube
-		new_scene.scene_released.connect(_on_scene_released.bind(new_scene))
-		#if new_scene.connect("scene_released", _on_scene_released.bind(new_scene)) != OK:
-		#	push_error("failed to connect 'scene_released' signal. Scene's must emit this signal for the ScenePool to function properly.")
-		#	return
-		scene_instanced.emit(new_scene)
-		cube = new_scene
-	if not cube.is_inside_tree():
-		track.add_child(cube)
-	#print("cubes in pool: ",_free_list.size())
+		var new_cube := scene.instantiate() as BeepCube
+		new_cube.scene_released.connect(_on_scene_released)
+		scene_instanced.emit(new_cube)
+		cube = new_cube
 	return cube
 
-func _on_scene_released(scene) -> void:
-	#_free_list.push_front(scene)
-	_free_list.push_back(scene)
-	#print("cubes in pool: ",_free_list.size())
+func _on_scene_released(cube: BeepCube) -> void:
+	cube.scene_released.disconnect(_on_scene_released)
+	_free_list.push_back(cube)

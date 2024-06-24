@@ -30,15 +30,6 @@ const info_text := """VR Simulator Keys:
 """
 
 func _ready() -> void:
-	if (!vr.vrOrigin):
-		vr.log_error(" in Feature_VRSimulator: no vrOrigin.")
-	if (!vr.vrCamera):
-		vr.log_error(" in Feature_VRSimulator: no vrCamera.")
-	if (!vr.leftController):
-		vr.log_error(" in Feature_VRSimulator: no leftController.")
-	if (!vr.rightController):
-		vr.log_error(" in Feature_VRSimulator: no rightController.")
-
 	# set up everything for simulation
 	left_controller_node = Node3D.new()
 	vr.vrCamera.add_child(left_controller_node)
