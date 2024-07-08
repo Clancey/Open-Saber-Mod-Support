@@ -1,4 +1,5 @@
 extends Panel
+class_name BeatSagePanel
 
 @export_node_path var youtube_ui_path: NodePath
 var youtube_ui: YoutubeUI
@@ -143,7 +144,7 @@ func _on_BeatSageRequest_download_complete(filepath: String) -> void:
 		okay = false
 	
 	if okay:
-		Unzip.unzip(filepath,song_out_dir)
+		Utils.unzip(filepath,song_out_dir)
 	
 	DirAccess.remove_absolute(filepath)
 

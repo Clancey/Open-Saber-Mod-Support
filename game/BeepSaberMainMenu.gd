@@ -14,6 +14,9 @@ signal start_map(info: Map.Info, data: Dictionary, difficulty: int)
 
 var _cover_texture_create_sw := StopwatchFactory.create("cover_texture_create",10,true)
 
+@export var main_song_player_ref: AudioStreamPlayer
+@export var keyboard: OQ_UI2DKeyboard
+
 @onready var playlist_selector := $PlaylistSelector as OptionButton
 @onready var _bg_img_loader := preload("res://game/scripts/BackgroundImgLoader.gd").new()
 
@@ -22,7 +25,10 @@ var _cover_texture_create_sw := StopwatchFactory.create("cover_texture_create",1
 @onready var diff_menu := $DifficultyMenu as ItemList
 @onready var delete_button := $Delete_Button as Button
 
-var current_selected: Map.Info
+@onready var song_preview := $song_prev as AudioStreamPlayer
+var song_preview_transition_time := 1.0
+
+var current_selected: int
 
 enum PlaylistOptions {
 	AllSongs,
@@ -30,16 +36,15 @@ enum PlaylistOptions {
 	MostPlayed
 }
 
-#var bspath = "/sdcard/OpenSaber/"
-var bspath := "user://OpenSaber/"
-@export var keyboard: OQ_UI2DKeyboard
-
-var _playlists: Array
-
 # [{id:<song_dir_name>, source:<path_to_song?>},...]
 var _all_songs: Array[Map.Info]
 var _recently_added_songs: Array[Map.Info] # newest is first, oldest is last
 var _most_played_songs: Array[Map.Info] # most played is first, least played is last
+
+# stop the preview player if the main song player is going
+func _physics_process(_delta: float) -> void:
+	if main_song_player_ref.playing:
+		song_preview.stop()
 
 func refresh_playlist() -> void:
 	var id := playlist_selector.get_selected_id()
@@ -57,13 +62,11 @@ func compare(a: MapInfoWithSort, b: MapInfoWithSort) -> bool:
 	return a.num > b.num
 
 func _load_playlists() -> void:
-	_playlists = []
-	
 	#copy sample songs to main playlist folder on first run
-	var config_path := "user://config.dat"
+	const config_path := "user://config.dat"
 	if not FileAccess.file_exists(config_path):
 		@warning_ignore("return_value_discarded")
-		DirAccess.make_dir_recursive_absolute(bspath+"Songs/")
+		DirAccess.make_dir_recursive_absolute(Constants.APPDATA_PATH+"Songs/")
 		const maps_path := "res://game/data/maps/"
 		var dir := DirAccess.open(maps_path + "Songs/")
 		@warning_ignore("return_value_discarded")
@@ -73,7 +76,7 @@ func _load_playlists() -> void:
 			if dir.current_is_dir():
 				var new_dir := maps_path+"Songs/"+file_name
 				@warning_ignore("return_value_discarded")
-				DirAccess.make_dir_recursive_absolute(bspath+"Songs/"+file_name)
+				DirAccess.make_dir_recursive_absolute(Constants.APPDATA_PATH+"Songs/"+file_name)
 				var copy := DirAccess.open(new_dir)
 				@warning_ignore("return_value_discarded")
 				copy.list_dir_begin()
@@ -81,11 +84,11 @@ func _load_playlists() -> void:
 				while not copy_file_name.is_empty():
 					var copy_new_dir := new_dir+"/"+copy_file_name
 					@warning_ignore("return_value_discarded")
-					dir.copy(copy_new_dir,bspath+"Songs/"+file_name+"/"+copy_file_name)
+					dir.copy(copy_new_dir,Constants.APPDATA_PATH+"Songs/"+file_name+"/"+copy_file_name)
 					copy_file_name = copy.get_next()
 			file_name = dir.get_next()
 	
-	_all_songs = _discover_all_songs(bspath+"Songs/")
+	_discover_all_songs(Constants.APPDATA_PATH+"Songs/")
 	var songs_with_modify_times: Array[MapInfoWithSort] = []
 	var songs_with_play_count: Array[MapInfoWithSort] = []
 	for song in _all_songs:
@@ -110,8 +113,8 @@ func _load_playlists() -> void:
 	if canvas is OQ_UI2DCanvas:
 		(canvas as OQ_UI2DCanvas)._input_update()
 
-func _discover_all_songs(seek_path: String) -> Array[Map.Info]:
-	var songlist: Array[Map.Info] = []
+func _discover_all_songs(seek_path: String) -> void:
+	_all_songs.clear()
 	var dir := DirAccess.open(seek_path)
 	if dir:
 		@warning_ignore("return_value_discarded")
@@ -120,11 +123,10 @@ func _discover_all_songs(seek_path: String) -> Array[Map.Info]:
 		while not file_name.is_empty():
 			if dir.current_is_dir(): # TODO: or file_name.ends_with(".zip"):
 				var new_dir := seek_path+file_name+"/"
-				var song := Map.load_map_info_v2(new_dir)
+				var song := Map.load_map_info(new_dir)
 				if song:
-					songlist.append(song)
+					_all_songs.append(song)
 			file_name = dir.get_next()
-	return songlist
 
 func _set_cur_playlist(songs: Array[Map.Info]) -> void:
 	var current_id := songs_menu.get_selected_items()
@@ -182,89 +184,69 @@ func play_preview(buffer: PackedByteArray, start_time: float = 0.0, duration: fl
 	
 	
 	# fade out preview if ones already running
-	if song_prev.playing:
+	if song_preview.playing:
 		await _on_stop_prev_timeout()
 	
-	# start the requested preview
-	#if not _beepsaber.song_player.playing:
-	song_prev.stream = stream
-	var song_prev_Tween := song_prev.create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
-	@warning_ignore("return_value_discarded")
-	song_prev_Tween.tween_property(song_prev, ^"volume_db", 0, song_prev_transition_time)
-	song_prev_Tween.play()
-	
-	song_prev.play(float(start_time))
-	($song_prev/stop_prev as Timer).start(float(duration))
-
-@onready var song_prev := $song_prev as AudioStreamPlayer
-var song_prev_transition_time := 1.0
+	# start the requested preview, if still on song select
+	if not main_song_player_ref.playing:
+		song_preview.stream = stream
+		var song_prev_Tween := song_preview.create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
+		@warning_ignore("return_value_discarded")
+		song_prev_Tween.tween_property(song_preview, ^"volume_db", 0, song_preview_transition_time)
+		song_prev_Tween.play()
+		song_preview.play(start_time)
+		($song_prev/stop_prev as Timer).start(duration)
 
 func _select_song(id: int) -> void:
-	songs_menu.select(id)
+	current_selected = id
 	songs_menu.ensure_current_is_visible()
-	var map := _all_songs[id]
 	delete_button.disabled = false
-	current_selected = Map.load_map_info_v2(map.filepath)
 	
-	var play_count := PlayCount.get_total_play_count(current_selected)
+	var map := _all_songs[id]
 	($SongInfo_Label as Label).text = """Song Author: %s
 	Song Title: %s
 	Beatmap Author: %s
 	Play Count: %d""" % [
-		current_selected.song_author_name,
-		current_selected.song_name,
-		current_selected.level_author_name,
-		play_count
+		map.song_author_name,
+		map.song_name,
+		map.level_author_name,
+		PlayCount.get_total_play_count(map)
 	]
-
+	
 	# load cover in background to avoid freezing UI
-	var filepath := current_selected.filepath + current_selected.cover_image_filename
-	_bg_img_loader.load_texture(filepath, _on_cover_loaded, true, -1)
+	_bg_img_loader.load_texture(map.filepath + map.cover_image_filename, _on_cover_loaded, true, -1)
+	
+	# preview song
+	play_preview(FileAccess.get_file_as_bytes(map.filepath + map.song_filename), map.preview_start_time, map.preview_duration)
+	var result := FileAccess.get_open_error()
+	if result != OK:
+		vr.log_file_error(result, map.filepath + map.song_filename, "BeepSaberMainMenu.gd at line 223 ")
 	
 	diff_menu.clear()
-	for ii_dif in range(current_selected.difficulty_beatmaps.size()):
-		var diff_name := current_selected.difficulty_beatmaps[ii_dif].difficulty
-		var diff_display_name := ""
-		var diff_custom_data := current_selected.difficulty_beatmaps[ii_dif].custom_data
-		if ((not diff_custom_data.is_empty()) and
-			diff_custom_data.has("_difficultyLabel")):
-				diff_display_name = diff_custom_data._difficultyLabel
-		if diff_display_name.is_empty():
-			diff_display_name = diff_name
-		@warning_ignore("return_value_discarded")
-		diff_menu.add_item(diff_display_name)
-		diff_menu.set_item_tooltip(diff_menu.get_item_count()-1, diff_name + " / " + diff_display_name)
-		diff_menu.set_item_metadata(diff_menu.get_item_count()-1,{id=ii_dif,DisplayName=diff_display_name,Name=diff_name})
+	for diff in map.difficulty_beatmaps:
+		var diff_index := diff_menu.add_item(diff.custom_name)
+		diff_menu.set_item_tooltip(diff_index, diff.difficulty + " / " + diff.custom_name)
 	
 	_select_difficulty(0)
-	
-	# preview songg
-	var song_filepath := current_selected.filepath + current_selected.song_filename
-	var song_data := FileAccess.get_file_as_bytes(song_filepath)
-	play_preview(song_data, current_selected.preview_start_time, current_selected.preview_duration)
 
 func _on_stop_prev_timeout() -> void:
-	var song_prev_Tween := song_prev.create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
+	var song_prev_Tween := song_preview.create_tween().set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
 	@warning_ignore("return_value_discarded")
-	song_prev_Tween.tween_property(song_prev, "volume_db", -50, song_prev_transition_time)
+	song_prev_Tween.tween_property(song_preview, "volume_db", -50, song_preview_transition_time)
 	song_prev_Tween.play()
-	await get_tree().create_timer(song_prev_transition_time).timeout
-	song_prev.stop()
+	await get_tree().create_timer(song_preview_transition_time).timeout
+	song_preview.stop()
 
 
 var _map_difficulty := 0
-var _map_difficulty_name := ""
-var _map_difficulty_noteJumpMovementSpeed := 9.0
 
 func _select_difficulty(id: int) -> void:
-	var item_meta: Dictionary = diff_menu.get_item_metadata(id)
-	_map_difficulty = item_meta.id
-	_map_difficulty_name = item_meta.Name
+	_map_difficulty = id
 	diff_menu.select(id)
 	
 	# notify listeners that difficulty has changed
-	var difficulty := current_selected.difficulty_beatmaps[id]
-	difficulty_changed.emit(current_selected, difficulty.difficulty_rank)
+	var difficulty := _all_songs[current_selected].difficulty_beatmaps[id]
+	difficulty_changed.emit(_all_songs[current_selected], difficulty.difficulty_rank)
 
 
 func _load_map_and_start(map: Map.Info) -> void:
@@ -278,7 +260,6 @@ func _load_map_and_start(map: Map.Info) -> void:
 	var diff_info := set0[_map_difficulty]
 	var map_filename := map.filepath + diff_info.beatmap_filename
 	var map_data := vr.load_json_file(map_filename)
-	_map_difficulty_noteJumpMovementSpeed = set0[_map_difficulty].note_jump_movement_speed
 	
 	if (map_data == null):
 		vr.log_error("Could not read map data from " + map_filename)
@@ -292,12 +273,11 @@ func _on_Delete_Button_button_up() -> void:
 		delete_button.text = "Delete"
 	else:
 		delete_button.text = "Delete"
-		_delete_map(current_selected)
+		_delete_map(_all_songs[current_selected])
 	
 func _delete_map(map: Map.Info) -> void:
-	if map:
-		Highscores.remove_map(map)
-		PlayCount.remove_map(map)
+	Highscores.remove_map(map)
+	PlayCount.remove_map(map)
 	
 	if not map.filepath.is_empty():
 		var dir := DirAccess.open(map.filepath)
@@ -319,7 +299,7 @@ func _delete_map(map: Map.Info) -> void:
 
 func _ready() -> void:
 	UI_AudioEngine.attach_children(self)
-	vr.log_info("BeepSaber search path is " + bspath)
+	vr.log_info("BeepSaber search path is " + Constants.APPDATA_PATH)
 	
 	playlist_selector.clear()
 	playlist_selector.add_item("All Songs")
@@ -340,8 +320,8 @@ func _ready() -> void:
 
 
 func _on_Play_Button_pressed() -> void:
-	song_prev.stop()
-	_load_map_and_start(current_selected)
+	song_preview.stop()
+	_load_map_and_start(_all_songs[current_selected])
 
 
 func _on_Exit_Button_pressed() -> void:

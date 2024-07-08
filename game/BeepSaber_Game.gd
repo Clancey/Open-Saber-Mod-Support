@@ -73,16 +73,11 @@ var pause_position := 0.0
 func start_map(info: Map.Info, map_difficulty: int) -> void:
 	var set0 := info.difficulty_beatmaps
 	if (set0.is_empty()):
-		vr.log_error("No _difficultyBeatmaps in set")
+		vr.log_error("No difficulty beatmaps in set")
 		return
-	Map.current_difficulty_index = map_difficulty
 	
-	var map_data := vr.load_json_file(info.filepath + set0[map_difficulty].beatmap_filename)
-	if not map_data.has("_notes"):
-		print("Map has no '_notes'")
+	if not Map.load_beatmap(vr.load_json_file(info.filepath + set0[map_difficulty].beatmap_filename)):
 		return
-	Map.current_info = info
-	Map.load_beatmap_v2(map_data)
 	
 	if not Settings.disable_map_color:
 		Map.set_colors_from_custom_data(info.custom_data, info.difficulty_beatmaps[map_difficulty].custom_data, Settings.color_left, Settings.color_right)
@@ -92,10 +87,11 @@ func start_map(info: Map.Info, map_difficulty: int) -> void:
 	else:
 		event_driver.set_all_off()
 	
-	print("loading: ",info.filepath + info.song_filename)
-	var stream := AudioStreamOggVorbis.load_from_file(info.filepath + info.song_filename)
+	vr.log_info("loading: " + info.filepath + info.song_filename)
+	song_player.stream = AudioStreamOggVorbis.load_from_file(info.filepath + info.song_filename)
+	Map.current_difficulty_index = map_difficulty
+	Map.current_info = info
 	
-	song_player.stream = stream
 	_audio_synced_after_restart = false
 	song_player.play(0.0)
 	song_player.volume_db = 0.0
@@ -273,7 +269,7 @@ func _on_song_ended() -> void:
 		"%s By %s\n%s     Map author: %s" % [
 			Map.current_info.song_name,
 			Map.current_info.song_author_name,
-			menu._map_difficulty_name,
+			Map.current_difficulty.custom_name,
 			Map.current_info.level_author_name],
 		Scoreboard.full_combo,
 		new_record
@@ -329,14 +325,6 @@ func _settings_button() -> void:
 func _on_settings_Panel_apply() -> void:
 	set_colors_from_settings()
 	_transition_game_state(gamestate_mapselection)
-
-func _on_Keyboard_highscore_text_input_enter(text: String) -> void:
-	if gamestate == gamestate_newhighscore:
-		_submit_highscore(text)
-
-func _on_NameSelector_name_selected(name: String) -> void:
-	if gamestate == gamestate_newhighscore:
-		_submit_highscore(name)
 
 func _on_BeepCubePool_scene_instanced(cube: BeepCube) -> void:
 	cube.visible = false

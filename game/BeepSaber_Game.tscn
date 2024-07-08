@@ -144,7 +144,8 @@ controller = NodePath("..")
 [node name="MainMenu_OQ_UI2DCanvas" parent="." instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1.5, -1)
 
-[node name="BeepSaberMainMenu" parent="MainMenu_OQ_UI2DCanvas" node_paths=PackedStringArray("keyboard") instance=ExtResource("11")]
+[node name="BeepSaberMainMenu" parent="MainMenu_OQ_UI2DCanvas" node_paths=PackedStringArray("main_song_player_ref", "keyboard") instance=ExtResource("11")]
+main_song_player_ref = NodePath("../../SongPlayer")
 keyboard = NodePath("../../Keyboard_highscore")
 
 [node name="Multiplier_Label" type="MeshInstance3D" parent="."]
@@ -195,9 +196,9 @@ transform = Transform3D(0.346575, 0, -0.938022, 0, 1, 0, 0.938022, 0, 0.346575, 
 [node name="MapDownload_Canvas" parent="MapSourceDialogs" instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 
-[node name="MapDownloadPanel" parent="MapSourceDialogs/MapDownload_Canvas" instance=ExtResource("28")]
-beat_saver_canvas_path = NodePath("../../BeatSaver_Canvas")
-beat_sage_canvas_path = NodePath("../../BeatSage_Canvas")
+[node name="MapDownloadPanel" parent="MapSourceDialogs/MapDownload_Canvas" node_paths=PackedStringArray("beat_saver_panel", "beat_sage_panel") instance=ExtResource("28")]
+beat_saver_panel = NodePath("../../BeatSaver_Canvas/BeatSaverPanel")
+beat_sage_panel = NodePath("../../BeatSage_Canvas/BeatSageUI")
 
 [node name="BeatSaver_Canvas" parent="MapSourceDialogs" instance=ExtResource("3")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
@@ -263,6 +264,6 @@ is_name_input = true
 [connection signal="mainmenu_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_main_menu_button"]
 [connection signal="restart_button" from="PauseMenu_canvas/Pause_Panel" to="." method="_restart_button"]
 [connection signal="apply" from="Settings_canvas/settings_Panel" to="." method="_on_settings_Panel_apply"]
-[connection signal="name_selected" from="NameSelector_Canvas/NameSelector" to="." method="_on_NameSelector_name_selected"]
+[connection signal="name_selected" from="NameSelector_Canvas/NameSelector" to="." method="_submit_highscore"]
 [connection signal="scene_instanced" from="BeepCubePool" to="." method="_on_BeepCubePool_scene_instanced"]
-[connection signal="text_input_enter" from="Keyboard_highscore" to="." method="_on_Keyboard_highscore_text_input_enter"]
+[connection signal="text_input_enter" from="Keyboard_highscore" to="." method="_submit_highscore"]
