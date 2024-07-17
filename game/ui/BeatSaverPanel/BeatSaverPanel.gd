@@ -143,6 +143,7 @@ func update_list(req: BeatSaverRequest) -> void:
 			vr.log_warning("Unsupported request type '%s'" % req.type)
 
 func _add_to_back_stack(request: BeatSaverRequest) -> void:
+	if request == null: return
 	back_stack.push_back(request)
 	if back_stack.size() > MAX_BACK_STACK_DEPTH:
 		back_stack.pop_front()
@@ -305,7 +306,7 @@ func _on_preview_download_completed(result: int, _response_code: int, _headers: 
 
 func _on_search_button_up() -> void:
 	keyboard._show()
-	keyboard._text_edit.grab_focus();
+	keyboard._text_edit.grab_focus()
 
 func _text_input_enter(text: String) -> void:
 	keyboard._hide()
@@ -318,7 +319,7 @@ func _text_input_enter(text: String) -> void:
 	prev_request.type = "text_search"
 	prev_request.data = search_word
 	update_list(prev_request)
-	
+
 func _text_input_cancel() -> void:
 	keyboard._hide()
 
@@ -425,5 +426,6 @@ func _on_BeatSaverPanel_visibility_changed() -> void:
 		first_req.page = 0
 		first_req.type = "list"
 		first_req.data = "plays"
-		update_list(first_req)
+		prev_request = first_req
+		update_list(prev_request)
 		_is_first_show = false

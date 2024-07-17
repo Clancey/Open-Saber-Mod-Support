@@ -6,6 +6,12 @@ func get_str(dict: Dictionary, key: String, default: String) -> String:
 			return dict[key] as String
 		return default
 
+func get_bool(dict: Dictionary, key: String, default: bool) -> bool:
+	if dict.has(key) and dict[key] is bool:
+		@warning_ignore("unsafe_cast")
+		return dict[key] as bool
+	return default
+
 func get_float(dict: Dictionary, key: String, default: float) -> float:
 	if dict.has(key) and dict[key] is float:
 		@warning_ignore("unsafe_cast")
