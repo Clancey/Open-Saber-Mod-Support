@@ -234,6 +234,14 @@ text = "Close"
 [node name="list_slider" parent="." instance=ExtResource("3")]
 scroll_node_path = NodePath("../ItemList")
 
+[node name="HTTPReq" type="HTTPRequest" parent="."]
+
+[node name="HTTPDownload" type="HTTPRequest" parent="."]
+
+[node name="CoverDownload" type="HTTPRequest" parent="."]
+
+[node name="PreviewDownload" type="HTTPRequest" parent="."]
+
 [connection signal="item_selected" from="ItemList" to="." method="_on_ItemList_item_selected"]
 [connection signal="button_up" from="mode" to="." method="_on_mode_button_up"]
 [connection signal="button_up" from="download" to="." method="_on_download_button_up"]
@@ -241,3 +249,7 @@ scroll_node_path = NodePath("../ItemList")
 [connection signal="pressed" from="back" to="." method="_on_back_pressed"]
 [connection signal="pressed" from="gotoMapsBy" to="." method="_on_gotoMapsBy_pressed"]
 [connection signal="pressed" from="CloseButton" to="." method="_on_CloseButton_pressed"]
+[connection signal="request_completed" from="HTTPReq" to="." method="_on_HTTPRequest_request_completed"]
+[connection signal="request_completed" from="HTTPDownload" to="." method="_on_HTTPRequest_download_completed"]
+[connection signal="request_completed" from="CoverDownload" to="." method="_update_cover"]
+[connection signal="request_completed" from="PreviewDownload" to="." method="_on_preview_download_completed"]

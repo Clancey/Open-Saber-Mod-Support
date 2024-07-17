@@ -30,15 +30,6 @@ const info_text := """VR Simulator Keys:
 """
 
 func _ready() -> void:
-	if (!vr.vrOrigin):
-		vr.log_error(" in Feature_VRSimulator: no vrOrigin.")
-	if (!vr.vrCamera):
-		vr.log_error(" in Feature_VRSimulator: no vrCamera.")
-	if (!vr.leftController):
-		vr.log_error(" in Feature_VRSimulator: no leftController.")
-	if (!vr.rightController):
-		vr.log_error(" in Feature_VRSimulator: no rightController.")
-
 	# set up everything for simulation
 	left_controller_node = Node3D.new()
 	vr.vrCamera.add_child(left_controller_node)
@@ -85,16 +76,16 @@ func _is_interact_left() -> bool:
 func _is_interact_right() -> bool:
 	return Input.is_key_pressed(KEY_ALT)
 
-func _interact_move_controller(dir: Vector3, rotate: Vector3) -> void:
+func _interact_move_controller(dir: Vector3, rot: Vector3) -> void:
 	if (_is_interact_left()):
 		if (left_controller_node):
-			left_controller_node.rotate_x(rotate.x)
-			left_controller_node.rotate_y(rotate.y)
+			left_controller_node.rotate_x(rot.x)
+			left_controller_node.rotate_y(rot.y)
 			left_controller_node.position += dir
 	if (_is_interact_right()):
 		if (right_controller_node):
-			right_controller_node.rotate_x(rotate.x)
-			right_controller_node.rotate_y(rotate.y)
+			right_controller_node.rotate_x(rot.x)
+			right_controller_node.rotate_y(rot.y)
 			right_controller_node.position += dir
 	_update_virtual_controller_position()
 
@@ -120,7 +111,14 @@ func _update_keyboard(dt: float) -> void:
 	
 	var button_BY := Input.is_key_pressed(KEY_KP_7) || Input.is_key_pressed(KEY_7)
 	var button_AX := Input.is_key_pressed(KEY_KP_1) || Input.is_key_pressed(KEY_1)
-	var button_trigger :=  Input.is_key_pressed(KEY_KP_0) || Input.is_key_pressed(KEY_0) || Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+	var button_trigger := Input.is_key_pressed(KEY_KP_0) || Input.is_key_pressed(KEY_0) || Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+	
+	vr.leftController.trigger_last_frame = vr.leftController.trigger
+	vr.leftController.ax_last_frame = vr.leftController.ax
+	vr.leftController.by_last_frame = vr.leftController.by
+	vr.rightController.trigger_last_frame = vr.rightController.trigger
+	vr.rightController.ax_last_frame = vr.rightController.ax
+	vr.rightController.by_last_frame = vr.rightController.by
 	
 	vr.leftController.trigger_last_frame = vr.leftController.trigger
 	vr.leftController.ax_last_frame = vr.leftController.ax
@@ -153,7 +151,7 @@ func _input(event: InputEvent) -> void:
 	vr.vrCamera.position.y = current_player_height
 	
 	# camera movement on mouse movement
-	if (event is InputEventMouseMotion && Input.is_mouse_button_pressed(2)):
+	if (event is InputEventMouseMotion && Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)):
 		var eventMouse := event as InputEventMouseMotion
 		if (_is_interact_left() || _is_interact_right()):
 			var move := Vector3(eventMouse.relative.x, -eventMouse.relative.y, 0.0)

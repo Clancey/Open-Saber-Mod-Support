@@ -19,185 +19,50 @@ func _ready(game: BeepSaber_Game) -> void:
 	game.right_ui_raycast.visible = false
 	game.highscore_keyboard._hide()
 	game.online_search_keyboard._hide()
+	game.left_saber.set_swingcast_enabled(true)
+	game.right_saber.set_swingcast_enabled(true)
+	Scoreboard.paused = false
 
-func _physics_process(game: BeepSaber_Game, delta: float) -> void:
-	if game.non_dominant_hand.by_just_pressed():
+func _physics_process(game: BeepSaber_Game) -> void:
+	if game.left_controller.by_just_pressed():
 		game._transition_game_state(game.gamestate_paused)
-	if game.song_player.playing and not game._audio_synced_after_restart:
+	if game._audio_synced_after_restart:
+		_process_map(game)
+	else:
 		# 0.5 seconds is a pretty concervative number to use for the audio
 		# resync check. Having this duration be this long might only be an
 		# issue for maps that spawn notes extremely early into the song.
 		if game.song_player.get_playback_position() < 0.5:
 			game._audio_synced_after_restart = true
-	elif game.song_player.playing:
-		_process_map(game, delta)
-		_update_controller_movement_aabb(game, game.left_controller)
-		_update_controller_movement_aabb(game, game.right_controller)
 
-var _proc_map_sw := StopwatchFactory.create("process_map",10,true)
-var _instance_cube_sw := StopwatchFactory.create("instance_cube",10,true)
-var _add_cube_to_scene_sw := StopwatchFactory.create("add_cube_to_scene",10,true)
+var bomb_template := load("res://game/Bomb/Bomb.tscn") as PackedScene
+var wall_template := load("res://game/Wall/Wall.tscn") as PackedScene
+const BEATS_AHEAD := 4.0
 
-const CUBE_DISTANCE := 0.5
-const CUBE_HEIGHT_OFFSET := 0.4
-
-func _spawn_note(game: BeepSaber_Game, note, current_beat: float) -> void:
-	var note_node = null
-	var is_cube = true
-	var color := game.COLOR_LEFT
-	if (note._type == 0):
-		_instance_cube_sw.start()
-		note_node = game._cube_pool.acquire(game.track)
-		color = game.COLOR_LEFT
-		_instance_cube_sw.stop()
-	elif (note._type == 1):
-		_instance_cube_sw.start()
-		note_node = game._cube_pool.acquire(game.track)
-		color = game.COLOR_RIGHT
-		_instance_cube_sw.stop()
-	elif (note._type == 3) and game.bombs_enabled:
-		is_cube = false
-		note_node = game.bomb_template.instantiate()
-	else:
+func _process_map(game: BeepSaber_Game) -> void:
+	if (Map.current_info == null):
 		return
 	
-	if note_node == null:
-		print("Failed to acquire a new note from scene pool")
-		return
+	var current_beat := game.song_player.get_playback_position() * Map.current_info.beats_per_minute / 60.0
 	
-	# disable collision until it gets nearer to player (helps with performance)
-	note_node.collision_disabled = true
-	
-	if game.menu._map_difficulty_noteJumpMovementSpeed > 0:
-		note_node.speed = float(game.menu._map_difficulty_noteJumpMovementSpeed)/9
-	
-	var line: float = -(CUBE_DISTANCE * 3.0 / 2.0) + note._lineIndex * CUBE_DISTANCE
-	var layer: float = CUBE_DISTANCE + note._lineLayer * CUBE_DISTANCE
-	
-	var rotation_z := deg_to_rad(game.CUBE_ROTATIONS[note._cutDirection])
-	
-	var distance: float = note._time - current_beat
-	
-	note_node.transform.origin = Vector3(
-		line,
-		CUBE_HEIGHT_OFFSET + layer,
-		-distance * game.beat_distance)
-	
-	if is_cube:
-		var is_dot: bool = note._cutDirection == 8
-		note_node._cube_mesh_orientation.rotation.z = rotation_z;
-		note_node._cube_mesh_orientation.rotation.y = (PI if is_dot else 0)
-	
-	note_node._note = note
-	
-	if note_node is BeepCube:
-		_add_cube_to_scene_sw.start()
-		note_node.spawn(note._type, color)
-		_add_cube_to_scene_sw.stop()
-	else:
-		# spawn bombs by adding to track
-		game.track.add_child(note_node)
-
-# constants used to interpret the '_type' field in map obstacles
-const WALL_TYPE_FULL_HEIGHT := 0
-const WALL_TYPE_CROUCH := 1
-
-const WALL_HEIGHT := 3.0
-
-func _spawn_wall(game: BeepSaber_Game, obstacle, current_beat: float) -> void:
-	# instantiate new wall from template
-	var wall = game.wall_template.duplicate()
-	wall.duplicate_create() # gives it its own unique mesh and collision shape
-	
-	var height := 0.0
-	
-	if (obstacle._type == WALL_TYPE_FULL_HEIGHT):
-		wall.height = WALL_HEIGHT
-		height = 0.0
-	elif (obstacle._type == WALL_TYPE_CROUCH):
-		wall.height = WALL_HEIGHT / 2.0
-		height = WALL_HEIGHT / 2.0
-	else:
-		return
-	
-	game.track.add_child(wall)
-	
-	var line = -(CUBE_DISTANCE * 3.0 / 2.0) + obstacle._lineIndex * CUBE_DISTANCE
-	
-	var distance = obstacle._time - current_beat
-	
-	wall.transform.origin = Vector3(line,height,-distance * game.beat_distance)
-	wall.depth = game.beat_distance * obstacle._duration
-	wall.width = CUBE_DISTANCE * obstacle._width
-	
-	# walls have slightly difference origins offsets than cubes do, so we must
-	# translate them by half a cube distance to correct for the misalignment.
-	wall.translate(Vector3(-CUBE_DISTANCE/2.0,-CUBE_DISTANCE/2.0,0.0))
-	
-	wall._obstacle = obstacle;
-
-func _process_map(game: BeepSaber_Game, dt: float) -> void:
-	if (game._current_map == null):
-		return
-	
-	_proc_map_sw.start()
-	
-	var current_time := game.song_player.get_playback_position()
-	
-	var current_beat := current_time * (game._current_info._beatsPerMinute as float) / 60.0
-
 	# spawn notes
-	var n = game._current_map._notes
-	while (game._current_note < n.size() && n[game._current_note]._time <= current_beat+game.beats_ahead):
-		_spawn_note(game, n[game._current_note], current_beat)
-		game._current_note += 1
-
+	while not Map.note_stack.is_empty() and Map.note_stack[-1].beat <= current_beat+BEATS_AHEAD:
+		var note := game.cube_pool.acquire()
+		var note_info := Map.note_stack.pop_back() as Map.ColorNoteInfo
+		var color := Map.color_left if note_info.color == 0 else Map.color_right
+		note.spawn(note_info, current_beat, color)
+	
+	# spawn bombs
+	while not Map.bomb_stack.is_empty() and Map.bomb_stack[-1].beat <= current_beat+BEATS_AHEAD:
+		var bomb := bomb_template.instantiate() as Bomb
+		bomb.spawn(Map.bomb_stack.pop_back() as Map.BombInfo, current_beat)
+		game.track.add_child(bomb)
+	
 	# spawn obstacles (walls)
-	var o = game._current_map._obstacles
-	while (game._current_obstacle < o.size() && o[game._current_obstacle]._time <= current_beat+game.beats_ahead):
-		_spawn_wall(game, o[game._current_obstacle], current_beat)
-		game._current_obstacle += 1;
-
-	var speed = Vector3(0.0, 0.0, game.beat_distance * game._current_info._beatsPerMinute / 60.0) * dt
-
-	for c_idx in game.track.get_child_count():
-		var c = game.track.get_child(c_idx)
-		if ! c.visible:
-			continue
-		
-		c.translate(speed)
-
-		var depth = CUBE_DISTANCE
-		if c is Wall:
-			# compute wall's depth based on duration
-			depth = game.beat_distance * c._obstacle._duration
-		else:
-			# enable bomb/cube collision when it gets closer enough to player
-			if c.global_transform.origin.z > -3.0:
-				c.collision_disabled = false
-
-		# remove children that go to far
-		if ((c.global_transform.origin.z - depth) > 2.0):
-			if c is BeepCube:
-				game._reset_combo();
-				# cubes must be released() instead of queue_free() because they
-				# are part of a pool.
-				c.release()
-			else:
-				c.queue_free()
-
-	var e = game._current_map._events;
-	while (game._current_event < e.size() && e[game._current_event]._time <= current_beat):
-		game._spawn_event(e[game._current_event], current_beat)
-		game._current_event += 1
-
-	if (game.song_player.get_playback_position() >= game.song_player.stream.get_length()-1):
-		game._on_song_ended()
-		
-	_proc_map_sw.stop()
-
-
-func _update_controller_movement_aabb(game: BeepSaber_Game, controller : XRController3D):
-	var id := controller.tracker
-	var aabb := (game._controller_movement_aabb[id] as AABB).expand(controller.global_transform.origin)
-	game._controller_movement_aabb[id] = aabb
+	while not Map.obstacle_stack.is_empty() and Map.obstacle_stack[-1].beat <= current_beat+BEATS_AHEAD:
+		var wall := wall_template.instantiate() as Wall
+		wall.spawn(Map.obstacle_stack.pop_back() as Map.ObstacleInfo, current_beat)
+		game.track.add_child(wall)
+	
+	while not Map.event_stack.is_empty() and Map.event_stack[-1].beat <= current_beat:
+		game.event_driver.process_event(Map.event_stack.pop_back() as Map.EventInfo, Map.color_left, Map.color_right)

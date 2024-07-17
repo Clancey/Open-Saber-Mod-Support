@@ -1,4 +1,5 @@
 extends StaticBody3D
+class_name Floor
 
 var left_last_position := Vector2(0,-50)
 var right_last_position := Vector2(0,-50)
@@ -27,10 +28,10 @@ func update_colors(COLOR_LEFT: Color, COLOR_RIGHT: Color) -> void:
 
 var left_is_out := false
 var right_is_out := false
-func burn_mark(position:=Vector3(0,0,-50),type:=0) -> void:
+func burn_mark(pos:=Vector3(0,0,-50),type:=0) -> void:
 	var newpos := Vector2(
-		(position.x+1)*256,
-		position.z*256
+		(pos.x+1)*256,
+		pos.z*256
 	)
 	var burn_mark_sprite: Node2D
 	var burn_mark_sprite_long: Panel
@@ -65,7 +66,7 @@ func burn_mark(position:=Vector3(0,0,-50),type:=0) -> void:
 	elif type == 1:
 		right_last_position = newpos
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if left_is_out:
 		burn_l.visible = false
 	if right_is_out:

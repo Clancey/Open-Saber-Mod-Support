@@ -28,8 +28,8 @@ static func get_img_type_from_buffer(data: PackedByteArray):
 	return ImgType.Unknown
 	
 # returns a parsed Image object or null if parsing failed
-static func get_img_from_buffer(data: PackedByteArray):
-	var img = Image.new()
+static func get_img_from_buffer(data: PackedByteArray) -> Image:
+	var img := Image.new()
 	
 	match get_img_type_from_buffer(data):
 		ImgType.JPG:
@@ -42,5 +42,5 @@ static func get_img_from_buffer(data: PackedByteArray):
 			img.load_webp_from_buffer(data)
 		_:
 			img = null
-			
+	
 	return img

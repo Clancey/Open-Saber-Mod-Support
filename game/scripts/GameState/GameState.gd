@@ -1,8 +1,10 @@
 extends Object
 class_name GameState
 
+@warning_ignore("unused_parameter")
 func _ready(game: BeepSaber_Game) -> void:
 	return
 
-func _physics_process(game: BeepSaber_Game, delta: float) -> void:
+@warning_ignore("unused_parameter")
+func _physics_process(game: BeepSaber_Game) -> void:
 	return

@@ -10,40 +10,7 @@ var by_last_frame := false
 var trigger := false
 var trigger_last_frame := false
 
-
-# Sets up everything as it is expected by the helper scripts in the vr singleton
-func _enter_tree() -> void:
-	if (!vr):
-		vr.log_error(" in OQ_ARVRController._enter_tree(): no vr singleton")
-		return
-	if (tracker == "left_hand"):
-		if (vr.leftController != null):
-			vr.log_warning(" in OQ_ARVRController._enter_tree(): left controller already set; overwriting it")
-		vr.leftController = self
-	elif (tracker == "right_hand"):
-		if (vr.rightController != null):
-			vr.log_warning(" in OQ_ARVRController._enter_tree(): right controller already set; overwriting it")
-		vr.rightController = self
-	else:
-		vr.log_error(" in OQ_ARVRController._enter_tree(): unexpected controller id %s" % tracker)
-
-# Reset when we exit the tree
-func _exit_tree() -> void:
-	if (!vr):
-		vr.log_error(" in OQ_ARVRController._exit_tree(): no vr singleton")
-		return
-	if (tracker == "left_hand"):
-		if (vr.leftController != self):
-			vr.log_warning(" in OQ_ARVRController._exit_tree(): left controller different")
-			return
-		vr.leftController = null
-	elif (tracker == "right_hand"):
-		if (vr.rightController != self):
-			vr.log_warning(" in OQ_ARVRController._exit_tree(): right controller different")
-			return
-		vr.rightController = null
-	else:
-		vr.log_error(" in OQ_ARVRController._exit_tree(): unexpected controller id %d" % tracker)
+var movement_aabb := AABB()
 
 func ax_pressed() -> bool:
 	return ax
@@ -74,11 +41,17 @@ func trigger_just_released() -> bool:
 
 func _update_buttons_and_sticks() -> void:
 	ax_last_frame = ax
-	ax = is_button_pressed(&"ax_button")
 	by_last_frame = by
-	by = is_button_pressed(&"by_button")
 	trigger_last_frame = trigger
+	ax = is_button_pressed(&"ax_button")
+	by = is_button_pressed(&"by_button")
 	trigger = is_button_pressed(&"trigger")
+
+func _update_movement_aabb() -> void:
+	movement_aabb = movement_aabb.expand(global_transform.origin)
+
+func reset_movement_aabb() -> void:
+	movement_aabb = AABB(global_transform.origin, Vector3.ZERO)
 
 var _rumble_intensity := 0.0
 var _rumble_duration := -128.0 #-1 means deactivated so applications can also set their own rumble
@@ -99,14 +72,17 @@ func _update_rumble(dt: float) -> void:
 		_rumble_duration = -128.0
 		simple_rumble(0.0, _rumble_duration)
 
-var first_time = true
+var first_time := true
 
 func _physics_process(dt: float) -> void:
+	if not Scoreboard.paused:
+		_update_movement_aabb()
+	
 	if get_is_active(): # wait for active controller
-		_update_buttons_and_sticks()
 		_update_rumble(dt)
+		_update_buttons_and_sticks()
 		# this avoid getting just_pressed events when a key is pressed and the controller becomes
 		# active (like it happens on vr.scene_change!)
-		if (first_time):
+		if first_time:
 			_update_buttons_and_sticks()
 			first_time = false

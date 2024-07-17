@@ -3,8 +3,8 @@ class_name HighscorePanel
 
 signal close()
 
-@export var show_close_button = true
-@export var show_song_info = true
+@export var show_close_button := true
+@export var show_song_info := true
 
 # keep a copy of the base row for regeneration later
 @onready var _base_row = $Margin/VBox/LeftRight/ScrollContainer/Margin/HighscoresList/BaseRecordRow.duplicate()
@@ -14,12 +14,12 @@ signal close()
 @onready var _exit_button = $Margin/VBox/Exit_Button
 @onready var _song_info_panel = $Margin/VBox/LeftRight/VBox
 
-func _ready():
+func _ready() -> void:
 	_clear_list()
 	_exit_button.visible = show_close_button
 	_song_info_panel.visible = show_song_info
 
-func load_highscores(map_info: Dictionary, diff_rank: int):
+func load_highscores(map_info: Map.Info, diff_rank: int):
 	# clear the high score list
 	_clear_list()
 	
@@ -29,11 +29,11 @@ func load_highscores(map_info: Dictionary, diff_rank: int):
 	# populate song info
 	_song_info.text = """Artist: %s
 		Song: %s
-		Map Author: %s""" % [map_info._songAuthorName, map_info._songName, map_info._levelAuthorName]
+		Map Author: %s""" % [map_info.song_author_name, map_info.song_name, map_info.level_author_name]
 		
 	# TODO populate song artwork
 		
-	var records = Highscores.get_records(map_info,diff_rank)
+	var records := Highscores.get_records(map_info,diff_rank)
 	var idx = 1
 	for record in records:
 		# build a new row and populate fields from record
@@ -53,13 +53,11 @@ func _clear_list():
 	for c in _highscore_list.get_children():
 		c.queue_free()
 	
-func _get_difficulty_name(map_info: Dictionary, diff_rank: int) -> String:
-	if map_info.has('_difficultyBeatmapSets'):
-		for beat_sets in map_info._difficultyBeatmapSets:
-			for beat_map in beat_sets._difficultyBeatmaps:
-				if beat_map._difficultyRank == diff_rank:
-					return beat_map._difficulty
+func _get_difficulty_name(map_info: Map.Info, diff_rank: int) -> String:
+	for beat_map in map_info.difficulty_beatmaps:
+		if beat_map.difficulty_rank == diff_rank:
+			return beat_map.difficulty
 	return 'Rank %s' % diff_rank
-	
-func _on_Exit_Button_pressed():
-	emit_signal("close")
+
+func _on_Exit_Button_pressed() -> void:
+	close.emit()

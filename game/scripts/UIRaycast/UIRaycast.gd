@@ -4,13 +4,11 @@ class_name UIRaycast
 @export var active := true
 @export var ui_raycast_length := 3.0
 @export var ui_mesh_length := 1.0
+@export var controller: BeepSaberController
 
-var controller: BeepSaberController = null
 @onready var ui_raycast := $RayCastPosition/RayCast3D as RayCast3D
 @onready var ui_raycast_mesh := $RayCastPosition/RayCastMesh as MeshInstance3D
 @onready var ui_raycast_hitmarker := $RayCastPosition/RayCastHitMarker as MeshInstance3D
-
-const hand_click_button := vr.CONTROLLER_BUTTON.XA;
 
 var is_colliding := false;
 var colliding_with: Object = null
@@ -28,26 +26,18 @@ func _update_raycasts() -> void:
 		(colliding_with as UIRaycastTarget).ui_raycast_exit()
 	colliding_with = c
 	if c:
-		if (!c is UIRaycastTarget): return
+		if not c is UIRaycastTarget: return
 		
-		var click := controller.trigger_just_pressed()
-		var release := controller.trigger_just_released()
-		
-		var position := ui_raycast.get_collision_point()
+		var pos := ui_raycast.get_collision_point()
 		ui_raycast_hitmarker.visible = true
-		ui_raycast_hitmarker.global_transform.origin = position
+		ui_raycast_hitmarker.global_transform.origin = pos
 		
-		(c as UIRaycastTarget).ui_raycast_hit_event(position, click, release)
+		(c as UIRaycastTarget).ui_raycast_hit_event(pos, controller.trigger_just_pressed(), controller.trigger_just_released())
 		is_colliding = true
 	else:
 		is_colliding = false
 
 func _ready() -> void:
-	var parent := get_parent()
-	if (not parent is BeepSaberController):
-		vr.log_error(" in Feature_UIRayCast: parent not XRController3D.")
-	controller = parent as BeepSaberController
-	
 	ui_raycast.set_target_position(Vector3(0, 0, -ui_raycast_length))
 	
 	#setup the mesh
@@ -59,6 +49,5 @@ func _ready() -> void:
 
 # we use the physics process here be in sync with the controller position
 func _physics_process(_dt: float) -> void:
-	if (!active): return
-	if (!visible): return
-	_update_raycasts()
+	if active and visible:
+		_update_raycasts()

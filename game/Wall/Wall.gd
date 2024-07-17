@@ -1,66 +1,37 @@
-@tool
 extends Node3D
 class_name Wall
 
-# copy of 'obstacle' struct from map data
-var _obstacle;
+var depth: float
+var speed: float
 
-# width of wall in meters
-@export var width = 1: set = _set_width
-# height of wall in meters
-@export var height = 1: set = _set_height
-# depth of wall in meters (can be negative)
-@export var depth = 1: set = _set_depth
+func _physics_process(delta: float) -> void:
+	if Scoreboard.paused: return
+	transform.origin.z += speed * delta
+	
+	# remove children that go to far
+	if transform.origin.z - depth > 3.0:
+		queue_free()
 
-@onready var _anim = $WallMeshOrientation/AnimationPlayer
-@onready var _mesh_orientation = $WallMeshOrientation
-@onready var _mesh = $WallMeshOrientation/WallMesh
-@onready var _coll = $WallMeshOrientation/WallArea/CollisionShape3D
-
-func _ready():
-	# play the spawn animation when wall enters the scene
-	_anim.play("Spawn")
-
-func _set_width(value):
-	width = value
+func spawn(wall_info: Map.ObstacleInfo, current_beat: float) -> void:
+	var mesh := $WallMeshOrientation/WallMesh as MeshInstance3D
+	var m := mesh.mesh as BoxMesh
+	var shape := ($WallMeshOrientation/WallArea/CollisionShape3D as CollisionShape3D).shape as BoxShape3D
 	
-	if not _mesh:
-		await self.ready
-		
-	_mesh.mesh.size.x = width
-	_coll.shape.size.x = width #/ 2.0
-	_mesh_orientation.position.x = width / 2.0
-	update_material()
+	var x := wall_info.width * Constants.CUBE_DISTANCE
+	var y := wall_info.height * Constants.CUBE_DISTANCE
+	var z := wall_info.duration * Constants.BEAT_DISTANCE
+	m.size.x = x
+	shape.size.x = x
+	m.size.y = y
+	shape.size.y = y
+	m.size.z = z
+	shape.size.z = z
+	depth = z * 0.5
+	(mesh.material_override as ShaderMaterial).set_shader_parameter(&"size", Vector3(x, y, z))
 	
-func _set_height(value):
-	height = value
+	transform.origin.x = (wall_info.line_index - ((4 - wall_info.width) * 0.5)) * Constants.CUBE_DISTANCE
+	transform.origin.y = (wall_info.line_layer + (wall_info.height * 0.5)) *  Constants.CUBE_DISTANCE
+	transform.origin.z = (current_beat - wall_info.beat) * Constants.BEAT_DISTANCE - depth
 	
-	if not _mesh:
-		await self.ready
-		
-	_mesh.mesh.size.y = height
-	_coll.shape.size.y = height #/ 2.0
-	_mesh_orientation.position.y = height / 2.0
-	update_material()
-	
-func _set_depth(value):
-	depth = value
-	
-	if not _mesh:
-		await self.ready
-		
-	_mesh.mesh.size.z = depth
-	_coll.shape.size.z = depth #/ 2.0
-	_mesh_orientation.position.z = -1 * depth / 2.0
-	update_material()
-
-func update_material():
-	_mesh.material_override.set_shader_parameter("size", Vector3(width, height, depth))
-	
-func duplicate_create():
-	if not _mesh:
-		await self.ready
-	
-	_mesh.mesh = _mesh.mesh.duplicate();
-	_mesh.material_override = _mesh.material_override.duplicate()
-	_coll.shape = _coll.shape.duplicate()
+	speed = Constants.BEAT_DISTANCE * Map.current_info.beats_per_minute / 60.0
+	($AnimationPlayer as AnimationPlayer).play(&"Spawn")

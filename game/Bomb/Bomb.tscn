@@ -54,19 +54,22 @@ _data = {
 script = ExtResource("2")
 
 [node name="BombAnimation" type="Node3D" parent="."]
+transform = Transform3D(-0.0707107, 6.18172e-09, 0.0707107, -8.74228e-09, -0.1, 0, 0.0707107, -6.18172e-09, 0.0707107, 0, 0, -2)
 
 [node name="Mesh" parent="BombAnimation" instance=ExtResource("1")]
 transform = Transform3D(0.18, 0, 0, 0, 0.18, 0, 0, 0, 0.18, 0, 0, 0)
 
-[node name="Area3D" type="Area3D" parent="BombAnimation" groups=["bomb"]]
+[node name="Area3D" type="Area3D" parent="." groups=["bomb"]]
 collision_layer = 16
 collision_mask = 16
 monitoring = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="BombAnimation/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
 shape = SubResource("1")
+disabled = true
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="BombAnimation"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../BombAnimation")
 libraries = {
 "": SubResource("AnimationLibrary_4a1di")
 }

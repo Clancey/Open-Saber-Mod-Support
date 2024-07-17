@@ -4,42 +4,16 @@
 [ext_resource type="Script" path="res://game/ui/NameSelector/NameSelector.gd" id="2"]
 
 [node name="NameSelector" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 0
 offset_right = 534.0
 offset_bottom = 60.0
-clip_contents = true
 theme = ExtResource("1")
 script = ExtResource("2")
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="NameRow" type="HBoxContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/separation = 10
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="BaseButton" type="Button" parent="NameRow"]
-offset_right = 107.0
-offset_bottom = 60.0
-text = "Name 1"
-
-[node name="BaseButton2" type="Button" parent="NameRow"]
-offset_left = 117.0
-offset_right = 224.0
-offset_bottom = 60.0
-text = "Name 1"
-
-[node name="BaseButton3" type="Button" parent="NameRow"]
-offset_left = 234.0
-offset_right = 341.0
-offset_bottom = 60.0
-text = "Name 1"
-
-[node name="BaseButton4" type="Button" parent="NameRow"]
-offset_left = 351.0
-offset_right = 458.0
-offset_bottom = 60.0
-text = "Name 1"

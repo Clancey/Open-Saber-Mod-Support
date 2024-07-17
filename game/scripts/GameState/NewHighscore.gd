@@ -4,7 +4,7 @@ class_name GameStateNewHighScore
 func _ready(game: BeepSaber_Game) -> void:
 	# populate highscore panel with records
 	game.highscore_panel.load_highscores(
-		game._current_info,game._current_diff_rank)
+		Map.current_info,Map.current_difficulty.difficulty_rank)
 	
 	game.endscore.set_buttons_disabled(true)
 	
@@ -35,3 +35,6 @@ func _ready(game: BeepSaber_Game) -> void:
 	game.right_ui_raycast.visible = true
 	game.highscore_keyboard._show()
 	game.online_search_keyboard._hide()
+	game.left_saber.set_swingcast_enabled(false)
+	game.right_saber.set_swingcast_enabled(false)
+	game.set_colors_from_settings()

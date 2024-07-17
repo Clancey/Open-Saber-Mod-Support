@@ -10,8 +10,8 @@ script = ExtResource("2")
 stream = ExtResource("1")
 volume_db = -7.0
 pitch_scale = 1.5
-bus = "UI"
+bus = &"UI"
 
 [node name="ClickStream" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("1")
-bus = "UI"
+bus = &"UI"

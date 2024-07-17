@@ -215,9 +215,6 @@ offset_bottom = 320.0
 theme = SubResource("12")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 
-[node name="HTTPRequest" type="HTTPRequest" parent="."]
-timeout = 4.0
-
 [node name="Songs_Label2" type="Label" parent="."]
 layout_mode = 0
 offset_left = 864.0
@@ -257,6 +254,5 @@ scroll_node_path = NodePath("../DifficultyMenu")
 [connection signal="item_selected" from="SongsMenu" to="." method="_select_song"]
 [connection signal="item_selected" from="PlaylistSelector" to="." method="_on_PlaylistSelector_item_selected"]
 [connection signal="item_selected" from="DifficultyMenu" to="." method="_select_difficulty"]
-[connection signal="request_completed" from="HTTPRequest" to="." method="_on_HTTPRequest_request_completed"]
 [connection signal="pressed" from="LoadPlaylists_Button" to="." method="_on_LoadPlaylists_Button_pressed"]
 [connection signal="timeout" from="song_prev/stop_prev" to="." method="_on_stop_prev_timeout"]

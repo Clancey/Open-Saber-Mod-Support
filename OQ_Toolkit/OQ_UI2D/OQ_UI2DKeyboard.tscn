@@ -21,5 +21,6 @@ offset_right = 512.0
 offset_bottom = 48.0
 theme = ExtResource("4")
 
-[connection signal="visibility_changed" from="." to="." method="_on_OQ_UI2DKeyboard_visibility_changed"]
+[connection signal="cancel_pressed" from="OQ_UI2DCanvas_Keyboard/VirtualKeyboard" to="." method="_on_cancel"]
+[connection signal="enter_pressed" from="OQ_UI2DCanvas_Keyboard/VirtualKeyboard" to="." method="_on_enter"]
 [connection signal="text_changed" from="OQ_UI2DCanvas_TextInput/TextEdit" to="." method="_on_TextEdit_text_changed"]

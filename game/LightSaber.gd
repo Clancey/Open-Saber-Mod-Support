@@ -5,130 +5,108 @@ extends Area3D
 class_name LightSaber
 
 # the type of note this saber can cut (0 -> left, 1 -> right)
-@export var type = 0 # (int, 0, 1)
+@export var type := 0 # (int, 0, 1)
+@export var song_player_ref: AudioStreamPlayer
 
 # store the saber material in a variable so the main game can set the color on initialize
-@onready var _anim := $AnimationPlayer;
-@onready var _swing_cast := $SwingableRayCast
-@onready var _main_game = null;
+@onready var _anim := $AnimationPlayer as AnimationPlayer
+@onready var _ray_cast := $RayCast3D as RayCast3D
+@onready var _swing_cast := $SwingableRayCast as SwingableRayCast
+@onready var saber_visual := $saber_holder.get_child(0) as DefaultSaber
+@onready var controller := get_parent() as BeepSaberController
 
-signal saber_show()
-signal saber_hide()
-signal saber_quickhide()
-signal saber_set_thickness(value)
-signal saber_set_color(value)
-signal saber_set_trail(value)
-signal saber_hit(cube,time_offset)
-signal cube_collide(cube)
-signal bomb_collide(bomb)
+@export var offset_pos := Vector3.ZERO
+@export var offset_rot := Vector3.ZERO
+var extra_offset_pos := Vector3.ZERO
+var extra_offset_rot := Vector3.ZERO
 
-@export var offset_pos = Vector3()
-@export var offset_rot = Vector3()
-var extra_offset_pos = Vector3()
-var extra_offset_rot = Vector3()
+var saber_end := Vector3.ZERO
+var saber_end_past := Vector3.ZERO
+var last_dt := 0.0
 
-func _show():
-	if (!is_extended()):
-		_anim.play("Show");
-		emit_signal("saber_show")
+func _show() -> void:
+	if not is_extended():
+		_anim.play(&"Show")
+		saber_visual._show()
 
-func get_saber():
-	return $saber_holder.get_child(0);
+func is_extended() -> bool:
+	return saber_visual.is_extended
 
-func is_extended():
-	var val = get_saber().get("is_extended")
-	if val != null:
-		return val
-	return false
-
-
-func _hide():
+func _hide() -> void:
 	# This check makes sure that we are not already in the hidden state
 	# (where we translated the light saber to the hilt) to avoid playing it back
 	# again from the fully extended light saber position
 	if (is_extended() and _anim.current_animation != "QuickHide"):
-		_anim.play("Hide");
-		emit_signal("saber_hide")
+		_anim.play(&"Hide")
+		saber_visual._hide()
 
-func set_thickness(value):
-	emit_signal("saber_set_thickness",value)
-	
+func set_thickness(value: float) -> void:
+	saber_visual.set_thickness(value)
 
-func set_color(color):
-	emit_signal("saber_set_color",color)
+func set_color(color: Color) -> void:
+	saber_visual.set_color(color)
 	
-func set_trail(enabled=true):
-	emit_signal("saber_set_trail",enabled)
+func set_trail(enabled: bool = true) -> void:
+	saber_visual.set_trail(enabled)
 
-# toggle between the Area3D (legacy) or SwingableRaycast cube/bomb collision
-# detection mechansims. The SwingableRaycast mechanism is better because it can
-# detect collisions with items even when the saber is swung at a high velocity.
-# There shouldn't be a reason to not use SwingableRaycast, but it was nice to
-# have option to toggle and compare performance when developing the feature.
-func set_collision_mechanism(use_swingable_raycast: bool):
-	# prevent SwingableRaycase from processing anything
-	_swing_cast.enabled = use_swingable_raycast
-	_swing_cast.set_process(use_swingable_raycast)
-	_swing_cast.set_physics_process(use_swingable_raycast)
+func _ready() -> void:
+#	set_saber("res://game/sabers/particles/particles_saber.tscn")
+	_anim.play(&"QuickHide")
+	saber_visual.quickhide()
 	
-	await get_tree().physics_frame
 	if type == 0:
-		_swing_cast._set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, use_swingable_raycast)
-		set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, ! use_swingable_raycast)
+		_swing_cast._set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, true)
 	else:
-		_swing_cast._set_collision_mask_value(CollisionLayerConstants.RightNote_bit, use_swingable_raycast)
-		set_collision_mask_value(CollisionLayerConstants.RightNote_bit, ! use_swingable_raycast)
+		_swing_cast._set_collision_mask_value(CollisionLayerConstants.RightNote_bit, true)
 	_swing_cast._set_collision_mask_value(CollisionLayerConstants.Bombs_bit, true)
 
-func _ready():
-#	set_saber("res://game/sabers/particles/particles_saber.tscn")
-	if get_tree().get_nodes_in_group("main_game"):
-		_main_game = get_tree().get_nodes_in_group("main_game")[0];
-	_anim.play("QuickHide");
-	emit_signal("saber_quickhide")
-	
-	# default to using SwingableRaycast collision detection
-	set_collision_mechanism(true)
-	
-func _process(delta):
+func _physics_process(delta: float) -> void:
 	position = offset_pos + extra_offset_pos
 	rotation_degrees = offset_rot + extra_offset_rot
+	saber_end_past = saber_end
+	saber_end = saber_visual.tip.global_transform.origin
+	last_dt = delta
 	if is_extended():
 		#check floor collision for burn mark
-		$RayCast3D.force_raycast_update()
-		var raycoli = $RayCast3D.get_collider()
-		if raycoli != null and (raycoli.collision_layer & CollisionLayerConstants.Floor_mask):
-			var colipoint = $RayCast3D.get_collision_point()
-			raycoli.burn_mark(colipoint,type)
-				
-func set_saber(saber_path):
-	var prenewsaber = load(saber_path)
-	var newsaber = prenewsaber.instantiate()
-	for i in $saber_holder.get_children():
-		i.queue_free()
-	$saber_holder.add_child(newsaber)
+		_ray_cast.force_raycast_update()
+		var raycoli := _ray_cast.get_collider()
+		if raycoli is Floor:
+			var floor_body := raycoli as Floor
+			var colipoint := _ray_cast.get_collision_point()
+			floor_body.burn_mark(colipoint,type)
 
-func hit(cube):
-	var time_offset = (
-		(cube._note._time/_main_game._current_info._beatsPerMinute * 60.0)-
-		_main_game.song_player.get_playback_position()
-		)
-	emit_signal("saber_hit",cube,time_offset)
+func set_saber(saber_path: String) -> void:
+	var newsaber := (load(saber_path) as PackedScene).instantiate()
+	if newsaber is DefaultSaber:
+		for i in $saber_holder.get_children():
+			i.queue_free()
+		saber_visual = newsaber as DefaultSaber
+		$saber_holder.add_child(newsaber)
+
+func set_swingcast_enabled(value: bool) -> void:
+	_swing_cast.set_raycasts_enabled(value)
+
+func _handle_area_collided(area: Area3D) -> void:
+	if Scoreboard.paused: return
+	var cut_object := area.get_parent()
+	if not cut_object is Cuttable: return
+	var note := cut_object as Cuttable
 	
-func _handle_area_collided(area):
-	if area.collision_layer*2 & CollisionLayerConstants.AllNotes_mask:
-		emit_signal("cube_collide",area.get_parent().get_parent())
-	elif area.collision_layer*2 & CollisionLayerConstants.Bombs_mask:
-		emit_signal("bomb_collide",area.get_parent().get_parent())
+	var time_offset: float = (
+		(note.beat/Map.current_info.beats_per_minute * 60.0)-
+		song_player_ref.get_playback_position()
+	)
+	saber_visual.hit(time_offset)
+	controller.simple_rumble(0.75, 0.1)
+	
+	var o := controller.global_transform.origin
+	var controller_speed: Vector3 = (saber_end - saber_end_past) / last_dt
+	const BEAT_DISTANCE := 4.0
+	var cutplane := Plane(o, saber_end, saber_end_past + Vector3(0, 0, BEAT_DISTANCE * Map.current_info.beats_per_minute * last_dt / 30)) # Account for relative position to track speed
+	note.cut(type, controller_speed, cutplane, controller)
 
-func _on_SwingableRayCast_area_collided(area):
-	_handle_area_collided(area)
-
-func _on_AnimationPlayer_animation_started(anim_name):
+func _on_AnimationPlayer_animation_started(anim_name: StringName) -> void:
 	_swing_cast.adjust_segments = true
 
-func _on_AnimationPlayer_animation_finished(anim_name):
+func _on_AnimationPlayer_animation_finished(anim_name: StringName) -> void:
 	_swing_cast.adjust_segments = false
-
-func _on_LightSaber_area_entered(area):
-	_handle_area_collided(area)

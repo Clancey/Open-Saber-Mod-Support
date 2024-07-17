@@ -6,6 +6,7 @@ signal repeat
 
 var animated_percent: float = 0.0
 @onready var raycast_area := $RaycastArea as Area3D
+@onready var collision := $RaycastArea/CollisionShape3D as CollisionShape3D
 @onready var percent_indicator := $PercentIndicator as PercentIndicator
 @onready var details := ($Details as MeshInstance3D).mesh as TextMesh
 @onready var grade_label := $GradeViewport/GradeLabel as RichTextLabel
@@ -17,11 +18,17 @@ func _ready() -> void:
 	set_buttons_disabled(true)
 
 func _show() -> void:
-	raycast_area.collision_layer = 1
+	raycast_area.collision_layer = CollisionLayerConstants.Ui_mask
+	collision.disabled = false
+	($Repeat as UIRaycastButton).collision_layer = CollisionLayerConstants.Ui_mask
+	($MainMenu as UIRaycastButton).collision_layer = CollisionLayerConstants.Ui_mask
 	show()
 
 func _hide() -> void:
 	raycast_area.collision_layer = 0
+	collision.disabled = true
+	($Repeat as UIRaycastButton).collision_layer = 0
+	($MainMenu as UIRaycastButton).collision_layer = 0
 	hide()
 
 func show_score(score: int, record: int, percent: float, song_string: String, is_full_combo: bool, is_new_record: bool) -> void:
@@ -51,9 +58,7 @@ func show_score(score: int, record: int, percent: float, song_string: String, is
 	else:
 		grade_label.text = "[center]F"
 	
-	var tw := create_tween()
-	tw.set_trans(Tween.TRANS_QUAD)
-	tw.set_ease(Tween.EASE_OUT)
+	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.tween_property(self,^"animated_percent",percent,3.0).from(0.0)
 	tw.play()
 	while tw.is_running():
@@ -61,11 +66,8 @@ func show_score(score: int, record: int, percent: float, song_string: String, is
 		await get_tree().process_frame
 	#_on_Tween_tween_completed()
 	
-	tw = create_tween()
 	percent_indicator.update_percent(animated_percent)
-	tw.set_trans(Tween.TRANS_QUAD)
-	tw.set_ease(Tween.EASE_IN_OUT)
-	tw.set_parallel()
+	tw = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT).set_parallel()
 	tw.tween_property(details.material,^"albedo_color",Color.WHITE,2).from(transparent)
 	tw.tween_property(grade_label,^"modulate",Color.WHITE,2).from(transparent)
 	tw.tween_property(fc_label,^"modulate",Color.WHITE,2).from(transparent)

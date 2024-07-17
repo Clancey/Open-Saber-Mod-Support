@@ -8,9 +8,9 @@ extends UIRaycastTarget
 var last_pos2d := Vector2(INF, INF)
 
 
-func ui_raycast_hit_event(position: Vector3, click: bool, release: bool):
+func ui_raycast_hit_event(pos: Vector3, click: bool, release: bool) -> void:
 	# note: this transform assumes that the unscaled area is [-0.5, -0.5] to [0.5, 0.5] in size
-	var local_position := to_local(position)
+	var local_position := to_local(pos)
 	var pos2d := Vector2(local_position.x, -local_position.y)
 	pos2d = pos2d + Vector2(0.5, 0.5)
 	pos2d.x *= viewport.size.x
