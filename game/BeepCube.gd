@@ -69,7 +69,7 @@ func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> v
 	transform.origin.y = Constants.CUBE_HEIGHT_OFFSET + ((note_info.line_layer + 1) * Constants.CUBE_DISTANCE)
 	transform.origin.z = -(note_info.beat - current_beat) * Constants.BEAT_DISTANCE
 	
-	rotation.z = CUBE_ROTATIONS[note_info.cut_direction]
+	rotation.z = CUBE_ROTATIONS[note_info.cut_direction] + deg_to_rad(note_info.angle_offset)
 	
 	_mat.set_shader_parameter(&"color",color)
 	_mat.set_shader_parameter(&"is_dot", is_dot)

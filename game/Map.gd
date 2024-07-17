@@ -102,6 +102,7 @@ class ColorNoteInfo extends RefCounted:
 	var line_layer: int
 	var color: int # 0=left, 1=right
 	var cut_direction: int
+	var angle_offset: int
 	
 	func load_v2(note_dict: Dictionary) -> void:
 		beat = Utils.get_float(note_dict, "_time", 0.0)
@@ -109,6 +110,14 @@ class ColorNoteInfo extends RefCounted:
 		line_layer = int(Utils.get_float(note_dict, "_lineLayer", 0))
 		color = int(Utils.get_float(note_dict, "_type", -1.0))
 		cut_direction = int(Utils.get_float(note_dict, "_cutDirection", 0))
+	
+	func load_v3(note_dict: Dictionary) -> void:
+		beat = Utils.get_float(note_dict, "b", 0.0)
+		line_index = int(Utils.get_float(note_dict, "x", 0))
+		line_layer = int(Utils.get_float(note_dict, "y", 0))
+		color = int(Utils.get_float(note_dict, "c", -1.0))
+		cut_direction = int(Utils.get_float(note_dict, "d", 0))
+		angle_offset = int(Utils.get_float(note_dict, "a", 0))
 
 class BombInfo extends RefCounted:
 	var beat: float
@@ -119,6 +128,11 @@ class BombInfo extends RefCounted:
 		beat = Utils.get_float(bomb_dict, "_time", 0.0)
 		line_index = int(Utils.get_float(bomb_dict, "_lineIndex", 0))
 		line_layer = int(Utils.get_float(bomb_dict, "_lineLayer", 0))
+	
+	func load_v3(bomb_dict: Dictionary) -> void:
+		beat = Utils.get_float(bomb_dict, "b", 0.0)
+		line_index = int(Utils.get_float(bomb_dict, "x", 0))
+		line_layer = int(Utils.get_float(bomb_dict, "y", 0))
 
 class ObstacleInfo extends RefCounted:
 	var beat: float
@@ -144,6 +158,14 @@ class ObstacleInfo extends RefCounted:
 			2: # free
 				line_layer = int(Utils.get_float(obstacle_dict, "_lineLayer", 0))
 				height = int(Utils.get_float(obstacle_dict, "_height", 0))
+	
+	func load_v3(obstacle_dict: Dictionary) -> void:
+		beat = Utils.get_float(obstacle_dict, "b", 0.0)
+		duration = Utils.get_float(obstacle_dict, "d", 0.0)
+		line_index = int(Utils.get_float(obstacle_dict, "x", 0))
+		line_layer = int(Utils.get_float(obstacle_dict, "y", 0))
+		width = int(Utils.get_float(obstacle_dict, "w", 0))
+		height = int(Utils.get_float(obstacle_dict, "h", 0))
 
 class EventInfo extends RefCounted:
 	var beat: float
@@ -156,6 +178,12 @@ class EventInfo extends RefCounted:
 		type = int(Utils.get_float(event_dict, "_type", 0))
 		value = int(Utils.get_float(event_dict, "_value", 0))
 		float_value = Utils.get_float(event_dict, "_floatValue", -1.0)
+	
+	func load_v3(event_dict: Dictionary) -> void:
+		beat = Utils.get_float(event_dict, "b", 0.0)
+		type = int(Utils.get_float(event_dict, "et", 0))
+		value = int(Utils.get_float(event_dict, "i", 0))
+		float_value = Utils.get_float(event_dict, "f", -1.0)
 
 var current_info: Info
 var current_difficulty: Difficulty
@@ -181,6 +209,8 @@ var color_right: Color
 # getting pretty close to halfing it.
 var note_thread_0 := Thread.new()
 var note_thread_1 := Thread.new()
+var bomb_thread_0 := Thread.new()
+var bomb_thread_1 := Thread.new()
 var obstacle_thread_0 := Thread.new()
 var obstacle_thread_1 := Thread.new()
 var event_thread_0 := Thread.new()
@@ -302,6 +332,77 @@ func load_event_stack_v2(event_data: Array) -> void:
 	load_range.bind(midpoint, event_data.size()).call()
 	event_thread_1.wait_to_finish()
 
+func load_note_stack_v3(note_data: Array) -> void:
+	var last_index := note_data.size() - 1
+	var load_range := func(start: int, end: int) -> void:
+		var i := start
+		while i < end:
+			if note_data[i] is Dictionary:
+				var new_note := ColorNoteInfo.new()
+				@warning_ignore("unsafe_cast")
+				new_note.load_v3(note_data[i] as Dictionary)
+				note_stack[last_index - i] = new_note
+			i += 1
+	var midpoint := note_data.size() >> 1
+	note_stack.resize(note_data.size())
+	note_thread_1.start(load_range.bind(0, midpoint))
+	load_range.bind(midpoint, note_data.size()).call()
+	note_thread_1.wait_to_finish()
+
+func load_bomb_stack_v3(bomb_data: Array) -> void:
+	if not Settings.bombs_enabled:
+		bomb_stack.clear()
+		return
+	var last_index := bomb_data.size() - 1
+	var load_range := func(start: int, end: int) -> void:
+		var i := start
+		while i < end:
+			if bomb_data[i] is Dictionary:
+				var new_bomb := BombInfo.new()
+				@warning_ignore("unsafe_cast")
+				new_bomb.load_v3(bomb_data[i] as Dictionary)
+				bomb_stack[last_index - i] = new_bomb
+			i += 1
+	var midpoint := bomb_data.size() >> 1
+	bomb_stack.resize(bomb_data.size())
+	bomb_thread_1.start(load_range.bind(0, midpoint))
+	load_range.bind(midpoint, bomb_data.size()).call()
+	bomb_thread_1.wait_to_finish()
+
+func load_obstacle_stack_v3(obstacle_data: Array) -> void:
+	var last_index := obstacle_data.size() - 1
+	var load_range := func(start: int, end: int) -> void:
+		var i := start
+		while i < end:
+			if obstacle_data[i] is Dictionary:
+				var new_obstacle := ObstacleInfo.new()
+				@warning_ignore("unsafe_cast")
+				new_obstacle.load_v3(obstacle_data[i] as Dictionary)
+				obstacle_stack[last_index - i] = new_obstacle
+			i += 1
+	var midpoint := obstacle_data.size() >> 1
+	obstacle_stack.resize(obstacle_data.size())
+	obstacle_thread_1.start(load_range.bind(0, midpoint))
+	load_range.bind(midpoint, obstacle_data.size()).call()
+	obstacle_thread_1.wait_to_finish()
+
+func load_event_stack_v3(event_data: Array) -> void:
+	var last_index := event_data.size() - 1
+	var load_range := func(start: int, end: int) -> void:
+		var i := start
+		while i < end:
+			if event_data[i] is Dictionary:
+				var new_event := EventInfo.new()
+				@warning_ignore("unsafe_cast")
+				new_event.load_v3(event_data[i] as Dictionary)
+				event_stack[last_index - i] = new_event
+			i += 1
+	var midpoint := event_data.size() >> 1
+	event_stack.resize(event_data.size())
+	event_thread_1.start(load_range.bind(0, midpoint))
+	load_range.bind(midpoint, event_data.size()).call()
+	event_thread_1.wait_to_finish()
+
 func load_beatmap(map_data: Dictionary) -> bool:
 	if map_data.has("_version"):
 		note_thread_0.start(load_note_stack_v2.bind(Utils.get_array(map_data, "_notes", [])))
@@ -311,6 +412,17 @@ func load_beatmap(map_data: Dictionary) -> bool:
 		obstacle_thread_0.wait_to_finish()
 		event_thread_0.wait_to_finish()
 		return true
-	else:
-		vr.log_warning("selected map is an unsupported version")
-		return false
+	elif map_data.has("version"):
+		var version := Utils.get_str(map_data, "version", "")
+		if version.begins_with("3."):
+			note_thread_0.start(load_note_stack_v3.bind(Utils.get_array(map_data, "colorNotes", [])))
+			bomb_thread_0.start(load_bomb_stack_v3.bind(Utils.get_array(map_data, "bombNotes", [])))
+			obstacle_thread_0.start(load_obstacle_stack_v3.bind(Utils.get_array(map_data, "obstacles", [])))
+			event_thread_0.start(load_event_stack_v3.bind(Utils.get_array(map_data, "basicBeatmapEvents", [])))
+			note_thread_0.wait_to_finish()
+			bomb_thread_0.wait_to_finish()
+			obstacle_thread_0.wait_to_finish()
+			event_thread_0.wait_to_finish()
+			return true
+	vr.log_warning("selected map is an unsupported version")
+	return false
