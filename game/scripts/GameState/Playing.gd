@@ -37,32 +37,41 @@ func _physics_process(game: BeepSaber_Game) -> void:
 
 var bomb_template := load("res://game/Bomb/Bomb.tscn") as PackedScene
 var wall_template := load("res://game/Wall/Wall.tscn") as PackedScene
+var chain_head_template := load("res://game/Chain/ChainHead.tscn") as PackedScene
 const BEATS_AHEAD := 4.0
 
 func _process_map(game: BeepSaber_Game) -> void:
 	if (Map.current_info == null):
 		return
 	
-	var current_beat := game.song_player.get_playback_position() * Map.current_info.beats_per_minute / 60.0
+	var current_beat := game.song_player.get_playback_position() * Map.current_info.beats_per_minute * 0.016666666666666667
+	var look_ahead := current_beat + BEATS_AHEAD
 	
 	# spawn notes
-	while not Map.note_stack.is_empty() and Map.note_stack[-1].beat <= current_beat+BEATS_AHEAD:
+	while not Map.note_stack.is_empty() and Map.note_stack[-1].beat <= look_ahead:
 		var note := game.cube_pool.acquire()
 		var note_info := Map.note_stack.pop_back() as Map.ColorNoteInfo
 		var color := Map.color_left if note_info.color == 0 else Map.color_right
 		note.spawn(note_info, current_beat, color)
 	
 	# spawn bombs
-	while not Map.bomb_stack.is_empty() and Map.bomb_stack[-1].beat <= current_beat+BEATS_AHEAD:
+	while not Map.bomb_stack.is_empty() and Map.bomb_stack[-1].beat <= look_ahead:
 		var bomb := bomb_template.instantiate() as Bomb
 		bomb.spawn(Map.bomb_stack.pop_back() as Map.BombInfo, current_beat)
 		game.track.add_child(bomb)
 	
 	# spawn obstacles (walls)
-	while not Map.obstacle_stack.is_empty() and Map.obstacle_stack[-1].beat <= current_beat+BEATS_AHEAD:
+	while not Map.obstacle_stack.is_empty() and Map.obstacle_stack[-1].beat <= look_ahead:
 		var wall := wall_template.instantiate() as Wall
 		wall.spawn(Map.obstacle_stack.pop_back() as Map.ObstacleInfo, current_beat)
 		game.track.add_child(wall)
+	
+	while not Map.chain_stack.is_empty() and Map.chain_stack[-1].head_beat <= look_ahead:
+		var chain_head := chain_head_template.instantiate() as ChainHead
+		var chain_info := Map.chain_stack.pop_back() as Map.ChainInfo
+		var color := Map.color_left if chain_info.color == 0 else Map.color_right
+		chain_head.spawn(chain_info, current_beat, color)
+		game.track.add_child(chain_head)
 	
 	while not Map.event_stack.is_empty() and Map.event_stack[-1].beat <= current_beat:
 		game.event_driver.process_event(Map.event_stack.pop_back() as Map.EventInfo, Map.color_left, Map.color_right)

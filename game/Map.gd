@@ -167,6 +167,30 @@ class ObstacleInfo extends RefCounted:
 		width = int(Utils.get_float(obstacle_dict, "w", 0))
 		height = int(Utils.get_float(obstacle_dict, "h", 0))
 
+class ChainInfo extends RefCounted:
+	var color: int
+	var head_beat: float
+	var head_line_index: int
+	var head_line_layer: int
+	var head_cut_direction: int
+	var tail_beat: float
+	var tail_line_index: int
+	var tail_line_layer: int
+	var slice_count: int
+	var squish_factor: float
+	
+	func load_v3(chain_dict: Dictionary) -> void:
+			color = int(Utils.get_float(chain_dict, "c", 0))
+			head_beat = Utils.get_float(chain_dict, "b", 0.0)
+			head_line_index = int(Utils.get_float(chain_dict, "x", 0))
+			head_line_layer = int(Utils.get_float(chain_dict, "y", 0))
+			head_cut_direction = int(Utils.get_float(chain_dict, "d", 0))
+			tail_beat = Utils.get_float(chain_dict, "tb", 0.0)
+			tail_line_index = int(Utils.get_float(chain_dict, "tx", 0))
+			tail_line_layer = int(Utils.get_float(chain_dict, "ty", 0))
+			slice_count = int(Utils.get_float(chain_dict, "sc", 0))
+			squish_factor = int(Utils.get_float(chain_dict, "s", 1.0))
+
 class EventInfo extends RefCounted:
 	var beat: float
 	var type: int
@@ -192,6 +216,7 @@ var current_difficulty_index: int
 var note_stack: Array[ColorNoteInfo]
 var bomb_stack: Array[BombInfo]
 var obstacle_stack: Array[ObstacleInfo]
+var chain_stack: Array[ChainInfo]
 var event_stack: Array[EventInfo]
 
 var color_left: Color
@@ -213,6 +238,8 @@ var bomb_thread_0 := Thread.new()
 var bomb_thread_1 := Thread.new()
 var obstacle_thread_0 := Thread.new()
 var obstacle_thread_1 := Thread.new()
+var chain_thread_0 := Thread.new()
+var chain_thread_1 := Thread.new()
 var event_thread_0 := Thread.new()
 var event_thread_1 := Thread.new()
 
@@ -386,6 +413,23 @@ func load_obstacle_stack_v3(obstacle_data: Array) -> void:
 	load_range.bind(midpoint, obstacle_data.size()).call()
 	obstacle_thread_1.wait_to_finish()
 
+func load_chain_stack_v3(chain_data: Array) -> void:
+	var last_index := chain_data.size() - 1
+	var load_range := func(start: int, end: int) -> void:
+		var i := start
+		while i < end:
+			if chain_data[i] is Dictionary:
+				var new_chain := ChainInfo.new()
+				@warning_ignore("unsafe_cast")
+				new_chain.load_v3(chain_data[i] as Dictionary)
+				chain_stack[last_index - i] = new_chain
+			i += 1
+	var midpoint := chain_data.size() >> 1
+	chain_stack.resize(chain_data.size())
+	chain_thread_1.start(load_range.bind(0, midpoint))
+	load_range.bind(midpoint, chain_data.size()).call()
+	chain_thread_1.wait_to_finish()
+
 func load_event_stack_v3(event_data: Array) -> void:
 	var last_index := event_data.size() - 1
 	var load_range := func(start: int, end: int) -> void:
@@ -408,6 +452,7 @@ func load_beatmap(map_data: Dictionary) -> bool:
 		note_thread_0.start(load_note_stack_v2.bind(Utils.get_array(map_data, "_notes", [])))
 		obstacle_thread_0.start(load_obstacle_stack_v2.bind(Utils.get_array(map_data, "_obstacles", [])))
 		event_thread_0.start(load_event_stack_v2.bind(Utils.get_array(map_data, "_events", [])))
+		chain_stack.clear()
 		note_thread_0.wait_to_finish()
 		obstacle_thread_0.wait_to_finish()
 		event_thread_0.wait_to_finish()
@@ -418,10 +463,12 @@ func load_beatmap(map_data: Dictionary) -> bool:
 			note_thread_0.start(load_note_stack_v3.bind(Utils.get_array(map_data, "colorNotes", [])))
 			bomb_thread_0.start(load_bomb_stack_v3.bind(Utils.get_array(map_data, "bombNotes", [])))
 			obstacle_thread_0.start(load_obstacle_stack_v3.bind(Utils.get_array(map_data, "obstacles", [])))
+			chain_thread_0.start(load_chain_stack_v3.bind(Utils.get_array(map_data, "burstSliders", [])))
 			event_thread_0.start(load_event_stack_v3.bind(Utils.get_array(map_data, "basicBeatmapEvents", [])))
 			note_thread_0.wait_to_finish()
 			bomb_thread_0.wait_to_finish()
 			obstacle_thread_0.wait_to_finish()
+			chain_thread_0.wait_to_finish()
 			event_thread_0.wait_to_finish()
 			return true
 	vr.log_warning("selected map is an unsupported version")

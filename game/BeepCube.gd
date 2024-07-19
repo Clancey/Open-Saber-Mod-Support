@@ -53,14 +53,11 @@ var _mat: ShaderMaterial
 
 func _ready() -> void:
 	var mi := $BeepCubeMesh as MeshInstance3D
-	_mat = mi.material_override.duplicate(true) as ShaderMaterial
-	mi.mesh = mi.mesh.duplicate() as Mesh
-	mi.material_override = _mat
+	_mat = mi.material_override as ShaderMaterial
 	_mesh = mi.mesh
 
-static var CUBE_ROTATIONS := PackedFloat64Array([PI, 0.0, TAU*0.75, TAU*0.25, -TAU*0.375, TAU*0.375, -TAU*0.125, TAU*0.125, 0.0])
 func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> void:
-	speed = Constants.BEAT_DISTANCE * Map.current_info.beats_per_minute / 60.0
+	speed = Constants.BEAT_DISTANCE * Map.current_info.beats_per_minute * 0.016666666666666667
 	beat = note_info.beat
 	which_saber = note_info.color
 	is_dot = note_info.cut_direction == 8
@@ -69,7 +66,7 @@ func spawn(note_info: Map.ColorNoteInfo, current_beat: float, color: Color) -> v
 	transform.origin.y = Constants.CUBE_HEIGHT_OFFSET + ((note_info.line_layer + 1) * Constants.CUBE_DISTANCE)
 	transform.origin.z = -(note_info.beat - current_beat) * Constants.BEAT_DISTANCE
 	
-	rotation.z = CUBE_ROTATIONS[note_info.cut_direction] + deg_to_rad(note_info.angle_offset)
+	rotation.z = Constants.CUBE_ROTATIONS[note_info.cut_direction] + deg_to_rad(note_info.angle_offset)
 	
 	_mat.set_shader_parameter(&"color",color)
 	_mat.set_shader_parameter(&"is_dot", is_dot)
