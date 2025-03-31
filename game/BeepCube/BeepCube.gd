@@ -45,32 +45,32 @@ func spawn(note_info: ColorNoteInfo, current_beat: float, color : Color) -> void
 	which_saber = note_info.color
 	is_dot = note_info.cut_direction == 8
 
-	if note_info.line_index > 3 or note_info.line_index < 0 or note_info.line_layer > 2 or note_info.line_layer < 0:
-		var noteLineIndex = note_info.line_index
-		var noteLayerIndex = note_info.line_layer
-		var leftSide = false
-		var flipLineIndex = noteLineIndex * -1
-		var newLaneCount = 1000
-		if noteLineIndex >= 1000 or noteLineIndex <= -1000:
-			if sign(note_info.line_index) == 1:
-				transform.origin.x = (note_info.line_index / 1000.0) - 2.5
-			else:
-				transform.origin.x = (note_info.line_index / 1000.0) - 0.5
-			transform.origin.y = (noteLayerIndex - 1000.0) / 1000.0 + 0.8
+	#if note_info.line_index > 3 or note_info.line_index < 0 or note_info.line_layer > 2 or note_info.line_layer < 0:
+	var noteLineIndex = note_info.line_index
+	var noteLayerIndex = note_info.line_layer
+	var leftSide = false
+	var flipLineIndex = noteLineIndex * -1
+	var newLaneCount = 1000
+	if noteLineIndex >= 1000 or noteLineIndex <= -1000:
+		if sign(note_info.line_index) == 1:
+			transform.origin.x = (note_info.line_index / 1000.0) - 2.5
 		else:
-			transform.origin.x = (note_info.line_index * 0.6) - 0.9
-			transform.origin.y = (note_info.line_layer * 0.6) + 0.8
-
-		transform.origin.z = - (note_info.beat - current_beat) * Constants.BEAT_DISTANCE
-		if note_info.cut_direction < 9:
-			rotation.z = Constants.CUBE_ROTATIONS[note_info.cut_direction] + deg_to_rad(note_info.angle_offset)
-		else:
-			rotation.z = deg_to_rad((note_info.cut_direction - 1000) * -1)
+			transform.origin.x = (note_info.line_index / 1000.0) - 0.5
+		transform.origin.y = (noteLayerIndex - 1000.0) / 1000.0 + 0.8
 	else:
-		transform.origin.x = Constants.LANE_X[note_info.line_index]
-		transform.origin.y = Constants.LAYER_Y[note_info.line_layer]
-		transform.origin.z = - (note_info.beat - current_beat) * Constants.BEAT_DISTANCE
+		transform.origin.x = (note_info.line_index * 0.6) + Constants.LANE_ZERO_X
+		transform.origin.y = (note_info.line_layer * 0.6) + Constants.LAYER_ZERO_Y
+
+	transform.origin.z = - (note_info.beat - current_beat) * Constants.BEAT_DISTANCE
+	if note_info.cut_direction < 9:
 		rotation.z = Constants.CUBE_ROTATIONS[note_info.cut_direction] + deg_to_rad(note_info.angle_offset)
+	else:
+		rotation.z = deg_to_rad((note_info.cut_direction - 1000) * -1)
+	#else:
+		#transform.origin.x = Constants.LANE_X[note_info.line_index]
+		#transform.origin.y = Constants.LAYER_Y[note_info.line_layer]
+		#transform.origin.z = - (note_info.beat - current_beat) * Constants.BEAT_DISTANCE
+		#rotation.z = Constants.CUBE_ROTATIONS[note_info.cut_direction] + deg_to_rad(note_info.angle_offset)
 
 	
 	if is_dot:

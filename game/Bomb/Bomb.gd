@@ -32,20 +32,20 @@ func spawn(info: BombInfo, current_beat: float) -> void:
 				transform.origin.x = (info.line_index / 1000.0) - 2.5
 			else:
 				transform.origin.x = (info.line_index / 1000.0) - 0.5
-			transform.origin.y = (noteLayerIndex - 1000.0) / 1000.0 + 0.8
+			transform.origin.y = (noteLayerIndex - 1000.0) / 1000.0 + Constants.LANE_ZERO_Y
 		else:
-			transform.origin.x = (info.line_index * 0.6) - 0.9
-			transform.origin.y = (info.line_layer * 0.6) + 0.8
+			transform.origin.x = (info.line_index * 0.6) + Constants.LANE_ZERO_X
+			transform.origin.y = (info.line_layer * 0.6) + Constants.LANE_ZERO_Y
 
 		transform.origin.z = - (info.beat - current_beat) * Constants.BEAT_DISTANCE
 		#if info.cut_direction < 9:
 			#rotation.z = Constants.CUBE_ROTATIONS[info.cut_direction] + deg_to_rad(info.angle_offset)
 		#else:
 			#rotation.z = deg_to_rad((info.cut_direction - 1000) * -1)
-	else:
-		transform.origin.x = Constants.LANE_X[info.line_index]
-		transform.origin.y = Constants.LAYER_Y[info.line_layer]
-		transform.origin.z = - (info.beat - current_beat) * Constants.BEAT_DISTANCE
+	#else:
+		#transform.origin.x = Constants.LANE_X[info.line_index]
+		#transform.origin.y = Constants.LAYER_Y[info.line_layer]
+		#transform.origin.z = - (info.beat - current_beat) * Constants.BEAT_DISTANCE
 		#rotation.z = Constants.CUBE_ROTATIONS[info.cut_direction] + deg_to_rad(info.angle_offset)
 	
 	var anim := $AnimationPlayer as AnimationPlayer
