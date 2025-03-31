@@ -21,8 +21,6 @@ func _physics_process(delta: float) -> void :
 		queue_free()
 
 func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
-	if Constants.usingNoodleExtension:
-		queue_free()
 
 	$WallMeshOrientation / WallMesh.material_override.set_shader_parameter(&"albedo_color", color)
 	var mesh: = $WallMeshOrientation / WallMesh as MeshInstance3D
