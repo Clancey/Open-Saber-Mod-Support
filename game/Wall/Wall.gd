@@ -28,7 +28,6 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 	var shape: = ($WallMeshOrientation / WallArea / CollisionShape3D as CollisionShape3D).shape as BoxShape3D
 	if wall_info.line_layer == 0:
 		testforLayer += 1
-		print(testforLayer)
 
 
 
@@ -36,6 +35,8 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 	var wallHeight = wall_info.height
 	var wallType = wall_info.type
 	var startHeight = 0
+	print(wall_info.type)
+	name = str(wall_info.type)
 	if wallWidth >= 1000 or wallWidth <= -1000:
 		if wallWidth >= 1000 and wallWidth <= 4000:
 			wallWidth = (wallWidth - 1000) / 1000.0
@@ -57,6 +58,7 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 	# Convert values to match game world scale
 	wallHeight = ((wallHeight / 1000.0) * 5.0) #/ 10000.0
 	startHeight = ((startHeight / 1000.0) * 5.0) #/ 10000.0  # Convert start height
+	#wallHeight = startHeight - wallHeight
 	wallHeight = (wallHeight * 1000.0 + startHeight + 4001) / 1000.0
 
 
