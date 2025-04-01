@@ -32,10 +32,10 @@ func spawn(info: BombInfo, current_beat: float) -> void:
 				transform.origin.x = (info.line_index / 1000.0) - 2.5
 			else:
 				transform.origin.x = (info.line_index / 1000.0) - 0.5
-			transform.origin.y = (noteLayerIndex - 1000.0) / 1000.0 + Constants.LANE_ZERO_Y
+			transform.origin.y = (noteLayerIndex - 1000.0) / 1000.0 + Constants.LAYER_ZERO_Y
 		else:
 			transform.origin.x = (info.line_index * 0.6) + Constants.LANE_ZERO_X
-			transform.origin.y = (info.line_layer * 0.6) + Constants.LANE_ZERO_Y
+			transform.origin.y = (info.line_layer * 0.6) + Constants.LAYER_ZERO_Y
 
 		transform.origin.z = - (info.beat - current_beat) * Constants.BEAT_DISTANCE
 		#if info.cut_direction < 9:

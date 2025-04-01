@@ -59,6 +59,7 @@ func _process_map(game: BeepSaber_Game) -> void:
 		var note := GlobalReferences.cube_pool.acquire() as BeepCube
 		var note_info := Map.note_stack.pop_back() as ColorNoteInfo
 		var color: = Map.color_left if note_info.color == 0 else Map.color_right
+		print(note_info.custom_data)
 		if note_info.custom_data.has("_color"):
 			note.spawn(note_info, current_beat, Color(note_info.custom_data["_color"][0], note_info.custom_data["_color"][1], note_info.custom_data["_color"][2]))
 		else:

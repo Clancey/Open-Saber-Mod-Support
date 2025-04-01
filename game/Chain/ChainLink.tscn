@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bbsbv2l8r8kxm" path="res://game/Chain/ChainLink.glb" id="2_jgcvi"]
 [ext_resource type="Shader" uid="uid://sqdgn1rip22u" path="res://game/Chain/ChainLink.gdshader" id="3_fnqer"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ls7sy"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fnqer"]
 resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("3_fnqer")
@@ -82,7 +82,7 @@ script = ExtResource("1_8l7tk")
 
 [node name="Mesh" parent="." instance=ExtResource("2_jgcvi")]
 layers = 3
-material_override = SubResource("ShaderMaterial_ls7sy")
+material_override = SubResource("ShaderMaterial_fnqer")
 
 [node name="Area3D" type="Area3D" parent="."]
 collision_layer = 768

@@ -35,15 +35,31 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 	var wallWidth = wall_info.width
 	var wallHeight = wall_info.height
 	var wallType = wall_info.type
-	if wallWidth >= 1000 and wallWidth <= 4000:
-		wallWidth = (wallWidth - 1000) / 1000.0
-	elif wallWidth >= 40001 and wallWidth >= 4005000:
-		pass
+	var startHeight = 0
+	if wallWidth >= 1000 or wallWidth <= -1000:
+		if wallWidth >= 1000 and wallWidth <= 4000:
+			wallWidth = (wallWidth - 1000) / 1000.0
+		elif wallWidth >= 4001 and wallWidth <= 4005000:
+			pass  # Do nothing
+		elif wallWidth <= -1000:
+			wallWidth = ((wallWidth + 2000) - 1000) / 1000.0
 
-	if wallType >= 1000 and wallType <= 4000:
+	if wallType >= 4001 and wallType <= 4005000:
+		wallHeight = (wallType - 4001) / 1000.0  # Extracts wall height
+		startHeight = fmod(wallType - 4001, 1000)  # Extracts start height
+		
+		# Scale start height (since 250 ≈ 1000 height)
+		startHeight *= 4  
+	else:
 		wallHeight = (wallType - 1000) / 1000.0
-	elif wallType >= 40001 and wallType <= 4005000:
-		wallHeight = ((wallType - 4001) / 200000)
+		startHeight = 0  # Regular walls start at the bottom
+
+	# Convert values to match game world scale
+	wallHeight = ((wallHeight / 1000.0) * 5.0) #/ 10000.0
+	startHeight = ((startHeight / 1000.0) * 5.0) #/ 10000.0  # Convert start height
+	wallHeight = (wallHeight * 1000.0 + startHeight + 4001) / 1000.0
+
+
 
 
 	var x = wallWidth * Constants.LANE_DISTANCE
@@ -57,8 +73,11 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 	shape.size.y = y
 	m.size.z = z
 	shape.size.z = z
+	print(m.size.y)
 	despawn_z = Constants.MISS_Z + depth
 	(mesh.material_override as ShaderMaterial).set_shader_parameter(&"size", Vector3(x, y, z))
+	
+	#walls placement for mapping extensions
 	if wall_info.line_index > 3 or wall_info.line_index < 0 or wall_info.line_layer > 2 or wall_info.line_layer < 0:
 		var wallLineIndex = wall_info.line_index
 		var wallLayerIndex = wall_info.line_layer
