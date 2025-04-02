@@ -45,16 +45,21 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 		elif wallWidth <= -1000:
 			wallWidth = ((wallWidth + 2000) - 1000) / 1000.0
 
-	if wallType >= 4001 and wallType <= 4005000:
-		wallHeight = (wallType - 4001) / 1000.0  # Extracts wall height
-		startHeight = fmod(wallType - 4001, 1000)  # Extracts start height
-		
-		# Scale start height (since 250 ≈ 1000 height)
-		startHeight *= 4  
-	else:
-		wallHeight = (wallType - 1000) / 1000.0
-		startHeight = 0  # Regular walls start at the bottom
 
+	
+	#if wallType >= 4001 and wallType <= 4005000:
+		#wallHeight = (wallType - 4001) / 1000.0  # Extracts wall height
+		##startHeight = fmod(wallType - 4001, 1000)  # Extracts start height
+		##startHeight = startHeight / 750.0 * 5 * 1000 + 1334
+		## Scale start height (since 250 ≈ 1000 height)
+		##startHeight *= 4  
+	#else:
+		#wallHeight = (wallType - 1000) / 1000.0
+		##startHeight = 0  # Regular walls start at the bottom
+	wallHeight = PostfixWallHeight(wallType, wallHeight)
+	startHeight = PostfixstartHeight(wallType, startHeight)
+	
+	wallHeight = wallHeight / 1000.0 * 5 * 1000 + 1000
 	# Convert values to match game world scale
 	wallHeight = ((wallHeight / 1000.0) * 5.0) #/ 10000.0
 	startHeight = ((startHeight / 1000.0) * 5.0) #/ 10000.0  # Convert start height
@@ -63,13 +68,13 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 		wallHeight = (wallHeight * 1000.0 + startHeight + 4001) / 1000.0
 	else:
 		wallHeight = (wallHeight * 1000.0 + startHeight + 4001) / 10000.0
-		wallHeight /= 4
-
+		wallHeight *= 4
+	#wallHeight *= 4
 
 
 
 	var x = wallWidth * Constants.LANE_DISTANCE
-	var y = wallHeight * Constants.LANE_DISTANCE
+	var y = (wallHeight / 4) * Constants.LANE_DISTANCE
 	var z = wall_info.duration * Constants.BEAT_DISTANCE
 
 	var depth = z * 0.5
@@ -79,7 +84,7 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 	shape.size.y = y
 	m.size.z = z
 	shape.size.z = z
-	print(m.size.y)
+	#print(m.size.y)
 	despawn_z = Constants.MISS_Z + depth
 	(mesh.material_override as ShaderMaterial).set_shader_parameter(&"size", Vector3(x, y, z))
 	
@@ -95,10 +100,12 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 				transform.origin.x = ((wall_info.line_index - ((4 - wallWidth) * 0.5) - 1000) / 1000.0) - 1.5
 			else:
 				transform.origin.x = ((wall_info.line_index - ((4 - wallWidth) * 0.5) + 1000) / 1000.0) - 1.5
-			if wall_info.type < 4000:
-				transform.origin.y = (wall_info.line_layer + (wallHeight * 0.5) - 1000.0) / 1000.0 + 0.8
-			else:
-				transform.origin.y = (wall_info.line_layer + (wallHeight * 0.5) - 1000.0) / 250.0 + 0.8
+			#if wall_info.type < 4000:
+			transform.origin.y = (wall_info.line_layer + (wallHeight * 0.5) - 1000.0) / 1000.0 + 0.8
+			#else:
+				#transform.origin.y = ((wall_info.line_layer + (wallHeight * 0.5) - 1000.0) / 1000.0) + 0.999947
+				#transform.origin.y *= -16000000
+			print(transform.origin.y)
 		else:
 			transform.origin.x = (wall_info.line_index - ((4 - wallWidth) * 0.5)) * Constants.LANE_DISTANCE
 			transform.origin.y = (wall_info.line_layer + (wallHeight * 0.5)) * Constants.LANE_DISTANCE
@@ -111,3 +118,38 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 
 	speed = Constants.BEAT_DISTANCE * Map.current_info.beats_per_minute / 60.0
 	($AnimationPlayer as AnimationPlayer).play(&"Spawn")
+
+
+func PostfixWallHeight(wallType, wallHeight):
+	if wallType < 1000 or wallType > 4005000:
+		return wallHeight
+	
+	if wallType >= 4001 and wallType <= 4005000:
+		wallType -= 4001
+		wallHeight = wallType / 1000.0
+	else:
+		wallHeight -= 1000
+	return wallHeight / 1000.0 * 5 * 1000 + 1000
+
+func PostfixstartHeight(wallType, startHeight):
+	if wallType < 1000 or wallType > 4005000:
+		return startHeight
+	if wallType >= 4001 and wallType <= 4005000:
+		wallType -= 4001
+		startHeight = fmod(wallType - 4001, 1000)
+	return startHeight / 750.0 * 5 * 1000 + 1334
+
+func PrefixWallHeight(wallType, wallHeight):
+	if !Constants.usingMappingExtension:
+		return wallHeight
+	#get spawn data
+	var height = wallHeight
+	if height <= -1000:
+		wallHeight = (height + 2000) / 1000
+	if height >= 1000:
+		wallHeight = (height - 1000) / 1000
+	if height > 2:
+		wallHeight = height
+	
+	return wallHeight
+	#FIND OUT WHAT StaticSpawnMovement IS!!
