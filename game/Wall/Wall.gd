@@ -59,7 +59,11 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 	wallHeight = ((wallHeight / 1000.0) * 5.0) #/ 10000.0
 	startHeight = ((startHeight / 1000.0) * 5.0) #/ 10000.0  # Convert start height
 	#wallHeight = startHeight - wallHeight
-	wallHeight = (wallHeight * 1000.0 + startHeight + 4001) / 1000.0
+	if wall_info.type < 4000:
+		wallHeight = (wallHeight * 1000.0 + startHeight + 4001) / 1000.0
+	else:
+		wallHeight = (wallHeight * 1000.0 + startHeight + 4001) / 10000.0
+		wallHeight /= 4
 
 
 
@@ -91,7 +95,10 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 				transform.origin.x = ((wall_info.line_index - ((4 - wallWidth) * 0.5) - 1000) / 1000.0) - 1.5
 			else:
 				transform.origin.x = ((wall_info.line_index - ((4 - wallWidth) * 0.5) + 1000) / 1000.0) - 1.5
-			transform.origin.y = (wall_info.line_layer + (wallHeight * 0.5) - 1000.0) / 1000.0 + 0.8
+			if wall_info.type < 4000:
+				transform.origin.y = (wall_info.line_layer + (wallHeight * 0.5) - 1000.0) / 1000.0 + 0.8
+			else:
+				transform.origin.y = (wall_info.line_layer + (wallHeight * 0.5) - 1000.0) / 250.0 + 0.8
 		else:
 			transform.origin.x = (wall_info.line_index - ((4 - wallWidth) * 0.5)) * Constants.LANE_DISTANCE
 			transform.origin.y = (wall_info.line_layer + (wallHeight * 0.5)) * Constants.LANE_DISTANCE
