@@ -55,11 +55,12 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 		# Convert values to match game world scale
 		wallHeight = ((wallHeight / 1000.0) * 5.0) #/ 10000.0
 		startHeight = ((startHeight / 1000.0) * 5.0) #/ 10000.0  # Convert start height
-		print(wall_info.type,",",wallHeight)
+		print("before", wall_info.type,",",wall_info.height,",",wallHeight,",",startHeight)
 		#HOW DO I GET YOU TO ONLY ACTIVATE IF IT IS ULTRA PERSISION MODE?????
 		if wall_info.type >= 1000:
 			wallHeight = (wallHeight * 1000.0 + startHeight + 4001) / 10000.0
 			wallHeight /= 4
+		print("after ",wall_info.type,",",wall_info.height,",",wallHeight * Constants.LANE_DISTANCE,",",startHeight)
 
 
 
@@ -92,7 +93,7 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 				transform.origin.x = ((wall_info.line_index - ((4 - wallWidth) * 0.5) + 1000) / 1000.0) - 1.5
 			#Y axix placement is broken for most walls
 			transform.origin.y = (startHeight * 0.1) * 0.75
-			print(wallHeight,",",startHeight)
+			#print(wallHeight,",",startHeight)
 		else:
 			transform.origin.x = (wall_info.line_index - ((4 - wallWidth) * 0.5)) * Constants.LANE_DISTANCE
 			transform.origin.y = (wall_info.line_layer + (wallHeight * 0.5)) * Constants.LANE_DISTANCE
