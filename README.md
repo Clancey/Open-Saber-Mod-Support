@@ -1,4 +1,4 @@
-<h1>Open saber vr mods!</h1>
+<h1>Open saber vr + Mods!</h1>
 <h2>Progress</h2>
 <h3>Chroma</h3>
 There is full Chroma support*
