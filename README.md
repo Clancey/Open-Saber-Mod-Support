@@ -1,3 +1,18 @@
+<h1>Open saber vr mods!</h1>
+<h2>Progress</h2>
+<h3>Chroma</h3>
+There is full Chroma support*
+The only thing you can't do, is control each light with the "_light_id" as it is used in changing environments and Open saber only has 1, but the notes change colour properly!
+<h3>Mapping extensions</h3>
+Mapping extensions is currently in the works as the walls are placed in a weird way I can't understand, however wall sizeing is fully working along side everything else*
+the only things not implemented is archs and chains, as i've never even seen a mapping extension level in v3 anyways.
+
+<h3>Noodle extensions</h3>
+While I have code that can make it work, there is no animation support and in general is extremly buggy so It's unimplimented but I want to give it support someday!
+
+<h3>Vivify</h3>
+No.
+
 # Open Saber VR
 This is a fork of [Beep Saber by NeoSpark314](https://github.com/NeoSpark314/BeepSaber) ported to Godot 4.3 and OpenXR (WIP)
 (The OQ Toolkit is only partially ported/patched for it to work on Godot 4 with OpenXR, most features that are not used in this project will not work)
