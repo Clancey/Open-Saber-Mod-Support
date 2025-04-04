@@ -112,6 +112,7 @@ func spawn(note_info: ColorNoteInfo, current_beat: float, color : Color) -> void
 	mi.visible = true
 
 # call this when clearing the track
+# soon I'll add my optimization that really helps.
 func clear_from_track() -> void:
 	hide_cube()
 	piece_left.hide_piece()

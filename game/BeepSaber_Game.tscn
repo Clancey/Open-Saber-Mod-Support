@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=45 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://iglrdadxsqw4" path="res://game/Wall/Wall.tscn" id="3_73652"]
 [ext_resource type="PackedScene" uid="uid://iiatb07725bg" path="res://game/SpectatorWindow.tscn" id="6_g42ih"]
 [ext_resource type="PackedScene" uid="uid://b08nwxm66uyir" path="res://game/vr_goggles.glb" id="7_e6irq"]
+[ext_resource type="Script" uid="uid://c5q6fwwowulxf" path="res://game/player.gd" id="7_sm0lh"]
 [ext_resource type="Script" uid="uid://c4u23qsibqd12" path="res://game/scripts/BeepSaberController.gd" id="8_5lcn1"]
 [ext_resource type="Shader" uid="uid://nxwxoum3ynv1" path="res://game/vr_goggles.gdshader" id="8_7x23q"]
 [ext_resource type="Script" uid="uid://xdwe7pllqpih" path="res://game/BeepSaber_Game.gd" id="9"]
@@ -115,6 +116,7 @@ playback_type = 1
 
 [node name="XROrigin3D" type="XROrigin3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+script = ExtResource("7_sm0lh")
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
