@@ -14,7 +14,7 @@ While I have code that can make it work, there is no animation support and in ge
 No.
 
 # Open Saber VR
-This is a fork of [Beep Saber by NeoSpark314](https://github.com/NeoSpark314/BeepSaber) ported to Godot 4.3 and OpenXR (WIP)
+This is a fork of [Beep Saber by NeoSpark314](https://github.com/NeoSpark314/BeepSaber) ported to Godot 4.4.1 and OpenXR (WIP)
 (The OQ Toolkit is only partially ported/patched for it to work on Godot 4 with OpenXR, most features that are not used in this project will not work)
 
 This fork tries to improve the experience and make it more of it's own game instead of just a demo.
