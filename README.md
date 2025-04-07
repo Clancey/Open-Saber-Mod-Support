@@ -1,4 +1,6 @@
 <h1>Open saber vr + Mods!</h1>
+Currently there is an issue where if there are too many notes, there will be lots of lag.
+I have made a fix for this, but I need to bring it over to this repo as its hevily out of date.
 <h2>Progress</h2>
 <h3>Chroma</h3>
 There is full Chroma support*
