@@ -7,6 +7,8 @@ The only thing you can't do, is control each light with the "_light_id" as it is
 Mapping extensions is currently in the works as the walls are placed in a weird way I can't understand, however wall sizeing is fully working along side everything else*
 the only things not implemented is archs and chains, as i've never even seen a mapping extension level in v3 anyways.
 
+Songs used for texting: Air (67ba), Dadadada of the bumblebee (922f)
+
 <h3>Noodle extensions</h3>
 While I have code that can make it work, there is no animation support and in general is extremly buggy so It's unimplimented but I want to give it support someday!
 

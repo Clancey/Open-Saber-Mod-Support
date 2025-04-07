@@ -5,7 +5,8 @@ var despawn_z: float
 var speed: float
 var _mat: ShaderMaterial
 var testforLayer = 0
-
+@export var wallType : int
+@export var wallWidth : float
 const wallYOffset = 3.0
 
 func _ready():
@@ -31,17 +32,18 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 
 
 
-	var wallWidth = wall_info.width
+	wallWidth = wall_info.width
 	var wallHeight = wall_info.height
-	var wallType = wall_info.type
+	wallType = wall_info.type
 	var startHeight = 0
-	#name = str(wallHeight)
+	name = str(wallType)
 	if Constants.usingMappingExtension:
 		if wallWidth >= 1000 or wallWidth <= -1000:
 			if wallWidth >= 1000 and wallWidth <= 4000:
 				wallWidth = (wallWidth - 1000) / 1000.0
 			elif wallWidth >= 4001 and wallWidth <= 4005000:
-				pass  # Do nothing
+				#pass #do nothing?
+				wallWidth /= 1000
 			elif wallWidth <= -1000:
 				wallWidth = ((wallWidth + 2000) - 1000) / 1000.0
 		
@@ -55,12 +57,15 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 		# Convert values to match game world scale
 		wallHeight = ((wallHeight / 1000.0) * 5.0) #/ 10000.0
 		startHeight = ((startHeight / 1000.0) * 5.0) #/ 10000.0  # Convert start height
-		print("before", wall_info.type,",",wall_info.height,",",wallHeight,",",startHeight)
+		
+		var wallCheckedType = PostfixWallType(wall_info.type, wallHeight, startHeight)
+		
+		print("before ", wall_info.type,",",wall_info.height,",",wallHeight,",",startHeight,",",wall_info.width)
 		#HOW DO I GET YOU TO ONLY ACTIVATE IF IT IS ULTRA PERSISION MODE?????
-		if wall_info.type >= 1000:
+		if wallCheckedType >= 1000:
 			wallHeight = (wallHeight * 1000.0 + startHeight + 4001) / 10000.0
 			wallHeight /= 4
-		print("after ",wall_info.type,",",wall_info.height,",",wallHeight * Constants.LANE_DISTANCE,",",startHeight)
+		print("after ",wallCheckedType,",",wall_info.height,",",wallHeight * Constants.LANE_DISTANCE,",",startHeight,",",wallWidth)
 
 
 
@@ -88,9 +93,11 @@ func spawn(wall_info: ObstacleInfo, current_beat: float, color: Color) -> void :
 		var newLaneCount = 1000
 		if wallLineIndex >= 1000 or wallLineIndex <= -1000:
 			if sign(wall_info.line_index) == 1:
-				transform.origin.x = ((wall_info.line_index - ((4 - wallWidth) * 0.5) - 1000) / 1000.0) - 1.5
+				transform.origin.x = ((wall_info.line_index - ((4 - wallWidth * 2)) - 1000) / 1000.0) - 1.5
+				
 			else:
-				transform.origin.x = ((wall_info.line_index - ((4 - wallWidth) * 0.5) + 1000) / 1000.0) - 1.5
+				transform.origin.x = ((wall_info.line_index - ((4 - wallWidth * 2)) + 1000) / 1000.0) - 1.5
+			transform.origin.x += (wallWidth * 0.5)
 			#Y axix placement is broken for most walls
 			transform.origin.y = (startHeight * 0.1) * 0.75
 			#print(wallHeight,",",startHeight)
@@ -138,3 +145,10 @@ func PrefixWallHeight(wallType, wallHeight, line_layer, height):
 	
 	return wallHeight * line_layer
 	#FIND OUT WHAT StaticSpawnMovement IS!!
+
+func PostfixWallType(wallType, wallHeight, startHeight):
+	if wallType >= 4001:
+		wallType = wallHeight / 1000.0 - startHeight - 4001
+		return wallType * sign(wallType)
+	return wallType
+	
