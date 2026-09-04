@@ -5,6 +5,10 @@ var config := ConfigFile.new()
 const SECTION := "OpenSaber"
 const CONFIG_PATH := "user://config.ini"
 const OLD_CONFIG_PATH := "user://config.dat"
+const DEFAULT_COLOR_LEFT := Color("ff1a1a")
+const DEFAULT_COLOR_RIGHT := Color("1a1aff")
+const MIN_SABER_COLOR_CHANNEL := 0.15
+const MIN_SABER_COLOR_ALPHA := 0.5
 var SABER_VISUALS: Array[PackedStringArray] = [
 	PackedStringArray(["Default saber","res://game/sabers/default/default_saber.tscn"]),
 	PackedStringArray(["Particle sword","res://game/sabers/particles/particles_saber.tscn"])
@@ -18,12 +22,14 @@ var thickness: float:
 		set_and_emit(&"thickness", value)
 var color_left: Color:
 	set(value):
-		color_left = value
-		set_and_emit(&"color_left", value)
+		var validated_color: Color = _validate_saber_color(value, DEFAULT_COLOR_LEFT, &"color_left")
+		color_left = validated_color
+		set_and_emit(&"color_left", validated_color)
 var color_right: Color:
 	set(value):
-		color_right = value
-		set_and_emit(&"color_right", value)
+		var validated_color: Color = _validate_saber_color(value, DEFAULT_COLOR_RIGHT, &"color_right")
+		color_right = validated_color
+		set_and_emit(&"color_right", validated_color)
 var saber_visual: int:
 	set(value):
 		saber_visual = value
@@ -122,7 +128,7 @@ func _ready() -> void:
 
 const platform_default_values = {
 	Android = {
-		glare = false,
+		glare = true,
 	},
 	Web = {
 		glare = false,
@@ -135,8 +141,8 @@ const platform_default_values = {
 var default_values = {
 	thickness = 1.0,
 	cube_cuts_falloff = true,
-	color_left = Color("ff1a1a"),
-	color_right = Color("1a1aff"),
+	color_left = DEFAULT_COLOR_LEFT,
+	color_right = DEFAULT_COLOR_RIGHT,
 	saber_tail = true,
 	glare = true,
 	show_debug_info = false,
@@ -166,6 +172,16 @@ func set_and_emit(key: StringName, value: Variant) -> void:
 	config.set_value(SECTION, String(key), value if default_values[key] != value else null)
 	changed.emit(key)
 
+func _is_valid_saber_color(value: Color) -> bool:
+	return maxf(value.r, maxf(value.g, value.b)) >= MIN_SABER_COLOR_CHANNEL \
+		and value.a >= MIN_SABER_COLOR_ALPHA
+
+func _validate_saber_color(value: Color, default_color: Color, setting_name: StringName) -> Color:
+	if _is_valid_saber_color(value):
+		return value
+	push_warning("Invalid %s value %s; restoring default %s." % [setting_name, value, default_color])
+	return default_color
+
 # load() is the name of a built-in function,
 # so i went with the next best thing.
 func reload() -> void:
@@ -174,8 +190,18 @@ func reload() -> void:
 		vr.log_file_error(config_error, CONFIG_PATH, "reload() in Settings.gd")
 		return
 	
+	var corrected_saber_color := false
 	for key in default_values:
-		set(key, cast_or_default(key))
+		var loaded_value: Variant = cast_or_default(key)
+		if key == "color_left":
+			var loaded_left_color := loaded_value as Color
+			corrected_saber_color = corrected_saber_color or not _is_valid_saber_color(loaded_left_color)
+		elif key == "color_right":
+			var loaded_right_color := loaded_value as Color
+			corrected_saber_color = corrected_saber_color or not _is_valid_saber_color(loaded_right_color)
+		set(key, loaded_value)
+	if corrected_saber_color:
+		save()
 
 func load_old_config() -> void:
 	var file := FileAccess.open(OLD_CONFIG_PATH, FileAccess.READ)
@@ -188,17 +214,22 @@ func load_old_config() -> void:
 		restore_defaults()
 		return
 	var settings_dict := settings_var as Dictionary
+	var corrected_saber_color := false
 	thickness = Utils.get_float(settings_dict, "thickness", 1)
 	if settings_dict.has("COLOR_LEFT") and settings_dict["COLOR_LEFT"] is Color:
 		@warning_ignore("unsafe_cast")
-		color_left = settings_dict["COLOR_LEFT"] as Color
+		var old_left_color := settings_dict["COLOR_LEFT"] as Color
+		corrected_saber_color = corrected_saber_color or not _is_valid_saber_color(old_left_color)
+		color_left = old_left_color
 	else:
-		color_left = Color("ff1a1a")
+		color_left = DEFAULT_COLOR_LEFT
 	if settings_dict.has("COLOR_RIGHT") and settings_dict["COLOR_RIGHT"] is Color:
 		@warning_ignore("unsafe_cast")
-		color_right = settings_dict["COLOR_RIGHT"] as Color
+		var old_right_color := settings_dict["COLOR_RIGHT"] as Color
+		corrected_saber_color = corrected_saber_color or not _is_valid_saber_color(old_right_color)
+		color_right = old_right_color
 	else:
-		color_right = Color("1a1aff")
+		color_right = DEFAULT_COLOR_RIGHT
 	saber_visual = int(Utils.get_float(settings_dict, "saber", 0))
 	ui_volume = Utils.get_float(settings_dict, "ui_volume", 10.0)
 	left_saber_offset_pos = Vector3.ZERO
@@ -227,12 +258,14 @@ func load_old_config() -> void:
 				right_saber_offset_rot = right_array[1] as Vector3
 	cube_cuts_falloff = Utils.get_bool(settings_dict, "cube_cuts_falloff", true, {"Web": false})
 	saber_tail = Utils.get_bool(settings_dict, "saber_tail", true, {"Web": false})
-	glare = Utils.get_bool(settings_dict, "glare", true, {"Android": false, "Web": false})
+	glare = Utils.get_bool(settings_dict, "glare", true, {"Android": true, "Web": false})
 	show_debug_info = Utils.get_bool(settings_dict, "show_debug_info", false)
 	bombs_enabled = Utils.get_bool(settings_dict, "bombs_enabled", true)
 	events = Utils.get_bool(settings_dict, "events", true, {"Web": false})
 	disable_map_color = Utils.get_bool(settings_dict, "disable_map_color", false)
 	player_height_offset = Utils.get_float(settings_dict, "player_height_offset", 0.0)
+	if corrected_saber_color:
+		save()
 
 func save() -> void:
 	var error := config.save(CONFIG_PATH)

@@ -40,6 +40,7 @@ var gamestate: GameState = gamestate_bootup
 
 @onready var points_label_driver := $Points_label_driver as PointsLabelDriver
 @onready var event_driver := $event_driver as EventDriver
+@onready var world_environment := $WorldEnvironment as WorldEnvironment
 
 @onready var multiplier_label := $Multiplier_Label as MeshInstance3D
 @onready var point_label := $Point_Label as MeshInstance3D
@@ -76,6 +77,8 @@ var gamestate: GameState = gamestate_bootup
 var _audio_synced_after_restart := false
 
 var _in_wall := false
+var _environment_left_color: Color = Color.BLACK
+var _environment_right_color: Color = Color.BLACK
 
 #prevents the song for starting from the start when pausing and unpausing
 var pause_position := 0.0
@@ -282,6 +285,8 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	@warning_ignore("return_value_discarded")
 	pause_countdown.visibility_changed.connect(_sync_pause_countdown_viewport)
+	@warning_ignore("return_value_discarded")
+	event_driver.environment_palette_changed.connect(_on_environment_palette_changed)
 	_sync_pause_countdown_viewport()
 
 	# pre-allocate scenes in our scene pools
@@ -309,7 +314,7 @@ func _ready() -> void:
 	
 	debug_info_label.visible = Settings.show_debug_info
 	set_colors_from_settings()
-	($WorldEnvironment as WorldEnvironment).environment.glow_enabled = Settings.glare
+	world_environment.environment.glow_enabled = Settings.glare
 	
 	if not vr.inVR:
 		xr_origin.add_child(preload("res://OQ_Toolkit/OQ_ARVROrigin/Feature_VRSimulator.tscn").instantiate())
@@ -353,7 +358,7 @@ func on_settings_changed(key: StringName) -> void:
 		&"show_debug_info":
 			debug_info_label.visible = Settings.show_debug_info
 		&"glare":
-			($WorldEnvironment as WorldEnvironment).environment.glow_enabled = Settings.glare
+			world_environment.environment.glow_enabled = Settings.glare
 		&"player_height_offset":
 			xr_origin.transform.origin.y = Settings.player_height_offset
 
@@ -364,22 +369,37 @@ func set_colors_from_settings() -> void:
 func update_left_color(color: Color) -> void:
 	if !left_saber:
 		await get_tree().process_frame
+	_environment_left_color = color
 	left_saber.set_color(color)
 	Arc.left_color = color
 	Arc.left_material.set_shader_parameter(&"color", color)
 	goggles_shader.set_shader_parameter(&"left_color", color)
 	event_driver.update_left_color(color)
 	standing_ground.update_left_color(color)
+	_update_environment_tint()
 
 func update_right_color(color: Color) -> void:
 	if !left_saber:
 		await get_tree().process_frame
+	_environment_right_color = color
 	right_saber.set_color(color)
 	Arc.right_color = color
 	Arc.right_material.set_shader_parameter(&"color", color)
 	goggles_shader.set_shader_parameter(&"right_color", color)
 	event_driver.update_right_color(color)
 	standing_ground.update_right_color(color)
+	_update_environment_tint()
+
+func _on_environment_palette_changed(color_left: Color, color_right: Color) -> void:
+	_environment_left_color = color_left
+	_environment_right_color = color_right
+	_update_environment_tint()
+
+func _update_environment_tint() -> void:
+	world_environment.environment.fog_light_color = EventDriver.get_environment_base_color(
+		_environment_left_color,
+		_environment_right_color
+	)
 
 func disable_events(disabled: bool) -> void:
 	event_driver.disabled = disabled

@@ -1,6 +1,10 @@
 extends Node3D
 class_name EventDriver
 
+signal environment_palette_changed(left: Color, right: Color)
+
+const IDLE_LIGHT_SCALE: float = 0.25
+const ENVIRONMENT_BASE_BRIGHTNESS: float = 0.12
 const INTENSITY_PARAMS: Array[StringName] = [
 	&"bg_0_intensity",
 	&"bg_1_intensity",
@@ -25,6 +29,7 @@ var right_color: Color
 var normal_left_color: Color
 var normal_right_color: Color
 var boost_enabled: bool = false
+var floor_lights_active: bool = true
 var ring_spin_tween: Tween = null
 
 var events_processed: int = 0
@@ -78,6 +83,7 @@ func _ready() -> void :
 	light_manager = LightManager.new()
 	add_child(light_manager)
 	light_manager.initialize_lights(self)
+	_update_environment_base()
 
 func _physics_process(_delta: float) -> void:
 	if not is_instance_valid(light_manager):
@@ -110,6 +116,7 @@ func update_left_color(color: Color) -> void :
 		turn_light_on(EventInfo.TYPE_DIAGONAL_LASERS, color)
 		turn_light_on(EventInfo.TYPE_LEFT_WAVING_LASERS, color)
 		turn_light_on(EventInfo.TYPE_RIGHT_WAVING_LASERS, color)
+	_update_environment_base()
 
 func update_right_color(color: Color) -> void :
 	normal_right_color = color
@@ -117,6 +124,7 @@ func update_right_color(color: Color) -> void :
 		right_color = color
 		turn_light_on(EventInfo.TYPE_SQUARE_LASERS, color)
 		turn_light_on(EventInfo.TYPE_FLOOR_LIGHTS, color)
+	_update_environment_base()
 
 func set_all_off() -> void :
 	boost_enabled = false
@@ -125,6 +133,7 @@ func set_all_off() -> void :
 	if disabled:
 		for i in range(1, 4):
 			turn_light_off(i)
+		turn_light_off(EventInfo.TYPE_FLOOR_LIGHTS)
 		ring_holder.visible = false
 	else:
 		for i in range(5):
@@ -205,6 +214,9 @@ func process_event(data: EventInfo) -> void :
 				boost_enabled = data.value != 0
 				left_color = Map.color_left_boost if boost_enabled else Map.color_left
 				right_color = Map.color_right_boost if boost_enabled else Map.color_right
+				_update_environment_base()
+				if not floor_lights_active:
+					_apply_floor_idle()
 			EventInfo.TYPE_RING_SPIN:
 				if ring_spin_tween != null:
 					ring_spin_tween.kill()
@@ -236,12 +248,14 @@ func stop_prev_tween(type: int) -> void :
 
 func turn_light_off(type: int) -> void :
 	stop_prev_tween(type)
+	if type == EventInfo.TYPE_FLOOR_LIGHTS:
+		floor_lights_active = false
+		_apply_floor_idle()
+		return
 	_on_Tween_tween_step(Color.BLACK, type)
 	if is_instance_valid(light_manager):
 		light_manager.set_all_lights_of_type(type, Color.BLACK, false)
 	_set_light_holder_visible(type, false)
-	if type == EventInfo.TYPE_FLOOR_LIGHTS:
-		floor_material.albedo_color = Color.BLACK
 
 func turn_light_on(type: int, color: Color) -> void :
 	sphere_material.set_shader_parameter(TINT_PARAMS[type], color)
@@ -251,6 +265,7 @@ func turn_light_on(type: int, color: Color) -> void :
 	if is_instance_valid(light_manager):
 		light_manager.set_all_lights_of_type(type, color, true)
 	if type == EventInfo.TYPE_FLOOR_LIGHTS:
+		floor_lights_active = true
 		floor_material.albedo_color = color
 
 func _prepare_targeted_light_event(
@@ -373,6 +388,9 @@ func fade_light(
 	duration: float = 1.0
 ) -> void :
 	stop_prev_tween(type)
+	var target_color: Color = to
+	if type == EventInfo.TYPE_FLOOR_LIGHTS and turn_off_after_fade:
+		target_color = _get_floor_idle_color()
 
 	var group: Node3D
 	var material: Array[StandardMaterial3D] = []
@@ -398,12 +416,17 @@ func fade_light(
 	tween.set_parallel().set_trans(trans_type).set_ease(ease_type)
 	for m in material:
 		@warning_ignore("return_value_discarded")
-		tween.tween_property(m, ^"albedo_color", to, duration).from(from)
+		tween.tween_property(m, ^"albedo_color", target_color, duration).from(from)
 	if is_instance_valid(light_manager):
 		@warning_ignore("return_value_discarded")
-		tween.tween_method(light_manager.set_all_lights_color.bind(type), from, to, duration)
+		tween.tween_method(
+			light_manager.set_all_lights_color.bind(type),
+			from,
+			target_color,
+			duration
+		)
 	@warning_ignore("return_value_discarded")
-	tween.tween_method(_on_Tween_tween_step.bind(type), from, to, duration)
+	tween.tween_method(_on_Tween_tween_step.bind(type), from, target_color, duration)
 	tween.play()
 	prev_tweeners[type] = tween
 	tween.finished.connect(
@@ -415,6 +438,11 @@ func _on_light_fade_finished(
 	turn_off_after_fade: bool, tween: Tween, type: int
 ) -> void:
 	if turn_off_after_fade:
+		if type == EventInfo.TYPE_FLOOR_LIGHTS:
+			floor_lights_active = false
+			_apply_floor_idle()
+			tween.kill()
+			return
 		if is_instance_valid(light_manager):
 			light_manager.set_all_lights_visible(type, false)
 		_set_light_holder_visible(type, false)
@@ -430,3 +458,77 @@ func _event_fade_duration(data: EventInfo) -> float:
 		return 1.0
 	var end_beat: float = data.beat + duration_beats
 	return maxf(Map.beat_to_seconds(end_beat) - Map.beat_to_seconds(data.beat), 0.001)
+
+static func get_environment_base_color(color_left: Color, color_right: Color) -> Color:
+	var mixed_color: Color = color_left.lerp(color_right, 0.5)
+	var luminance: float = mixed_color.get_luminance()
+	var gray: Color = Color(luminance, luminance, luminance, 1.0)
+	var desaturated: Color = mixed_color.lerp(gray, 0.25)
+	var peak: float = maxf(desaturated.r, maxf(desaturated.g, desaturated.b))
+	if peak <= 0.001:
+		return Color.BLACK
+	var scale: float = ENVIRONMENT_BASE_BRIGHTNESS / peak
+	return Color(
+		desaturated.r * scale,
+		desaturated.g * scale,
+		desaturated.b * scale,
+		1.0
+	)
+
+func _update_environment_base() -> void:
+	var base_color: Color = get_environment_base_color(left_color, right_color)
+	sphere_material.set_shader_parameter(&"base_color", base_color)
+	environment_palette_changed.emit(left_color, right_color)
+
+func _get_floor_idle_color() -> Color:
+	var idle_left: Color = Color(
+		left_color.r * IDLE_LIGHT_SCALE,
+		left_color.g * IDLE_LIGHT_SCALE,
+		left_color.b * IDLE_LIGHT_SCALE,
+		1.0
+	)
+	var idle_right: Color = Color(
+		right_color.r * IDLE_LIGHT_SCALE,
+		right_color.g * IDLE_LIGHT_SCALE,
+		right_color.b * IDLE_LIGHT_SCALE,
+		1.0
+	)
+	return idle_left.lerp(idle_right, 0.5)
+
+func _apply_floor_idle() -> void:
+	var idle_left: Color = Color(
+		left_color.r * IDLE_LIGHT_SCALE,
+		left_color.g * IDLE_LIGHT_SCALE,
+		left_color.b * IDLE_LIGHT_SCALE,
+		1.0
+	)
+	var idle_right: Color = Color(
+		right_color.r * IDLE_LIGHT_SCALE,
+		right_color.g * IDLE_LIGHT_SCALE,
+		right_color.b * IDLE_LIGHT_SCALE,
+		1.0
+	)
+	var idle_mix: Color = idle_left.lerp(idle_right, 0.5)
+	_on_Tween_tween_step(idle_mix, EventInfo.TYPE_FLOOR_LIGHTS)
+	_set_light_holder_visible(EventInfo.TYPE_FLOOR_LIGHTS, true)
+	floor_material.albedo_color = idle_mix
+	if not is_instance_valid(light_manager):
+		return
+	light_manager.set_all_lights_of_type(
+		EventInfo.TYPE_FLOOR_LIGHTS,
+		idle_mix,
+		true
+	)
+	var floor_lights: Dictionary = light_manager.lights_by_type_and_id.get(
+		EventInfo.TYPE_FLOOR_LIGHTS,
+		{}
+	)
+	for light_value: Variant in floor_lights.values():
+		var light: LightManager.LightInstance = light_value as LightManager.LightInstance
+		if light == null or not is_instance_valid(light.mesh_instance):
+			continue
+		var side_position: float = light.mesh_instance.global_position.x
+		if side_position < -0.01:
+			light.set_color(idle_left)
+		elif side_position > 0.01:
+			light.set_color(idle_right)

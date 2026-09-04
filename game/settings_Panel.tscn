@@ -410,29 +410,111 @@ theme = SubResource("5")
 theme_override_fonts/font = SubResource("4")
 flat = true
 
-[node name="SaberColorsRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
+[node name="SaberColorsRow" type="VBoxContainer" parent="ScrollContainer/VBox"]
 layout_mode = 2
 
-[node name="left_saber_col_label" type="Label" parent="ScrollContainer/VBox/SaberColorsRow"]
+[node name="saber_colors_label" type="Label" parent="ScrollContainer/VBox/SaberColorsRow"]
 layout_mode = 2
 theme = SubResource("3")
-text = "Saber Colors: "
+text = "Saber Colors:"
 
-[node name="left_saber_col" type="ColorPickerButton" parent="ScrollContainer/VBox/SaberColorsRow"]
+[node name="LeftSaberColors" type="HBoxContainer" parent="ScrollContainer/VBox/SaberColorsRow"]
 layout_mode = 2
-size_flags_horizontal = 3
-text = "Left saber"
-flat = true
-color = Color(1, 0.101961, 0.101961, 1)
-edit_alpha = false
 
-[node name="right_saber_col" type="ColorPickerButton" parent="ScrollContainer/VBox/SaberColorsRow"]
+[node name="Label" type="Label" parent="ScrollContainer/VBox/SaberColorsRow/LeftSaberColors"]
 layout_mode = 2
-size_flags_horizontal = 3
-text = "Right saber"
+custom_minimum_size = Vector2(92, 0)
+theme = SubResource("3")
+text = "Left:"
+
+[node name="Swatches" type="HBoxContainer" parent="ScrollContainer/VBox/SaberColorsRow/LeftSaberColors"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Red" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/LeftSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Orange" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/LeftSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Yellow" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/LeftSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Green" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/LeftSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Cyan" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/LeftSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Blue" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/LeftSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Purple" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/LeftSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Pink" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/LeftSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="RightSaberColors" type="HBoxContainer" parent="ScrollContainer/VBox/SaberColorsRow"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBox/SaberColorsRow/RightSaberColors"]
+custom_minimum_size = Vector2(92, 0)
+layout_mode = 2
+theme = SubResource("3")
+text = "Right:"
+
+[node name="Swatches" type="HBoxContainer" parent="ScrollContainer/VBox/SaberColorsRow/RightSaberColors"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Red" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/RightSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Orange" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/RightSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Yellow" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/RightSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Green" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/RightSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Cyan" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/RightSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Blue" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/RightSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Purple" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/RightSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="Pink" type="Button" parent="ScrollContainer/VBox/SaberColorsRow/RightSaberColors/Swatches"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+
+[node name="ResetColors" type="Button" parent="ScrollContainer/VBox/SaberColorsRow"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme = SubResource("5")
+theme_override_fonts/font = SubResource("4")
+text = "Reset colors"
 flat = true
-color = Color(0.101961, 0.101961, 1, 1)
-edit_alpha = false
 
 [node name="UI_VolumeRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
 layout_mode = 2
@@ -642,8 +724,7 @@ scroll_node_path = NodePath("../ScrollContainer")
 [connection signal="toggled" from="ScrollContainer/VBox/bombs_enabled" to="." method="_on_bombs_enabled_toggled"]
 [connection signal="value_changed" from="ScrollContainer/VBox/SaberThicknessRow/saber_thickness" to="." method="_on_thickness_value_changed"]
 [connection signal="item_selected" from="ScrollContainer/VBox/SaberTypeRow/saber" to="." method="_on_saber_item_selected"]
-[connection signal="color_changed" from="ScrollContainer/VBox/SaberColorsRow/left_saber_col" to="." method="_on_left_saber_color_changed"]
-[connection signal="color_changed" from="ScrollContainer/VBox/SaberColorsRow/right_saber_col" to="." method="_on_right_saber_color_changed"]
+[connection signal="pressed" from="ScrollContainer/VBox/SaberColorsRow/ResetColors" to="." method="_on_reset_saber_colors_pressed"]
 [connection signal="value_changed" from="ScrollContainer/VBox/UI_VolumeRow/ui_volume_slider" to="." method="_on_ui_volume_slider_value_changed"]
 [connection signal="value_changed" from="ScrollContainer/VBox/left_saber_offset/posx" to="." method="_on_left_saber_pos_x_changed"]
 [connection signal="value_changed" from="ScrollContainer/VBox/left_saber_offset/posy" to="." method="_on_left_saber_pos_y_changed"]

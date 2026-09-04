@@ -4,14 +4,27 @@ class_name SettingsPanel
 signal apply()
 @export var beepsaber_game : BeepSaber_Game
 
+const SABER_COLORS: Array[Color] = [
+	Color("ff1a1a"),
+	Color("ff7a1a"),
+	Color("ffd21a"),
+	Color("33ff66"),
+	Color("1affe6"),
+	Color("1a1aff"),
+	Color("9a4dff"),
+	Color("ff4dd2"),
+]
+const SWATCH_MATCH_DISTANCE_SQUARED := 0.0025
+const SWATCH_BORDER_WIDTH := 5
+
 @onready var saber_control := $ScrollContainer/VBox/SaberTypeRow/saber as OptionButton
 @onready var glare_control := $ScrollContainer/VBox/glare as CheckButton
 @onready var saber_tail_control := $ScrollContainer/VBox/saber_tail as CheckButton
 @onready var saber_thickness := $ScrollContainer/VBox/SaberThicknessRow/saber_thickness as HSlider
 @onready var cut_blocks := $ScrollContainer/VBox/cut_blocks as CheckButton
 @onready var d_background := $ScrollContainer/VBox/d_background as CheckButton
-@onready var left_saber_col := $ScrollContainer/VBox/SaberColorsRow/left_saber_col as ColorPickerButton
-@onready var right_saber_col := $ScrollContainer/VBox/SaberColorsRow/right_saber_col as ColorPickerButton
+@onready var left_saber_swatches := $ScrollContainer/VBox/SaberColorsRow/LeftSaberColors/Swatches as HBoxContainer
+@onready var right_saber_swatches := $ScrollContainer/VBox/SaberColorsRow/RightSaberColors/Swatches as HBoxContainer
 @onready var show_debug_control := $ScrollContainer/VBox/show_debug as CheckButton
 @onready var show_collisions := $ScrollContainer/VBox/show_collisions as CheckButton
 @onready var bombs_enabled_control := $ScrollContainer/VBox/bombs_enabled as CheckButton
@@ -40,6 +53,9 @@ var _play_ui_sound_demo := false
 
 func _ready() -> void:
 	UI_AudioEngine.attach_children(self)
+	_setup_saber_swatches(left_saber_swatches, true)
+	_setup_saber_swatches(right_saber_swatches, false)
+	visibility_changed.connect(_on_visibility_changed)
 	
 	set_controls_from_settings()
 	_play_ui_sound_demo = true
@@ -60,8 +76,8 @@ func set_controls_from_settings() -> void:
 	await get_tree().process_frame
 	saber_thickness.value = Settings.thickness
 	cut_blocks.button_pressed = Settings.cube_cuts_falloff
-	left_saber_col.color = Settings.color_left
-	right_saber_col.color = Settings.color_right
+	_update_saber_swatch_selection(left_saber_swatches, Settings.color_left)
+	_update_saber_swatch_selection(right_saber_swatches, Settings.color_right)
 	saber_tail_control.button_pressed = Settings.saber_tail
 	glare_control.button_pressed = Settings.glare
 	d_background.button_pressed = Settings.events
@@ -100,11 +116,78 @@ func _on_thickness_value_changed(value: float) -> void:
 func _on_cut_blocks_toggled(button_pressed: bool) -> void:
 	Settings.cube_cuts_falloff = button_pressed
 
-func _on_left_saber_color_changed(color: Color) -> void:
-	Settings.color_left = color
+func _setup_saber_swatches(container: HBoxContainer, is_left: bool) -> void:
+	for index: int in range(SABER_COLORS.size()):
+		var button := container.get_child(index) as Button
+		button.pressed.connect(_on_saber_swatch_pressed.bind(index, is_left))
+		_set_swatch_style(button, SABER_COLORS[index], false)
 
-func _on_right_saber_color_changed(color: Color) -> void:
-	Settings.color_right = color
+func _set_swatch_style(button: Button, color: Color, selected: bool) -> void:
+	var normal_style := _make_swatch_style(color, selected, 0.0)
+	var hover_style := _make_swatch_style(color, selected, 0.12)
+	var pressed_style := _make_swatch_style(color, selected, -0.12)
+	button.add_theme_stylebox_override(&"normal", normal_style)
+	button.add_theme_stylebox_override(&"hover", hover_style)
+	button.add_theme_stylebox_override(&"pressed", pressed_style)
+
+func _make_swatch_style(color: Color, selected: bool, brightness_change: float) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = color.lightened(brightness_change) if brightness_change >= 0.0 else color.darkened(-brightness_change)
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_left = 4
+	style.corner_radius_bottom_right = 4
+	if selected:
+		style.border_width_left = SWATCH_BORDER_WIDTH
+		style.border_width_top = SWATCH_BORDER_WIDTH
+		style.border_width_right = SWATCH_BORDER_WIDTH
+		style.border_width_bottom = SWATCH_BORDER_WIDTH
+		style.border_color = Color.WHITE
+	return style
+
+func _get_matching_swatch_index(color: Color) -> int:
+	var closest_index := -1
+	var closest_distance := INF
+	for index: int in range(SABER_COLORS.size()):
+		var palette_color: Color = SABER_COLORS[index]
+		var red_difference := color.r - palette_color.r
+		var green_difference := color.g - palette_color.g
+		var blue_difference := color.b - palette_color.b
+		var distance_squared := (
+			red_difference * red_difference
+			+ green_difference * green_difference
+			+ blue_difference * blue_difference
+		)
+		if distance_squared < closest_distance:
+			closest_distance = distance_squared
+			closest_index = index
+	return closest_index if closest_distance <= SWATCH_MATCH_DISTANCE_SQUARED else -1
+
+func _update_saber_swatch_selection(container: HBoxContainer, color: Color) -> void:
+	var selected_index := _get_matching_swatch_index(color)
+	for index: int in range(SABER_COLORS.size()):
+		var button := container.get_child(index) as Button
+		_set_swatch_style(button, SABER_COLORS[index], index == selected_index)
+
+func _on_saber_swatch_pressed(index: int, is_left: bool) -> void:
+	var color: Color = SABER_COLORS[index]
+	if is_left:
+		Settings.color_left = color
+		_update_saber_swatch_selection(left_saber_swatches, color)
+	else:
+		Settings.color_right = color
+		_update_saber_swatch_selection(right_saber_swatches, color)
+
+func _on_reset_saber_colors_pressed() -> void:
+	Settings.color_left = Settings.DEFAULT_COLOR_LEFT
+	Settings.color_right = Settings.DEFAULT_COLOR_RIGHT
+	_update_saber_swatch_selection(left_saber_swatches, Settings.color_left)
+	_update_saber_swatch_selection(right_saber_swatches, Settings.color_right)
+
+func _on_visibility_changed() -> void:
+	if is_visible_in_tree():
+		_update_saber_swatch_selection(left_saber_swatches, Settings.color_left)
+		_update_saber_swatch_selection(right_saber_swatches, Settings.color_right)
 
 func _on_saber_tail_toggled(button_pressed: bool) -> void:
 	Settings.saber_tail = button_pressed
@@ -195,8 +278,6 @@ func _on_show_collisions_toggled(button_pressed: bool) -> void:
 func _on_apply_pressed() -> void:
 	Settings.save()
 	apply.emit()
-	left_saber_col.get_popup().hide()
-	right_saber_col.get_popup().hide()
 
 
 func _on_master_slider_value_changed(value: float) -> void:
