@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://qjvg3reomvyk"]
+[gd_scene load_steps=37 format=3 uid="uid://qjvg3reomvyk"]
 
 [ext_resource type="Script" uid="uid://b6pfpqv0i0umg" path="res://game/event_driver.gd" id="2"]
 [ext_resource type="ArrayMesh" uid="uid://cy814avk383k" path="res://game/data/ring.obj" id="3"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://tunmi5sdu42a" path="res://game/data/background/bg_3.png" id="9"]
 [ext_resource type="Texture2D" uid="uid://mtc2b2mfx2wd" path="res://game/data/background/bg_1.png" id="10"]
 [ext_resource type="Material" uid="uid://mu4iyylnwc38" path="res://game/Wall/wall_new2.material" id="10_3fiaj"]
+[ext_resource type="Shader" path="res://game/data/light_bar.gdshader" id="11_light_bar"]
 
 [sub_resource type="Shader" id="4"]
 code = "shader_type spatial;
@@ -261,6 +262,9 @@ albedo_texture = SubResource("17")
 [sub_resource type="StandardMaterial3D" id="20"]
 shading_mode = 0
 albedo_color = Color(0.0941176, 0.0941176, 0.0941176, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_light_bar"]
+shader = ExtResource("11_light_bar")
 
 [sub_resource type="Animation" id="21"]
 length = 2.0
@@ -598,6 +602,10 @@ mesh = SubResource("6")
 
 [node name="DiagonalLasers" type="Node3D" parent="Level"]
 
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/DiagonalLasers"]
+layers = 3
+material_override = SubResource("ShaderMaterial_light_bar")
+
 [node name="laser1" type="Node3D" parent="Level/DiagonalLasers"]
 transform = Transform3D(0.965926, -5.55139e-09, -0.776457, -0.258819, -4.21669e-08, -2.89778, -5.55139e-09, 1, -1.26501e-07, 4.57081, -2.26002, -30)
 
@@ -690,6 +698,10 @@ mesh = SubResource("10")
 
 [node name="SquareLasers" type="Node3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15)
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/SquareLasers"]
+layers = 3
+material_override = SubResource("ShaderMaterial_light_bar")
 
 [node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers"]
 transform = Transform3D(-1.31134e-08, 0, -0.3, 0, 1, 0, 1, 0, -4.37114e-08, 0, 11, 5)
@@ -808,6 +820,10 @@ mesh = SubResource("10")
 [node name="LeftWavingLasers" type="Node3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10)
 
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/LeftWavingLasers"]
+layers = 3
+material_override = SubResource("ShaderMaterial_light_bar")
+
 [node name="laser1" type="Node3D" parent="Level/LeftWavingLasers"]
 transform = Transform3D(0.871635, -5.611e-09, -0.490155, -0.490155, -2.14254e-08, -0.871635, -5.611e-09, 1, -2.14254e-08, -12.4292, -1.26002, -11)
 
@@ -852,6 +868,10 @@ autoplay = "laser_anim"
 
 [node name="RightWavingLasers" type="Node3D" parent="Level"]
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, -41)
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/RightWavingLasers"]
+layers = 3
+material_override = SubResource("ShaderMaterial_light_bar")
 
 [node name="laser1" type="Node3D" parent="Level/RightWavingLasers"]
 transform = Transform3D(0.893858, -4.63962e-09, 0.448351, 0.448351, 1.9598e-08, -0.893858, -4.63962e-09, 1, 1.9598e-08, -12.4292, -1.26002, -11)
@@ -957,6 +977,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1.49852, -3, 0, -23.8955)
 layers = 3
 material_override = SubResource("1")
 mesh = SubResource("10")
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+material_override = SubResource("ShaderMaterial_light_bar")
 
 [node name="rings" type="Node3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)

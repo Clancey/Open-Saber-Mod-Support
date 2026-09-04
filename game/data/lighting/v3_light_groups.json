@@ -1,0 +1,5983 @@
+{
+  "_sources": [
+    "https://github.com/KivalEvan/BeatSaber-JSMap/blob/49360c0532f53723df703ef5d204fea10ae03300/src/extensions/renamer/group.ts",
+    "https://github.com/KivalEvan/BeatSaber-JSMap/blob/49360c0532f53723df703ef5d204fea10ae03300/src/beatmap/misc/environment.ts",
+    "https://github.com/KivalEvan/BeatSaber-JSMap/blob/49360c0532f53723df703ef5d204fea10ae03300/src/beatmap/schema/shared/types/environment.ts",
+    "https://bsmg.wiki/mapping/basic-lighting.html",
+    "https://bsmg.wiki/mapping/map-format/lightshow.html",
+    "https://bsmg.wiki/mapping/lighting-defaults.html",
+    "https://beatsaber.com/documentation/environment-specific-lighting-attributes-and-explanations/index.html",
+    "https://beatsaber.com/documentation/the-group-lighting-event-system/index.html"
+  ],
+  "_notes": {
+    "type": "0=back lasers/back-of-stage, 1=rings/ceiling/big ambient structures, 2=left lasers/left-side, 3=right lasers/right-side, 4=center/floor/runway",
+    "rotation": "true if the group accepts lightRotationEventBoxGroups on any axis (x/y/z) per JSMap GroupTrackDefinitions",
+    "extra": "color/translation/fx/count are carried from JSMap GroupTrackDefinitions; group names are the official editor group names as mirrored by JSMap. 'type' is a heuristic assignment by this script, not an official mapping."
+  },
+  "WeaveEnvironment": {
+    "0": {
+      "name": "Outer Square Bottom Left Laser",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "1": {
+      "name": "Outer Square Bottom Right Laser",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "2": {
+      "name": "Outer Square Top Left Laser",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "3": {
+      "name": "Outer Square Top Right Laser",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "4": {
+      "name": "Inner Square Bottom Left Laser",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "5": {
+      "name": "Inner Square Bottom Right Laser",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "6": {
+      "name": "Inner Square Top Left Laser",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "7": {
+      "name": "Inner Square Top Right Laser",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "8": {
+      "name": "Side Square Bottom Left Laser",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "9": {
+      "name": "Side Square Bottom Right Laser",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "10": {
+      "name": "Side Square Top Left Laser",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "11": {
+      "name": "Side Square Top Right Laser",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "12": {
+      "name": "Distant Square Top Laser",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "13": {
+      "name": "Distant Square Bottom Laser",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "14": {
+      "name": "Distant Square Left Laser",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "15": {
+      "name": "Distant Square Right Laser",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    }
+  },
+  "PyroEnvironment": {
+    "0": {
+      "name": "Stage Left Platform",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "1": {
+      "name": "Stage Right Platform",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "2": {
+      "name": "Top Stage Left Laser",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "3": {
+      "name": "Top Stage Right Laser",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "4": {
+      "name": "Top Stage Middle Laser",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "5": {
+      "name": "Top Stage Light",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "6": {
+      "name": "Side Panels Left Tower",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 48
+    },
+    "7": {
+      "name": "Side Panels Right Tower",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 48
+    },
+    "8": {
+      "name": "Stage Left Laser",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "9": {
+      "name": "Stage Right Laser",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "10": {
+      "name": "Side Panels Left Laser",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "11": {
+      "name": "Side Panels Right Laser",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "12": {
+      "name": "Fire Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "13": {
+      "name": "Fire Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    }
+  },
+  "EDMEnvironment": {
+    "0": {
+      "name": "Circles Top",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "1": {
+      "name": "Circles Close",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "2": {
+      "name": "Circles Distant",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "3": {
+      "name": "Circles Distant 2",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "4": {
+      "name": "Single Source Circles Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "5": {
+      "name": "Single Source Circles Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "6": {
+      "name": "Single Source Lasers Left (Up)",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "7": {
+      "name": "Single Source Lasers Left (Out)",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "8": {
+      "name": "Single Source Lasers Right (Up)",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "9": {
+      "name": "Single Source Lasers Right (Out)",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "10": {
+      "name": "Single Source Lasers Left (Down)",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "11": {
+      "name": "Single Source Lasers Right (Down)",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "12": {
+      "name": "Single Source Lasers Left (Down) / Circle Rotations Top",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "13": {
+      "name": "Single Source Lasers Right (Up) / Circle Rotations Close",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "14": {
+      "name": "Circle Rotations Distant",
+      "type": 0,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "15": {
+      "name": "Circle Rotations Distant 2",
+      "type": 0,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "16": {
+      "name": "Circle Rotations Single Source Left",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "17": {
+      "name": "Circle Rotations Single Source Right",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    }
+  },
+  "TheSecondEnvironment": {
+    "0": {
+      "name": "Rings Big",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 15
+    },
+    "1": {
+      "name": "Rings Small",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "2": {
+      "name": "Runway Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "3": {
+      "name": "Runway Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "4": {
+      "name": "Spotlight Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "5": {
+      "name": "Spotlight Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "6": {
+      "name": "Top Lasers Left Bottom",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "7": {
+      "name": "Top Lasers Right Bottom",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "8": {
+      "name": "Top Lasers Left Top",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "9": {
+      "name": "Top Lasers Right Top",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "10": {
+      "name": "Bottom Lasers Left Bottom",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "11": {
+      "name": "Bottom Lasers Right Bottom",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "12": {
+      "name": "Bottom Lasers Left Top",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "13": {
+      "name": "Bottom Lasers Right Top",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    }
+  },
+  "LizzoEnvironment": {
+    "0": {
+      "name": "Main Floor",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 40
+    },
+    "1": {
+      "name": "Rainbow Arcs Inner",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "2": {
+      "name": "Rainbow Arcs 2",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "3": {
+      "name": "Rainbow Arcs 3",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "4": {
+      "name": "Rainbow Arcs 4",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "5": {
+      "name": "Rainbow Arcs Outer",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "6": {
+      "name": "Rainbow Rings Left",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "7": {
+      "name": "Rainbow Rings Right",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "8": {
+      "name": "Rainbow Rings Lasers Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "9": {
+      "name": "Rainbow Rings Lasers Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "10": {
+      "name": "Main Top Lasers",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "11": {
+      "name": "Environment Stands Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 6
+    },
+    "12": {
+      "name": "Environment Stands Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 6
+    },
+    "13": {
+      "name": "Environment Clouds Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 14
+    },
+    "14": {
+      "name": "Environment Clouds Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 14
+    },
+    "15": {
+      "name": "Main Left Lasers",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "16": {
+      "name": "Main Right Lasers",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "17": {
+      "name": "Environment Stand Lasers Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "18": {
+      "name": "Environment Stand Lasers Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "19": {
+      "name": "Rainbow Arcs Laser",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 14
+    }
+  },
+  "TheWeekndEnvironment": {
+    "0": {
+      "name": "Lamps Poles Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "1": {
+      "name": "Lamps Poles Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "2": {
+      "name": "Lamps Rings Left",
+      "type": 2,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "3": {
+      "name": "Lamps Rings Right",
+      "type": 3,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "4": {
+      "name": "Environment Arrows",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "5": {
+      "name": "Environment Side Lasers Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "6": {
+      "name": "Environment Side Lasers Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "7": {
+      "name": "Environment Runway Lane",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "8": {
+      "name": "Environment Center Ring",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "9": {
+      "name": "Environment Center Ring Lasers",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 6
+    },
+    "10": {
+      "name": "Windows Left 1 Front",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "11": {
+      "name": "Windows Left 1 Side",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "12": {
+      "name": "Windows Left 2 Side",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "13": {
+      "name": "Windows Left 3 Front",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "14": {
+      "name": "Windows Left 3 Side",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "15": {
+      "name": "Windows Right 1 Front",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "16": {
+      "name": "Windows Right 1 Side",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "17": {
+      "name": "Windows Right 2 Side",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "18": {
+      "name": "Windows Right 3 Front",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "19": {
+      "name": "Windows Right 3 Side",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "20": {
+      "name": "Buildings Left",
+      "type": 2,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "21": {
+      "name": "Buildings Right",
+      "type": 3,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "22": {
+      "name": "Buildings Roof Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "23": {
+      "name": "Buildings Roof Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "29": {
+      "name": "Lamp Rings Left 1",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "30": {
+      "name": "Lamp Rings Left 2",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "31": {
+      "name": "Lamp Rings Left 3",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "32": {
+      "name": "Lamp Rings Left 4",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "33": {
+      "name": "Lamp Rings Right 1",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "34": {
+      "name": "Lamp Rings Right 2",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "35": {
+      "name": "Lamp Rings Right 3",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "36": {
+      "name": "Lamp Rings Right 4",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "37": {
+      "name": "Buildings Background Left",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 6
+    },
+    "38": {
+      "name": "Buildings Background Right",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 6
+    },
+    "40": {
+      "name": "Buildings Side Buildings",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    }
+  },
+  "RockMixtapeEnvironment": {
+    "0": {
+      "name": "Lasers Far Left",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 5
+    },
+    "1": {
+      "name": "Lasers Far Right",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 5
+    },
+    "2": {
+      "name": "Mountain 1",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "3": {
+      "name": "Mountain 2",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "4": {
+      "name": "Mountain 3",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "5": {
+      "name": "Mountain 4",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "6": {
+      "name": "Mountain 5",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "7": {
+      "name": "Mountain 6",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "8": {
+      "name": "Mountain 7",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "9": {
+      "name": "Mountain 8",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "10": {
+      "name": "Mountain 9",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "11": {
+      "name": "Mountain 10",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "12": {
+      "name": "Mountain 11",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "13": {
+      "name": "Mountain 12",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "14": {
+      "name": "Face Eyes",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "15": {
+      "name": "Runway Frets",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 10
+    },
+    "16": {
+      "name": "Runway Strings",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "17": {
+      "name": "Runway Tunnel",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 5
+    },
+    "18": {
+      "name": "Lasers Side Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "19": {
+      "name": "Lasers Side Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "20": {
+      "name": "Lasers Side Left Rotation",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "21": {
+      "name": "Lasers Side Right Rotation",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "22": {
+      "name": "Face Left",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "23": {
+      "name": "Face Right",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "24": {
+      "name": "Spikes Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 36
+    },
+    "25": {
+      "name": "Spikes Left Movement",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "26": {
+      "name": "Spikes Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 36
+    },
+    "27": {
+      "name": "Spikes Right Movement",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "28": {
+      "name": "Runway Dots",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "29": {
+      "name": "Face Movement",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    },
+    "30": {
+      "name": "Runway Equilizer",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "31": {
+      "name": "Screens Left 1",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "32": {
+      "name": "Screens Left 2",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "33": {
+      "name": "Screens Right 1",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "34": {
+      "name": "Screens Right 2",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "35": {
+      "name": "Screens Left Movement",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    },
+    "36": {
+      "name": "Screens Right Movement",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    },
+    "37": {
+      "name": "Lasers Side Z Translation",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    }
+  },
+  "Dragons2Environment": {
+    "0": {
+      "name": "Small Rings (R/T)",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 24
+    },
+    "1": {
+      "name": "Small Rings (Colors)",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 96
+    },
+    "2": {
+      "name": "Underground",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 35
+    },
+    "3": {
+      "name": "Big Rings",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 15
+    },
+    "4": {
+      "name": "Top Spotlights",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "5": {
+      "name": "Runway Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "6": {
+      "name": "Runway Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "7": {
+      "name": "Particles Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "8": {
+      "name": "Particles Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "9": {
+      "name": "Main Lasers Bottom Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "10": {
+      "name": "Main Lasers Top Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "11": {
+      "name": "Main Lasers Top Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "12": {
+      "name": "Main Lasers Bottom Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    }
+  },
+  "Panic2Environment": {
+    "0": {
+      "name": "Left Cones Local",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 7
+    },
+    "1": {
+      "name": "Right Cones Local",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 7
+    },
+    "2": {
+      "name": "Left Cones Global",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 7
+    },
+    "3": {
+      "name": "Right Cones Global",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 7
+    },
+    "4": {
+      "name": "Center Cones Local",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "5": {
+      "name": "Center Cones Global",
+      "type": 4,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "6": {
+      "name": "Diamond Rings Local Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "7": {
+      "name": "Diamond Rings Local Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 24
+    },
+    "8": {
+      "name": "Diamond Rings Global",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 24
+    },
+    "9": {
+      "name": "Lasers Bottom Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 6
+    },
+    "10": {
+      "name": "Lasers Bottom Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 6
+    },
+    "11": {
+      "name": "Lasers Top Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 6
+    },
+    "12": {
+      "name": "Lasers Top Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 6
+    },
+    "13": {
+      "name": "Runway Lasers Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 14
+    },
+    "14": {
+      "name": "Runway Lasers Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 14
+    },
+    "15": {
+      "name": "Runway Inner Laser",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 2
+    },
+    "16": {
+      "name": "Spectrogram Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 28
+    },
+    "17": {
+      "name": "Spectrogram Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 28
+    },
+    "18": {
+      "name": "Runway Lasers Left Transform Z",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "19": {
+      "name": "Runway Lasers Right Transform Z",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "20": {
+      "name": "Window Left Pirces",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "21": {
+      "name": "Window Left Aura",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "22": {
+      "name": "Window Right Pieces",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "23": {
+      "name": "Window Right Aura",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    }
+  },
+  "QueenEnvironment": {
+    "0": {
+      "name": "Vinyls Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "1": {
+      "name": "Vinyl Left 1",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "2": {
+      "name": "Vinyl Left 2",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "3": {
+      "name": "Vinyl Left 3",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "4": {
+      "name": "Vinyl Left 4",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "5": {
+      "name": "Vinyls Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "6": {
+      "name": "Vinyl Right 1",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "7": {
+      "name": "Vinyl Right 2",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "8": {
+      "name": "Vinyl Right 3",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "9": {
+      "name": "Vinyl Right 4",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "10": {
+      "name": "Tunnel Rings Wrapper",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 60
+    },
+    "11": {
+      "name": "Distant Circular Lasers Z",
+      "type": 0,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "12": {
+      "name": "Distant Circular Lasers",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 20
+    },
+    "13": {
+      "name": "Top Circular Lasers Rot Y",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "14": {
+      "name": "Top Circular Lasers",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "15": {
+      "name": "Platform Lane Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 24
+    },
+    "16": {
+      "name": "Platform Lane Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 24
+    },
+    "17": {
+      "name": "Silhouette Contour",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    }
+  },
+  "LinkinPark2Environment": {
+    "0": {
+      "name": "Circular Lasers Global Distant",
+      "type": 0,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "1": {
+      "name": "Circular Lasers Local Distant",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 20
+    },
+    "2": {
+      "name": "Circular Lasers Global Close",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "3": {
+      "name": "Circular Lasers Local Close",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 20
+    },
+    "4": {
+      "name": "Tunnels Rings",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "5": {
+      "name": "Big Arcs Local",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "6": {
+      "name": "Laser Beams Local Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    },
+    "7": {
+      "name": "Laser Beams Local Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    },
+    "8": {
+      "name": "Floor Lasers Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "9": {
+      "name": "Floor Lasers Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "10": {
+      "name": "Tunnels Lights",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "11": {
+      "name": "Logo",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "12": {
+      "name": "Big Arcs Global",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "13": {
+      "name": "Spectrograms Floor Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 28
+    },
+    "14": {
+      "name": "Spectrograms Floor Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 28
+    },
+    "15": {
+      "name": "Spectrograms Tunnel Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "16": {
+      "name": "Spectrograms Tunnel Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "17": {
+      "name": "Laser Beams Global Left",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 2
+    },
+    "18": {
+      "name": "Laser Beams Global Right",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 2
+    }
+  },
+  "TheRollingStonesEnvironment": {
+    "0": {
+      "name": "Cube Local Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 15
+    },
+    "1": {
+      "name": "Cube Local Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 15
+    },
+    "2": {
+      "name": "Columns Left 01",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "3": {
+      "name": "Columns Left 02",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "4": {
+      "name": "Columns Left 03",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "5": {
+      "name": "Columns Left 04",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "6": {
+      "name": "Columns Right 01",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "7": {
+      "name": "Columns Right 02",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "8": {
+      "name": "Columns Right 03",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "9": {
+      "name": "Columns Right 04",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "10": {
+      "name": "Floor Blocks Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "11": {
+      "name": "Floor Blocks Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "12": {
+      "name": "Heart Local Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 6
+    },
+    "13": {
+      "name": "Heart Local Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 6
+    },
+    "14": {
+      "name": "Lasers Left 01",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "15": {
+      "name": "Lasers Left 02",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "16": {
+      "name": "Lasers Left 03",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "17": {
+      "name": "Lasers Left 04",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "18": {
+      "name": "Lasers Right 01",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "19": {
+      "name": "Lasers Right 02",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "20": {
+      "name": "Lasers Right 03",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "21": {
+      "name": "Lasers Right 04",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "22": {
+      "name": "Columns Lasers 01",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "23": {
+      "name": "Columns Lasers 02",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "24": {
+      "name": "Lasers Left Sphere",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 4
+    },
+    "25": {
+      "name": "Lasers Right Sphere",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 4
+    },
+    "26": {
+      "name": "Cube Global",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "27": {
+      "name": "Heart Global",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "28": {
+      "name": "Logo Local",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 6
+    },
+    "29": {
+      "name": "Logo Global",
+      "type": 4,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "30": {
+      "name": "Splinters",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 6
+    },
+    "31": {
+      "name": "Cube Rot Z Left",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 15
+    },
+    "32": {
+      "name": "Cube Rot Z Right",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 15
+    },
+    "33": {
+      "name": "Heart Rot Z Left",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 6
+    },
+    "34": {
+      "name": "Heart Rot Z Right",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 6
+    },
+    "35": {
+      "name": "Floor Side Laser Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "36": {
+      "name": "Floor Side Laser Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "37": {
+      "name": "Cube Lasers",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "38": {
+      "name": "Splinters Global Translation",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 6
+    },
+    "39": {
+      "name": "Floor Below Block",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "40": {
+      "name": "Floor Inner Light Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "41": {
+      "name": "Floor Inner Light Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "42": {
+      "name": "Logo Iridescence",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 6
+    },
+    "43": {
+      "name": "Logo Color",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 6
+    },
+    "44": {
+      "name": "Floor Side Laser Bottom Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "45": {
+      "name": "Floor Side Laser Bottom Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    }
+  },
+  "LatticeEnvironment": {
+    "0": {
+      "name": "Bottom Left Global",
+      "type": 2,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "1": {
+      "name": "Bottom Left Cube",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 8
+    },
+    "2": {
+      "name": "Bottom Left Radial",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "3": {
+      "name": "Bottom Left Spot 1",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "4": {
+      "name": "Bottom Left Spot 2",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "5": {
+      "name": "Bottom Left Laser 1",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "6": {
+      "name": "Bottom Left Laser 2",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "7": {
+      "name": "Bottom Right Global",
+      "type": 3,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "8": {
+      "name": "Bottom Right Cube",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 8
+    },
+    "9": {
+      "name": "Bottom Right Radial",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "10": {
+      "name": "Bottom Right Spot 1",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "11": {
+      "name": "Bottom Right Spot 2",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "12": {
+      "name": "Bottom Right Laser 1",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "13": {
+      "name": "Bottom Right Laser 2",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "14": {
+      "name": "Top Left Global",
+      "type": 2,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "15": {
+      "name": "Top Left Cube",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 8
+    },
+    "16": {
+      "name": "Top Left Radial",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "17": {
+      "name": "Top Left Spot 1",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "18": {
+      "name": "Top Left Spot 2",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "19": {
+      "name": "Top Left Laser 1",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "20": {
+      "name": "Top Left Laser 2",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "21": {
+      "name": "Top Right Global",
+      "type": 3,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "22": {
+      "name": "Top Right Cube",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 8
+    },
+    "23": {
+      "name": "Top Right Radial",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "24": {
+      "name": "Top Right Spot 1",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "25": {
+      "name": "Top Right Spot 2",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "26": {
+      "name": "Top Right Laser 1",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "27": {
+      "name": "Top Right Laser 2",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "28": {
+      "name": "Runway Diagonals",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "29": {
+      "name": "Runway Outline",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "30": {
+      "name": "Runway Chevron",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    }
+  },
+  "DaftPunkEnvironment": {
+    "0": {
+      "name": "Tris Wall Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 75
+    },
+    "1": {
+      "name": "Tris Wall Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 75
+    },
+    "2": {
+      "name": "Lasers Top Sideset 01 L",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "3": {
+      "name": "Lasers Top Sideset 02 L",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "4": {
+      "name": "Lasers Top Sideset 01 R",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "5": {
+      "name": "Lasers Top Sideset 02 R",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "6": {
+      "name": "Lasers Bottom Sideset 01 L",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "7": {
+      "name": "Lasers Bottom Sideset 02 L",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "8": {
+      "name": "Lasers Bottom Sideset 01 R",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "9": {
+      "name": "Lasers Bottom Sideset 02 R",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "10": {
+      "name": "Lasers Top Wall L",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "11": {
+      "name": "Lasers Top Wall R",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "12": {
+      "name": "Lasers Bottom Wall L",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "13": {
+      "name": "Lasers Bottom Wall R",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 5
+    },
+    "14": {
+      "name": "Orbit 1",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "15": {
+      "name": "Orbit 2",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "16": {
+      "name": "Orbit 3",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "17": {
+      "name": "Orbit 4",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "18": {
+      "name": "Runway Middle",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 32
+    },
+    "19": {
+      "name": "Visor 01 Spectrogram",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 17
+    },
+    "20": {
+      "name": "Visor 02 Spectrogram",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 37
+    },
+    "21": {
+      "name": "Visor 01 Text",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "22": {
+      "name": "Visor 02 Text",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "23": {
+      "name": "Helmet 01",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "24": {
+      "name": "Helmet 02",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "25": {
+      "name": "Runway Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "26": {
+      "name": "Runway Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "27": {
+      "name": "Background Stars",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "28": {
+      "name": "Orbit 1 Star 1",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "29": {
+      "name": "Orbit 1 Star 2",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "30": {
+      "name": "Orbit 1 Star 3",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "31": {
+      "name": "Orbit 1 Star 4",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "32": {
+      "name": "Orbit 2 Star 1",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "33": {
+      "name": "Orbit 2 Star 2",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "34": {
+      "name": "Orbit 2 Star 3",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "35": {
+      "name": "Orbit 2 Star 4",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "36": {
+      "name": "Orbit 3 Star 1",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "37": {
+      "name": "Orbit 3 Star 2",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "38": {
+      "name": "Orbit 3 Star 3",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "39": {
+      "name": "Orbit 3 Star 4",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "40": {
+      "name": "Orbit 4 Star 1",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "41": {
+      "name": "Orbit 4 Star 2",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "42": {
+      "name": "Orbit 4 Star 3",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "43": {
+      "name": "Orbit 4 Star 4",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "44": {
+      "name": "Orbit 1 Stars Transform",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "45": {
+      "name": "Orbit 2 Stars Transform",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "46": {
+      "name": "Orbit 3 Stars Transform",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "47": {
+      "name": "Orbit 4 Stars Transform",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "48": {
+      "name": "Visor 02 Offset X",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "49": {
+      "name": "Visor 02 Offset Y",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "50": {
+      "name": "Visor 02 Padding X",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "51": {
+      "name": "Visor 02 Padding Y",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "52": {
+      "name": "Visor 01 Offset X",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "53": {
+      "name": "Visor 01 Offset Y",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "54": {
+      "name": "Visor 01 Padding X",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "55": {
+      "name": "Visor 01 Padding Y",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    }
+  },
+  "HipHopEnvironment": {
+    "0": {
+      "name": "Environment Side Lasers Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 5
+    },
+    "1": {
+      "name": "Environment Side Lasers Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 5
+    },
+    "2": {
+      "name": "Ceiling Lights Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 12
+    },
+    "5": {
+      "name": "Ceiling Lights Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 12
+    },
+    "6": {
+      "name": "Trains Long 1 Transforms",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "7": {
+      "name": "Trains Long 1 Color",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 30
+    },
+    "8": {
+      "name": "Trains Long 2 Transforms",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "9": {
+      "name": "Trains Long 2 Color",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 30
+    },
+    "10": {
+      "name": "Trains Short L Transforms",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "11": {
+      "name": "Trains Short L Color",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "12": {
+      "name": "Trains Short R Transforms",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "13": {
+      "name": "Trains Short R Color",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "14": {
+      "name": "Geo Walls",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "15": {
+      "name": "Geo Roof",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "16": {
+      "name": "Geo Platforms",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "17": {
+      "name": "Geo Pillars Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "18": {
+      "name": "Geo Pillars Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "19": {
+      "name": "Environment Runway Ring",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "20": {
+      "name": "Hoops L1",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "21": {
+      "name": "Hoops Pieces L1",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 12
+    },
+    "22": {
+      "name": "Balls L1",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "23": {
+      "name": "Hoops L2",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "24": {
+      "name": "Hoops Pieces L2",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 12
+    },
+    "25": {
+      "name": "Balls L2",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "26": {
+      "name": "Hoops R1",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "27": {
+      "name": "Hoops Pieces R1",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 12
+    },
+    "28": {
+      "name": "Balls R1",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "29": {
+      "name": "Hoops R2",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "30": {
+      "name": "Hoops Pieces R2",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 12
+    },
+    "31": {
+      "name": "Balls R2",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "32": {
+      "name": "Graffiti Floating Graffiti R",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "33": {
+      "name": "Graffiti Floating Graffiti L",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "34": {
+      "name": "Graffiti Boombox",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "35": {
+      "name": "Graffiti Boombox Shards",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 6
+    },
+    "36": {
+      "name": "Environment Spectrogram Left",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "37": {
+      "name": "Environment Spectrogram Right",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "38": {
+      "name": "Trains Short L Graffiti",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "39": {
+      "name": "Trains Short R Graffiti",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 12
+    },
+    "40": {
+      "name": "Environment Runway Lights",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 2
+    },
+    "41": {
+      "name": "Environment Spectrogram Y",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    }
+  },
+  "ColliderEnvironment": {
+    "0": {
+      "name": "Center Blocks Local",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 20
+    },
+    "1": {
+      "name": "Center Blocks Global",
+      "type": 4,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 20
+    },
+    "2": {
+      "name": "Center Blocks Inner Lasers",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 40
+    },
+    "3": {
+      "name": "Center Blocks Outer Lasers",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 40
+    },
+    "4": {
+      "name": "Center Blocks Side 01 Lasers",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 40
+    },
+    "5": {
+      "name": "Center Blocks Side 02 Lasers",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 40
+    },
+    "6": {
+      "name": "Colliders Diamonds",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "7": {
+      "name": "Side Blocks Set 01 (Left) Local",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 5
+    },
+    "8": {
+      "name": "Side Blocks Set 02 (Right) Local",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 5
+    },
+    "9": {
+      "name": "Side Blocks Set 01 (Left) Global",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 5
+    },
+    "10": {
+      "name": "Side Blocks Set 02 (Right) Global",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 5
+    },
+    "11": {
+      "name": "Side Blocks Set 01 (Left) Inner Lasers",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 10
+    },
+    "12": {
+      "name": "Side Blocks Set 02 (Right) Inner Lasers",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 10
+    },
+    "13": {
+      "name": "Side Blocks Set 01 (Left) Outer Lasers",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 10
+    },
+    "14": {
+      "name": "Side Blocks Set 02 (Right) Outer Lasers",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 10
+    },
+    "15": {
+      "name": "Side Blocks Set 01 (Left) Side 01 Lasers",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 10
+    },
+    "16": {
+      "name": "Side Blocks Set 02 (Right) Side 01 Lasers",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 10
+    },
+    "17": {
+      "name": "Side Blocks Set 01 (Left) Side 02 Lasers",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 10
+    },
+    "18": {
+      "name": "Side Blocks Set 02 (Right) Side 02 Lasers",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 10
+    },
+    "19": {
+      "name": "Runway Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 5
+    },
+    "20": {
+      "name": "Runway Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 5
+    },
+    "21": {
+      "name": "Colliders Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "22": {
+      "name": "Colliders Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "23": {
+      "name": "Chevron Local",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "24": {
+      "name": "Chevron Mask Strength",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "25": {
+      "name": "Center Blocks Mask Strength",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 20
+    },
+    "26": {
+      "name": "Side Blocks Set 01 (Left) Mask Strength",
+      "type": 2,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 5
+    },
+    "27": {
+      "name": "Side Blocks Set 02 (Right) Mask Strength",
+      "type": 3,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 5
+    }
+  },
+  "BritneyEnvironment": {
+    "0": {
+      "name": "Cubes Local Left",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 24
+    },
+    "1": {
+      "name": "Cubes Global Left",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 24
+    },
+    "2": {
+      "name": "Cubes Local Right",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 24
+    },
+    "3": {
+      "name": "Cubes Global Right",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 24
+    },
+    "5": {
+      "name": "Display Local",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "6": {
+      "name": "Top Lasers Set 01 Global",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 18
+    },
+    "7": {
+      "name": "Top Lasers Set 01 Local",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 18
+    },
+    "8": {
+      "name": "Top Lasers Set 02 Global",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 18
+    },
+    "9": {
+      "name": "Top Lasers Set 02 Local",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 18
+    },
+    "10": {
+      "name": "Chevron",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "11": {
+      "name": "Outer Cylinders Bottom Lasers",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 76
+    },
+    "12": {
+      "name": "Runway",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "13": {
+      "name": "Stage Mask Offset",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 3
+    },
+    "14": {
+      "name": "Outer Cylinders Local",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 2
+    },
+    "15": {
+      "name": "Spirals Local",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 2
+    },
+    "16": {
+      "name": "Stage Top",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 3
+    },
+    "17": {
+      "name": "Stage Sides",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 3
+    },
+    "18": {
+      "name": "Cubes Speaker Lights L",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 96
+    },
+    "19": {
+      "name": "Cubes Speaker Lights R",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 96
+    },
+    "20": {
+      "name": "Display Mask Strength",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "21": {
+      "name": "Stars Color",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "22": {
+      "name": "Chevron Mask Strength",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    }
+  },
+  "Monstercat2Environment": {
+    "0": {
+      "name": "Head Move",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "1": {
+      "name": "Light Pillars Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 32
+    },
+    "2": {
+      "name": "Light Pillars Group Left",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 8
+    },
+    "3": {
+      "name": "Light Pillars Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 32
+    },
+    "4": {
+      "name": "Light Pillars Group Right",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 8
+    },
+    "5": {
+      "name": "Objects Screens L",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 4
+    },
+    "6": {
+      "name": "Objects Screens L Color",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "7": {
+      "name": "Objects Screens R",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 4
+    },
+    "8": {
+      "name": "Objects Screens R Color",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "9": {
+      "name": "Lasers Circle Global",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "10": {
+      "name": "Lasers Circle",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 20
+    },
+    "11": {
+      "name": "Head Lights L",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "12": {
+      "name": "Head Lights R",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "13": {
+      "name": "Head Lights Mouth",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "14": {
+      "name": "Lasers Vertical End Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "15": {
+      "name": "Lasers Vertical End Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "16": {
+      "name": "Objects Screens Runway Rings L",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "17": {
+      "name": "Objects Screens Runway Rings R",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "18": {
+      "name": "Objects Teeth",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "19": {
+      "name": "Lasers Vertical Side Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "20": {
+      "name": "Lasers Vertical Side Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "21": {
+      "name": "Screens Small Left 1 Color",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 32
+    },
+    "22": {
+      "name": "Screens Small Left 1",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "23": {
+      "name": "Screens Small Left 1 Global",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "24": {
+      "name": "Screens Small Right 1 Color",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 32
+    },
+    "25": {
+      "name": "Screens Small Right 1",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "26": {
+      "name": "Screens Small Right 1 Global",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "27": {
+      "name": "Screens Small Left 2 Color",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 32
+    },
+    "28": {
+      "name": "Screens Small Left 2",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "29": {
+      "name": "Screens Small Left 2 Global",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "30": {
+      "name": "Screens Small Right 2 Color",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 32
+    },
+    "31": {
+      "name": "Screens Small Right 2",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "32": {
+      "name": "Screens Small Right 2 Global",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    }
+  },
+  "MetallicaEnvironment": {
+    "0": {
+      "name": "Chevron",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "1": {
+      "name": "Pillars L Global",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 6
+    },
+    "2": {
+      "name": "Pillars R Global",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 6
+    },
+    "3": {
+      "name": "Center Stage Left",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 7
+    },
+    "4": {
+      "name": "Center Stage Right",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 7
+    },
+    "5": {
+      "name": "Center Stage Mid",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 5
+    },
+    "6": {
+      "name": "Runway",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 3
+    },
+    "7": {
+      "name": "Stage BG Lasers Left",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 6
+    },
+    "8": {
+      "name": "Stage BG Lasers Right",
+      "type": 0,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 6
+    },
+    "9": {
+      "name": "Pillars L Lasers",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 6
+    },
+    "10": {
+      "name": "Pillars R Lasers",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 6
+    },
+    "11": {
+      "name": "Center Stage Front Lasers",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 5
+    },
+    "12": {
+      "name": "Pillars L Lighting Bolts",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 6
+    },
+    "13": {
+      "name": "Pillars R Lighting Bolts",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 6
+    },
+    "14": {
+      "name": "Pillars L Construction Light",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 6
+    },
+    "15": {
+      "name": "Pillars R Construction Light",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 6
+    },
+    "16": {
+      "name": "BG Lighting Bolts Left",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 4
+    },
+    "17": {
+      "name": "BG Construction Point Light Left",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "18": {
+      "name": "BG Lighting Bolts Right",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 4
+    },
+    "19": {
+      "name": "BG Construction Point Light Right",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "20": {
+      "name": "Effects Lighting A",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 4
+    },
+    "21": {
+      "name": "Effects Lighting B",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "22": {
+      "name": "Pillars L Local",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 24
+    },
+    "23": {
+      "name": "Pillars R Local",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 24
+    },
+    "24": {
+      "name": "Runway Lasers Left",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 4
+    },
+    "25": {
+      "name": "Runway Lasers Right",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 4
+    },
+    "26": {
+      "name": "Scaffoldings Top",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "27": {
+      "name": "Runway Fire Burst L",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "28": {
+      "name": "Runway Fire Burst R",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "29": {
+      "name": "Infinite Lasers Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 12
+    },
+    "30": {
+      "name": "Infinite Lasers Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 12
+    },
+    "31": {
+      "name": "Scaffoldings Back",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "32": {
+      "name": "Effect Stars",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "33": {
+      "name": "Center Stage Point Lights",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "34": {
+      "name": "Pillars L Point Lights",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 60
+    },
+    "35": {
+      "name": "Pillars R Point Lights",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 60
+    },
+    "36": {
+      "name": "Scaffoldings Far Left",
+      "type": 0,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "37": {
+      "name": "Scaffoldings Far Right",
+      "type": 0,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "38": {
+      "name": "Runway Fire Continuous L",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "39": {
+      "name": "Runway Fire Continuous R",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 4
+    },
+    "40": {
+      "name": "Pillars L Column Global",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 6
+    },
+    "41": {
+      "name": "Pillars R Column Global",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 6
+    },
+    "42": {
+      "name": "Pillars L Scratches",
+      "type": 2,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 24
+    },
+    "43": {
+      "name": "Pillars R Scratches",
+      "type": 3,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 24
+    },
+    "44": {
+      "name": "Runway / Chevron Mask Strength",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    }
+  },
+  "GridEnvironment": {
+    "0": {
+      "name": "Chevron",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "1": {
+      "name": "Cubes Left Local",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 36
+    },
+    "2": {
+      "name": "Cubes Left Global + Lasers Top",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 36
+    },
+    "3": {
+      "name": "Cubes Right Local",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 36
+    },
+    "4": {
+      "name": "Cubes Right Global + Lasers Top",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 36
+    },
+    "5": {
+      "name": "Cubes Front Local",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 36
+    },
+    "6": {
+      "name": "Cubes Front Global + Lasers Top",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 36
+    },
+    "7": {
+      "name": "Cubes Front Laser Bottom + Cube Scale",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 36
+    },
+    "8": {
+      "name": "Cubes Left Laser Bottom + Cube Scale",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 36
+    },
+    "9": {
+      "name": "Cubes Right Laser Bottom + Cube Scale",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 36
+    },
+    "10": {
+      "name": "Infinite Lasers Left Local",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 8
+    },
+    "11": {
+      "name": "Infinite Lasers Right Local",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 8
+    },
+    "12": {
+      "name": "Lasers Top Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 8
+    },
+    "13": {
+      "name": "Lasers Bottom Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 8
+    },
+    "14": {
+      "name": "Lasers Top Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 8
+    },
+    "15": {
+      "name": "Lasers Bottom Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 8
+    },
+    "16": {
+      "name": "Motion Speed",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "17": {
+      "name": "Motion Scale",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "18": {
+      "name": "Motion Phase",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "19": {
+      "name": "Motion Param 1",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "20": {
+      "name": "Motion Param 2",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "21": {
+      "name": "Motion Texture",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "22": {
+      "name": "Motion Offset",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "23": {
+      "name": "Motion Preset",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "24": {
+      "name": "Motion Front Switch",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "25": {
+      "name": "Motion Left Switch",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "26": {
+      "name": "Motion Right Switch",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "27": {
+      "name": "Chevron Mask",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "28": {
+      "name": "Floor Left",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "29": {
+      "name": "Floor Right",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 8
+    },
+    "30": {
+      "name": "Floor Time Offset Left",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 8
+    },
+    "31": {
+      "name": "Floor Time Offset Right",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 8
+    },
+    "32": {
+      "name": "Chevron Small Left",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 12
+    },
+    "33": {
+      "name": "Chevron Small Right",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 12
+    },
+    "34": {
+      "name": "Runway",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 4
+    },
+    "35": {
+      "name": "Runway Top Mask Intensity",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 4
+    },
+    "36": {
+      "name": "Floor Mask Intensity Left",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 8
+    },
+    "37": {
+      "name": "Floor Mask Intensity Right",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 8
+    },
+    "38": {
+      "name": "Motion Left Mapping",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "39": {
+      "name": "Motion Right Mapping",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "40": {
+      "name": "Motion Front Mapping",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "41": {
+      "name": "Chevron Global / Scale Left",
+      "type": 4,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 12
+    },
+    "42": {
+      "name": "Chevron Global / Scale Right",
+      "type": 4,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 12
+    },
+    "43": {
+      "name": "Chevron Scale",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "44": {
+      "name": "Runway Bottom Construction",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 4
+    },
+    "45": {
+      "name": "Runway Bottom Mask Intensity",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 4
+    },
+    "46": {
+      "name": "Infinite Lasers Left Global",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    },
+    "47": {
+      "name": "Infinite Lasers Right Global",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 8
+    }
+  },
+  "ColdplayEnvironment": {
+    "0": {
+      "name": "Chevron",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 2
+    },
+    "1": {
+      "name": "Spheres Set 1",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "2": {
+      "name": "Spheres Set 2",
+      "type": 1,
+      "rotation": false,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "3": {
+      "name": "Spheres Gradient Position Set 1",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "4": {
+      "name": "Spheres Gradient Position Set 2",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "5": {
+      "name": "Hemisphere",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "6": {
+      "name": "Color Points",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 3
+    },
+    "7": {
+      "name": "Circle Ribbons Gradient Position",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 2
+    },
+    "8": {
+      "name": "Spiral Ribbons Gradient Position",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 2
+    },
+    "9": {
+      "name": "Circle Ribbons Time Offset",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 2
+    },
+    "10": {
+      "name": "Spiral Ribbons Time Offset",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 2
+    },
+    "11": {
+      "name": "Circle Ribbons Emission Mask",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 2
+    },
+    "12": {
+      "name": "Spiral Ribbons Emission Mask",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 2
+    },
+    "13": {
+      "name": "Lasers Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "14": {
+      "name": "Lasers Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "15": {
+      "name": "Background Bloom",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "16": {
+      "name": "Runway",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "17": {
+      "name": "Top Spotlights",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 3
+    },
+    "18": {
+      "name": "Spheres Displacement Strength Set 1",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "19": {
+      "name": "Spheres Displacement Strength Set 2",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "20": {
+      "name": "Spheres SDF Noise Scale Set 1",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "21": {
+      "name": "Spheres SDF Noise Scale Set 2",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "22": {
+      "name": "Spheres SDF Noise Intensity Set 1",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "23": {
+      "name": "Spheres SDF Noise Intensity Set 2",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "24": {
+      "name": "Hemisphere TimeOffset",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "25": {
+      "name": "Hemisphere Emission Gradient Position",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "28": {
+      "name": "Circle Ribbons SDF Noise Intensity",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 2
+    },
+    "29": {
+      "name": "Spiral Ribbons SDF Noise Intensity",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 2
+    },
+    "30": {
+      "name": "Spheres Global and Switch Set 1",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "31": {
+      "name": "Spheres Global and Switch Set 2",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "32": {
+      "name": "Lasers Global L",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "33": {
+      "name": "Lasers Global R",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "34": {
+      "name": "Spheres Time Offset Set 1",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "35": {
+      "name": "Spheres Time Offset Set 2",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "36": {
+      "name": "Circle Ribbons Switch",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 2
+    },
+    "37": {
+      "name": "Spiral Ribbons Switch",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 2
+    },
+    "38": {
+      "name": "Stars",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 3
+    },
+    "39": {
+      "name": "Circle Ribbons Displacement Strength",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 2
+    },
+    "40": {
+      "name": "Spiral Ribbons Displacement Strength",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 2
+    },
+    "41": {
+      "name": "Moonrise Primary Color",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "42": {
+      "name": "Moonrise Secondary Color",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 1
+    },
+    "43": {
+      "name": "Moonrise Switch",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "44": {
+      "name": "Moonrise Time Offset",
+      "type": 0,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "45": {
+      "name": "Infinite Lasers Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "46": {
+      "name": "Infinite Lasers Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "47": {
+      "name": "Infinite Lasers Global L",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "48": {
+      "name": "Infinite Lasers Global R",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "49": {
+      "name": "Hearts",
+      "type": 1,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 16
+    },
+    "50": {
+      "name": "Flares",
+      "type": 0,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "51": {
+      "name": "Hearts Scale",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 16
+    },
+    "52": {
+      "name": "Hemisphere Switch",
+      "type": 1,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    }
+  },
+  "ProdigyEnvironment": {
+    "0": {
+      "name": "Chevron",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": true,
+      "count": 1
+    },
+    "1": {
+      "name": "Chevron",
+      "type": 4,
+      "rotation": false,
+      "color": false,
+      "translation": false,
+      "fx": true,
+      "count": 1
+    },
+    "2": {
+      "name": "Cubes Left Global",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "3": {
+      "name": "Cubes Left Local",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "4": {
+      "name": "Cubes Right Global",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "5": {
+      "name": "Cubes Right Local",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "6": {
+      "name": "Cubes Lasers Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "7": {
+      "name": "Cubes Lasers Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "8": {
+      "name": "Pillars Left",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 5
+    },
+    "9": {
+      "name": "Pillars Right",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 5
+    },
+    "10": {
+      "name": "Centerpiece Local",
+      "type": 4,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "11": {
+      "name": "Centerpiece Global",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "12": {
+      "name": "Centerpiece Lasers",
+      "type": 4,
+      "rotation": true,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 16
+    },
+    "13": {
+      "name": "Debris Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 12
+    },
+    "14": {
+      "name": "Debris Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 12
+    },
+    "15": {
+      "name": "Lasers Left Global",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "16": {
+      "name": "Lasers Left Local",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "17": {
+      "name": "Lasers Right Global",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "18": {
+      "name": "Lasers Right Local",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 16
+    },
+    "19": {
+      "name": "FloatPillars Left",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    },
+    "20": {
+      "name": "FloatPillars Right",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    },
+    "21": {
+      "name": "Crowds Left",
+      "type": 2,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "22": {
+      "name": "Crowds Right",
+      "type": 3,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 1
+    },
+    "23": {
+      "name": "Scaffolding Local",
+      "type": 1,
+      "rotation": true,
+      "color": false,
+      "translation": true,
+      "fx": false,
+      "count": 4
+    },
+    "24": {
+      "name": "Pillars Left Lasers",
+      "type": 2,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "25": {
+      "name": "Pillars Right Lasers",
+      "type": 3,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 25
+    },
+    "26": {
+      "name": "Figures Left Figures",
+      "type": 2,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    },
+    "27": {
+      "name": "Figures Right Figures",
+      "type": 3,
+      "rotation": true,
+      "color": true,
+      "translation": true,
+      "fx": false,
+      "count": 2
+    },
+    "28": {
+      "name": "Runway Local",
+      "type": 4,
+      "rotation": false,
+      "color": true,
+      "translation": false,
+      "fx": false,
+      "count": 2
+    }
+  }
+}

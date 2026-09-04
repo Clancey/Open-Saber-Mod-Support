@@ -1,12 +1,37 @@
 extends Node3D
 class_name EventDriver
 
+const INTENSITY_PARAMS: Array[StringName] = [
+	&"bg_0_intensity",
+	&"bg_1_intensity",
+	&"bg_2_intensity",
+	&"bg_3_intensity",
+	&"bg_4_intensity",
+]
+const TINT_PARAMS: Array[StringName] = [
+	&"bg_0_tint",
+	&"bg_1_tint",
+	&"bg_2_tint",
+	&"bg_3_tint",
+	&"bg_4_tint",
+]
+
 var ring_rot_speed: = 0.0
 var ring_rot_inv_dir: = false
 var rings_in: = false
 
 var left_color: Color
 var right_color: Color
+var normal_left_color: Color
+var normal_right_color: Color
+var boost_enabled: bool = false
+var ring_spin_tween: Tween = null
+
+var events_processed: int = 0
+var events_by_type: Dictionary = {}
+
+# Light ID system (Chroma)
+var light_manager: LightManager = null
 
 @onready var ring_holder: = $Level / rings as Node3D
 @onready var diagonal_lasers_holder: = $Level / DiagonalLasers as Node3D
@@ -14,6 +39,15 @@ var right_color: Color
 @onready var left_waving_lasers_holder: = $Level / LeftWavingLasers as Node3D
 @onready var right_waving_lasers_holder: = $Level / RightWavingLasers as Node3D
 @onready var track_lights_holder: = $Level / TrackLights as Node3D
+@onready var floor_holder: = $Level / floor as MeshInstance3D
+
+@onready var diagonal_lasers_batch: = $Level / DiagonalLasers / LightBatch as MultiMeshInstance3D
+@onready var square_lasers_batch: = $Level / SquareLasers / LightBatch as MultiMeshInstance3D
+@onready var left_waving_lasers_batch: = $Level / LeftWavingLasers / LightBatch as MultiMeshInstance3D
+@onready var right_waving_lasers_batch: = $Level / RightWavingLasers / LightBatch as MultiMeshInstance3D
+@onready var floor_lights_batch: = (
+	$Level / TrackLights / LightBatch as MultiMeshInstance3D
+)
 
 @onready var sphere_material: = ($Level / Sphere as MeshInstance3D).material_override as ShaderMaterial
 @onready var diagonal_lasers_material: = ($Level / DiagonalLasers / laser1 / Bar7 as MeshInstance3D).material_override as StandardMaterial3D
@@ -31,19 +65,37 @@ var right_color: Color
 
 func _ready() -> void :
 
-	Thread.PRIORITY_LOW
 	if not RenderingServer.get_rendering_device():
 		sphere_material.set_shader_parameter("contrast", 1)
 		for background_side in 5:
 			var shader_param: = StringName("bg_%s_intensity_mult" % background_side)
 			sphere_material.set_shader_parameter(
-				shader_param, 
+				shader_param,
 				(sphere_material.get_shader_parameter(shader_param) as float) * 2.2
 			)
 
+	# Initialize after all @onready references have resolved.
+	light_manager = LightManager.new()
+	add_child(light_manager)
+	light_manager.initialize_lights(self)
+
+func _physics_process(_delta: float) -> void:
+	if not is_instance_valid(light_manager):
+		return
+	var left_lasers_active: bool = (
+		left_waving_lasers_holder.is_visible_in_tree()
+		and left_laser_anim_player.speed_scale > 0.0
+		and light_manager.has_visible_lights(EventInfo.TYPE_LEFT_WAVING_LASERS)
+	)
+	var right_lasers_active: bool = (
+		right_waving_lasers_holder.is_visible_in_tree()
+		and right_laser_anim_player.speed_scale > 0.0
+		and light_manager.has_visible_lights(EventInfo.TYPE_RIGHT_WAVING_LASERS)
+	)
+	if left_lasers_active or right_lasers_active:
+		light_manager.sync_batched_transforms()
+
 func _process(delta: float) -> void :
-
-
 	if ring_rot_speed > 0:
 		for ring in ring_holder.get_children():
 			if ring is Node3D:
@@ -52,19 +104,24 @@ func _process(delta: float) -> void :
 				(ring as Node3D).rotate_z((rot * delta) * (float(ring.get_index() + 1) / 5))
 
 func update_left_color(color: Color) -> void :
-	left_color = color
-	print(color)
-	turn_light_on(EventInfo.TYPE_DIAGONAL_LASERS, color)
-	turn_light_on(EventInfo.TYPE_LEFT_WAVING_LASERS, color)
-	turn_light_on(EventInfo.TYPE_RIGHT_WAVING_LASERS, color)
+	normal_left_color = color
+	if not boost_enabled:
+		left_color = color
+		turn_light_on(EventInfo.TYPE_DIAGONAL_LASERS, color)
+		turn_light_on(EventInfo.TYPE_LEFT_WAVING_LASERS, color)
+		turn_light_on(EventInfo.TYPE_RIGHT_WAVING_LASERS, color)
 
 func update_right_color(color: Color) -> void :
-	right_color = color
-	print(color)
-	turn_light_on(EventInfo.TYPE_SQUARE_LASERS, color)
-	turn_light_on(EventInfo.TYPE_FLOOR_LIGHTS, color)
+	normal_right_color = color
+	if not boost_enabled:
+		right_color = color
+		turn_light_on(EventInfo.TYPE_SQUARE_LASERS, color)
+		turn_light_on(EventInfo.TYPE_FLOOR_LIGHTS, color)
 
 func set_all_off() -> void :
+	boost_enabled = false
+	left_color = normal_left_color
+	right_color = normal_right_color
 	if disabled:
 		for i in range(1, 4):
 			turn_light_off(i)
@@ -74,62 +131,98 @@ func set_all_off() -> void :
 			turn_light_off(i)
 
 func set_all_on(left: Color, right: Color) -> void :
-		update_left_color(left)
-		update_right_color(right)
-		ring_holder.visible = true
+	boost_enabled = false
+	update_left_color(left)
+	update_right_color(right)
+	ring_holder.visible = true
 
 func process_event(data: EventInfo) -> void :
 	if disabled: return
-	if data.custom_data.has("_color"):
-		left_color = Color(data.custom_data["_color"][0], data.custom_data["_color"][1], data.custom_data["_color"][2])
-		right_color = Color(data.custom_data["_color"][0], data.custom_data["_color"][1], data.custom_data["_color"][2])
 
-	if data.type in range(0, 5):
-		match data.value:
-			EventInfo.VALUE_LIGHTS_OFF:
-				turn_light_off(data.type)
-			EventInfo.VALUE_LIGHTS_RIGHT_ON:
-				turn_light_on(data.type, right_color)
-			EventInfo.VALUE_LIGHTS_RIGHT_FLASH:
-				flash_light_on(data.type, right_color)
-			EventInfo.VALUE_LIGHTS_RIGHT_FADE:
-				flash_light_then_fade_off(data.type, right_color)
-			EventInfo.VALUE_LIGHTS_FADE_TO_RIGHT:
-				fade_light_from_current(data.type, right_color)
-			EventInfo.VALUE_LIGHTS_LEFT_ON:
-				turn_light_on(data.type, left_color)
-			EventInfo.VALUE_LIGHTS_LEFT_FLASH:
-				flash_light_on(data.type, left_color)
-			EventInfo.VALUE_LIGHTS_LEFT_FADE:
-				flash_light_then_fade_off(data.type, left_color)
-			EventInfo.VALUE_LIGHTS_FADE_TO_LEFT:
-				fade_light_from_current(data.type, left_color)
-			EventInfo.VALUE_LIGHTS_WHITE_ON:
-				turn_light_on(data.type, Color.WHITE)
-			EventInfo.VALUE_LIGHTS_WHITE_FLASH:
-				flash_light_on(data.type, Color.WHITE)
-			EventInfo.VALUE_LIGHTS_WHITE_FADE:
-				flash_light_then_fade_off(data.type, Color.WHITE)
-			EventInfo.VALUE_LIGHTS_FADE_TO_WHITE:
-				fade_light_from_current(data.type, Color.WHITE)
+	events_processed += 1
+	var type_count: int = int(events_by_type.get(data.type, 0))
+	events_by_type[data.type] = type_count + 1
+
+	if data.type >= 0 and data.type <= 4:
+		var l := left_color
+		var r := right_color
+		var w := Color.WHITE
+		if data.custom_data.has("_v3PaletteColor"):
+			var palette_color: int = int(data.custom_data["_v3PaletteColor"])
+			var brightness: float = float(data.custom_data.get("_v3Brightness", 1.0))
+			match palette_color:
+				0:
+					l *= brightness
+					r = l
+				1:
+					r *= brightness
+					l = r
+				_:
+					w *= brightness
+		elif data.color.size() >= 3:
+			var custom_color := Color(data.color[0], data.color[1], data.color[2])
+			l = custom_color
+			r = custom_color
+			w = custom_color
+
+		# If event has lightID array (Chroma), use LightManager for targeted control
+		var lights_by_id: Dictionary = light_manager.lights_by_type_and_id.get(data.type, {}) if is_instance_valid(light_manager) else {}
+		if not data.lightID.is_empty() and not lights_by_id.is_empty():
+			_prepare_targeted_light_event(data, l, r, w)
+			light_manager.process_light_event(data, l, r, w)
+		else:
+			# Legacy behavior: control all lights of this type
+			match data.value:
+				EventInfo.VALUE_LIGHTS_OFF:
+					turn_light_off(data.type)
+				EventInfo.VALUE_LIGHTS_RIGHT_ON:
+					turn_light_on(data.type, r)
+				EventInfo.VALUE_LIGHTS_RIGHT_FLASH:
+					flash_light_on(data.type, r)
+				EventInfo.VALUE_LIGHTS_RIGHT_FADE:
+					flash_light_then_fade_off(data.type, r)
+				EventInfo.VALUE_LIGHTS_FADE_TO_RIGHT:
+					fade_light_from_current(data.type, r, _event_fade_duration(data))
+				EventInfo.VALUE_LIGHTS_LEFT_ON:
+					turn_light_on(data.type, l)
+				EventInfo.VALUE_LIGHTS_LEFT_FLASH:
+					flash_light_on(data.type, l)
+				EventInfo.VALUE_LIGHTS_LEFT_FADE:
+					flash_light_then_fade_off(data.type, l)
+				EventInfo.VALUE_LIGHTS_FADE_TO_LEFT:
+					fade_light_from_current(data.type, l, _event_fade_duration(data))
+				EventInfo.VALUE_LIGHTS_WHITE_ON:
+					turn_light_on(data.type, w)
+				EventInfo.VALUE_LIGHTS_WHITE_FLASH:
+					flash_light_on(data.type, w)
+				EventInfo.VALUE_LIGHTS_WHITE_FADE:
+					flash_light_then_fade_off(data.type, w)
+				EventInfo.VALUE_LIGHTS_FADE_TO_WHITE:
+					fade_light_from_current(data.type, w, _event_fade_duration(data))
 	else:
 		match data.type:
-			8:
-				var ringtween: = ring_holder.create_tween()
+			EventInfo.TYPE_COLOR_BOOST:
+				boost_enabled = data.value != 0
+				left_color = Map.color_left_boost if boost_enabled else Map.color_left
+				right_color = Map.color_right_boost if boost_enabled else Map.color_right
+			EventInfo.TYPE_RING_SPIN:
+				if ring_spin_tween != null:
+					ring_spin_tween.kill()
+				ring_spin_tween = ring_holder.create_tween()
 				if absf(ring_rot_speed) < 1.0:
 					ring_rot_inv_dir = not ring_rot_inv_dir
 				@warning_ignore("return_value_discarded")
-				ringtween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT).tween_property(self, ^"ring_rot_speed", 0.0, 2.0).from(3.0)
-				ringtween.play()
-			9:
+				ring_spin_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT).tween_property(self, ^"ring_rot_speed", 0.0, 2.0).from(3.0)
+				ring_spin_tween.play()
+			EventInfo.TYPE_RING_ZOOM:
 				ring_anim_player.stop(false)
 				ring_anim_player.play(&"out" if rings_in else &"in")
 				rings_in = not rings_in
-			12:
+			EventInfo.TYPE_LEFT_LASER_SPEED:
 				var val: = float(data.value) * 0.125
 				left_laser_anim_player.speed_scale = val
 				left_laser_anim_player.seek(randf_range(0.0, left_laser_anim_player.current_animation_length), true)
-			13:
+			EventInfo.TYPE_RIGHT_LASER_SPEED:
 				var val: = float(data.value) * 0.125
 				right_laser_anim_player.speed_scale = val
 				right_laser_anim_player.seek(randf_range(0.0, right_laser_anim_player.current_animation_length), true)
@@ -144,70 +237,141 @@ func stop_prev_tween(type: int) -> void :
 func turn_light_off(type: int) -> void :
 	stop_prev_tween(type)
 	_on_Tween_tween_step(Color.BLACK, type)
-	match type:
-		EventInfo.TYPE_DIAGONAL_LASERS:
-			diagonal_lasers_holder.visible = false
-			diagonal_lasers_material.albedo_color = Color.BLACK
-		EventInfo.TYPE_SQUARE_LASERS:
-			square_lasers_holder.visible = false
-			square_lasers_material.albedo_color = Color.BLACK
-		EventInfo.TYPE_LEFT_WAVING_LASERS:
-			left_waving_lasers_holder.visible = false
-			left_waving_lasers_material.albedo_color = Color.BLACK
-		EventInfo.TYPE_RIGHT_WAVING_LASERS:
-			right_waving_lasers_holder.visible = false
-			right_waving_lasers_material.albedo_color = Color.BLACK
-		EventInfo.TYPE_FLOOR_LIGHTS:
-			track_lights_holder.visible = false
-			track_lights_material.albedo_color = Color.BLACK
-			floor_material.albedo_color = Color.BLACK
+	if is_instance_valid(light_manager):
+		light_manager.set_all_lights_of_type(type, Color.BLACK, false)
+	_set_light_holder_visible(type, false)
+	if type == EventInfo.TYPE_FLOOR_LIGHTS:
+		floor_material.albedo_color = Color.BLACK
 
 func turn_light_on(type: int, color: Color) -> void :
-	sphere_material.set_shader_parameter("bg_%d_tint" % type, color)
+	sphere_material.set_shader_parameter(TINT_PARAMS[type], color)
 	stop_prev_tween(type)
 	_on_Tween_tween_step(color, type)
+	_set_light_holder_visible(type, true)
+	if is_instance_valid(light_manager):
+		light_manager.set_all_lights_of_type(type, color, true)
+	if type == EventInfo.TYPE_FLOOR_LIGHTS:
+		floor_material.albedo_color = color
+
+func _prepare_targeted_light_event(
+	data: EventInfo,
+	event_left_color: Color,
+	event_right_color: Color,
+	event_white_color: Color
+) -> void:
+	var group: Node3D = _get_light_holder(data.type)
+	if group == null:
+		return
+	group.visible = true
+
+	var target_color := Color.BLACK
+	match data.value:
+		EventInfo.VALUE_LIGHTS_RIGHT_ON, EventInfo.VALUE_LIGHTS_RIGHT_FLASH, EventInfo.VALUE_LIGHTS_RIGHT_FADE, EventInfo.VALUE_LIGHTS_FADE_TO_RIGHT:
+			target_color = event_right_color
+		EventInfo.VALUE_LIGHTS_LEFT_ON, EventInfo.VALUE_LIGHTS_LEFT_FLASH, EventInfo.VALUE_LIGHTS_LEFT_FADE, EventInfo.VALUE_LIGHTS_FADE_TO_LEFT:
+			target_color = event_left_color
+		EventInfo.VALUE_LIGHTS_WHITE_ON, EventInfo.VALUE_LIGHTS_WHITE_FLASH, EventInfo.VALUE_LIGHTS_WHITE_FADE, EventInfo.VALUE_LIGHTS_FADE_TO_WHITE:
+			target_color = event_white_color
+
+	match data.value:
+		EventInfo.VALUE_LIGHTS_OFF:
+			stop_prev_tween(data.type)
+			_on_Tween_tween_step(Color.BLACK, data.type)
+		EventInfo.VALUE_LIGHTS_RIGHT_ON, EventInfo.VALUE_LIGHTS_LEFT_ON, EventInfo.VALUE_LIGHTS_WHITE_ON:
+			sphere_material.set_shader_parameter(TINT_PARAMS[data.type], target_color)
+			stop_prev_tween(data.type)
+			_on_Tween_tween_step(target_color, data.type)
+		EventInfo.VALUE_LIGHTS_RIGHT_FLASH, EventInfo.VALUE_LIGHTS_LEFT_FLASH, EventInfo.VALUE_LIGHTS_WHITE_FLASH:
+			sphere_material.set_shader_parameter(TINT_PARAMS[data.type], target_color)
+			_fade_background(data.type, target_color * 3.0, target_color, Tween.TRANS_LINEAR, Tween.EASE_OUT)
+		EventInfo.VALUE_LIGHTS_RIGHT_FADE, EventInfo.VALUE_LIGHTS_LEFT_FADE, EventInfo.VALUE_LIGHTS_WHITE_FADE:
+			sphere_material.set_shader_parameter(TINT_PARAMS[data.type], target_color)
+			_fade_background(data.type, target_color * 3.0, Color.BLACK, Tween.TRANS_QUAD, Tween.EASE_IN)
+		EventInfo.VALUE_LIGHTS_FADE_TO_RIGHT, EventInfo.VALUE_LIGHTS_FADE_TO_LEFT, EventInfo.VALUE_LIGHTS_FADE_TO_WHITE:
+			_fade_background(
+				data.type,
+				_get_current_light_color(data.type),
+				target_color,
+				Tween.TRANS_LINEAR,
+				Tween.EASE_IN,
+				_event_fade_duration(data)
+			)
+
+func _get_light_holder(type: int) -> Node3D:
 	match type:
 		EventInfo.TYPE_DIAGONAL_LASERS:
-			diagonal_lasers_holder.visible = true
-			diagonal_lasers_material.albedo_color = color
+			return diagonal_lasers_holder
 		EventInfo.TYPE_SQUARE_LASERS:
-			square_lasers_holder.visible = true
-			square_lasers_material.albedo_color = color
+			return square_lasers_holder
 		EventInfo.TYPE_LEFT_WAVING_LASERS:
-			left_waving_lasers_holder.visible = true
-			left_waving_lasers_material.albedo_color = color
+			return left_waving_lasers_holder
 		EventInfo.TYPE_RIGHT_WAVING_LASERS:
-			right_waving_lasers_holder.visible = true
-			right_waving_lasers_material.albedo_color = color
+			return right_waving_lasers_holder
 		EventInfo.TYPE_FLOOR_LIGHTS:
-			track_lights_holder.visible = true
-			track_lights_material.albedo_color = color
-			floor_material.albedo_color = color
+			return track_lights_holder
+	return null
+
+func _set_light_holder_visible(type: int, is_visible: bool) -> void:
+	var holder: Node3D = _get_light_holder(type)
+	if holder != null:
+		holder.visible = is_visible
+
+func _get_current_light_color(type: int) -> Color:
+	if is_instance_valid(light_manager):
+		return light_manager.get_light_color(type)
+	match type:
+		EventInfo.TYPE_DIAGONAL_LASERS:
+			return diagonal_lasers_material.albedo_color
+		EventInfo.TYPE_SQUARE_LASERS:
+			return square_lasers_material.albedo_color
+		EventInfo.TYPE_LEFT_WAVING_LASERS:
+			return left_waving_lasers_material.albedo_color
+		EventInfo.TYPE_RIGHT_WAVING_LASERS:
+			return right_waving_lasers_material.albedo_color
+		EventInfo.TYPE_FLOOR_LIGHTS:
+			return floor_material.albedo_color
+	return Color.BLACK
+
+func _fade_background(
+	type: int,
+	from: Color,
+	to: Color,
+	trans_type: Tween.TransitionType,
+	ease_type: Tween.EaseType,
+	duration: float = 1.0
+) -> void:
+	var group: Node3D = _get_light_holder(type)
+	if group == null:
+		return
+	stop_prev_tween(type)
+	var tween := group.create_tween()
+	@warning_ignore("return_value_discarded")
+	tween.set_trans(trans_type).set_ease(ease_type)
+	@warning_ignore("return_value_discarded")
+	tween.tween_method(_on_Tween_tween_step.bind(type), from, to, duration)
+	prev_tweeners[type] = tween
 
 func flash_light_on(type: int, color: Color) -> void :
-	sphere_material.set_shader_parameter("bg_%d_tint" % type, color)
+	sphere_material.set_shader_parameter(TINT_PARAMS[type], color)
 	fade_light(type, color * 3.0, color, false, Tween.TRANS_LINEAR, Tween.EASE_OUT)
 
 func flash_light_then_fade_off(type: int, color: Color) -> void :
-	sphere_material.set_shader_parameter("bg_%d_tint" % type, color)
+	sphere_material.set_shader_parameter(TINT_PARAMS[type], color)
 	fade_light(type, color * 3.0, Color.BLACK, true, Tween.TRANS_QUAD, Tween.EASE_IN)
 
-func fade_light_from_current(type: int, to_color: Color) -> void :
-	var current_color: Color
-	match type:
-		EventInfo.TYPE_DIAGONAL_LASERS:
-			current_color = diagonal_lasers_material.albedo_color
-		EventInfo.TYPE_SQUARE_LASERS:
-			current_color = square_lasers_material.albedo_color
-		EventInfo.TYPE_LEFT_WAVING_LASERS:
-			current_color = left_waving_lasers_material.albedo_color
-		EventInfo.TYPE_RIGHT_WAVING_LASERS:
-			current_color = right_waving_lasers_material.albedo_color
-		EventInfo.TYPE_FLOOR_LIGHTS:
-			current_color = floor_material.albedo_color
-	fade_light(type, current_color, to_color, false, Tween.TRANS_LINEAR, Tween.EASE_IN)
+func fade_light_from_current(type: int, to_color: Color, duration: float = 1.0) -> void :
+	var current_color := _get_current_light_color(type)
+	fade_light(type, current_color, to_color, false, Tween.TRANS_LINEAR, Tween.EASE_IN, duration)
 
-func fade_light(type: int, from: Color, to: Color, turn_off_after_fade: bool, trans_type: Tween.TransitionType, ease_type: Tween.EaseType) -> void :
+func fade_light(
+	type: int,
+	from: Color,
+	to: Color,
+	turn_off_after_fade: bool,
+	trans_type: Tween.TransitionType,
+	ease_type: Tween.EaseType,
+	duration: float = 1.0
+) -> void :
 	stop_prev_tween(type)
 
 	var group: Node3D
@@ -215,37 +379,54 @@ func fade_light(type: int, from: Color, to: Color, turn_off_after_fade: bool, tr
 	match type:
 		EventInfo.TYPE_DIAGONAL_LASERS:
 			group = diagonal_lasers_holder
-			material = [diagonal_lasers_material]
 		EventInfo.TYPE_SQUARE_LASERS:
 			group = square_lasers_holder
-			material = [square_lasers_material]
 		EventInfo.TYPE_LEFT_WAVING_LASERS:
 			group = left_waving_lasers_holder
-			material = [left_waving_lasers_material]
 		EventInfo.TYPE_RIGHT_WAVING_LASERS:
 			group = right_waving_lasers_holder
-			material = [right_waving_lasers_material]
 		EventInfo.TYPE_FLOOR_LIGHTS:
 			group = track_lights_holder
-			material = [track_lights_material, floor_material]
+			material = [floor_material]
 
 	group.visible = true
+	if is_instance_valid(light_manager):
+		light_manager.set_all_lights_of_type(type, from, true)
 
 	var tween: = group.create_tween()
 	@warning_ignore("return_value_discarded")
 	tween.set_parallel().set_trans(trans_type).set_ease(ease_type)
 	for m in material:
 		@warning_ignore("return_value_discarded")
-		tween.tween_property(m, ^"albedo_color", to, 1).from(from)
+		tween.tween_property(m, ^"albedo_color", to, duration).from(from)
+	if is_instance_valid(light_manager):
+		@warning_ignore("return_value_discarded")
+		tween.tween_method(light_manager.set_all_lights_color.bind(type), from, to, duration)
 	@warning_ignore("return_value_discarded")
-	tween.tween_method(_on_Tween_tween_step.bind(type), from, to, 1)
+	tween.tween_method(_on_Tween_tween_step.bind(type), from, to, duration)
 	tween.play()
 	prev_tweeners[type] = tween
-	await tween.finished
+	tween.finished.connect(
+		_on_light_fade_finished.bind(turn_off_after_fade, tween, type),
+		CONNECT_ONE_SHOT
+	)
+
+func _on_light_fade_finished(
+	turn_off_after_fade: bool, tween: Tween, type: int
+) -> void:
 	if turn_off_after_fade:
-		group.visible = false
+		if is_instance_valid(light_manager):
+			light_manager.set_all_lights_visible(type, false)
+		_set_light_holder_visible(type, false)
 		tween.kill()
 		_on_Tween_tween_step(Color.BLACK, type)
 
 func _on_Tween_tween_step(value: Color, id: int) -> void :
-	sphere_material.set_shader_parameter("bg_%d_intensity" % id, value.v)
+	sphere_material.set_shader_parameter(INTENSITY_PARAMS[id], value.v)
+
+func _event_fade_duration(data: EventInfo) -> float:
+	var duration_beats: float = float(data.custom_data.get("_v3FadeDurationBeats", 0.0))
+	if duration_beats <= 0.0:
+		return 1.0
+	var end_beat: float = data.beat + duration_beats
+	return maxf(Map.beat_to_seconds(end_beat) - Map.beat_to_seconds(data.beat), 0.001)
