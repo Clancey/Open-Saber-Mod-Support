@@ -1,0 +1,76 @@
+{
+  "version": "4.0.1",
+  "song": {
+    "title": "V4 Test Song",
+    "subTitle": "Fixture",
+    "author": "Test Artist"
+  },
+  "audio": {
+    "songFilename": "song.ogg",
+    "songDuration": 120.0,
+    "audioDataFilename": "AudioData.dat",
+    "bpm": 128.0,
+    "lufs": -8.0,
+    "previewStartTime": 10.0,
+    "previewDuration": 12.0
+  },
+  "songPreviewFilename": "",
+  "coverImageFilename": "cover.png",
+  "environmentNames": [
+    "DefaultEnvironment"
+  ],
+  "colorSchemes": [
+    {
+      "colorSchemeName": "Fixture Colors",
+      "overrideNotes": true,
+      "saberAColor": "FF0000FF",
+      "saberBColor": "0000FFFF",
+      "obstaclesColor": "FFFFFFFF",
+      "overrideLights": true,
+      "environmentColor0": "FF0000FF",
+      "environmentColor1": "0000FFFF",
+      "environmentColor0Boost": "FFFFFFFF",
+      "environmentColor1Boost": "FFFFFFFF"
+    }
+  ],
+  "difficultyBeatmaps": [
+    {
+      "characteristic": "Standard",
+      "difficulty": "Expert",
+      "beatmapAuthors": {
+        "mappers": [
+          "Test Mapper"
+        ],
+        "lighters": [
+          "Test Lighter"
+        ]
+      },
+      "environmentNameIdx": 0,
+      "beatmapColorSchemeIdx": 0,
+      "noteJumpMovementSpeed": 16.0,
+      "noteJumpStartBeatOffset": 0.5,
+      "beatmapDataFilename": "ExpertStandard.beatmap.dat",
+      "lightshowDataFilename": "Lightshow.dat",
+      "customData": {
+        "difficultyLabel": "Fixture Expert",
+        "requirements": [
+          "Chroma"
+        ],
+        "suggestions": [
+          "Noodle Extensions"
+        ],
+        "colorLeft": {
+          "r": 1.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "colorRight": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 1.0
+        }
+      }
+    }
+  ],
+  "customData": {}
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "_time": 1,
+    "_lineIndex": 0,
+    "_lineLayer": 0,
+    "_type": 0,
+    "_cutDirection": 1
+  },
+  "junk",
+  {
+    "_time": 2,
+    "_lineIndex": 1,
+    "_lineLayer": 1,
+    "_type": 1,
+    "_cutDirection": 0
+  }
+]

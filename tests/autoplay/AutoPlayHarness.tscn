@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/autoplay/AutoPlay.gd" id="1_autoplay"]
+
+[node name="AutoPlayHarness" type="Node"]
+script = ExtResource("1_autoplay")
