@@ -12,6 +12,9 @@ var _song_playing_duration: float = 0.0
 var _low_fps_duration: float = 0.0
 
 func _process(delta: float) -> void:
+	if delta > 0.5:
+		return
+	var sample_delta: float = minf(delta, 0.1)
 	var is_song_playing: bool = song_player.playing
 
 	if is_song_playing and not _was_song_playing:
@@ -26,7 +29,7 @@ func _process(delta: float) -> void:
 	if not is_song_playing:
 		return
 
-	_song_playing_duration += delta
+	_song_playing_duration += sample_delta
 
 	if (
 		not vr.inVR
@@ -41,7 +44,7 @@ func _process(delta: float) -> void:
 		_low_fps_duration = 0.0
 		return
 
-	_low_fps_duration += delta
+	_low_fps_duration += sample_delta
 	if _low_fps_duration >= LOW_FPS_DURATION:
 		_low_fps_duration = 0.0
 		beep_saber._transition_game_state(beep_saber.gamestate_paused)

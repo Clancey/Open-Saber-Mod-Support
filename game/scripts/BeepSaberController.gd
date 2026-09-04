@@ -95,3 +95,13 @@ func _physics_process(dt: float) -> void:
 		if first_time:
 			_update_buttons_and_sticks()
 			first_time = false
+	else:
+		first_time = true
+		ax = false
+		ax_last_frame = false
+		by = false
+		by_last_frame = false
+		menu = false
+		menu_last_frame = false
+		trigger = false
+		trigger_last_frame = false

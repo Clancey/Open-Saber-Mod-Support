@@ -89,6 +89,9 @@ static func set_colors_from_custom_data() -> void:
 		Map.color_right_boost = Map.color_right
 		return
 	
+	Map.color_left = Settings.color_left
+	Map.color_right = Settings.color_right
+
 	var set_colors := func(data: Dictionary, color_name: String) -> bool:
 		var left_name := color_name % "Left"
 		var right_name := color_name % "Right"
@@ -112,24 +115,28 @@ static func set_colors_from_custom_data() -> void:
 			)
 			return true
 		return false
-	var info_data := current_info.custom_data
-	var diff_data := current_difficulty.custom_data
-	var custom_colors_found := false
-	if set_colors.call(info_data, "envColor%sBoost"): custom_colors_found = true
-	if set_colors.call(diff_data, "envColor%sBoost"): custom_colors_found = true
-	if set_colors.call(info_data, "envColor%s"): custom_colors_found = true
-	if set_colors.call(diff_data, "envColor%s"): custom_colors_found = true
-	if set_colors.call(info_data, "color%s"): custom_colors_found = true
-	if set_colors.call(diff_data, "color%s"): custom_colors_found = true
-	if set_colors.call(info_data, "_envColor%sBoost"): custom_colors_found = true
-	if set_colors.call(diff_data, "_envColor%sBoost"): custom_colors_found = true
-	if set_colors.call(info_data, "_envColor%s"): custom_colors_found = true
-	if set_colors.call(diff_data, "_envColor%s"): custom_colors_found = true
-	if set_colors.call(info_data, "_color%s"): custom_colors_found = true
-	if set_colors.call(diff_data, "_color%s"): custom_colors_found = true
-	if not custom_colors_found:
-		Map.color_left = Settings.color_left
-		Map.color_right = Settings.color_right
+	var info_data: Dictionary = current_info.custom_data
+	var diff_data: Dictionary = current_difficulty.custom_data
+	set_colors.call(info_data, "envColor%sBoost")
+	set_colors.call(info_data, "envColor%s")
+	set_colors.call(info_data, "color%s")
+	set_colors.call(info_data, "_envColor%sBoost")
+	set_colors.call(info_data, "_envColor%s")
+	set_colors.call(info_data, "_color%s")
+	set_colors.call(diff_data, "envColor%sBoost")
+	set_colors.call(diff_data, "envColor%s")
+	set_colors.call(diff_data, "_envColor%sBoost")
+	set_colors.call(diff_data, "_envColor%s")
+
+	var scheme: Dictionary = _selected_color_scheme()
+	if not scheme.is_empty():
+		if scheme.has("saberAColor"):
+			Map.color_left = _scheme_color(scheme["saberAColor"], Map.color_left)
+		if scheme.has("saberBColor"):
+			Map.color_right = _scheme_color(scheme["saberBColor"], Map.color_right)
+
+	set_colors.call(diff_data, "color%s")
+	set_colors.call(diff_data, "_color%s")
 	Map.color_left_boost = Map.color_left
 	Map.color_right_boost = Map.color_right
 
@@ -153,23 +160,48 @@ static func set_colors_from_custom_data() -> void:
 				Utils.get_float(right, "b", Map.color_right.b)
 			)
 
-	if current_info.version.begins_with("4"):
-		var scheme_index: int = current_difficulty.color_scheme_index
-		if scheme_index >= 0 and scheme_index < current_info.color_schemes.size():
-			var scheme: Dictionary = current_info.color_schemes[scheme_index]
-			Map.color_left_boost = Color.from_string(
-				Utils.get_str(scheme, "environmentColor0Boost", Map.color_left.to_html()),
-				Map.color_left
+	if not scheme.is_empty():
+		if scheme.has("environmentColor0Boost"):
+			Map.color_left_boost = _scheme_color(
+				scheme["environmentColor0Boost"], Map.color_left
 			)
-			Map.color_right_boost = Color.from_string(
-				Utils.get_str(scheme, "environmentColor1Boost", Map.color_right.to_html()),
-				Map.color_right
+		if scheme.has("environmentColor1Boost"):
+			Map.color_right_boost = _scheme_color(
+				scheme["environmentColor1Boost"], Map.color_right
 			)
 
 	set_boost_colors.call(info_data, "envColor%s")
 	set_boost_colors.call(diff_data, "envColor%s")
 	set_boost_colors.call(info_data, "_envColor%s")
 	set_boost_colors.call(diff_data, "_envColor%s")
+
+static func _selected_color_scheme() -> Dictionary:
+	if current_info == null or current_difficulty == null:
+		return {}
+	var scheme_index: int = current_difficulty.color_scheme_index
+	if scheme_index < 0 or scheme_index >= current_info.color_schemes.size():
+		return {}
+	var scheme_entry: Dictionary = current_info.color_schemes[scheme_index]
+	if scheme_entry.has("colorScheme"):
+		if not Utils.get_bool(scheme_entry, "useOverride", false):
+			return {}
+		return Utils.get_dict(scheme_entry, "colorScheme", {})
+	return scheme_entry
+
+static func _scheme_color(value: Variant, fallback: Color) -> Color:
+	if value is Color:
+		return value as Color
+	if value is String:
+		return Color.from_string(value as String, fallback)
+	if value is Dictionary:
+		var color_data: Dictionary = value as Dictionary
+		return Color(
+			Utils.get_float(color_data, "r", fallback.r),
+			Utils.get_float(color_data, "g", fallback.g),
+			Utils.get_float(color_data, "b", fallback.b),
+			Utils.get_float(color_data, "a", fallback.a)
+		)
+	return fallback
 
 static func load_map_info(load_path: String) -> MapInfo:
 	var info_dict := {}
@@ -444,7 +476,7 @@ static func load_v3_lighting_groups(map_data: Dictionary, environment_name: Stri
 		event_stack.append(indexed_event["event"] as EventInfo)
 
 static func _environment_name_for(info: MapInfo, difficulty: DifficultyInfo) -> String:
-	if info.version.begins_with("4") and not info.environment_names.is_empty():
+	if not info.environment_names.is_empty():
 		var environment_index: int = difficulty.environment_name_index
 		if environment_index >= 0 and environment_index < info.environment_names.size():
 			return info.environment_names[environment_index]

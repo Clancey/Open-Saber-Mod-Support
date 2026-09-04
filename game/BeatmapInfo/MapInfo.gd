@@ -77,10 +77,18 @@ static func new_v2(info_dict: Dictionary, load_path: String) -> MapInfo:
 	for difficulty_set: Variant in difficulty_beatmap_sets:
 		if difficulty_set is Dictionary:
 			var beatmaps := Utils.get_array(difficulty_set as Dictionary, "_difficultyBeatmaps", [])
-			for i: Variant in beatmaps:
-				if i is Dictionary:
-					diffs.append(DifficultyInfo.load_v2(i as Dictionary))
-	return MapInfo.new(
+			for difficulty_value: Variant in beatmaps:
+				if difficulty_value is Dictionary:
+					var difficulty_dict: Dictionary = difficulty_value as Dictionary
+					var difficulty: DifficultyInfo = DifficultyInfo.load_v2(difficulty_dict)
+					difficulty.color_scheme_index = int(
+						Utils.get_float(difficulty_dict, "_beatmapColorSchemeIdx", -1.0)
+					)
+					difficulty.environment_name_index = int(
+						Utils.get_float(difficulty_dict, "_environmentNameIdx", 0.0)
+					)
+					diffs.append(difficulty)
+	var info: MapInfo = MapInfo.new(
 		Utils.get_str(info_dict, "_version", "2.0.0"),
 		Utils.get_str(info_dict, "_songName", ""),
 		Utils.get_str(info_dict, "_songSubName", ""),
@@ -97,6 +105,9 @@ static func new_v2(info_dict: Dictionary, load_path: String) -> MapInfo:
 		load_path,
 		diffs
 	)
+	info.environment_names = _string_array(Utils.get_array(info_dict, "_environmentNames", []))
+	info.color_schemes = _dictionary_array(Utils.get_array(info_dict, "_colorSchemes", []))
+	return info
 
 static func new_v4(info_dict: Dictionary, load_path: String) -> MapInfo:
 	var song: Dictionary = Utils.get_dict(info_dict, "song", {})

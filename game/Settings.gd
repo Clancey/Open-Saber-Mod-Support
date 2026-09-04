@@ -182,6 +182,19 @@ func _validate_saber_color(value: Color, default_color: Color, setting_name: Str
 	push_warning("Invalid %s value %s; restoring default %s." % [setting_name, value, default_color])
 	return default_color
 
+func _validate_loaded_saber_color(
+	value: Variant,
+	default_color: Color,
+	setting_name: StringName
+) -> Color:
+	if typeof(value) != TYPE_COLOR:
+		push_warning(
+			"Invalid %s type %s; restoring default %s."
+			% [setting_name, type_string(typeof(value)), default_color]
+		)
+		return default_color
+	return _validate_saber_color(value as Color, default_color, setting_name)
+
 # load() is the name of a built-in function,
 # so i went with the next best thing.
 func reload() -> void:
@@ -191,14 +204,20 @@ func reload() -> void:
 		return
 	
 	var corrected_saber_color := false
-	for key in default_values:
+	for key: String in default_values:
 		var loaded_value: Variant = cast_or_default(key)
 		if key == "color_left":
-			var loaded_left_color := loaded_value as Color
-			corrected_saber_color = corrected_saber_color or not _is_valid_saber_color(loaded_left_color)
+			var loaded_left_color: Color = _validate_loaded_saber_color(
+				loaded_value, DEFAULT_COLOR_LEFT, &"color_left"
+			)
+			corrected_saber_color = corrected_saber_color or loaded_left_color != loaded_value
+			loaded_value = loaded_left_color
 		elif key == "color_right":
-			var loaded_right_color := loaded_value as Color
-			corrected_saber_color = corrected_saber_color or not _is_valid_saber_color(loaded_right_color)
+			var loaded_right_color: Color = _validate_loaded_saber_color(
+				loaded_value, DEFAULT_COLOR_RIGHT, &"color_right"
+			)
+			corrected_saber_color = corrected_saber_color or loaded_right_color != loaded_value
+			loaded_value = loaded_right_color
 		set(key, loaded_value)
 	if corrected_saber_color:
 		save()
@@ -216,18 +235,20 @@ func load_old_config() -> void:
 	var settings_dict := settings_var as Dictionary
 	var corrected_saber_color := false
 	thickness = Utils.get_float(settings_dict, "thickness", 1)
-	if settings_dict.has("COLOR_LEFT") and settings_dict["COLOR_LEFT"] is Color:
-		@warning_ignore("unsafe_cast")
-		var old_left_color := settings_dict["COLOR_LEFT"] as Color
-		corrected_saber_color = corrected_saber_color or not _is_valid_saber_color(old_left_color)
-		color_left = old_left_color
+	if settings_dict.has("COLOR_LEFT"):
+		var old_left_value: Variant = settings_dict["COLOR_LEFT"]
+		color_left = _validate_loaded_saber_color(
+			old_left_value, DEFAULT_COLOR_LEFT, &"color_left"
+		)
+		corrected_saber_color = corrected_saber_color or color_left != old_left_value
 	else:
 		color_left = DEFAULT_COLOR_LEFT
-	if settings_dict.has("COLOR_RIGHT") and settings_dict["COLOR_RIGHT"] is Color:
-		@warning_ignore("unsafe_cast")
-		var old_right_color := settings_dict["COLOR_RIGHT"] as Color
-		corrected_saber_color = corrected_saber_color or not _is_valid_saber_color(old_right_color)
-		color_right = old_right_color
+	if settings_dict.has("COLOR_RIGHT"):
+		var old_right_value: Variant = settings_dict["COLOR_RIGHT"]
+		color_right = _validate_loaded_saber_color(
+			old_right_value, DEFAULT_COLOR_RIGHT, &"color_right"
+		)
+		corrected_saber_color = corrected_saber_color or color_right != old_right_value
 	else:
 		color_right = DEFAULT_COLOR_RIGHT
 	saber_visual = int(Utils.get_float(settings_dict, "saber", 0))

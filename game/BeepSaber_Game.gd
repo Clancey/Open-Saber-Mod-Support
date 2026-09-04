@@ -239,8 +239,8 @@ func _submit_highscore(player_name: String) -> void:
 		_transition_game_state(gamestate_mapcomplete)
 
 func _check_and_update_saber(controller: BeepSaberController, saber: LightSaber) -> void:
-	# to allow extending/sheething the saber while not playing a song
-	if ((not song_player.playing)
+	# Allow extending/sheathing sabers only from the map selection menu.
+	if ((gamestate == gamestate_mapselection)
 		and (controller.ax_just_pressed() or controller.by_just_pressed())
 		and (not saber._anim.is_playing())):
 		if (saber.is_extended()): saber._hide()
@@ -306,6 +306,7 @@ func _ready() -> void:
 		left_controller,
 		right_controller
 	)
+	_connect_xr_session_signals()
 	var primary_interface := XRServer.primary_interface
 	if vr.inVR and primary_interface != null:
 		var display_refresh_rate: float = primary_interface.get_display_refresh_rate()
@@ -337,6 +338,38 @@ func _ready() -> void:
 	($pre_renderer as Node3D).queue_free()
 	
 	recenter()
+
+func _connect_xr_session_signals() -> void:
+	if not vr.inVR or not is_instance_valid(vr.xr_interface):
+		return
+	var xr_interface: XRInterface = vr.xr_interface
+	var signal_handlers: Dictionary[StringName, Callable] = {
+		&"session_visible": _on_xr_session_visible,
+		&"session_stopping": _on_xr_session_stopping,
+		&"pose_recentered": _on_xr_pose_recentered,
+		&"session_focussed": _on_xr_session_focussed,
+	}
+	for signal_name: StringName in signal_handlers:
+		var handler: Callable = signal_handlers[signal_name]
+		if xr_interface.has_signal(signal_name) and not xr_interface.is_connected(signal_name, handler):
+			@warning_ignore("return_value_discarded")
+			xr_interface.connect(signal_name, handler)
+
+func _on_xr_session_visible() -> void:
+	if gamestate == gamestate_playing:
+		_transition_game_state(gamestate_paused)
+
+func _on_xr_session_stopping() -> void:
+	if gamestate == gamestate_playing:
+		_transition_game_state(gamestate_paused)
+	if song_player.playing:
+		song_player.stop()
+
+func _on_xr_pose_recentered() -> void:
+	recenter()
+
+func _on_xr_session_focussed() -> void:
+	pass
 
 func _sync_pause_countdown_viewport() -> void:
 	pause_countdown_viewport.render_target_update_mode = (
@@ -565,7 +598,7 @@ func _hide_pooled_scene(obj: Node3D) -> void:
 		obj.visible = false
 		obj.process_mode = Node.PROCESS_MODE_DISABLED
 
-func recenter():
+func recenter() -> void:
 	var xr_camera := $XROrigin3D/XRCamera3D as XRCamera3D
 	xr_origin.rotation.y -= xr_camera.global_rotation.y
 	xr_origin.position -= (xr_camera.global_position * Vector3(1,0,1)) - Vector3(0,0,1)
