@@ -3,6 +3,7 @@ class_name Cuttable
 
 var speed: float
 var beat: float
+@onready var _collision_shape := find_children("*", "CollisionShape3D", true, false).front() as CollisionShape3D
 
 # used to release the cube once both of it's cut pieces have died off
 # Note: serves no purpose for bombs
@@ -32,7 +33,7 @@ func _physics_process(delta: float) -> void:
 	transform.origin.z += speed * delta
 	
 	# enable collisions when cuttable gets close enough to player
-	if global_transform.origin.z > -3.0:
+	if global_transform.origin.z > -3.0 and _collision_shape != null and _collision_shape.disabled:
 		set_collision_disabled(false)
 	
 	# remove children that go to far

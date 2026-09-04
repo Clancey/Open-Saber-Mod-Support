@@ -7,9 +7,17 @@ signal repeat
 var animated_percent: float = 0.0
 @onready var raycast_area := $RaycastArea as Area3D
 @onready var collision := $RaycastArea/CollisionShape3D as CollisionShape3D
+@onready var fc_viewport := $FCViewport as SubViewport
+@onready var nr_viewport := $NRViewport as SubViewport
+@onready var grade_viewport := $GradeViewport as SubViewport
+
+var _viewport_refresh_generation := 0
 
 func _ready() -> void:
 	set_buttons_disabled(true)
+	@warning_ignore("return_value_discarded")
+	visibility_changed.connect(_sync_viewport_update_modes)
+	_sync_viewport_update_modes()
 
 func _show() -> void:
 	raycast_area.collision_layer = CollisionLayerConstants.Ui_mask
@@ -17,6 +25,7 @@ func _show() -> void:
 	($Repeat as UIRaycastButton).collision_layer = CollisionLayerConstants.Ui_mask
 	($MainMenu as UIRaycastButton).collision_layer = CollisionLayerConstants.Ui_mask
 	show()
+	_sync_viewport_update_modes()
 
 func _hide() -> void:
 	raycast_area.collision_layer = 0
@@ -24,6 +33,29 @@ func _hide() -> void:
 	($Repeat as UIRaycastButton).collision_layer = 0
 	($MainMenu as UIRaycastButton).collision_layer = 0
 	hide()
+	_sync_viewport_update_modes()
+
+func _sync_viewport_update_modes() -> void:
+	_viewport_refresh_generation += 1
+	var viewports: Array[SubViewport] = [fc_viewport, nr_viewport, grade_viewport]
+	if not is_visible_in_tree():
+		for score_viewport: SubViewport in viewports:
+			score_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+		return
+
+	var refresh_generation := _viewport_refresh_generation
+	for score_viewport: SubViewport in viewports:
+		score_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	await RenderingServer.frame_post_draw
+	if refresh_generation != _viewport_refresh_generation:
+		return
+	var update_mode := (
+		SubViewport.UPDATE_ALWAYS
+		if is_visible_in_tree()
+		else SubViewport.UPDATE_DISABLED
+	)
+	for score_viewport: SubViewport in viewports:
+		score_viewport.render_target_update_mode = update_mode
 
 func show_score(score: int, record: int, percent: float, song_string: String, is_full_combo: bool, is_new_record: bool) -> void:
 	var details_mesh := ($Details as MeshInstance3D).mesh as TextMesh

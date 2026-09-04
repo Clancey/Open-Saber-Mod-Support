@@ -4,6 +4,7 @@ class_name BeepCube
 
 # emitted when the cube gets cutted, correct_saber is true if the right saber was used
 signal cutted(correct_saber: bool)
+signal released
 
 @onready var mi := $BeepCubeMesh as MeshInstance3D
 @onready var collision_big := $BeepCube_Big/CollisionBig as CollisionShape3D
@@ -25,59 +26,78 @@ var piece_right : CutPiece = null
 func _ready() -> void:
 	_mat = mi.material_override as ShaderMaterial
 	_mesh = mi.mesh
-	
+
 	# init our cut pieces with unique copies of our own material for reference,
 	# and enable "bouncy" physics behavior
 	piece_left = CutPiece.new(self, _mesh, _mat.duplicate(true) as ShaderMaterial, true)
 	piece_right = CutPiece.new(self, _mesh, _mat.duplicate(true) as ShaderMaterial, true)
-	
+
 	# slice_particles are within cube's tree, but want then to move in global space
 	slice_particles.top_level = true
-	
-func spawn(note_info: ColorNoteInfo, current_beat: float, color : Color) -> void:
+
+var note_info: ColorNoteInfo = null  # Store for later use (debris, etc.)
+var movement_direction: Vector3 = Vector3.BACK
+var distance_moved: float = 0.0
+var collision_enable_distance: float = 0.0
+var hit_distance: float = 0.0
+var miss_distance: float = 0.0
+
+func spawn(note_info_param: ColorNoteInfo, current_beat: float, color : Color) -> void:
 	# re-enable our process_mode first otherwise it seems like Godot-internals
 	# can behave weirdly (ex. AnimationPlayer won't always play correctly)
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	
-	#var color := Map.color_left if note_info.color == 0 else Map.color_right
-	speed = Constants.BEAT_DISTANCE * Map.current_info.beats_per_minute * 0.01666666666666666
+
+	# Store note info for later use
+	note_info = note_info_param
+
+	transform = Transform3D.IDENTITY
+	var default_njs: float = Map.current_difficulty.note_jump_movement_speed
+	var effective_njs: float = note_info.get_note_jump_movement_speed(default_njs)
+	var movement_scale := effective_njs / default_njs if default_njs > 0.0 and effective_njs > 0.0 else 1.0
+	speed = (
+		Constants.BEAT_DISTANCE
+		* Map.current_info.beats_per_minute
+		* 0.01666666666666666
+		* movement_scale
+	)
 	beat = note_info.beat
 	which_saber = note_info.color
 	is_dot = note_info.cut_direction == 8
 
-	#if note_info.line_index > 3 or note_info.line_index < 0 or note_info.line_layer > 2 or note_info.line_layer < 0:
-	var noteLineIndex = note_info.line_index
-	var noteLayerIndex = note_info.line_layer
-	var leftSide = false
-	var flipLineIndex = noteLineIndex * -1
-	var newLaneCount = 1000
-	if noteLineIndex >= 1000 or noteLineIndex <= -1000:
-		if sign(note_info.line_index) == 1:
-			transform.origin.x = (note_info.line_index / 1000.0) - 2.5
-		else:
-			transform.origin.x = (note_info.line_index / 1000.0) - 0.5
-		transform.origin.y = (noteLayerIndex - 1000.0) / 1000.0 + 0.8
-	else:
-		transform.origin.x = (note_info.line_index * 0.6) + Constants.LANE_ZERO_X
-		transform.origin.y = (note_info.line_layer * 0.6) + Constants.LAYER_ZERO_Y
+	# Get position using ME precision positioning if applicable
+	var note_position := note_info.get_position()
 
-	transform.origin.z = - (note_info.beat - current_beat) * Constants.BEAT_DISTANCE
+	# Convert to world space
+	transform.origin.x = note_position.x * Constants.LANE_DISTANCE + Constants.LANE_ZERO_X
+	transform.origin.y = note_position.y * Constants.LANE_DISTANCE + Constants.LAYER_ZERO_Y
+	transform.origin.z = -(note_info.beat - current_beat) * Constants.BEAT_DISTANCE * movement_scale
+	var initial_z := transform.origin.z
+	distance_moved = 0.0
+	collision_enable_distance = maxf(0.0, -3.0 - initial_z)
+	hit_distance = -initial_z
+	miss_distance = Constants.MISS_Z - initial_z
+	var cut_rotation: float
 	if note_info.cut_direction < 9:
-		rotation.z = Constants.CUBE_ROTATIONS[note_info.cut_direction] + deg_to_rad(note_info.angle_offset)
+		cut_rotation = Constants.CUBE_ROTATIONS[note_info.cut_direction] + deg_to_rad(note_info.angle_offset)
 	else:
-		rotation.z = deg_to_rad((note_info.cut_direction - 1000) * -1)
-	#else:
-		#transform.origin.x = Constants.LANE_X[note_info.line_index]
-		#transform.origin.y = Constants.LAYER_Y[note_info.line_layer]
-		#transform.origin.z = - (note_info.beat - current_beat) * Constants.BEAT_DISTANCE
-		#rotation.z = Constants.CUBE_ROTATIONS[note_info.cut_direction] + deg_to_rad(note_info.angle_offset)
+		cut_rotation = deg_to_rad((note_info.cut_direction - 1000) * -1)
+	ColorNoteInfo.NoodleData.apply_rotations(
+		self,
+		cut_rotation,
+		note_info.local_rotation_degrees,
+		note_info.has_local_rotation,
+		note_info.world_rotation_degrees,
+		note_info.has_world_rotation
+	)
+	movement_direction = ColorNoteInfo.NoodleData.get_movement_direction(
+		note_info.world_rotation_degrees, note_info.has_world_rotation
+	)
 
-	
 	if is_dot:
 		(collision_big.shape as BoxShape3D).size.y = 0.8
 	else:
 		(collision_big.shape as BoxShape3D).size.y = 0.5
-	
+
 	piece_left.set_color(color)
 	piece_right.set_color(color)
 	_mat.set_shader_parameter(&"color", color)
@@ -87,7 +107,7 @@ func spawn(note_info: ColorNoteInfo, current_beat: float, color : Color) -> void
 	_mat.set_shader_parameter(&"is_chain_head", false)
 	piece_left.set_chain_head(false)
 	piece_right.set_chain_head(false)
-	
+
 	# separate cube collision layers to allow a diferent collider on right/wrong cuts.
 	# opposing collision layers (ie. right note & left saber) will be placed on the
 	# smalling collision shape, while similar collision layers (ie right note &
@@ -101,15 +121,28 @@ func spawn(note_info: ColorNoteInfo, current_beat: float, color : Color) -> void
 	small_coll_area.collision_layer = 0x0
 	small_coll_area.set_collision_layer_value(CollisionLayerConstants.LeftNote_bit, not is_left_note)
 	small_coll_area.set_collision_layer_value(CollisionLayerConstants.RightNote_bit, is_left_note)
-	
+
 	# play the spawn animation when this cube enters the scene
 	var anim := $AnimationPlayer as AnimationPlayer
-	var anim_speed := Map.current_difficulty.note_jump_movement_speed / 9.0
+	var anim_speed := effective_njs / 9.0
 	anim.speed_scale = maxf(min_speed,anim_speed)
 	anim.play(&"Spawn")
-	
+
 	slice_particles.reset()
 	mi.visible = true
+	if note_info.uninteractable:
+		set_collision_disabled(true)
+
+func _physics_process(delta: float) -> void:
+	if Scoreboard.paused or not is_visible_in_tree() or not Map.current_info:
+		return
+	var frame_distance := speed * delta
+	transform.origin += movement_direction * frame_distance
+	distance_moved += frame_distance
+	if distance_moved >= collision_enable_distance and collision_big.disabled:
+		set_collision_disabled(false)
+	if distance_moved > miss_distance:
+		on_miss()
 
 # call this when clearing the track
 # soon I'll add my optimization that really helps.
@@ -119,6 +152,11 @@ func clear_from_track() -> void:
 	piece_right.hide_piece()
 	if ! is_released():
 		release()
+
+func release() -> void:
+	if not is_released():
+		released.emit()
+	super.release()
 
 func hide_cube() -> void:
 	mi.visible = false
@@ -132,20 +170,25 @@ func make_chain_head() -> void:
 	piece_right.set_chain_head(true)
 
 func on_miss() -> void:
-	Scoreboard.reset_combo()
+	if note_info != null and not note_info.uninteractable:
+		Scoreboard.reset_combo()
 	hide_cube()
 	release()
 
 func set_collision_disabled(value: bool) -> void:
+	if note_info != null and note_info.uninteractable and not value:
+		value = true
 	collision_big.disabled = value
 	collision_small.disabled = value
 
 func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: BeepSaberController) -> void:
+	if note_info == null or note_info.uninteractable:
+		return
 	# compute the angle between the cube orientation and the cut direction
 	var cut_direction_xy := -Vector3(cut_speed.x, cut_speed.y, 0.0).normalized()
 	var base_cut_angle_accuracy := global_transform.basis.y.dot(cut_direction_xy)
 	var cut_distance := cut_plane.distance_to(global_transform.origin)
-	
+
 	if saber_type == which_saber:
 		var cut_angle_accuracy := clampf((base_cut_angle_accuracy-0.7)/0.3, 0.0, 1.0)
 		if is_dot: #ignore angle if is a dot
@@ -154,16 +197,17 @@ func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: Beep
 		var travel_distance_factor := controller.movement_aabb.get_longest_axis_size()
 		travel_distance_factor = clampf((travel_distance_factor-0.5)/0.5, 0.0, 1.0)
 		# allows a bit of save margin where the beat is considered 100% correct
-		var beat_accuracy := clampf((1.0 - absf(global_transform.origin.z)) / 0.5, 0.0, 1.0)
+		var beat_distance := absf(hit_distance - distance_moved)
+		var beat_accuracy := clampf((1.0 - beat_distance) / 0.5, 0.0, 1.0)
 		Scoreboard.note_cut(transform.origin, beat_accuracy, cut_angle_accuracy, cut_distance_accuracy, travel_distance_factor)
 		cutted.emit(true)
 	else:
 		Scoreboard.bad_cut(transform.origin)
 		cutted.emit(false)
-	
+
 	# reset the movement tracking volume for the next cut
 	controller.reset_movement_aabb()
-	
+
 	hide_cube()
 	if Settings.cube_cuts_falloff:
 		_start_cut_pieces(cut_plane)
@@ -176,21 +220,21 @@ func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: Beep
 func _start_cut_pieces(cutplane: Plane) -> void:
 	piece_left.global_transform = global_transform
 	piece_right.global_transform = global_transform
-	
+
 	# calculate angle and position of the cut
 	var cut_angle_abs := Vector2(cutplane.normal.x, cutplane.normal.y).angle()
 	var cut_dist_from_center := cutplane.distance_to(global_transform.origin)
 	var cut_angle_rel := cut_angle_abs - global_rotation.z
-	
+
 	_piece_death_count = 0
 	piece_left.start_cut(-cut_dist_from_center, cut_angle_rel + PI)
 	piece_right.start_cut(cut_dist_from_center, cut_angle_rel)
-	
+
 	# some impulse so the cube half moves
 	var split_vector := cutplane.normal * 2.0
 	piece_left.apply_central_impulse(-split_vector)
 	piece_right.apply_central_impulse(split_vector)
-	
+
 	slice_particles.global_transform.origin = global_transform.origin
 	slice_particles.rotation.z = cut_angle_abs+TAU*0.25
 	slice_particles.fire()

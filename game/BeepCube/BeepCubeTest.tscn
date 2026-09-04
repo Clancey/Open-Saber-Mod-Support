@@ -21,7 +21,7 @@ enum TestOperation {
 class TestStep:
 	var op : TestOperation = TestOperation.Idle
 	var duration : float = 0.0
-	
+
 	func _init(operation: TestOperation, duration: float) -> void:
 		self.op = operation
 		self.duration = duration
@@ -56,7 +56,7 @@ func _ready() -> void:
 		{},
 		\"NoFilePath\",
 		[])
-	
+
 	Map.color_left = Color(1.0, 0.0, 0.0)
 	Map.color_right = Color(0.0, 0.0, 1.0)
 	Map.current_difficulty = DifficultyInfo.new(
@@ -73,7 +73,7 @@ func _on_timer_timeout() -> void:
 	if _test_sequence.is_empty():
 		print(\"Test complete!\")
 		return
-	
+
 	_curr_step = _test_sequence.pop_front() as TestStep
 	var op_name := TestOperation.find_key(_curr_step.op) as String
 	print(\"===== %s =====\" % [op_name])
@@ -89,8 +89,10 @@ func _on_timer_timeout() -> void:
 				0,               # line_layer
 				0,               # color
 				1,               # cut_direction
-				0)               # angle_offset
-			cube.spawn(info, 0.0)
+				0,               # angle_offset
+				{})              # custom_data
+			var note_color := Map.color_left if info.color == 0 else Map.color_right
+			cube.spawn(info, 0.0, note_color)
 		TestOperation.Cut:
 			var cut_plane := Plane(
 				Vector3.RIGHT,         # normal
@@ -100,7 +102,7 @@ func _on_timer_timeout() -> void:
 			pass # nothing to do just let cube pass behind the \"player\"
 		_:
 			print(\"unsupported TestOperation!\")
-	
+
 	timer.start(_curr_step.duration)
 "
 

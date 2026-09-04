@@ -13,7 +13,7 @@ var ROTATION_UNIT_VECTORS := PackedVector2Array([
 ])
 const APPDATA_PATH := "user://OpenSaber/"
 
-var usingMappingExtension = false
-var usingNoodleExtension = false
-var usingChroma = false
-var usingVivify = false
+var usingMappingExtension: bool = false
+var usingNoodleExtension: bool = false
+var usingChroma: bool = false
+var usingVivify: bool = false

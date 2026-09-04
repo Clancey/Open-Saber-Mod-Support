@@ -24,6 +24,8 @@ func _ready(game: BeepSaber_Game) -> void:
 	Scoreboard.paused = false
 
 func _physics_process(game: BeepSaber_Game) -> void:
+	if game.is_loading_map:
+		return
 	if game.left_controller.by_just_pressed():
 		game._transition_game_state(game.gamestate_paused)
 	if game._audio_synced_after_restart:
@@ -35,58 +37,65 @@ func _physics_process(game: BeepSaber_Game) -> void:
 		if game.song_player.get_playback_position() < 0.5:
 			game._audio_synced_after_restart = true
 
-var bomb_template := load("res://game/Bomb/Bomb.tscn") as PackedScene
-var wall_template := load("res://game/Wall/Wall.tscn") as PackedScene
-var arc_template := load("res://game/Arc/Arc.tscn") as PackedScene
 const BEATS_AHEAD := 4.0
+var note_info_refs: Array[ColorNoteInfo] = []
+var cube_refs: Array[BeepCube] = []
 
 func _process_map(game: BeepSaber_Game) -> void:
 	if (Map.current_info == null):
 		return
 	
-	var current_beat := game.song_player.get_playback_position() * Map.current_info.beats_per_minute * 0.016666666666666667
-	var look_ahead := current_beat + BEATS_AHEAD
+	var current_beat := Map.seconds_to_beat(game.song_player.get_playback_position())
 	
 	# chains connect to a regular colornote and modify it, so we have to keep
 	# track of what notes were spawned this frame, in case any become the head
 	# of a chain.
 	# why did they do this?
-	var note_info_refs: Array[ColorNoteInfo] = []
-	var cube_refs: Array[BeepCube] = []
+	note_info_refs.clear()
+	cube_refs.clear()
+	var default_spawn_offset: float = Map.current_difficulty.note_jump_start_beat_offset
 	
 	# spawn notes
-	while not Map.note_stack.is_empty() and Map.note_stack[-1].beat <= look_ahead:
+	while not Map.note_stack.is_empty():
+		var pending_note := Map.note_stack[-1] as ColorNoteInfo
+		var note_look_ahead := pending_note.get_spawn_ahead_beats(BEATS_AHEAD, default_spawn_offset)
+		if pending_note.beat > current_beat + note_look_ahead:
+			break
 		var note := GlobalReferences.cube_pool.acquire() as BeepCube
 		var note_info := Map.note_stack.pop_back() as ColorNoteInfo
 		var color: = Map.color_left if note_info.color == 0 else Map.color_right
-		print(note_info.custom_data)
-		if note_info.custom_data.has("_color"):
-			note.spawn(note_info, current_beat, Color(note_info.custom_data["_color"][0], note_info.custom_data["_color"][1], note_info.custom_data["_color"][2]))
-		else:
-			note.spawn(note_info, current_beat, color)
+		note.spawn(note_info, current_beat, note_info.get_color(color))
 		note_info_refs.append(note_info)
 		cube_refs.append(note)
 	
 	# spawn bombs
-	while not Map.bomb_stack.is_empty() and Map.bomb_stack[-1].beat <= look_ahead:
-		var bomb := bomb_template.instantiate() as Bomb
+	while not Map.bomb_stack.is_empty():
+		var pending_bomb := Map.bomb_stack[-1] as BombInfo
+		var bomb_look_ahead := pending_bomb.get_spawn_ahead_beats(BEATS_AHEAD, default_spawn_offset)
+		if pending_bomb.beat > current_beat + bomb_look_ahead:
+			break
+		var bomb := game.bomb_pool.acquire() as Bomb
 		bomb.spawn(Map.bomb_stack.pop_back() as BombInfo, current_beat)
-		game.track.add_child(bomb)
 	
 	# spawn obstacles (walls)
-	while not Map.obstacle_stack.is_empty() and Map.obstacle_stack[-1].beat <= look_ahead:
-		var wall := wall_template.instantiate() as Wall
+	while not Map.obstacle_stack.is_empty():
+		var pending_wall := Map.obstacle_stack[-1] as ObstacleInfo
+		var wall_look_ahead := pending_wall.get_spawn_ahead_beats(BEATS_AHEAD, default_spawn_offset)
+		if pending_wall.beat > current_beat + wall_look_ahead:
+			break
+		var wall := game.wall_pool.acquire() as Wall
 		var wall_info: = Map.obstacle_stack.pop_back() as ObstacleInfo
-		if wall_info.custom_data.has("_color"):
-			wall.spawn(wall_info, current_beat, Color(wall_info.custom_data["_color"][0], wall_info.custom_data["_color"][1], wall_info.custom_data["_color"][2]))
-		else:
-			wall.spawn(wall_info, current_beat, Settings.default_values.obstacle_color)
-		game.track.add_child(wall)
+		var wall_color := wall_info.get_color(Settings.default_values.obstacle_color)
+		wall.spawn(wall_info, current_beat, wall_color)
 	
-	while not Map.arc_stack.is_empty() and Map.arc_stack[-1].head_beat <= look_ahead:
-		var arc := arc_template.instantiate() as Arc
+	while not Map.arc_stack.is_empty():
+		var pending_arc := Map.arc_stack[-1] as ArcInfo
+		var arc_look_ahead := pending_arc.get_spawn_ahead_beats(BEATS_AHEAD, default_spawn_offset)
+		if pending_arc.head_beat > current_beat + arc_look_ahead:
+			break
+		var arc := game.arc_pool.acquire() as Arc
 		var arc_info := Map.arc_stack.pop_back() as ArcInfo
-		
+
 		# find starting cube to use as magnet trigger
 		var cube : BeepCube
 		var cube_id := cube_refs.size()-1
@@ -94,15 +103,23 @@ func _process_map(game: BeepSaber_Game) -> void:
 			var current_cube : BeepCube = cube_refs[cube_id]
 			if (current_cube.beat == arc_info.head_beat
 				and current_cube.which_saber == arc_info.color
+				and current_cube.note_info != null
+				and not current_cube.note_info.uninteractable
 				):
 					cube = current_cube
 					break
 			cube_id -= 1
-		
-		arc.spawn(arc_info, current_beat, cube)
-		game.track.add_child(arc)
+
+		# Check for Chroma custom color
+		var arc_color := arc_info.get_color(Color.TRANSPARENT)
+
+		arc.spawn(arc_info, current_beat, cube, arc_color)
 	
-	while not Map.chain_stack.is_empty() and Map.chain_stack[-1].head_beat <= look_ahead:
+	while not Map.chain_stack.is_empty():
+		var pending_chain := Map.chain_stack[-1] as ChainInfo
+		var chain_look_ahead := pending_chain.get_spawn_ahead_beats(BEATS_AHEAD, default_spawn_offset)
+		if pending_chain.head_beat > current_beat + chain_look_ahead:
+			break
 		var chain_info := Map.chain_stack.pop_back() as ChainInfo
 		if chain_info.slice_count > 1: # skip if the chain doesn't have any links
 			ChainLink.construct_chain(chain_info, current_beat, note_info_refs, cube_refs)

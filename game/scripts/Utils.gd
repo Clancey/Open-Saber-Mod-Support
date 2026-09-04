@@ -40,6 +40,24 @@ func get_dict(dict: Dictionary, key: String, default: Dictionary, platform_defau
 		return platform_defaults[OS.get_name()]
 	return default
 
+static func get_color(dict: Dictionary, default: Color) -> Color:
+	var keys: Array[String] = ["color", "_color"]
+	for key in keys:
+		if not dict.has(key) or not dict[key] is Array:
+			continue
+		var components := dict[key] as Array
+		if components.size() < 3:
+			continue
+		var valid := true
+		for index in range(mini(components.size(), 4)):
+			if not components[index] is int and not components[index] is float:
+				valid = false
+				break
+		if valid:
+			var alpha := float(components[3]) if components.size() >= 4 else 1.0
+			return Color(float(components[0]), float(components[1]), float(components[2]), alpha)
+	return default
+
 func unzip(zip_file: String, destination: String) -> void:
 	var zreader := ZIPReader.new()
 	if zreader.open(zip_file) != OK:
@@ -55,24 +73,27 @@ func unzip(zip_file: String, destination: String) -> void:
 	zreader.close()
 
 
-var thread_finished : Array[Thread] = []
-var fake_thread_finished = {}
+var fake_thread_finished: Dictionary[Thread, Variant] = {}
 
-func custom_thread_wait_to_finish(thread : Thread):
-	if thread in thread_finished:
-		var r = thread.wait_to_finish()
-		thread_finished.remove_at(thread_finished.find(thread))
-		return r
-	elif thread in fake_thread_finished:
-		var r = fake_thread_finished[thread]
+func custom_thread_wait_to_finish(thread: Thread) -> Variant:
+	if OS.has_feature("web"):
+		if not fake_thread_finished.has(thread):
+			return null
+		var r: Variant = fake_thread_finished[thread]
 		fake_thread_finished.erase(thread)
 		return r
+	if thread.is_started():
+		if thread.is_alive():
+			return thread.wait_to_finish()
+		return thread.wait_to_finish()
 	return null
 
-func custom_thread_call(thread : Thread, function : Callable, params := []):
-	if OS.get_name() == &"Web":
+func custom_thread_call(thread: Thread, function: Callable, params: Array = []) -> Error:
+	if OS.has_feature("web"):
 		fake_thread_finished[thread] = function.callv(params)
-		return 0
-	else:
-		thread_finished.append(thread)
-		return thread.start(function.bindv(params))
+		return OK
+	if thread.is_started():
+		if thread.is_alive():
+			return ERR_BUSY
+		thread.wait_to_finish()
+	return thread.start(function.bindv(params))

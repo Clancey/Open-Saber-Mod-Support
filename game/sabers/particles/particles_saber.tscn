@@ -377,7 +377,7 @@ bus = &"SFX"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_kyofm")
+&"": SubResource("AnimationLibrary_kyofm")
 }
 
 [node name="base" type="Marker3D" parent="."]

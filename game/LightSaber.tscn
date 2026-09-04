@@ -145,7 +145,7 @@ offset_rot = Vector3(-48.297, 0, 0)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_l1r6j")
+&"": SubResource("AnimationLibrary_l1r6j")
 }
 
 [node name="RayCast3D" type="RayCast3D" parent="."]

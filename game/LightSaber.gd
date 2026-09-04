@@ -23,6 +23,7 @@ var extra_offset_rot := Vector3.ZERO
 var saber_end := Vector3.ZERO
 var saber_end_past := Vector3.ZERO
 var last_dt := 0.0
+var _floor_burn_marks_enabled := OS.get_name() not in [&"Android", &"Web"]
 
 func _show() -> void:
 	if not is_extended():
@@ -72,6 +73,7 @@ func on_settings_changed(key: StringName) -> void:
 				extra_offset_rot = Settings.right_saber_offset_rot	
 
 func _ready() -> void:
+	_ray_cast.enabled = _floor_burn_marks_enabled
 	set_saber(Settings.SABER_VISUALS[Settings.saber_visual][1])
 	_anim.play(&"QuickHide")
 	saber_visual.quickhide()
@@ -93,7 +95,7 @@ func _physics_process(delta: float) -> void:
 	saber_end_past = saber_end
 	saber_end = saber_visual.tip.global_transform.origin
 	last_dt = delta
-	if is_extended():
+	if is_extended() and _floor_burn_marks_enabled:
 		#check floor collision for burn mark
 		_ray_cast.force_raycast_update()
 		var raycoli := _ray_cast.get_collider()

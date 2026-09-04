@@ -29,6 +29,7 @@ var gamestate: GameState = gamestate_bootup
 @onready var main_menu := $MainMenu_OQ_UI2DCanvas as OQ_UI2DCanvas
 @onready var pause_menu := $PauseMenu_canvas as OQ_UI2DCanvas
 @onready var pause_countdown := $Pause_countdown as OQ_UI2DLabel
+@onready var pause_countdown_viewport := $Pause_countdown/SubViewport as SubViewport
 @onready var settings_canvas := $Settings_canvas as OQ_UI2DCanvas
 @onready var settings_panel := settings_canvas.ui_control as SettingsPanel
 @onready var highscore_canvas := $Highscores_Canvas as OQ_UI2DCanvas
@@ -51,6 +52,11 @@ var gamestate: GameState = gamestate_bootup
 
 @onready var track := $Track as Node3D
 @onready var standing_ground := $StandingGround as Floor
+@onready var cube_pool := $BeepCubePool as ScenePool
+@onready var link_pool := $ChainLinkPool as ScenePool
+@onready var bomb_pool := $BombPool as ScenePool
+@onready var wall_pool := $WallPool as ScenePool
+@onready var arc_pool := $ArcPool as ScenePool
 
 @onready var song_player := $SongPlayer as AudioStreamPlayer
 
@@ -74,36 +80,133 @@ var _in_wall := false
 #prevents the song for starting from the start when pausing and unpausing
 var pause_position := 0.0
 
+class MapLoadResult:
+	extends RefCounted
+
+	var succeeded: bool = false
+	var error_message: String = ""
+	var song_stream: AudioStreamOggVorbis
+
+var is_loading_map: bool = false
+var _load_generation: int = 0
+var _load_thread: Thread
+
 func start_map(info: MapInfo, map_difficulty: DifficultyInfo) -> void:
-	var map_filename := info.filepath + map_difficulty.beatmap_filename
-	var map_data := vr.load_json_file(map_filename)
-	
-	if (map_data == null):
-		vr.log_error("Could not read map data from " + map_filename)
-	if not Map.load_beatmap(info, map_difficulty, map_data):
+	_load_generation += 1
+	var generation: int = _load_generation
+	is_loading_map = true
+	Scoreboard.paused = true
+	song_player.stop()
+
+	while _load_thread != null:
+		await get_tree().process_frame
+		if generation != _load_generation:
+			return
+
+	Map.prepare_beatmap_load(info, map_difficulty)
+	var map_filename: String = info.filepath + map_difficulty.beatmap_filename
+	var song_filename: String = info.filepath + info.song_filename
+	_load_thread = Thread.new()
+	var start_error: Error = _load_thread.start(
+		_load_map_worker.bind(info, map_difficulty, map_filename, song_filename)
+	)
+	if start_error != OK:
+		_load_thread = null
+		_finish_failed_map_load(generation, "Could not start map loading thread")
 		return
-	
+
+	while _load_thread.is_alive():
+		await get_tree().process_frame
+
+	var thread_result: Variant = _load_thread.wait_to_finish()
+	_load_thread = null
+	if generation != _load_generation:
+		return
+	for warning: String in Map.load_warnings:
+		vr.log_warning(warning)
+	for info_message: String in Map.load_info_messages:
+		vr.log_info(info_message)
+	var result: MapLoadResult = thread_result as MapLoadResult
+	if result == null or not result.succeeded:
+		var error_message: String = "Could not load map"
+		if result != null and not result.error_message.is_empty():
+			error_message = result.error_message
+		_finish_failed_map_load(generation, error_message)
+		return
+
 	update_left_color(Map.color_left)
 	update_right_color(Map.color_right)
 	if Map.event_stack.is_empty():
 		event_driver.set_all_on(Map.color_left, Map.color_right)
 	else:
 		event_driver.set_all_off()
-	
-	vr.log_info("loading: " + info.filepath + info.song_filename)
-	song_player.stream = AudioStreamOggVorbis.load_from_file(info.filepath + info.song_filename)
-	
+
+	vr.log_info("loading: " + song_filename)
+	song_player.stream = result.song_stream
 	_audio_synced_after_restart = false
-	song_player.play(0.0)
 	song_player.volume_db = 0.0
 	_in_wall = false
 	Scoreboard.restart()
-	
 	_display_points()
 	percent_indicator.start_map()
-	
 	_clear_track()
+	track.visible = true
+	var prewarm_completed: bool = await _prewarm_map_start(generation)
+	if not prewarm_completed:
+		return
+
+	is_loading_map = false
+	song_player.play(0.0)
 	_transition_game_state(gamestate_playing)
+
+static func _load_map_worker(
+	info: MapInfo,
+	map_difficulty: DifficultyInfo,
+	map_filename: String,
+	song_filename: String
+) -> MapLoadResult:
+	var result := MapLoadResult.new()
+	var map_data: Dictionary = Map.load_json_file_threaded(map_filename)
+	if map_data.is_empty():
+		result.error_message = "Could not read map data from " + map_filename
+		return result
+	if not Map.load_beatmap(info, map_difficulty, map_data):
+		result.error_message = Map.load_error
+		return result
+	result.song_stream = AudioStreamOggVorbis.load_from_file(song_filename)
+	if result.song_stream == null:
+		result.error_message = "Could not load OGG audio from " + song_filename
+		return result
+	result.succeeded = true
+	return result
+
+func _prewarm_map_start(generation: int) -> bool:
+	await get_tree().process_frame
+	var stable_frames: int = 0
+	var deadline_msec: int = Time.get_ticks_msec() + 2000
+	while stable_frames < 3 and Time.get_ticks_msec() < deadline_msec:
+		await get_tree().process_frame
+		if generation != _load_generation:
+			return false
+		if get_process_delta_time() < 1.0 / 40.0:
+			stable_frames += 1
+		else:
+			stable_frames = 0
+	return generation == _load_generation
+
+func _finish_failed_map_load(generation: int, error_message: String) -> void:
+	if generation != _load_generation:
+		return
+	vr.log_error(error_message)
+	is_loading_map = false
+	_clear_track()
+	_transition_game_state(gamestate_mapselection)
+
+func _exit_tree() -> void:
+	_load_generation += 1
+	if _load_thread != null:
+		_load_thread.wait_to_finish()
+		_load_thread = null
 
 # This function will transitioning the game from it's current state into
 # the provided 'next_state'.
@@ -156,10 +259,13 @@ func _check_and_update_saber(controller: BeepSaberController, saber: LightSaber)
 
 func _physics_process(_dt: float) -> void:
 	if debug_info_label.visible:
-		var dbg_text := "FPS: %d\nCube Pool: %d free of %d\nLink Pool: %d free of %d" % [
+		var dbg_text := "FPS: %d\nCube Pool: %d free of %d\nLink Pool: %d free of %d\nBomb Pool: %d free of %d\nWall Pool: %d free of %d\nArc Pool: %d free of %d" % [
 			Engine.get_frames_per_second(),
 			GlobalReferences.cube_pool.free_count(), GlobalReferences.cube_pool.total_count(),
-			GlobalReferences.link_pool.free_count(), GlobalReferences.link_pool.total_count()]
+			GlobalReferences.link_pool.free_count(), GlobalReferences.link_pool.total_count(),
+			bomb_pool.free_count(), bomb_pool.total_count(),
+			wall_pool.free_count(), wall_pool.total_count(),
+			arc_pool.free_count(), arc_pool.total_count()]
 		(debug_info_label.mesh as TextMesh).text = dbg_text
 	
 	gamestate._physics_process(self)
@@ -174,11 +280,19 @@ func _enter_tree() -> void:
 	Settings.changed.connect(on_settings_changed)
 
 func _ready() -> void:
+	@warning_ignore("return_value_discarded")
+	pause_countdown.visibility_changed.connect(_sync_pause_countdown_viewport)
+	_sync_pause_countdown_viewport()
+
 	# pre-allocate scenes in our scene pools
-	GlobalReferences.cube_pool = $BeepCubePool
-	GlobalReferences.link_pool = $ChainLinkPool
-	GlobalReferences.cube_pool.presize(100)
-	GlobalReferences.link_pool.presize(100)
+	GlobalReferences.cube_pool = cube_pool
+	GlobalReferences.link_pool = link_pool
+	cube_pool.presize(100)
+	link_pool.presize(100)
+	bomb_pool.presize(16)
+	wall_pool.presize(16)
+	arc_pool.presize(8)
+	await _flush_presize_render_batch()
 	
 	var xr_camera := $XROrigin3D/XRCamera3D as XRCamera3D
 	vr.initialize(
@@ -187,6 +301,11 @@ func _ready() -> void:
 		left_controller,
 		right_controller
 	)
+	var primary_interface := XRServer.primary_interface
+	if vr.inVR and primary_interface != null:
+		var display_refresh_rate: float = primary_interface.get_display_refresh_rate()
+		if display_refresh_rate > 0.0:
+			Engine.physics_ticks_per_second = int(round(display_refresh_rate))
 	
 	debug_info_label.visible = Settings.show_debug_info
 	set_colors_from_settings()
@@ -214,6 +333,13 @@ func _ready() -> void:
 	
 	recenter()
 
+func _sync_pause_countdown_viewport() -> void:
+	pause_countdown_viewport.render_target_update_mode = (
+		SubViewport.UPDATE_ALWAYS
+		if pause_countdown.is_visible_in_tree()
+		else SubViewport.UPDATE_DISABLED
+	)
+
 func on_settings_changed(key: StringName) -> void:
 	# ensures proper initialization of tree for proper first frame setting loading
 	await get_tree().process_frame
@@ -239,8 +365,8 @@ func update_left_color(color: Color) -> void:
 	if !left_saber:
 		await get_tree().process_frame
 	left_saber.set_color(color)
+	Arc.left_color = color
 	Arc.left_material.set_shader_parameter(&"color", color)
-	Arc.left_material_magnet.set_shader_parameter(&"color", color)
 	goggles_shader.set_shader_parameter(&"left_color", color)
 	event_driver.update_left_color(color)
 	standing_ground.update_left_color(color)
@@ -249,8 +375,8 @@ func update_right_color(color: Color) -> void:
 	if !left_saber:
 		await get_tree().process_frame
 	right_saber.set_color(color)
+	Arc.right_color = color
 	Arc.right_material.set_shader_parameter(&"color", color)
-	Arc.right_material_magnet.set_shader_parameter(&"color", color)
 	goggles_shader.set_shader_parameter(&"right_color", color)
 	event_driver.update_right_color(color)
 	standing_ground.update_right_color(color)
@@ -299,6 +425,8 @@ func _on_PlayerHead_area_exited(area: Area3D) -> void:
 # the high score
 func _on_song_ended() -> void:
 	song_player.stop()
+	Scoreboard.paused = true
+	_clear_track()
 	PlayCount.increment_play_count(Map.current_info,Map.current_difficulty.difficulty_rank)
 	
 	var new_record := false
@@ -311,7 +439,11 @@ func _on_song_ended() -> void:
 		highscore = Scoreboard.points
 		new_record = true
 
-	var current_percent := Scoreboard.right_notes/(Scoreboard.right_notes+Scoreboard.wrong_notes)
+	var current_percent: float
+	if Scoreboard.right_notes + Scoreboard.wrong_notes > 0:
+		current_percent = Scoreboard.right_notes / (Scoreboard.right_notes + Scoreboard.wrong_notes)
+	else:
+		current_percent = 1.0
 	endscore.show_score(
 		Scoreboard.points,
 		highscore,
@@ -332,10 +464,12 @@ func _on_song_ended() -> void:
 
 func _restart_button() -> void:
 	start_map(Map.current_info, Map.current_difficulty)
-	endscore.visible = false
+	endscore._hide()
 	pause_menu.visible = false
 
 func _main_menu_button() -> void:
+	_load_generation += 1
+	is_loading_map = false
 	_clear_track()
 	_transition_game_state(gamestate_mapselection)
 
@@ -370,23 +504,46 @@ func _on_settings_Panel_apply() -> void:
 	set_colors_from_settings()
 	_transition_game_state(gamestate_mapselection)
 
+var _presize_render_batch: Array[Node3D] = []
+
 func _on_ScenePool_new_scene_instanced(obj: Node3D, during_presizing: bool) -> void:
 	# add obj to the track. it will reside inside the track for eternity, only
 	# to be reposition and made visible again when it is acquired and spawned.
 	track.add_child(obj)
 	
-	# make obj visible and wait for a frame to be processed. this tricks
-	# shaders to be loaded at startup time.
+	# Render presized scenes in batches so their shaders are loaded without
+	# yielding once for every individual object.
 	if during_presizing:
 		obj.position.z = -2.0
-		await get_tree().process_frame
-		
-		if obj is BeepCube:
-			obj.hide_cube()
-		elif obj is ChainLink:
-			obj.hide_cube()
-		else:
-			obj.visible = false
+		_presize_render_batch.append(obj)
+		if _presize_render_batch.size() < 20:
+			return
+
+		await _flush_presize_render_batch()
+
+func _flush_presize_render_batch() -> void:
+	if _presize_render_batch.is_empty():
+		return
+	var render_batch: Array[Node3D] = _presize_render_batch.duplicate()
+	_presize_render_batch.clear()
+	await get_tree().process_frame
+	for pooled_obj: Node3D in render_batch:
+		_hide_pooled_scene(pooled_obj)
+
+func _hide_pooled_scene(obj: Node3D) -> void:
+	if obj is BeepCube:
+		(obj as BeepCube).hide_cube()
+	elif obj is ChainLink:
+		(obj as ChainLink).hide_cube()
+	elif obj is Bomb:
+		(obj as Bomb).hide_bomb()
+	elif obj is Wall:
+		(obj as Wall).hide_wall()
+	elif obj is Arc:
+		(obj as Arc).hide_arc()
+	else:
+		obj.visible = false
+		obj.process_mode = Node.PROCESS_MODE_DISABLED
 
 func recenter():
 	var xr_camera := $XROrigin3D/XRCamera3D as XRCamera3D

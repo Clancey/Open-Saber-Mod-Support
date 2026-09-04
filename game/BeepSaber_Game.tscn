@@ -15,7 +15,6 @@
 [ext_resource type="PackedScene" uid="uid://cisgyiarwaf2i" path="res://game/scripts/UIRaycast/UIRaycast.tscn" id="12"]
 [ext_resource type="PackedScene" uid="uid://qjvg3reomvyk" path="res://game/event_driver.tscn" id="13"]
 [ext_resource type="Material" uid="uid://dqox51k4cngtf" path="res://game/Text.material" id="13_3xkki"]
-[ext_resource type="Sky" uid="uid://byunh6ley5hib" path="res://game/background_sky.tres" id="14"]
 [ext_resource type="Shader" uid="uid://bkt21vetmleqj" path="res://game/PercentIndicator.gdshader" id="14_155do"]
 [ext_resource type="PackedScene" uid="uid://63fr72w7kh2w" path="res://game/PercentIndicator.tscn" id="16"]
 [ext_resource type="PackedScene" uid="uid://f53k0dxxtenr" path="res://game/Pause_Panel.tscn" id="18"]
@@ -36,11 +35,12 @@
 [ext_resource type="Script" uid="uid://pmppoemwkiha" path="res://game/scripts/SongUploader/song_uploader.gd" id="33_l0uxg"]
 [ext_resource type="PackedScene" uid="uid://dvj8dorx2l7s0" path="res://game/BeepCube/BeepCube.tscn" id="33_nc705"]
 [ext_resource type="PackedScene" uid="uid://b62c3hkjmky75" path="res://game/Chain/ChainLink.tscn" id="34_tsovg"]
+[ext_resource type="PackedScene" uid="uid://cl1dig23jiq45" path="res://game/Arc/Arc.tscn" id="35_arc"]
 
 [sub_resource type="Environment" id="1"]
-background_mode = 2
-sky = ExtResource("14")
-sky_rotation = Vector3(0, 3.14159, 0)
+background_mode = 1
+background_color = Color(0, 0, 0, 1)
+ambient_light_source = 2
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_sky_contribution = 0.37
 ssr_fade_in = 0.197926
@@ -282,6 +282,15 @@ scene = ExtResource("33_nc705")
 [node name="ChainLinkPool" parent="." instance=ExtResource("27")]
 scene = ExtResource("34_tsovg")
 
+[node name="BombPool" parent="." instance=ExtResource("27")]
+scene = ExtResource("24")
+
+[node name="WallPool" parent="." instance=ExtResource("27")]
+scene = ExtResource("3_73652")
+
+[node name="ArcPool" parent="." instance=ExtResource("27")]
+scene = ExtResource("35_arc")
+
 [node name="Keyboard_highscore" parent="." instance=ExtResource("21")]
 transform = Transform3D(2.40442, 0, 0, 0, 2.37659, 0.364816, 0, -0.364816, 2.37659, -0.00735812, 0.350501, -0.67319)
 visible = false
@@ -308,4 +317,7 @@ main_menu_ref = NodePath("../MainMenu_OQ_UI2DCanvas/BeepSaberMainMenu")
 [connection signal="name_selected" from="NameSelector_Canvas/NameSelector" to="." method="_submit_highscore"]
 [connection signal="new_scene_instanced" from="BeepCubePool" to="." method="_on_ScenePool_new_scene_instanced"]
 [connection signal="new_scene_instanced" from="ChainLinkPool" to="." method="_on_ScenePool_new_scene_instanced"]
+[connection signal="new_scene_instanced" from="BombPool" to="." method="_on_ScenePool_new_scene_instanced"]
+[connection signal="new_scene_instanced" from="WallPool" to="." method="_on_ScenePool_new_scene_instanced"]
+[connection signal="new_scene_instanced" from="ArcPool" to="." method="_on_ScenePool_new_scene_instanced"]
 [connection signal="text_input_enter" from="Keyboard_highscore" to="." method="_submit_highscore"]

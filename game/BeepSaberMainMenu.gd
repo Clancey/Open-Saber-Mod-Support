@@ -208,116 +208,6 @@ func _select_song(id: int) -> void :
 	delete_button.disabled = false
 
 	var map: = _currently_selected_songlist_ref[id]
-	var modsNeeded = "None"
-	var filePath = map.filepath + "info.dat"
-	Constants.usingMappingExtension = false
-	if FileAccess.file_exists(filePath):
-		var mods = vr.load_json_file(filePath)
-		if mods:
-			var beatmap_sets = mods.get("_difficultyBeatmapSets", [])
-			if beatmap_sets.size() > 0:
-
-				var first_set = beatmap_sets[0]
-				var difficulty_beatmaps = first_set.get("_difficultyBeatmaps", [])
-
-				if difficulty_beatmaps.size() > 0:
-
-					var first_difficulty = difficulty_beatmaps[0]
-					var custom_data = first_difficulty.get("_customData", {})
-
-					if custom_data.has("_requirements"):
-						var requirements = custom_data.get("_requirements")
-						print(requirements)
-						if len(requirements) > 0:
-							if modsNeeded == "None": 
-								modsNeeded = ""
-							for i in len(requirements):
-								print(requirements[i])
-								modsNeeded = requirements[i] + "\n" + modsNeeded
-								Constants.usingMappingExtension = requirements.has("Mapping Extensions")
-								Constants.usingNoodleExtension = requirements.has("Noodle Extensions")
-								Constants.usingChroma = requirements.has("Chroma")
-								Constants.usingVivify = requirements.has("Vivify")
-						else:
-							modsNeeded = "None"
-							Constants.usingMappingExtension = false
-							Constants.usingNoodleExtension = false
-							Constants.usingChroma = false
-							Constants.usingVivify = false
-					if custom_data.has("_suggestions"):
-						var suggestions = custom_data.get("_suggestions")
-						if modsNeeded == "None": 
-							modsNeeded = ""
-						for i in len(suggestions):
-							if not modsNeeded.contains("Chroma"):
-								modsNeeded = suggestions[i] + "\n" + modsNeeded
-							elif suggestions[i] != "Chroma":
-								modsNeeded = suggestions[i] + "\n" + modsNeeded
-							if suggestions.has("Chroma"):
-								Constants.usingChroma = true
-							else:
-								Constants.usingChroma = false
-					else:
-							modsNeeded = "None"
-							Constants.usingChroma = false
-	else:
-
-
-		filePath = map.filepath + "Info.dat"
-		var mods = vr.load_json_file(filePath)
-		if mods:
-			var beatmap_sets = mods.get("_difficultyBeatmapSets", [])
-			if beatmap_sets.size() > 0:
-
-				var first_set = beatmap_sets[0]
-				var difficulty_beatmaps = first_set.get("_difficultyBeatmaps", [])
-
-				if difficulty_beatmaps.size() > 0:
-
-					var first_difficulty = difficulty_beatmaps[0]
-					var custom_data = first_difficulty.get("_customData", {})
-
-					if custom_data.has("_requirements"):
-						var requirements = custom_data.get("_requirements")
-						if len(requirements) > 0:
-							if modsNeeded == "None":
-								modsNeeded = ""
-							for i in len(requirements):
-								modsNeeded = requirements[i] + "\n" + modsNeeded
-								Constants.usingMappingExtension = requirements.has("Mapping Extensions")
-								Constants.usingNoodleExtension = requirements.has("Noodle Extensions")
-								Constants.usingChroma = requirements.has("Chroma")
-								Constants.usingVivify = requirements.has("Vivify")
-						else:
-							modsNeeded = "None"
-							Constants.usingMappingExtension = false
-							Constants.usingNoodleExtension = false
-							Constants.usingChroma = false
-							Constants.usingVivify = false
-					if custom_data.has("_suggestions"):
-						var suggestions = custom_data.get("_suggestions")
-						if modsNeeded == "None":
-							modsNeeded = ""
-						for i in len(suggestions):
-							modsNeeded = suggestions[i] + "\n" + modsNeeded
-							Constants.usingChroma = suggestions.has("Chroma")
-					else:
-							modsNeeded = "None"
-							Constants.usingChroma = false
-	#warnMapping.visible = Constants.usingMappingExtension
-	#warnNoodle.visible = Constants.usingNoodleExtension
-	#warnChroma.visible = Constants.usingChroma
-	($SongInfo_Label as Label).text = """Song Author: %s
-	Song Title: %s
-	Beatmap Author: %s
-	Play Count: %d
-	Mods requrired: %s""" % [
-		map.song_author_name,
-		map.song_name,
-		map.level_author_name,
-		PlayCount.get_total_play_count(map),
-		modsNeeded
-	]
 	
 	# load cover in background to avoid freezing UI
 	_bg_img_loader.load_texture(map.filepath + map.cover_image_filename, _on_cover_loaded, true, -1)
@@ -351,8 +241,22 @@ func _select_difficulty(id: int) -> void:
 	diff_menu.select(id)
 	
 	# notify listeners that difficulty has changed
-	var difficulty := _currently_selected_songlist_ref[current_selected].difficulty_beatmaps[id]
-	difficulty_changed.emit(_currently_selected_songlist_ref[current_selected], difficulty.difficulty_rank)
+	var map := _currently_selected_songlist_ref[current_selected]
+	var difficulty := map.difficulty_beatmaps[id]
+	var mods := Map.get_mods_for_difficulty(difficulty)
+	var mods_needed := "\n".join(PackedStringArray(mods)) if not mods.is_empty() else "None"
+	($SongInfo_Label as Label).text = """Song Author: %s
+	Song Title: %s
+	Beatmap Author: %s
+	Play Count: %d
+	Mods requrired: %s""" % [
+		map.song_author_name,
+		map.song_name,
+		map.level_author_name,
+		PlayCount.get_total_play_count(map),
+		mods_needed
+	]
+	difficulty_changed.emit(map, difficulty.difficulty_rank)
 
 
 func _load_map_and_start(map: MapInfo) -> void:
@@ -417,7 +321,7 @@ func _ready() -> void:
 	@warning_ignore("return_value_discarded")
 	keyboard._text_edit.text_changed.connect(_text_input_changed)
 	@warning_ignore("return_value_discarded")
-	keyboard._text_edit.focus_exited.connect(_text_input_enter)
+	keyboard._text_edit.focus_exited.connect(_text_input_enter.bind(""))
 	
 	playlist_selector.select(1)
 	playlist_selector.item_selected.emit(1)

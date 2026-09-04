@@ -16,15 +16,36 @@ var C_RIGHT := Color()
 @onready var timer_clear := $TimerClear as Timer
 
 var is_disabled := false
+var _viewport_refresh_generation := 0
 
 func _ready() -> void:
 	var material := ($Node3D/cutFloor as MeshInstance3D).material_override as StandardMaterial3D
 	material.albedo_texture = sub_viewport.get_texture()
 	material.emission_texture = sub_viewport.get_texture()
-	
-	if OS.get_name() == &"Web":
-		sub_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+
+	if OS.get_name() in [&"Android", &"Web"]:
+		timer_clear.stop()
 		is_disabled = true
+	@warning_ignore("return_value_discarded")
+	visibility_changed.connect(_sync_viewport_update_mode)
+	_sync_viewport_update_mode()
+
+func _sync_viewport_update_mode() -> void:
+	_viewport_refresh_generation += 1
+	if is_disabled or not is_visible_in_tree():
+		sub_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+		return
+
+	var refresh_generation := _viewport_refresh_generation
+	sub_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	await RenderingServer.frame_post_draw
+	if refresh_generation != _viewport_refresh_generation:
+		return
+	sub_viewport.render_target_update_mode = (
+		SubViewport.UPDATE_ALWAYS
+		if is_visible_in_tree()
+		else SubViewport.UPDATE_DISABLED
+	)
 
 func update_left_color(color: Color) -> void:
 	C_LEFT = color

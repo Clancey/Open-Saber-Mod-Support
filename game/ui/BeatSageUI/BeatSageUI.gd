@@ -42,12 +42,14 @@ const BS_SONG_DIR := "user://BeepSaber/Songs/"
 func _ready() -> void:
 	UI_AudioEngine.attach_children(self)
 	beatsage_request_.download_dir = BS_TEMP_DIR
-	
+
 	# setup youtube search UI and connect signal handlers
-	youtube_ui = get_node(youtube_ui_path)
-	if is_instance_valid(youtube_ui):
-		youtube_ui.song_selected.connect(_on_youtube_song_selected)
-	
+	# Only get node if path is not empty
+	if not youtube_ui_path.is_empty():
+		youtube_ui = get_node_or_null(youtube_ui_path)
+		if is_instance_valid(youtube_ui):
+			youtube_ui.song_selected.connect(_on_youtube_song_selected)
+
 	model_select.clear()
 	for key in MODELS.keys():
 		model_select.add_item(key)
@@ -59,7 +61,7 @@ func _hide() -> void:
 		if parent_canvas is OQ_UI2DCanvas:
 			break
 		parent_canvas = parent_canvas.get_parent()
-		
+
 	if parent_canvas == null:
 		self.visible = false
 	else:
@@ -72,7 +74,7 @@ func _show():
 		if parent_canvas is OQ_UI2DCanvas:
 			break
 		parent_canvas = parent_canvas.get_parent()
-		
+
 	if parent_canvas == null:
 		self.visible = true
 	else:
@@ -90,7 +92,7 @@ func _on_SubmitButton_pressed() -> void:
 		difficulties += ",ExpertPlus"
 	if difficulties.length() > 0:
 		difficulties = difficulties.substr(1)
-		
+
 	var modes := ""
 	if mode_standard.pressed:
 		modes += ",Standard"
@@ -100,7 +102,7 @@ func _on_SubmitButton_pressed() -> void:
 		modes += ",OneSaber"
 	if modes.length() > 0:
 		modes = modes.substr(1)
-	
+
 	var events := ""
 	if events_bombs.pressed:
 		events += ",Bombs"
@@ -110,7 +112,7 @@ func _on_SubmitButton_pressed() -> void:
 		events += ",Obstacles"
 	if events.length() > 0:
 		events = events.substr(1)
-	
+
 	# build request dictionary
 	var request_data := {
 		"youtube_url": song_url.text,
@@ -122,7 +124,7 @@ func _on_SubmitButton_pressed() -> void:
 		"environment": "DefaultEnvironment",
 		"system_tag": MODELS[model_select.text],
 	}
-	
+
 	# initial beatsaber request
 	if beatsage_request_.request_custom_level(request_data):
 		submit_button.disabled = true
@@ -133,19 +135,19 @@ func _on_BeatSageRequest_download_complete(filepath: String) -> void:
 	var okay := true
 	submit_button.disabled = false
 	progress_screen.hide()
-	
+
 	var song_dir_name = filepath.get_basename().get_file()
 	var song_out_dir = BS_SONG_DIR + song_dir_name + '/'
 	var dir = DirAccess.make_dir_recursive_absolute(song_out_dir)
-	if !dir: 
+	if !dir:
 		vr.log_error(
 			"_on_BeatSageRequest_download_complete - " +
 			"Failed to create song output dir '%s'" % song_out_dir)
 		okay = false
-	
+
 	if okay:
 		Utils.unzip(filepath,song_out_dir)
-	
+
 	DirAccess.remove_absolute(filepath)
 
 func _on_BeatSageRequest_request_failed() -> void:
@@ -163,17 +165,17 @@ func _on_BeatSageRequest_youtube_metadata_available(metadata) -> void:
 		var file := FileAccess.open("youtube_metadata.json",FileAccess.WRITE)
 		file.store_string(JSON.stringify(metadata,'  '))
 		file.close()
-	
+
 	var artist := 'Unknown Artist'
 	if metadata.has('artist'):
 		artist = metadata['artist']
 	song_artist.text = artist
-	
+
 	var track := 'Unknown Title'
 	if metadata.has('track'):
 		track = metadata['track']
 	song_name.text = track
-	
+
 	# parse the thumbnail/cover image
 	var img_data = Marshalls.base64_to_raw(metadata['beatsage_thumbnail'])
 	var img = ImageUtils.get_img_from_buffer(img_data)
@@ -199,7 +201,7 @@ func _on_YoutubeButton_pressed() -> void:
 func _on_youtube_song_selected(video_metadata) -> void:
 	var video_url: String = "https://www.youtube.com/watch?v=%s" % video_metadata['id']
 	song_url.text = video_url
-	
+
 	beatsage_request_.request_youtube_metadata(video_url)
 
 func _on_CloseButton_pressed() -> void:
