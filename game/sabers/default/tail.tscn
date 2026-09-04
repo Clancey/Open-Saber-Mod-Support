@@ -7,11 +7,11 @@ code = "shader_type spatial;
 render_mode unshaded, blend_add, cull_disabled, depth_draw_never;
 
 uniform vec4 color : source_color = vec4(1.0, 0.0, 0.0, 1.0);
-uniform float emission_strength : hint_range(1.0, 8.0) = 4.5;
+uniform float emission_strength : hint_range(1.0, 8.0) = 2.0;
 
 void fragment() {
 	float alpha = COLOR.a * color.a;
-	ALBEDO = color.rgb * alpha;
+	ALBEDO = color.rgb * 0.35 * alpha;
 	EMISSION = color.rgb * emission_strength * alpha;
 	ALPHA = alpha;
 }
@@ -21,7 +21,7 @@ void fragment() {
 resource_local_to_scene = true
 shader = SubResource("Shader_saber_tail")
 shader_parameter/color = Color(1, 0, 0, 1)
-shader_parameter/emission_strength = 4.5
+shader_parameter/emission_strength = 2.0
 
 [sub_resource type="ImmediateMesh" id="ImmediateMesh_f67k3"]
 resource_local_to_scene = true

@@ -437,9 +437,24 @@ func _on_environment_palette_changed(color_left: Color, color_right: Color) -> v
 	_update_environment_tint()
 
 func _update_environment_tint() -> void:
-	world_environment.environment.fog_light_color = EventDriver.get_environment_base_color(
-		_environment_left_color,
-		_environment_right_color
+	var left_hue: float = _environment_left_color.h
+	var right_hue: float = _environment_right_color.h
+	var hue_delta: float = fposmod(right_hue - left_hue + 0.5, 1.0) - 0.5
+	var average_hue: float = fposmod(left_hue + hue_delta * 0.5, 1.0)
+	var average_saturation: float = minf(
+		(_environment_left_color.s + _environment_right_color.s) * 0.5,
+		0.35
+	)
+	var average_value: float = clampf(
+		(_environment_left_color.v + _environment_right_color.v) * 0.5,
+		0.0,
+		1.0
+	) * 0.12
+	world_environment.environment.fog_light_color = Color.from_hsv(
+		average_hue,
+		average_saturation,
+		average_value,
+		1.0
 	)
 
 func disable_events(disabled: bool) -> void:

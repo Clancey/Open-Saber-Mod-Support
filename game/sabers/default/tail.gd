@@ -14,7 +14,7 @@ class TrailSample:
 
 const TRAIL_LIFETIME: float = 0.2
 const MAX_SAMPLES: int = 18
-const TRAIL_ALPHA: float = 0.46
+const TRAIL_ALPHA: float = 1.0
 
 @export var size: float = 1.0
 

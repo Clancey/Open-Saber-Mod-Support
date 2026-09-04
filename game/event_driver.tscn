@@ -24,6 +24,8 @@ uniform sampler2D bg_2;
 uniform sampler2D bg_3;
 uniform sampler2D bg_4;
 uniform lowp vec4 base_color : source_color = vec4(0.05, 0.04, 0.10, 1.0);
+uniform lowp vec4 left_color : source_color = vec4(1.0, 0.0, 0.0, 1.0);
+uniform lowp vec4 right_color : source_color = vec4(0.0, 0.0, 1.0, 1.0);
 uniform lowp float base_intensity = 1.0;
 uniform lowp float bg_0_intensity = 0.0;
 uniform lowp float bg_1_intensity = 0.0;
@@ -57,6 +59,14 @@ vec3 get_from_map(sampler2D maptx, vec2 uv, float intensity, vec3 albedo, vec4 t
 	return albedo;
 }
 
+vec3 darkened_saber_color(vec3 saber_color){
+	float peak = max(saber_color.r, max(saber_color.g, saber_color.b));
+	if (peak <= 0.001){
+		return vec3(0.0);
+	}
+	return saber_color * (0.12 / peak);
+}
+
 void fragment(){
 	ALBEDO = texture(bg_base,UV).rgb;
 	vec2 xinv_uv = vec2(-UV.x,UV.y);
@@ -66,12 +76,21 @@ void fragment(){
 	if (bg_3_intensity>0.0){ALBEDO = get_from_map(bg_3, xinv_uv, (bg_3_intensity*bg_3_intensity_mult), ALBEDO, bg_3_tint);}
 	if (bg_4_intensity>0.0){ALBEDO = get_from_map(bg_4, xinv_uv, (bg_4_intensity*bg_4_intensity_mult), ALBEDO, bg_4_tint);}
 	ALBEDO.rgb = vec3(pow(ALBEDO.r, contrast), pow(ALBEDO.g, contrast), pow(ALBEDO.b, contrast));
+	float side_mix = smoothstep(-0.06, 0.06, sphere_direction.x);
+	vec3 side_color = mix(
+		darkened_saber_color(left_color.rgb),
+		darkened_saber_color(right_color.rgb),
+		side_mix
+	);
+	float hemisphere_gradient = sphere_direction.y * 0.5 + 0.5;
+	float hemisphere_light = mix(0.5, 1.0, hemisphere_gradient);
+	ALBEDO.rgb *= hemisphere_light;
 	float horizon_gradient = mix(0.4, 1.0, 1.0 - abs(model_y));
-	ALBEDO.rgb += base_color.rgb * base_intensity * horizon_gradient;
+	ALBEDO.rgb += side_color * base_intensity * horizon_gradient;
 	float nebula_a = sin(sphere_direction.x * 7.0 + sphere_direction.y * 3.0 + TIME * 0.025);
 	float nebula_b = cos(sphere_direction.z * 5.0 - sphere_direction.y * 4.0 - TIME * 0.018);
 	float nebula = nebula_a * nebula_b;
-	ALBEDO.rgb += base_color.rgb * nebula * 0.045;
+	ALBEDO.rgb += side_color * nebula * 0.045;
 }"
 
 [sub_resource type="ShaderMaterial" id="5"]
@@ -84,6 +103,8 @@ shader_parameter/bg_2 = ExtResource("6")
 shader_parameter/bg_3 = ExtResource("9")
 shader_parameter/bg_4 = ExtResource("10")
 shader_parameter/base_color = Color(0.05, 0.04, 0.1, 1)
+shader_parameter/left_color = Color(1, 0, 0, 1)
+shader_parameter/right_color = Color(0, 0, 1, 1)
 shader_parameter/base_intensity = 1.0
 shader_parameter/bg_0_intensity = 0.0
 shader_parameter/bg_1_intensity = 0.0

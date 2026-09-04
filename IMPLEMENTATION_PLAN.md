@@ -55,3 +55,9 @@ Schedule: Stage 1 and Stage 2a run in parallel. Stage 2b and Stage 3 run in para
 **Tests**: `tests/test_v3_lighting.gd`; harness report.json per map.
 **Status**: Complete (v4 rotation boxes and v3 per-instance lightID filters added 2026-09-04)
 **Run**: `/Applications/Godot4.7.app/Contents/MacOS/Godot --path . --xr-mode off --resolution 1280x720 tests/autoplay/AutoPlayHarness.tscn -- --song="res://game/data/maps/Songs/48088 (Golden - sammy & Tonkie)/" --diff=ExpertStandard --duration=45 --out=/tmp/autoplay --shot-every=5`
+
+## Stage 7: Fail Mode, Energy Bar, Visual Pass
+**Goal**: Beat Saber energy/fail rules with a No Fail setting and an in-world energy bar; a visual pass (notes, bombs, sabers + trail, runway grid, platform border, rings, light bars, sky) tuned for Quest.
+**Success Criteria**: `tests/test_scoreboard.gd` passes; harness with `--bot=0` reports `AUTOPLAY|FAILED`; normal run reaches energy 1.0; screenshots show colored sabers, per-side sky tint, energy bar in view; draw calls stay ~50.
+**Tests**: 38 headless tests; harness runs on Golden and Timelapse.
+**Status**: In Progress (fail mode verified on desktop; visual refinement of sabers/sky/energy-bar placement running)

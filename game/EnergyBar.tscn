@@ -7,15 +7,16 @@
 resource_local_to_scene = true
 shader = ExtResource("1_shader")
 shader_parameter/fill = 0.5
-shader_parameter/bar_color = Color(0.55, 2.4, 3, 1)
-shader_parameter/low_color = Color(3.5, 0.08, 0.04, 1)
+shader_parameter/bar_color = Color(1, 0, 0, 1)
+shader_parameter/low_color = Color(1, 0.025, 0.015, 1)
 shader_parameter/background_color = Color(0.005, 0.01, 0.02, 0.72)
 
 [sub_resource type="QuadMesh" id="QuadMesh_energy"]
-size = Vector2(1.2, 0.06)
+size = Vector2(1.4, 0.06)
 
 [node name="EnergyBar" type="MeshInstance3D"]
 visible = false
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 0.28, -2.4)
 cast_shadow = 0
 material_override = SubResource("ShaderMaterial_energy")
 mesh = SubResource("QuadMesh_energy")

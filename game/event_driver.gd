@@ -479,6 +479,8 @@ static func get_environment_base_color(color_left: Color, color_right: Color) ->
 func _update_environment_base() -> void:
 	var base_color: Color = get_environment_base_color(left_color, right_color)
 	sphere_material.set_shader_parameter(&"base_color", base_color)
+	sphere_material.set_shader_parameter(&"left_color", left_color)
+	sphere_material.set_shader_parameter(&"right_color", right_color)
 	floor_material.set_shader_parameter(&"base_color", base_color)
 	floor_material.set_shader_parameter(&"left_color", left_color)
 	floor_material.set_shader_parameter(&"right_color", right_color)
