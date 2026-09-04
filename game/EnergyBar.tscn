@@ -7,7 +7,7 @@
 resource_local_to_scene = true
 shader = ExtResource("1_shader")
 shader_parameter/fill = 0.5
-shader_parameter/bar_color = Color(1, 0, 0, 1)
+shader_parameter/bar_color = Color(1, 1, 1, 1)
 shader_parameter/low_color = Color(1, 0.025, 0.015, 1)
 shader_parameter/background_color = Color(0.005, 0.01, 0.02, 0.72)
 

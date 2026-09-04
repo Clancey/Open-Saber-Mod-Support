@@ -411,6 +411,7 @@ func update_left_color(color: Color) -> void:
 	if !left_saber:
 		await get_tree().process_frame
 	_environment_left_color = color
+	energy_bar.set_colors(_environment_left_color, _environment_right_color)
 	left_saber.set_color(color)
 	Arc.left_color = color
 	Arc.left_material.set_shader_parameter(&"color", color)
@@ -423,6 +424,7 @@ func update_right_color(color: Color) -> void:
 	if !left_saber:
 		await get_tree().process_frame
 	_environment_right_color = color
+	energy_bar.set_colors(_environment_left_color, _environment_right_color)
 	right_saber.set_color(color)
 	Arc.right_color = color
 	Arc.right_material.set_shader_parameter(&"color", color)

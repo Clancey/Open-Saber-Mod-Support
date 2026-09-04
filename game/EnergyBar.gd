@@ -18,16 +18,13 @@ func _ready() -> void:
 	position = BAR_POSITION
 	rotation_degrees = Vector3(BAR_TILT_DEGREES, 0.0, 0.0)
 	_material = material_override as ShaderMaterial
-	_material.set_shader_parameter(&"bar_color", Settings.color_left)
 	displayed_energy = Scoreboard.energy
 	@warning_ignore("return_value_discarded")
 	Scoreboard.energy_changed.connect(_on_energy_changed)
-	@warning_ignore("return_value_discarded")
-	Settings.changed.connect(_on_settings_changed)
 
-func _on_settings_changed(key: StringName) -> void:
-	if key == &"color_left":
-		_material.set_shader_parameter(&"bar_color", Settings.color_left)
+@warning_ignore("unused_parameter")
+func set_colors(left: Color, right: Color) -> void:
+	_material.set_shader_parameter(&"bar_color", left)
 
 func _on_energy_changed(value: float) -> void:
 	if is_instance_valid(_energy_tween):
