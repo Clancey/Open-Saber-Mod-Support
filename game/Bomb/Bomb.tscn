@@ -1,7 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://6du64wi28yi6"]
+[gd_scene load_steps=8 format=3 uid="uid://6du64wi28yi6"]
 
 [ext_resource type="PackedScene" uid="uid://cxpnql8hhru8j" path="res://game/Bomb/BombMesh.tscn" id="1"]
 [ext_resource type="Script" uid="uid://byluxuyjs1b1n" path="res://game/Bomb/Bomb.gd" id="2"]
+[ext_resource type="Shader" path="res://game/Bomb/Bomb.gdshader" id="3_bomb"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bomb"]
+resource_local_to_scene = true
+shader = ExtResource("3_bomb")
+shader_parameter/body_color = Color(0.008, 0.006, 0.008, 1)
+shader_parameter/rim_color = Color(0.75, 0.035, 0.008, 1)
+shader_parameter/rim_emission_energy = 0.7
+shader_parameter/pulse_speed = 1.35
+shader_parameter/shell_grow = 0.018
 
 [sub_resource type="SphereShape3D" id="1"]
 radius = 0.154
@@ -59,6 +69,9 @@ transform = Transform3D(-0.0707107, 6.18172e-09, 0.0707107, -8.74228e-09, -0.1, 
 [node name="Mesh" parent="BombAnimation" instance=ExtResource("1")]
 transform = Transform3D(0.18, 0, 0, 0, 0.18, 0, 0, 0, 0.18, 0, 0, 0)
 
+[node name="Icosphere2" parent="BombAnimation/Mesh" index="1"]
+material_override = SubResource("ShaderMaterial_bomb")
+
 [node name="Area3D" type="Area3D" parent="." groups=["bomb"]]
 collision_layer = 16
 collision_mask = 16
@@ -73,3 +86,5 @@ root_node = NodePath("../BombAnimation")
 libraries = {
 &"": SubResource("AnimationLibrary_4a1di")
 }
+
+[editable path="BombAnimation/Mesh"]

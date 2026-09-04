@@ -1,6 +1,8 @@
 [gd_scene load_steps=11 format=3 uid="uid://cs8e62lsifik5"]
 
 [ext_resource type="Script" uid="uid://cyq6v0iit5rxj" path="res://game/floor.gd" id="3"]
+[ext_resource type="Shader" path="res://game/data/platform_floor.gdshader" id="4_platform"]
+[ext_resource type="Shader" path="res://game/data/platform_edge.gdshader" id="5_edge"]
 
 [sub_resource type="BoxShape3D" id="1"]
 size = Vector3(2, 2, 2)
@@ -25,36 +27,21 @@ corner_radius_bottom_right = 11
 corner_radius_bottom_left = 11
 corner_detail = 6
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2qncm"]
-shading_mode = 0
-albedo_color = Color(0.025, 0.025, 0.025, 1)
-emission_enabled = true
-emission = Color(0.025, 0.025, 0.025, 1)
-emission_energy_multiplier = 5.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform_left"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_platform_edge"]
 resource_local_to_scene = true
-shading_mode = 0
-emission_enabled = true
-emission = Color(1, 0, 0, 1)
-emission_energy_multiplier = 5.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_platform_right"]
-resource_local_to_scene = true
-shading_mode = 0
-emission_enabled = true
-emission = Color(0, 0, 1, 1)
-emission_energy_multiplier = 5.0
+shader = ExtResource("5_edge")
+shader_parameter/left_color = Color(1, 0, 0, 1)
+shader_parameter/right_color = Color(0, 0, 1, 1)
+shader_parameter/edge_energy = 3.0
 
 [sub_resource type="PlaneMesh" id="2"]
 size = Vector2(0.5, 0.5)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_boyhf"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_platform"]
 resource_local_to_scene = true
-emission_enabled = true
-emission = Color(1, 1, 1, 1)
-emission_energy_multiplier = 16.0
-emission_operator = 1
+shader = ExtResource("4_platform")
+shader_parameter/base_color = Color(0.015, 0.015, 0.025, 1)
+shader_parameter/burn_energy = 12.0
 
 [node name="StandingGround" type="StaticBody3D" groups=["floor"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -109,35 +96,35 @@ transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0, 0)
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D/Node3D"]
 transform = Transform3D(0.02, 0, 0, 0, 1, 0, 0, 0, 1, -0.245, 0, 0)
 layers = 3
-material_override = SubResource("StandardMaterial3D_platform_left")
+material_override = SubResource("ShaderMaterial_platform_edge")
 mesh = SubResource("2")
 skeleton = NodePath("../..")
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="Node3D/Node3D"]
 transform = Transform3D(0.02, 0, 0, 0, 1, 0, 0, 0, 1, 0.245, 0, 0)
 layers = 3
-material_override = SubResource("StandardMaterial3D_platform_right")
+material_override = SubResource("ShaderMaterial_platform_edge")
 mesh = SubResource("2")
 skeleton = NodePath("../..")
 
 [node name="MeshInstance3D4" type="MeshInstance3D" parent="Node3D/Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.02, 0, 0, 0.245)
 layers = 3
-material_override = SubResource("StandardMaterial3D_2qncm")
+material_override = SubResource("ShaderMaterial_platform_edge")
 mesh = SubResource("2")
 skeleton = NodePath("../..")
 
 [node name="MeshInstance3D5" type="MeshInstance3D" parent="Node3D/Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.02, 0, 0, -0.245)
 layers = 3
-material_override = SubResource("StandardMaterial3D_2qncm")
+material_override = SubResource("ShaderMaterial_platform_edge")
 mesh = SubResource("2")
 skeleton = NodePath("../..")
 
 [node name="cutFloor" type="MeshInstance3D" parent="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.001, 0)
 layers = 3
-material_override = SubResource("StandardMaterial3D_boyhf")
+material_override = SubResource("ShaderMaterial_platform")
 mesh = SubResource("2")
 
 [node name="MeshInstance2" type="MeshInstance3D" parent="Node3D"]

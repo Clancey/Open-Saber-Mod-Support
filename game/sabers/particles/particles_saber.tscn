@@ -359,7 +359,8 @@ resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("5")
 shader_parameter/color = Vector4(1, 0, 0, 1)
-shader_parameter/center_color = Vector4(0, 0, 0, 1)
+shader_parameter/emission_strength = 5.0
+shader_parameter/flicker_amount = 0.045
 
 [node name="particle_saber" type="Node3D"]
 script = ExtResource("1")

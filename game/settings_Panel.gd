@@ -28,6 +28,7 @@ const SWATCH_BORDER_WIDTH := 5
 @onready var show_debug_control := $ScrollContainer/VBox/show_debug as CheckButton
 @onready var show_collisions := $ScrollContainer/VBox/show_collisions as CheckButton
 @onready var bombs_enabled_control := $ScrollContainer/VBox/bombs_enabled as CheckButton
+@onready var no_fail_control := $ScrollContainer/VBox/no_fail as CheckButton
 @onready var ui_volume_slider := $ScrollContainer/VBox/UI_VolumeRow/ui_volume_slider as HSlider
 @onready var disable_map_color_control := $ScrollContainer/VBox/disable_map_color as CheckButton
 @onready var left_saber_posx_control := $ScrollContainer/VBox/left_saber_offset/posx as SpinBox
@@ -84,6 +85,7 @@ func set_controls_from_settings() -> void:
 	saber_control.select(Settings.saber_visual)
 	show_debug_control.button_pressed = Settings.show_debug_info
 	bombs_enabled_control.button_pressed = Settings.bombs_enabled
+	no_fail_control.button_pressed = Settings.no_fail
 	ui_volume_slider.value = Settings.ui_volume
 	disable_map_color_control.button_pressed = Settings.disable_map_color
 	left_saber_posx_control.value = Settings.left_saber_offset_pos.x
@@ -206,6 +208,9 @@ func _on_show_debug_toggled(button_pressed: bool) -> void:
 
 func _on_bombs_enabled_toggled(button_pressed: bool) -> void:
 	Settings.bombs_enabled = button_pressed
+
+func _on_no_fail_toggled(button_pressed: bool) -> void:
+	Settings.no_fail = button_pressed
 
 func _on_ui_volume_slider_value_changed(value: float) -> void:
 	UI_AudioEngine.set_volume(linear_to_db(float(value)/10.0))

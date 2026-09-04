@@ -16,22 +16,16 @@ var C_RIGHT := Color()
 @onready var timer_clear := $TimerClear as Timer
 @onready var left_edge_material := (
 	$Node3D/Node3D/MeshInstance3D2 as MeshInstance3D
-).material_override as StandardMaterial3D
-@onready var right_edge_material := (
-	$Node3D/Node3D/MeshInstance3D3 as MeshInstance3D
-).material_override as StandardMaterial3D
-@onready var cross_edge_material := (
-	$Node3D/Node3D/MeshInstance3D4 as MeshInstance3D
-).material_override as StandardMaterial3D
+).material_override as ShaderMaterial
 @onready var platform_material := (
 	$Node3D/cutFloor as MeshInstance3D
-).material_override as StandardMaterial3D
+).material_override as ShaderMaterial
 
 var is_disabled := false
 var _viewport_refresh_generation := 0
 
 func _ready() -> void:
-	platform_material.emission_texture = sub_viewport.get_texture()
+	platform_material.set_shader_parameter(&"burn_texture", sub_viewport.get_texture())
 
 	if OS.get_name() in [&"Android", &"Web"]:
 		timer_clear.stop()
@@ -60,15 +54,13 @@ func _sync_viewport_update_mode() -> void:
 func update_left_color(color: Color) -> void:
 	C_LEFT = color
 	burn_l.modulate = color*6
-	left_edge_material.albedo_color = color
-	left_edge_material.emission = color
+	left_edge_material.set_shader_parameter(&"left_color", color)
 	_update_platform_mix()
 
 func update_right_color(color: Color) -> void:
 	C_RIGHT = color
 	burn_r.modulate = color*6
-	right_edge_material.albedo_color = color
-	right_edge_material.emission = color
+	left_edge_material.set_shader_parameter(&"right_color", color)
 	_update_platform_mix()
 
 func _update_platform_mix() -> void:
@@ -79,15 +71,7 @@ func _update_platform_mix() -> void:
 		mixed_color.b * 0.05,
 		1.0
 	)
-	var edge_color: Color = Color(
-		mixed_color.r,
-		mixed_color.g,
-		mixed_color.b,
-		1.0
-	)
-	cross_edge_material.albedo_color = edge_color
-	cross_edge_material.emission = edge_color
-	platform_material.albedo_color = surface_color
+	platform_material.set_shader_parameter(&"base_color", surface_color)
 
 var left_is_out := false
 var right_is_out := false

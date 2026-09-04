@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://qjvg3reomvyk"]
+[gd_scene load_steps=41 format=3 uid="uid://qjvg3reomvyk"]
 
 [ext_resource type="Script" uid="uid://b6pfpqv0i0umg" path="res://game/event_driver.gd" id="2"]
 [ext_resource type="ArrayMesh" uid="uid://cy814avk383k" path="res://game/data/ring.obj" id="3"]
@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://mtc2b2mfx2wd" path="res://game/data/background/bg_1.png" id="10"]
 [ext_resource type="Material" uid="uid://mu4iyylnwc38" path="res://game/Wall/wall_new2.material" id="10_3fiaj"]
 [ext_resource type="Shader" path="res://game/data/light_bar.gdshader" id="11_light_bar"]
+[ext_resource type="Shader" path="res://game/data/runway_floor.gdshader" id="12_runway"]
+[ext_resource type="Shader" path="res://game/data/ring.gdshader" id="13_ring"]
 
 [sub_resource type="Shader" id="4"]
 code = "shader_type spatial;
@@ -41,9 +43,11 @@ uniform lowp float bg_3_intensity_mult = 1.0;
 uniform lowp float bg_4_intensity_mult = 1.0;
 
 varying lowp float model_y;
+varying lowp vec3 sphere_direction;
 
 void vertex(){
-	model_y = normalize(VERTEX).y;
+	sphere_direction = normalize(VERTEX);
+	model_y = sphere_direction.y;
 }
 
 vec3 get_from_map(sampler2D maptx, vec2 uv, float intensity, vec3 albedo, vec4 tint){
@@ -64,6 +68,10 @@ void fragment(){
 	ALBEDO.rgb = vec3(pow(ALBEDO.r, contrast), pow(ALBEDO.g, contrast), pow(ALBEDO.b, contrast));
 	float horizon_gradient = mix(0.4, 1.0, 1.0 - abs(model_y));
 	ALBEDO.rgb += base_color.rgb * base_intensity * horizon_gradient;
+	float nebula_a = sin(sphere_direction.x * 7.0 + sphere_direction.y * 3.0 + TIME * 0.025);
+	float nebula_b = cos(sphere_direction.z * 5.0 - sphere_direction.y * 4.0 - TIME * 0.018);
+	float nebula = nebula_a * nebula_b;
+	ALBEDO.rgb += base_color.rgb * nebula * 0.045;
 }"
 
 [sub_resource type="ShaderMaterial" id="5"]
@@ -261,19 +269,25 @@ colors = PackedColorArray(0, 0, 0, 1, 0.0729167, 0.0729167, 0.0729167, 1, 0, 0, 
 [sub_resource type="GradientTexture2D" id="17"]
 gradient = SubResource("16")
 
-[sub_resource type="StandardMaterial3D" id="18"]
+[sub_resource type="ShaderMaterial" id="18"]
 render_priority = -5
-transparency = 1
-shading_mode = 0
-disable_ambient_light = true
-albedo_color = Color(0.992157, 0, 1, 1)
-albedo_texture = SubResource("17")
+shader = ExtResource("12_runway")
+shader_parameter/base_color = Color(0.015, 0.015, 0.025, 1)
+shader_parameter/left_color = Color(1, 0, 0, 1)
+shader_parameter/right_color = Color(0, 0, 1, 1)
+shader_parameter/event_color = Color(0, 0, 0, 1)
+shader_parameter/lane_spacing = 0.6
+shader_parameter/runway_half_width = 3.0
+shader_parameter/edge_width = 0.045
 
 [sub_resource type="PlaneMesh" id="19"]
 
-[sub_resource type="StandardMaterial3D" id="20"]
-shading_mode = 0
-albedo_color = Color(0.0941176, 0.0941176, 0.0941176, 1)
+[sub_resource type="ShaderMaterial" id="20"]
+shader = ExtResource("13_ring")
+shader_parameter/ring_color = Color(0, 0, 0, 1)
+shader_parameter/chrome_color = Vector3(0.018, 0.02, 0.026)
+shader_parameter/idle_energy = 0.08
+shader_parameter/lit_energy = 2.2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_track_left"]
 resource_local_to_scene = true
@@ -958,6 +972,7 @@ mesh = SubResource("19")
 [node name="line0" type="MeshInstance3D" parent="Level/floor"]
 transform = Transform3D(1, 0, 6.82121e-16, 0, 1, 0, -2.27374e-13, 0, 0.003, 0, 0.01, 0)
 layers = 3
+visible = false
 material_override = SubResource("20")
 mesh = SubResource("19")
 skeleton = NodePath("../..")
@@ -965,6 +980,7 @@ skeleton = NodePath("../..")
 [node name="line1" type="MeshInstance3D" parent="Level/floor"]
 transform = Transform3D(1, 0, 6.82121e-16, 0, 1, 0, -2.27374e-13, 0, 0.003, 0, 0.01, -0.5)
 layers = 3
+visible = false
 material_override = SubResource("20")
 mesh = SubResource("19")
 skeleton = NodePath("../..")
@@ -972,6 +988,7 @@ skeleton = NodePath("../..")
 [node name="line2" type="MeshInstance3D" parent="Level/floor"]
 transform = Transform3D(1, 0, 6.82121e-16, 0, 1, 0, -2.27374e-13, 0, 0.003, 0, 0.01, 0.5)
 layers = 3
+visible = false
 material_override = SubResource("20")
 mesh = SubResource("19")
 skeleton = NodePath("../..")
@@ -979,6 +996,7 @@ skeleton = NodePath("../..")
 [node name="line3" type="MeshInstance3D" parent="Level/floor"]
 transform = Transform3D(1, 0, 6.82121e-16, 0, 1, 0, -2.27374e-13, 0, 0.003, 0, 0.01, 1)
 layers = 3
+visible = false
 material_override = SubResource("20")
 mesh = SubResource("19")
 skeleton = NodePath("../..")
@@ -986,6 +1004,7 @@ skeleton = NodePath("../..")
 [node name="line4" type="MeshInstance3D" parent="Level/floor"]
 transform = Transform3D(1, 0, 6.82121e-16, 0, 1, 0, -2.27374e-13, 0, 0.003, 0, 0.01, -1)
 layers = 3
+visible = false
 material_override = SubResource("20")
 mesh = SubResource("19")
 skeleton = NodePath("../..")

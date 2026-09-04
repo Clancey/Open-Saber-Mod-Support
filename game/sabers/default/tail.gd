@@ -1,78 +1,99 @@
 extends Node3D
 class_name SaberTail
 
-@onready var material := ($Mesh as MeshInstance3D).material_override as StandardMaterial3D
-@onready var imm_geo := ($Mesh as MeshInstance3D).mesh as ImmediateMesh
+class TrailSample:
+	extends RefCounted
 
-@export var size := 1.0
+	var base_position: Vector3
+	var tip_position: Vector3
+	var age: float = 0.0
 
-# for the math in _process to work properly and the tail to be drawn in the
-# right spot,the mesh has to be reparented to root.
-# TODO: reparenting to root like this is difficult for any future coders to
-# follow.  the math should be rewritten to work without reparenting.
-func _ready() -> void:
-	var mesh := $Mesh as MeshInstance3D
-	remove_child(mesh)
-	get_tree().get_root().add_child.call_deferred(mesh)
+	func _init(base: Vector3, tip: Vector3) -> void:
+		base_position = base
+		tip_position = tip
+
+const TRAIL_LIFETIME: float = 0.2
+const MAX_SAMPLES: int = 18
+const TRAIL_ALPHA: float = 0.46
+
+@export var size: float = 1.0
+
+@onready var _mesh_instance: MeshInstance3D = $Mesh as MeshInstance3D
+@onready var _material: ShaderMaterial = _mesh_instance.material_override as ShaderMaterial
+@onready var _immediate_mesh: ImmediateMesh = _mesh_instance.mesh as ImmediateMesh
+
+var _samples: Array[TrailSample] = []
+var _enabled: bool = true
+var _active: bool = false
 
 func set_color(color: Color) -> void:
-	material.albedo_color = color
-	material.emission = color
+	_material.set_shader_parameter(&"color", color)
 
-class HistoricalPositions:
-	extends RefCounted
-	
-	var base_pos := Vector3() # global position of blade at the base (near handle)
-	var tip_pos := Vector3()  # blogal position of blade at the tip
-	var age := 0.0 as float
-	
-	func _init(base: Vector3, tip: Vector3):
-		base_pos = base
-		tip_pos = tip
+func set_enabled(enabled: bool) -> void:
+	_enabled = enabled
+	visible = enabled
+	if not enabled:
+		_clear()
 
-var last_pos: Array[HistoricalPositions] = []
-const MAX_AGE := 0.15 as float
-func _process(delta: float) -> void:
-	if visible and size > 0:
-		var pos := HistoricalPositions.new(global_position, to_global(position + Vector3(0,size,0)))
-		imm_geo.clear_surfaces()
-		if last_pos.size() > 0:
-			imm_geo.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
+func set_active(active: bool) -> void:
+	_active = active
+	if not active:
+		_clear()
 
-			var new_size = -1 as int
-			for i in range(last_pos.size()):
-				var posA := pos
-				if i > 0:
-					posA = last_pos[i-1]
-				var posB := last_pos[i]
-				
-				var t := clampf(last_pos[i].age / MAX_AGE, 0.02, 0.98)
-				var offsetted := clampf(t + (1.0/last_pos.size()), 0.02, 0.98)
+func _physics_process(delta: float) -> void:
+	if not _enabled or not _active or size <= 0.001:
+		if not _samples.is_empty():
+			_clear()
+		return
 
-				imm_geo.surface_set_uv(Vector2(t,0.98))
-				imm_geo.surface_add_vertex(posA.base_pos)
-				imm_geo.surface_set_uv(Vector2(t,0.02))
-				imm_geo.surface_add_vertex(posA.tip_pos)
-				imm_geo.surface_set_uv(Vector2(offsetted,0.02))
-				imm_geo.surface_add_vertex(posB.tip_pos)
+	for sample: TrailSample in _samples:
+		sample.age += delta
 
-				imm_geo.surface_set_uv(Vector2(t,0.98))
-				imm_geo.surface_add_vertex(posA.base_pos)
-				imm_geo.surface_set_uv(Vector2(offsetted,0.98))
-				imm_geo.surface_add_vertex(posB.base_pos)
-				imm_geo.surface_set_uv(Vector2(offsetted,0.02))
-				imm_geo.surface_add_vertex(posB.tip_pos)
-				
-				last_pos[i].age += delta
-				if new_size < 0 && last_pos[i].age > MAX_AGE:
-					new_size = i
+	while not _samples.is_empty() and _samples.back().age >= TRAIL_LIFETIME:
+		_samples.pop_back()
 
-			imm_geo.surface_end()
-			
-			if new_size >= 0:
-				last_pos.resize(new_size)
+	var current_sample := TrailSample.new(
+		global_position,
+		to_global(Vector3(0.0, size, 0.0))
+	)
+	_samples.push_front(current_sample)
+	if _samples.size() > MAX_SAMPLES:
+		_samples.resize(MAX_SAMPLES)
 
-		last_pos.push_front(pos)
-	elif last_pos.size() > 0:
-		imm_geo.clear_surfaces()
-		last_pos = []
+	_rebuild_mesh()
+
+func _rebuild_mesh() -> void:
+	_immediate_mesh.clear_surfaces()
+	if _samples.size() < 2:
+		return
+
+	_immediate_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
+	for index: int in range(_samples.size() - 1):
+		var newer: TrailSample = _samples[index]
+		var older: TrailSample = _samples[index + 1]
+		var newer_alpha: float = _sample_alpha(newer)
+		var older_alpha: float = _sample_alpha(older)
+		var newer_base: Vector3 = _mesh_instance.to_local(newer.base_position)
+		var newer_tip: Vector3 = _mesh_instance.to_local(newer.tip_position)
+		var older_base: Vector3 = _mesh_instance.to_local(older.base_position)
+		var older_tip: Vector3 = _mesh_instance.to_local(older.tip_position)
+
+		_add_vertex(newer_base, newer_alpha)
+		_add_vertex(newer_tip, newer_alpha)
+		_add_vertex(older_tip, older_alpha)
+		_add_vertex(newer_base, newer_alpha)
+		_add_vertex(older_tip, older_alpha)
+		_add_vertex(older_base, older_alpha)
+	_immediate_mesh.surface_end()
+
+func _sample_alpha(sample: TrailSample) -> float:
+	var fade: float = 1.0 - clampf(sample.age / TRAIL_LIFETIME, 0.0, 1.0)
+	return fade * fade * TRAIL_ALPHA
+
+func _add_vertex(vertex: Vector3, alpha: float) -> void:
+	_immediate_mesh.surface_set_color(Color(1.0, 1.0, 1.0, alpha))
+	_immediate_mesh.surface_add_vertex(vertex)
+
+func _clear() -> void:
+	_samples.clear()
+	_immediate_mesh.clear_surfaces()

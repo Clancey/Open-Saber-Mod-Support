@@ -8,6 +8,7 @@ class_name BeepSaber_Game
 var version := "0.5.0"
 
 var gamestate_bootup := GameState.new()
+var gamestate_failed := GameStateFailed.new()
 var gamestate_mapcomplete := GameStateMapComplete.new()
 var gamestate_mapselection := GameStateMapSelection.new()
 var gamestate_newhighscore := GameStateNewHighScore.new()
@@ -45,6 +46,7 @@ var gamestate: GameState = gamestate_bootup
 @onready var multiplier_label := $Multiplier_Label as MeshInstance3D
 @onready var point_label := $Point_Label as MeshInstance3D
 @onready var percent_indicator := $Percent_Indicator as PercentIndicator
+@onready var energy_bar := $EnergyBar as EnergyBar
 
 @onready var map_source_dialogs := $MapSourceDialogs as Node3D
 @onready var online_search_keyboard := $Keyboard_online_search as OQ_UI2DKeyboard
@@ -215,6 +217,7 @@ func _exit_tree() -> void:
 # the provided 'next_state'.
 func _transition_game_state(next_state: GameState) -> void:
 	gamestate = next_state
+	energy_bar.visible = next_state == gamestate_playing or next_state == gamestate_paused
 	gamestate._ready(self)
 
 func show_MapSourceDialogs(showing: bool = true) -> void:
@@ -260,7 +263,7 @@ func _check_and_update_saber(controller: BeepSaberController, saber: LightSaber)
 			controller.simple_rumble(0.0, 0.1)
 
 
-func _physics_process(_dt: float) -> void:
+func _physics_process(dt: float) -> void:
 	if debug_info_label.visible:
 		var dbg_text := "FPS: %d\nCube Pool: %d free of %d\nLink Pool: %d free of %d\nBomb Pool: %d free of %d\nWall Pool: %d free of %d\nArc Pool: %d free of %d" % [
 			Engine.get_frames_per_second(),
@@ -271,6 +274,9 @@ func _physics_process(_dt: float) -> void:
 			arc_pool.free_count(), arc_pool.total_count()]
 		(debug_info_label.mesh as TextMesh).text = dbg_text
 	
+	if gamestate == gamestate_playing and _in_wall:
+		Scoreboard.drain(dt)
+
 	gamestate._physics_process(self)
 	
 	_check_and_update_saber(left_controller, left_saber)
@@ -329,6 +335,8 @@ func _ready() -> void:
 	Scoreboard.score_changed.connect(_display_points)
 	@warning_ignore("return_value_discarded")
 	Scoreboard.points_awarded.connect(points_label_driver.show_points)
+	@warning_ignore("return_value_discarded")
+	Scoreboard.level_failed.connect(_on_level_failed)
 	
 	#render common assets for a couple of frames to prevent performance issues when loading them mid game
 	($pre_renderer as Node3D).visible = true
@@ -477,6 +485,8 @@ func _on_PlayerHead_area_exited(area: Area3D) -> void:
 # when the song ended we want to display the current score and
 # the high score
 func _on_song_ended() -> void:
+	if gamestate != gamestate_playing:
+		return
 	song_player.stop()
 	Scoreboard.paused = true
 	_clear_track()
@@ -514,6 +524,10 @@ func _on_song_ended() -> void:
 		_transition_game_state(gamestate_newhighscore)
 	else:
 		_transition_game_state(gamestate_mapcomplete)
+
+func _on_level_failed() -> void:
+	if gamestate == gamestate_playing:
+		_transition_game_state(gamestate_failed)
 
 func _restart_button() -> void:
 	start_map(Map.current_info, Map.current_difficulty)

@@ -47,6 +47,7 @@ var _bot_enabled: bool = true
 
 var _started: bool = false
 var _finishing: bool = false
+var _failed: bool = false
 var _startup_frame_index: int = -1
 var _start_ticks_msec: int = 0
 var _last_sample_second: int = -1
@@ -194,6 +195,13 @@ func _process(_delta: float) -> void:
 
 func _physics_process(_delta: float) -> void:
 	if not _started or _finishing:
+		return
+
+	if _game.gamestate == _game.gamestate_failed:
+		_failed = true
+		print("AUTOPLAY|FAILED|t=%.3f" % _played_seconds())
+		_finishing = true
+		call_deferred("_finish")
 		return
 
 	_track_cubes()
@@ -472,6 +480,7 @@ func _sample_performance(played: float) -> void:
 		"score": Scoreboard.points,
 		"points": Scoreboard.points,
 		"combo": Scoreboard.combo,
+		"energy": Scoreboard.energy,
 		"spawned": _spawned,
 		"cut": _cut,
 		"missed": _missed,
@@ -480,10 +489,10 @@ func _sample_performance(played: float) -> void:
 	}
 	_samples.append(sample)
 	print(
-		"AUTOPLAY|t=%.1f|fps=%.1f|proc=%.2fms|phys=%.2fms|draw=%.0f|obj=%.0f|score=%d|combo=%d|spawn=%d|cut=%d|miss=%d|events=%d|lights=%d"
+		"AUTOPLAY|t=%.1f|fps=%.1f|proc=%.2fms|phys=%.2fms|draw=%.0f|obj=%.0f|score=%d|combo=%d|energy=%.2f|spawn=%d|cut=%d|miss=%d|events=%d|lights=%d"
 		% [
 			played, fps, process_ms, physics_ms, draw_calls, objects,
-			Scoreboard.points, Scoreboard.combo, _spawned, _cut, _missed,
+			Scoreboard.points, Scoreboard.combo, Scoreboard.energy, _spawned, _cut, _missed,
 			events, light_updates
 		]
 	)
@@ -669,6 +678,7 @@ func _finish() -> void:
 		"song": Map.current_info.song_name if Map.current_info != null else _song_path,
 		"difficulty": _selected_difficulty.custom_name if _selected_difficulty != null else _difficulty_query,
 		"duration_played": played,
+		"failed": _failed,
 		"samples": _samples,
 		"aggregates": {
 			"avg_fps": _aggregate("fps", "avg"),
@@ -757,6 +767,8 @@ func _song_has_ended() -> bool:
 	if _game.endscore.visible:
 		return true
 	if _game.gamestate == _game.gamestate_mapcomplete or _game.gamestate == _game.gamestate_newhighscore:
+		return true
+	if _game.gamestate == _game.gamestate_failed:
 		return true
 	return _played_seconds() > 0.5 and not _song_player.playing
 

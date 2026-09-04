@@ -74,6 +74,10 @@ var bombs_enabled: bool:
 	set(value):
 		bombs_enabled = value
 		set_and_emit(&"bombs_enabled", value)
+var no_fail: bool:
+	set(value):
+		no_fail = value
+		set_and_emit(&"no_fail", value)
 var events: bool:
 	set(value):
 		events = value
@@ -147,6 +151,7 @@ var default_values = {
 	glare = true,
 	show_debug_info = false,
 	bombs_enabled = true,
+	no_fail = false,
 	events = true,
 	saber_visual = 0,
 	ui_volume = 10.0,
@@ -282,6 +287,7 @@ func load_old_config() -> void:
 	glare = Utils.get_bool(settings_dict, "glare", true, {"Android": true, "Web": false})
 	show_debug_info = Utils.get_bool(settings_dict, "show_debug_info", false)
 	bombs_enabled = Utils.get_bool(settings_dict, "bombs_enabled", true)
+	no_fail = Utils.get_bool(settings_dict, "no_fail", false)
 	events = Utils.get_bool(settings_dict, "events", true, {"Web": false})
 	disable_map_color = Utils.get_bool(settings_dict, "disable_map_color", false)
 	player_height_offset = Utils.get_float(settings_dict, "player_height_offset", 0.0)

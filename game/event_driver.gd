@@ -60,7 +60,8 @@ var light_manager: LightManager = null
 @onready var left_waving_lasers_material: = ($Level / LeftWavingLasers / laser1 / Bar7 as MeshInstance3D).material_override as StandardMaterial3D
 @onready var right_waving_lasers_material: = ($Level / RightWavingLasers / laser1 / Bar7 as MeshInstance3D).material_override as StandardMaterial3D
 @onready var track_lights_material: = ($Level / TrackLights / Bar1 as MeshInstance3D).material_override as StandardMaterial3D
-@onready var floor_material: = ($Level / floor as MeshInstance3D).material_override as StandardMaterial3D
+@onready var floor_material: = ($Level / floor as MeshInstance3D).material_override as ShaderMaterial
+@onready var ring_material: = ($Level / rings / ring as MeshInstance3D).material_override as ShaderMaterial
 
 @onready var ring_anim_player: = $Level / rings / AnimationPlayer as AnimationPlayer
 @onready var left_laser_anim_player: = $Level / LeftWavingLasers / AnimationPlayer as AnimationPlayer
@@ -266,7 +267,7 @@ func turn_light_on(type: int, color: Color) -> void :
 		light_manager.set_all_lights_of_type(type, color, true)
 	if type == EventInfo.TYPE_FLOOR_LIGHTS:
 		floor_lights_active = true
-		floor_material.albedo_color = color
+		_set_floor_event_color(color)
 
 func _prepare_targeted_light_event(
 	data: EventInfo,
@@ -344,7 +345,7 @@ func _get_current_light_color(type: int) -> Color:
 		EventInfo.TYPE_RIGHT_WAVING_LASERS:
 			return right_waving_lasers_material.albedo_color
 		EventInfo.TYPE_FLOOR_LIGHTS:
-			return floor_material.albedo_color
+			return _get_floor_event_color()
 	return Color.BLACK
 
 func _fade_background(
@@ -393,7 +394,6 @@ func fade_light(
 		target_color = _get_floor_idle_color()
 
 	var group: Node3D
-	var material: Array[StandardMaterial3D] = []
 	match type:
 		EventInfo.TYPE_DIAGONAL_LASERS:
 			group = diagonal_lasers_holder
@@ -405,7 +405,6 @@ func fade_light(
 			group = right_waving_lasers_holder
 		EventInfo.TYPE_FLOOR_LIGHTS:
 			group = track_lights_holder
-			material = [floor_material]
 
 	group.visible = true
 	if is_instance_valid(light_manager):
@@ -414,9 +413,9 @@ func fade_light(
 	var tween: = group.create_tween()
 	@warning_ignore("return_value_discarded")
 	tween.set_parallel().set_trans(trans_type).set_ease(ease_type)
-	for m in material:
+	if type == EventInfo.TYPE_FLOOR_LIGHTS:
 		@warning_ignore("return_value_discarded")
-		tween.tween_property(m, ^"albedo_color", target_color, duration).from(from)
+		tween.tween_method(_set_floor_event_color, from, target_color, duration)
 	if is_instance_valid(light_manager):
 		@warning_ignore("return_value_discarded")
 		tween.tween_method(
@@ -451,6 +450,8 @@ func _on_light_fade_finished(
 
 func _on_Tween_tween_step(value: Color, id: int) -> void :
 	sphere_material.set_shader_parameter(INTENSITY_PARAMS[id], value.v)
+	if id == EventInfo.TYPE_SQUARE_LASERS:
+		ring_material.set_shader_parameter(&"ring_color", value)
 
 func _event_fade_duration(data: EventInfo) -> float:
 	var duration_beats: float = float(data.custom_data.get("_v3FadeDurationBeats", 0.0))
@@ -478,7 +479,19 @@ static func get_environment_base_color(color_left: Color, color_right: Color) ->
 func _update_environment_base() -> void:
 	var base_color: Color = get_environment_base_color(left_color, right_color)
 	sphere_material.set_shader_parameter(&"base_color", base_color)
+	floor_material.set_shader_parameter(&"base_color", base_color)
+	floor_material.set_shader_parameter(&"left_color", left_color)
+	floor_material.set_shader_parameter(&"right_color", right_color)
 	environment_palette_changed.emit(left_color, right_color)
+
+func _set_floor_event_color(color: Color) -> void:
+	floor_material.set_shader_parameter(&"event_color", color)
+
+func _get_floor_event_color() -> Color:
+	var color_value: Variant = floor_material.get_shader_parameter(&"event_color")
+	if color_value is Color:
+		return color_value as Color
+	return Color.BLACK
 
 func _get_floor_idle_color() -> Color:
 	var idle_left: Color = Color(
@@ -511,7 +524,7 @@ func _apply_floor_idle() -> void:
 	var idle_mix: Color = idle_left.lerp(idle_right, 0.5)
 	_on_Tween_tween_step(idle_mix, EventInfo.TYPE_FLOOR_LIGHTS)
 	_set_light_holder_visible(EventInfo.TYPE_FLOOR_LIGHTS, true)
-	floor_material.albedo_color = idle_mix
+	_set_floor_event_color(idle_mix)
 	if not is_instance_valid(light_manager):
 		return
 	light_manager.set_all_lights_of_type(

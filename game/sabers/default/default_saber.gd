@@ -22,19 +22,22 @@ func set_thickness(value: float) -> void:
 	light_mesh.scale.z = value
 
 func set_trail(enabled: bool = true) -> void:
-	tail.visible = enabled
+	tail.set_enabled(enabled)
 
 func _show() -> void:
 	_anim.play(&"Show")
 	is_extended = true
+	tail.set_active(true)
 	
 func _hide() -> void:
 	_anim.play(&"Hide")
 	is_extended = false
+	tail.set_active(false)
 	
 func quickhide() -> void:
 	_anim.play(&"QuickHide")
 	is_extended = false
+	tail.set_active(false)
 
 func hit(time_offset: float) -> void:
 	if time_offset>0.2 or time_offset<-0.05:

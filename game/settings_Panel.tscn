@@ -378,6 +378,11 @@ layout_mode = 2
 theme = SubResource("3")
 text = "Bombs Enabled:"
 
+[node name="no_fail" type="CheckButton" parent="ScrollContainer/VBox"]
+layout_mode = 2
+theme = SubResource("3")
+text = "No Fail:"
+
 [node name="SaberThicknessRow" type="HBoxContainer" parent="ScrollContainer/VBox"]
 layout_mode = 2
 
@@ -722,6 +727,7 @@ scroll_node_path = NodePath("../ScrollContainer")
 [connection signal="toggled" from="ScrollContainer/VBox/show_debug" to="." method="_on_show_debug_toggled"]
 [connection signal="toggled" from="ScrollContainer/VBox/show_collisions" to="." method="_on_show_collisions_toggled"]
 [connection signal="toggled" from="ScrollContainer/VBox/bombs_enabled" to="." method="_on_bombs_enabled_toggled"]
+[connection signal="toggled" from="ScrollContainer/VBox/no_fail" to="." method="_on_no_fail_toggled"]
 [connection signal="value_changed" from="ScrollContainer/VBox/SaberThicknessRow/saber_thickness" to="." method="_on_thickness_value_changed"]
 [connection signal="item_selected" from="ScrollContainer/VBox/SaberTypeRow/saber" to="." method="_on_saber_item_selected"]
 [connection signal="pressed" from="ScrollContainer/VBox/SaberColorsRow/ResetColors" to="." method="_on_reset_saber_colors_pressed"]

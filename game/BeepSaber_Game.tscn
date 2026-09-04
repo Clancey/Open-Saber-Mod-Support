@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=46 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
@@ -36,6 +36,7 @@
 [ext_resource type="PackedScene" uid="uid://dvj8dorx2l7s0" path="res://game/BeepCube/BeepCube.tscn" id="33_nc705"]
 [ext_resource type="PackedScene" uid="uid://b62c3hkjmky75" path="res://game/Chain/ChainLink.tscn" id="34_tsovg"]
 [ext_resource type="PackedScene" uid="uid://cl1dig23jiq45" path="res://game/Arc/Arc.tscn" id="35_arc"]
+[ext_resource type="PackedScene" path="res://game/EnergyBar.tscn" id="36_energy"]
 
 [sub_resource type="Environment" id="1"]
 background_mode = 1
@@ -199,6 +200,9 @@ skeleton = NodePath("")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, -2.5)
 material_override = SubResource("ShaderMaterial_6dld2")
 mesh = SubResource("QuadMesh_02xdc")
+
+[node name="EnergyBar" parent="." instance=ExtResource("36_energy")]
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 0.05, -1.6)
 
 [node name="EndScore" parent="." instance=ExtResource("20_fgfws")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.60386, -0.777581)
