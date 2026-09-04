@@ -21,6 +21,7 @@ var mesh_material: StandardMaterial3D
 
 
 var ui_size := Vector2.ZERO
+var _viewport_refresh_generation := 0
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if (ui_control == null): return PackedStringArray(["Need a Control node as child."])
@@ -49,16 +50,12 @@ func update_size() -> void:
 		viewport.set_size(ui_size)
 
 func _hide() -> void:
-	viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	hide()
+	_sync_viewport_update_mode()
 
 func _show() -> void:
-	if !update_only_on_input:
-		viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_PARENT_VISIBLE
-	else:
-		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
-		_input_update()
 	show()
+	_sync_viewport_update_mode()
 
 func _ready() -> void:
 	mesh_material = mesh_instance.material_override as StandardMaterial3D
@@ -68,6 +65,10 @@ func _ready() -> void:
 	
 	if Engine.is_editor_hint():
 		return
+
+	@warning_ignore("return_value_discarded")
+	visibility_changed.connect(_sync_viewport_update_mode)
+	_sync_viewport_update_mode()
 
 	find_child_control()
 
@@ -83,7 +84,27 @@ func _ready() -> void:
 	ui_control.visible = true # set visible here as it might was set invisible for editing multiple controls
 	
 	ui_collisionshape = $UIArea/UICollisionShape as CollisionShape3D
-	
+
+func _sync_viewport_update_mode() -> void:
+	_viewport_refresh_generation += 1
+	if not is_visible_in_tree():
+		viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+		return
+
+	if update_only_on_input:
+		_input_update()
+		return
+
+	var refresh_generation := _viewport_refresh_generation
+	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	await RenderingServer.frame_post_draw
+	if refresh_generation != _viewport_refresh_generation:
+		return
+	viewport.render_target_update_mode = (
+		SubViewport.UPDATE_ALWAYS
+		if is_visible_in_tree()
+		else SubViewport.UPDATE_DISABLED
+	)
 	
 func _editor_update_preview() -> void:
 	var preview_node := ui_control.duplicate(DUPLICATE_USE_INSTANTIATION) as Control
@@ -96,10 +117,13 @@ func _editor_update_preview() -> void:
 	viewport.add_child(preview_node)
 
 func _input_update() -> void:
+	if not is_visible_in_tree():
+		viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+		return
 	if update_only_on_input:
 		($update_once as UpdateViewport).update_once(viewport)
 	else:
-		viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_PARENT_VISIBLE
+		viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 
 func _process(_dt: float) -> void:
 	

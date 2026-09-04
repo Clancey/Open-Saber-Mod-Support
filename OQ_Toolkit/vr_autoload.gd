@@ -11,7 +11,7 @@ var active_arvr_interface_name := "Unknown"
 
 # we use this to be position indepented of the OQ_Toolkit directory
 # so make sure to always use this if instancing nodes/features via code
-@onready var oq_base_dir := (get_script() as Script).get_path().get_base_dir()
+@onready var oq_base_dir: String = (get_script() as Script).get_path().get_base_dir()
 
 ###############################################################################
 # VR logging systems
@@ -115,9 +115,13 @@ func get_current_player_height() -> float:
 func load_json_file(filename: String) -> Dictionary:
 	var save := FileAccess.open(filename, FileAccess.READ)
 	if save:
-		var r := JSON.parse_string(save.get_as_text()) as Dictionary
+		var parsed_result: Variant = JSON.parse_string(save.get_as_text())
 		save.close()
-		return r
+		if parsed_result is Dictionary:
+			return parsed_result as Dictionary
+		else:
+			log_error("Failed to parse JSON as Dictionary from file: " + filename)
+			return {}
 	else:
 		log_file_error(FileAccess.get_open_error(), filename, "load_json_file in vr_autoload.gd")
 		return {}
@@ -163,7 +167,7 @@ func _notification(what: int) -> void:
 # Scene Switching Helper Logic
 ###############################################################################
 
-var _active_scene_path: String # this assumes that only a single scene will ever be switched
+# Removed unused variable _active_scene_path
 
 ###############################################################################
 # Main Funcitonality for initialize and process
@@ -192,12 +196,14 @@ func initialize(origin: XROrigin3D, camera: XRCamera3D, left_hand: BeepSaberCont
 	if xr_interface and xr_interface.is_initialized():
 		log_info("OpenXR initialised successfully")
 		if xr_interface.has_method(&"get_available_display_refresh_rates"):
-			var fps : Array = xr_interface.get_available_display_refresh_rates()
+			var fps: Array = xr_interface.get_available_display_refresh_rates()
 			log_info("avaliable fps: "+str(fps))
 			if fps and fps.size() >= 1:
 				var max_fps: Variant = fps[fps.size() - 1]
 				if max_fps is float:
-					xr_interface.set_display_refresh_rate(max_fps as float)
+					xr_interface.set_display_refresh_rate(max_fps)
+				elif max_fps is int:
+					xr_interface.set_display_refresh_rate(float(max_fps))
 					Engine.set_physics_ticks_per_second(max_fps as int)
 		
 		# Turn off v-sync!

@@ -13,7 +13,7 @@ config_version=5
 config/name="Open Saber"
 config/version="0.6.0"
 run/main_scene="res://game/BeepSaber_Game.tscn"
-config/features=PackedStringArray("4.4")
+config/features=PackedStringArray("4.7", "Mobile")
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/image="res://game/data/beepsaber_logo.png"
 config/icon="res://icon.png"
@@ -49,7 +49,7 @@ gdscript/warnings/return_value_discarded=1
 window/size/viewport_width=960
 window/size/viewport_height=540
 window/subwindows/embed_subwindows=false
-window/vsync/vsync_mode=false
+window/vsync/vsync_mode=0
 
 [editor_plugins]
 
@@ -58,10 +58,6 @@ enabled=PackedStringArray("res://addons/stopwatch/plugin.cfg")
 [filesystem]
 
 import/blender/enabled=false
-
-[gdnative]
-
-singletons=["res://addons/godot-openxr/config/godot_openxr.gdnlib"]
 
 [importer_defaults]
 
@@ -136,8 +132,8 @@ ui_end={
 [physics]
 
 common/physics_jitter_fix=0.0
-3d/physics_engine="Bullet"
-common/physics_fps=72
+common/physics_ticks_per_second=72
+3d/physics_engine="Jolt Physics"
 
 [rendering]
 
@@ -147,15 +143,15 @@ shading/overrides/force_lambert_over_burley=true
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)
 environment/defaults/default_environment="res://default_env.tres"
 shading/overrides/force_vertex_shading.mobile=false
-quality/intended_usage/framebuffer_allocation=3
-vram_compression/import_etc=true
-lights_and_shadows/shadow_atlas/size=2048
-quality/shadows/filter_mode=0
-quality/reflections/texture_array_reflections=false
-quality/reflections/high_quality_ggx=false
+lights_and_shadows/directional_shadow/size=256
+lights_and_shadows/positional_shadow/atlas_size=256
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=0
+lights_and_shadows/positional_shadow/soft_shadow_filter_quality=0
+reflections/sky_reflections/texture_array_reflections=false
+reflections/sky_reflections/fast_filter_high_quality=false
 shading/overrides/force_blinn_over_ggx.mobile=false
-quality/filters/msaa=6
-quality/depth/hdr=false
+environment/glow/upscale_mode.mobile=0
+anti_aliasing/quality/msaa_3d=2
 
 [shader_globals]
 
@@ -171,6 +167,10 @@ right_saber={
 [xr]
 
 openxr/enabled=true
+shaders/enabled=true
+openxr/extensions/hand_tracking=false
 openxr/reference_space=2
 openxr/startup_alert=false
-shaders/enabled=true
+openxr/foveation_level=3
+openxr/foveation_dynamic=true
+openxr/submit_depth_buffer=false
