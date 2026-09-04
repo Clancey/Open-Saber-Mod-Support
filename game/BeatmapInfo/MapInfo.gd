@@ -16,6 +16,11 @@ var cover_image_filename: String
 var environment_name: String
 var song_time_offset: float
 var custom_data: Dictionary
+var song_duration: float = 0.0
+var audio_data_filename: String = ""
+var environment_names: Array[String] = []
+var color_schemes: Array[Dictionary] = []
+var difficulty_beatmap_sets: Dictionary = {}
 
 var filepath: String
 var difficulty_beatmaps: Array[DifficultyInfo]
@@ -92,3 +97,73 @@ static func new_v2(info_dict: Dictionary, load_path: String) -> MapInfo:
 		load_path,
 		diffs
 	)
+
+static func new_v4(info_dict: Dictionary, load_path: String) -> MapInfo:
+	var song: Dictionary = Utils.get_dict(info_dict, "song", {})
+	var audio: Dictionary = Utils.get_dict(info_dict, "audio", {})
+	var grouped_difficulties: Dictionary = {}
+	var characteristic_order: Array[String] = []
+	var level_authors: Array[String] = []
+
+	for difficulty_value: Variant in Utils.get_array(info_dict, "difficultyBeatmaps", []):
+		if not difficulty_value is Dictionary:
+			continue
+		var difficulty_dict: Dictionary = difficulty_value as Dictionary
+		var difficulty: DifficultyInfo = DifficultyInfo.load_v4(difficulty_dict)
+		var characteristic: String = difficulty.characteristic
+		if not grouped_difficulties.has(characteristic):
+			grouped_difficulties[characteristic] = []
+			characteristic_order.append(characteristic)
+		var characteristic_difficulties: Array = grouped_difficulties[characteristic] as Array
+		characteristic_difficulties.append(difficulty)
+		grouped_difficulties[characteristic] = characteristic_difficulties
+		for mapper: String in difficulty.beatmap_authors:
+			if not level_authors.has(mapper):
+				level_authors.append(mapper)
+
+	var difficulties: Array[DifficultyInfo] = []
+	for characteristic: String in characteristic_order:
+		var characteristic_difficulties: Array = grouped_difficulties[characteristic] as Array
+		for difficulty_value: Variant in characteristic_difficulties:
+			if difficulty_value is DifficultyInfo:
+				difficulties.append(difficulty_value as DifficultyInfo)
+
+	var environments: Array[String] = _string_array(Utils.get_array(info_dict, "environmentNames", []))
+	var schemes: Array[Dictionary] = _dictionary_array(Utils.get_array(info_dict, "colorSchemes", []))
+	var info: MapInfo = MapInfo.new(
+		Utils.get_str(info_dict, "version", "4.0.0"),
+		Utils.get_str(song, "title", ""),
+		Utils.get_str(song, "subTitle", ""),
+		Utils.get_str(song, "author", ""),
+		", ".join(level_authors),
+		Utils.get_float(audio, "bpm", 60.0),
+		Utils.get_float(audio, "previewStartTime", 0.0),
+		Utils.get_float(audio, "previewDuration", 0.0),
+		Utils.get_str(audio, "songFilename", ""),
+		Utils.get_str(info_dict, "coverImageFilename", ""),
+		environments[0] if not environments.is_empty() else "",
+		0.0,
+		Utils.get_dict(info_dict, "customData", {}),
+		load_path,
+		difficulties
+	)
+	info.song_duration = Utils.get_float(audio, "songDuration", 0.0)
+	info.audio_data_filename = Utils.get_str(audio, "audioDataFilename", "")
+	info.environment_names = environments
+	info.color_schemes = schemes
+	info.difficulty_beatmap_sets = grouped_difficulties
+	return info
+
+static func _string_array(values: Array) -> Array[String]:
+	var result: Array[String] = []
+	for value: Variant in values:
+		if value is String:
+			result.append(value as String)
+	return result
+
+static func _dictionary_array(values: Array) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for value: Variant in values:
+		if value is Dictionary:
+			result.append(value as Dictionary)
+	return result
