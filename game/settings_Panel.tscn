@@ -346,6 +346,12 @@ tooltip_text = "Low Performance impact*"
 theme = SubResource("3")
 text = "*Dynamic Background: "
 
+[node name="visionos_passthrough" type="CheckButton" parent="ScrollContainer/VBox"]
+layout_mode = 2
+tooltip_text = "visionOS only: show your real room instead of the immersive environment."
+theme = SubResource("3")
+text = "Passthrough: "
+
 [node name="cut_blocks" type="CheckButton" parent="ScrollContainer/VBox"]
 layout_mode = 2
 tooltip_text = "High Performance impact*"
@@ -743,5 +749,6 @@ scroll_node_path = NodePath("../ScrollContainer")
 [connection signal="toggled" from="ScrollContainer/VBox/disable_map_color" to="." method="_on_disable_map_color_toggled"]
 [connection signal="toggled" from="ScrollContainer/VBox/spectator_view" to="." method="_on_spectator_view_toggled"]
 [connection signal="toggled" from="ScrollContainer/VBox/spectator_hud" to="." method="_on_spectator_hud_toggled"]
+[connection signal="toggled" from="ScrollContainer/VBox/visionos_passthrough" to="." method="_on_visionos_passthrough_toggled"]
 [connection signal="button_up" from="defaults" to="." method="_restore_defaults"]
 [connection signal="pressed" from="apply" to="." method="_on_apply_pressed"]

@@ -14,6 +14,26 @@ var trigger_last_frame := false
 
 var movement_aabb := AABB()
 
+## Which physical source is currently driving this hand. Only meaningful on the
+## native visionOS backend, where optical hand tracking and real spatial
+## accessories both publish onto the reserved `left_hand`/`right_hand` trackers.
+var input_source: VisionOSPlatform.InputSource = VisionOSPlatform.InputSource.NONE
+
+var _is_native_visionos := false
+
+func _ready() -> void:
+	_is_native_visionos = VisionOSPlatform.is_native_platform()
+
+## True when this hand is driven by ARKit optical joints rather than a real
+## accessory. Optical hands have no face buttons, thumbstick or haptics.
+func is_optical_hand() -> bool:
+	return input_source == VisionOSPlatform.InputSource.OPTICAL_HAND
+
+## Haptics need a real accessory; firing them at an optical hand only produces
+## engine errors.
+func supports_haptics() -> bool:
+	return not _is_native_visionos or input_source == VisionOSPlatform.InputSource.SPATIAL_CONTROLLER
+
 func ax_pressed() -> bool:
 	return ax
 
@@ -56,6 +76,34 @@ func _update_buttons_and_sticks() -> void:
 	by = is_button_pressed(&"by_button")
 	menu = is_button_pressed(&"menu_button")
 	trigger = is_button_pressed(&"trigger")
+	if is_optical_hand():
+		# An optical hand only publishes pinch (trigger) and grasp (grip). Grasp
+		# is the single owner of the menu action there, so pausing stays reachable
+		# without an accessory.
+		menu = menu or is_button_pressed(&"grip_click")
+
+func _clear_button_state() -> void:
+	ax = false
+	ax_last_frame = false
+	by = false
+	by_last_frame = false
+	menu = false
+	menu_last_frame = false
+	trigger = false
+	trigger_last_frame = false
+
+## Re-resolves which source drives this hand. A change is an input state
+## transition: everything held on the old source is dropped and neutral input is
+## required before the new source can trigger an action.
+func _update_input_source() -> void:
+	if not _is_native_visionos:
+		return
+	var resolved := VisionOSPlatform.resolve_input_source(tracker)
+	if resolved == input_source:
+		return
+	input_source = resolved
+	_clear_button_state()
+	first_time = true
 
 func _update_movement_aabb() -> void:
 	movement_aabb = movement_aabb.expand(global_transform.origin)
@@ -69,6 +117,8 @@ var _rumble_duration_remaining := 0.0
 func simple_rumble(intensity: float, duration: float) -> void:
 	_rumble_duration_remaining = duration;
 	_is_simple_rumbling = true
+	if not supports_haptics():
+		return
 	trigger_haptic_pulse("haptic", 20, intensity, duration, 0)
 	
 func is_simple_rumbling() -> bool:
@@ -87,6 +137,8 @@ func _physics_process(dt: float) -> void:
 	if not Scoreboard.paused:
 		_update_movement_aabb()
 	
+	_update_input_source()
+	
 	if get_is_active(): # wait for active controller
 		_update_rumble(dt)
 		_update_buttons_and_sticks()
@@ -97,11 +149,4 @@ func _physics_process(dt: float) -> void:
 			first_time = false
 	else:
 		first_time = true
-		ax = false
-		ax_last_frame = false
-		by = false
-		by_last_frame = false
-		menu = false
-		menu_last_frame = false
-		trigger = false
-		trigger_last_frame = false
+		_clear_button_state()

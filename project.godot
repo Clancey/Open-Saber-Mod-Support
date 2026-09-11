@@ -139,6 +139,7 @@ common/physics_ticks_per_second=72
 [rendering]
 
 renderer/rendering_method="mobile"
+rendering_device/driver.visionos="metal"
 textures/vram_compression/import_etc2_astc=true
 shading/overrides/force_lambert_over_burley=true
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)
@@ -168,6 +169,7 @@ right_saber={
 [xr]
 
 openxr/enabled=true
+openxr/enabled.visionos=false
 shaders/enabled=true
 openxr/extensions/hand_tracking=false
 openxr/reference_space=2
@@ -175,3 +177,5 @@ openxr/startup_alert=false
 openxr/foveation_level=3
 openxr/foveation_dynamic=true
 openxr/submit_depth_buffer=false
+visionos/enable_controller_tracking=true
+visionos/enable_hand_tracking=true

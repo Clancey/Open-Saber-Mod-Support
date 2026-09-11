@@ -176,6 +176,10 @@ func _notification(what: int) -> void:
 var webxr_initializer: CanvasLayer
 var xr_interface: XRInterface
 
+## True once the native visionOS (CompositorServices) interface owns presentation.
+## The OpenXR path below is untouched on every other platform.
+var is_native_visionos := false
+
 func initialize(origin: XROrigin3D, camera: XRCamera3D, left_hand: BeepSaberController, right_hand: BeepSaberController,
 	render_scale: float = 1.0) -> void:
 	_init_vr_log()
@@ -191,10 +195,15 @@ func initialize(origin: XROrigin3D, camera: XRCamera3D, left_hand: BeepSaberCont
 		webxr_initializer = webxr
 		return
 	
+	if VisionOSPlatform.is_native_platform():
+		_initialize_native_visionos(render_scale)
+		return
+	
 	xr_interface = XRServer.find_interface("OpenXR") as XRInterface
 	if xr_interface: xr_interface.render_target_size_multiplier = render_scale
 	if xr_interface and xr_interface.is_initialized():
 		log_info("OpenXR initialised successfully")
+		active_arvr_interface_name = "OpenXR"
 		if xr_interface.has_method(&"get_available_display_refresh_rates"):
 			var fps: Array = xr_interface.get_available_display_refresh_rates()
 			log_info("avaliable fps: "+str(fps))
@@ -215,3 +224,53 @@ func initialize(origin: XROrigin3D, camera: XRCamera3D, left_hand: BeepSaberCont
 	else:
 		log_info("OpenXR not initialized, please check if your headset is connected")
 		inVR = false
+
+
+## Native visionOS startup. CompositorServices owns presentation, so this only
+## initialises the interface once and hands the root viewport to it.
+func _initialize_native_visionos(render_scale: float) -> void:
+	var interface := XRServer.find_interface(VisionOSPlatform.INTERFACE_NAME) as XRInterface
+	if interface == null:
+		log_error("visionOS XR interface not found. The build is missing the native XR module.")
+		inVR = false
+		return
+	
+	if not interface.is_initialized() and not interface.initialize():
+		log_error("visionOS XR interface failed to initialize; rendering would have no presenter.")
+		inVR = false
+		return
+	
+	xr_interface = interface
+	interface.render_target_size_multiplier = render_scale
+	is_native_visionos = true
+	active_arvr_interface_name = VisionOSPlatform.INTERFACE_NAME
+	
+	var viewport := get_viewport()
+	viewport.use_xr = true
+	viewport.vrs_mode = Viewport.VRS_XR
+	viewport.use_hdr_2d = true
+	inVR = true
+	
+	apply_camera_near_plane()
+	log_info("visionOS XR interface initialised successfully")
+
+
+## Keeps the tracked camera's near plane at or above the platform's physical
+## minimum. Safe to call again after a scene load, recenter or world scale change.
+func apply_camera_near_plane() -> void:
+	if not is_native_visionos or vrCamera == null:
+		return
+	vrCamera.near = VisionOSPlatform.near_plane_for_world_scale(XRServer.world_scale, vrCamera.near)
+
+
+## Selects the native immersion style. Returns true when the interface accepted
+## it, so callers can avoid stripping the environment on a build that is still
+## fully immersive. No-op (false) on every non-native platform.
+func set_visionos_immersion_style(style: VisionOSPlatform.ImmersionStyle) -> bool:
+	if not is_native_visionos or not is_instance_valid(xr_interface):
+		return false
+	if not xr_interface.has_method(&"set_immersion_style"):
+		log_warning("visionOS interface has no immersion style control; staying fully immersive.")
+		return false
+	xr_interface.set_immersion_style(int(style))
+	return int(xr_interface.get_immersion_style()) == int(style)

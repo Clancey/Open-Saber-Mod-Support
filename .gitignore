@@ -7,3 +7,8 @@ src_data
 .godot/
 android/build/*
 /addons/godotopenxrvendors
+
+# visionOS: the pinned 190 MB export template and build output stay local.
+# build-tools/visionos/build.sh is tracked; the template it verifies is not.
+/build-tools/visionos/visionos.zip
+/build/

@@ -11,6 +11,8 @@ the Godot game engine.
 
 The main target platform is the Oculus Quest but it should also work with SteamVR if you add the OpenVR plugin to the addons folder in the godot project.
 
+There is also a native Apple Vision Pro build — see [doc/VISIONOS.md](doc/VISIONOS.md).
+
 Originally this game was (and still is) a demo game as part of the Godot Oculus Quest Toolkit. To keep the demo implementation small
 this stand alone version was forked so that it can be changed and developed independent of the original demo.
 

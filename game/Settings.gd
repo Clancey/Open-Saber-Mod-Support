@@ -115,6 +115,12 @@ var spectator_hud: bool:
 	set(value):
 		spectator_hud = value
 		set_and_emit(&"spectator_hud", value)
+## visionOS only: render the real room behind the game instead of the full
+## immersive environment. Ignored on every other platform.
+var visionos_passthrough: bool:
+	set(value):
+		visionos_passthrough = value
+		set_and_emit(&"visionos_passthrough", value)
 
 
 
@@ -167,16 +173,24 @@ var default_values = {
 	audio_sfx = 0.8,
 	spectator_view = false,
 	spectator_hud = true,
+	visionos_passthrough = false,
 	obstacle_color = Color(1.0, 0.1882353, 0.1882353)
 }
 
 func cast_or_default(key: String, to_type: int = -1) -> Variant:
 	var default = default_values[key] if key in default_values else null
-	return convert(config.get_value(SECTION, key, default), typeof(default) if to_type < 0 else to_type)
+	return convert(config.get_value(SECTION, config_key(key), default), typeof(default) if to_type < 0 else to_type)
 
 func set_and_emit(key: StringName, value: Variant) -> void:
-	config.set_value(SECTION, String(key), value if default_values[key] != value else null)
+	config.set_value(SECTION, config_key(String(key)), value if default_values[key] != value else null)
 	changed.emit(key)
+
+## Saber offsets are a visual calibration of the held model against the platform's
+## aim pose, so a value tuned on Quest is meaningless on visionOS. The scoping
+## policy lives in VisionOSPlatform so it can be unit tested without booting the
+## Settings autoload.
+func config_key(key: String) -> String:
+	return VisionOSPlatform.config_key(key)
 
 func _is_valid_saber_color(value: Color) -> bool:
 	return maxf(value.r, maxf(value.g, value.b)) >= MIN_SABER_COLOR_CHANNEL \
@@ -292,6 +306,7 @@ func load_old_config() -> void:
 	events = Utils.get_bool(settings_dict, "events", true, {"Web": false})
 	disable_map_color = Utils.get_bool(settings_dict, "disable_map_color", false)
 	player_height_offset = Utils.get_float(settings_dict, "player_height_offset", 0.0)
+	visionos_passthrough = Utils.get_bool(settings_dict, "visionos_passthrough", false)
 	if corrected_saber_color:
 		save()
 
