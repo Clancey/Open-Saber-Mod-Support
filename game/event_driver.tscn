@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://qjvg3reomvyk"]
+[gd_scene load_steps=36 format=3 uid="uid://qjvg3reomvyk"]
 
 [ext_resource type="Script" path="res://game/event_driver.gd" id="script"]
 [ext_resource type="Script" path="res://game/environments/TrackLaneRings.gd" id="rings_script"]
@@ -208,6 +208,29 @@ tracks/3/keys = {
 _data = {
 &"rotate": SubResource("RightWavingLasers_anim")
 }
+
+[sub_resource type="ParticleProcessMaterial" id="dust_mat"]
+emission_shape = 3
+emission_box_extents = Vector3(6, 3, 12)
+direction = Vector3(0, 0, 1)
+spread = 180.0
+initial_velocity_min = 0.05
+initial_velocity_max = 0.2
+gravity = Vector3(0, 0, 0)
+scale_min = 0.6
+scale_max = 1.0
+color = Color(0.7, 0.8, 1, 0.35)
+
+[sub_resource type="StandardMaterial3D" id="dust_draw_mat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+
+[sub_resource type="QuadMesh" id="dust_quad"]
+material = SubResource("dust_draw_mat")
+size = Vector2(0.012, 0.012)
 
 [node name="event_driver" type="Node3D"]
 script = ExtResource("script")
@@ -726,6 +749,16 @@ mesh = SubResource("unit_box")
 [node name="LightBatch" type="MultiMeshInstance3D" parent="Level/TrackLights"]
 layers = 3
 material_override = SubResource("light_bar_mat")
+
+[node name="Dust" type="GPUParticles3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -6)
+amount = 220
+lifetime = 8.0
+preprocess = 8.0
+visibility_aabb = AABB(-8, -4, -14, 16, 8, 28)
+process_material = SubResource("dust_mat")
+draw_pass_1 = SubResource("dust_quad")
 
 [node name="rings" type="Node3D" parent="Level"]
 script = ExtResource("rings_script")

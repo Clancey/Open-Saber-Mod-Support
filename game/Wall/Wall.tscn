@@ -12,8 +12,8 @@ shader_parameter/color = Color(1, 0.188, 0.188, 1)
 shader_parameter/size = Vector3(1, 1, 1)
 shader_parameter/edge_size = 0.05
 shader_parameter/glow_size = 0.3
-shader_parameter/edge_energy = 2.4
-shader_parameter/glow_energy = 0.7
+shader_parameter/edge_energy = 1.7
+shader_parameter/glow_energy = 0.45
 shader_parameter/add_color_multiplier = 0.2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_core"]

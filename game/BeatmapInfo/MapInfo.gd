@@ -81,6 +81,9 @@ static func new_v2(info_dict: Dictionary, load_path: String) -> MapInfo:
 				if difficulty_value is Dictionary:
 					var difficulty_dict: Dictionary = difficulty_value as Dictionary
 					var difficulty: DifficultyInfo = DifficultyInfo.load_v2(difficulty_dict)
+					difficulty.characteristic = Utils.get_str(
+						difficulty_set as Dictionary, "_beatmapCharacteristicName", "Standard"
+					)
 					difficulty.color_scheme_index = int(
 						Utils.get_float(difficulty_dict, "_beatmapColorSchemeIdx", -1.0)
 					)

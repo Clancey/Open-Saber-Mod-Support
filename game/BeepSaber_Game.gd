@@ -552,9 +552,12 @@ func _display_points() -> void:
 	else:
 		hit_rate = 1.0
 	
-	(point_label.mesh as TextMesh).text = "Score: %6d" % Scoreboard.points
-	(multiplier_label.mesh as TextMesh).text = "x %d\nCombo %d" % [Scoreboard.multiplier, Scoreboard.combo]
+	# Beat Saber's HUD: "COMBO" panel on the left, "SCORE" panel on the right
+	# with the multiplier circle and the immediate rank below it
+	(point_label.mesh as TextMesh).text = "SCORE\n%d" % Scoreboard.points
+	(multiplier_label.mesh as TextMesh).text = "COMBO\n%d" % Scoreboard.combo
 	percent_indicator.update_percent(hit_rate)
+	percent_indicator.update_multiplier(Scoreboard.multiplier)
 
 # accessor method for the player name selector UI element
 func _name_selector() -> NameSelector:

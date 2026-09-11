@@ -2,6 +2,22 @@
 
 [ext_resource type="Theme" uid="uid://dvcjel72een6o" path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme" id="1"]
 [ext_resource type="Theme" path="res://game/ui/beat_saber_theme.tres" id="bs_theme"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_solo.png" id="tile_solo"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_solo_hover.png" id="tile_solo_hover"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_online.png" id="tile_online"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_online_hover.png" id="tile_online_hover"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_campaign.png" id="tile_campaign"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_campaign_hover.png" id="tile_campaign_hover"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_party.png" id="tile_party"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_party_hover.png" id="tile_party_hover"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/icon_options.png" id="icon_options"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/icon_options_hover.png" id="icon_options_hover"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/icon_help.png" id="icon_help"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/icon_help_hover.png" id="icon_help_hover"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/icon_editor.png" id="icon_editor"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/icon_editor_hover.png" id="icon_editor_hover"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/icon_exit.png" id="icon_exit"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/icon_exit_hover.png" id="icon_exit_hover"]
 [ext_resource type="FontFile" uid="uid://cdsnr8tscm8y6" path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" id="2"]
 [ext_resource type="Script" uid="uid://dc8kxgkh82kp2" path="res://game/BeepSaberMainMenu.gd" id="3"]
 [ext_resource type="Texture2D" uid="uid://cviyxvrpvyr0g" path="res://game/data/beepsaber_logo.png" id="3_wpmn0"]
@@ -94,6 +110,13 @@ cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 [sub_resource type="Theme" id="12"]
 default_font = SubResource("11")
 
+[sub_resource type="StyleBoxFlat" id="MainTilesBG"]
+bg_color = Color(0.02, 0.02, 0.03, 0.97)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
 [node name="BeepSaberMainMenu" type="Panel"]
 theme = ExtResource("bs_theme")
 offset_right = 1408.0
@@ -136,9 +159,9 @@ text = "Settings"
 
 [node name="Search_Button" type="Button" parent="."]
 layout_mode = 0
-offset_left = 24.0
+offset_left = 80.0
 offset_top = 20.0
-offset_right = 150.0
+offset_right = 200.0
 offset_bottom = 62.0
 pivot_offset = Vector2(-937.032, -176)
 text = "Search"
@@ -180,7 +203,6 @@ offset_left = 24.0
 offset_top = 76.0
 offset_right = 800.0
 offset_bottom = 596.0
-theme = SubResource("7")
 fixed_icon_size = Vector2i(64, 64)
 
 [node name="PlaylistSelector" type="OptionButton" parent="."]
@@ -189,8 +211,6 @@ offset_left = 520.0
 offset_top = 20.0
 offset_right = 800.0
 offset_bottom = 62.0
-theme = SubResource("9")
-theme_override_fonts/font = SubResource("10")
 flat = true
 
 [node name="DifficultyMenu" type="ItemList" parent="."]
@@ -202,7 +222,14 @@ offset_left = 856.0
 offset_top = 288.0
 offset_right = 1380.0
 offset_bottom = 332.0
-theme = SubResource("12")
+
+[node name="CharacteristicSelector" type="OptionButton" parent="."]
+layout_mode = 0
+offset_left = 1176.0
+offset_top = 24.0
+offset_right = 1380.0
+offset_bottom = 62.0
+visible = false
 
 [node name="Songs_Label2" type="Label" parent="."]
 layout_mode = 0
@@ -214,9 +241,9 @@ text = "Difficulty"
 
 [node name="LoadPlaylists_Button" type="Button" parent="."]
 layout_mode = 0
-offset_left = 164.0
+offset_left = 214.0
 offset_top = 20.0
-offset_right = 470.0
+offset_right = 500.0
 offset_bottom = 62.0
 text = "Refresh Songs/Playlists"
 
@@ -269,6 +296,186 @@ theme_override_colors/font_color = Color(1, 1, 1, 0.5)
 horizontal_alignment = 2
 text = "0.4.1"
 
+[node name="Back_Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 68.0
+offset_bottom = 62.0
+text = "<"
+
+[node name="MainTiles" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 1408.0
+offset_bottom = 640.0
+theme_override_styles/panel = SubResource("MainTilesBG")
+
+[node name="Tile_solo" type="TextureButton" parent="MainTiles"]
+layout_mode = 0
+offset_left = 108.0
+offset_top = 36.0
+offset_right = 388.0
+offset_bottom = 526.0
+texture_normal = ExtResource("tile_solo")
+texture_pressed = ExtResource("tile_solo_hover")
+texture_hover = ExtResource("tile_solo_hover")
+texture_disabled = ExtResource("tile_solo")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="MainTiles/Tile_solo"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 420.0
+offset_right = 280.0
+offset_bottom = 500.0
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+text = "Solo"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Tile_online" type="TextureButton" parent="MainTiles"]
+layout_mode = 0
+offset_left = 412.0
+offset_top = 36.0
+offset_right = 692.0
+offset_bottom = 526.0
+disabled = true
+modulate = Color(0.55, 0.55, 0.55, 1)
+texture_normal = ExtResource("tile_online")
+texture_pressed = ExtResource("tile_online_hover")
+texture_hover = ExtResource("tile_online_hover")
+texture_disabled = ExtResource("tile_online")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="MainTiles/Tile_online"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 420.0
+offset_right = 280.0
+offset_bottom = 500.0
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+text = "Online"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Tile_campaign" type="TextureButton" parent="MainTiles"]
+layout_mode = 0
+offset_left = 716.0
+offset_top = 36.0
+offset_right = 996.0
+offset_bottom = 526.0
+disabled = true
+modulate = Color(0.55, 0.55, 0.55, 1)
+texture_normal = ExtResource("tile_campaign")
+texture_pressed = ExtResource("tile_campaign_hover")
+texture_hover = ExtResource("tile_campaign_hover")
+texture_disabled = ExtResource("tile_campaign")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="MainTiles/Tile_campaign"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 420.0
+offset_right = 280.0
+offset_bottom = 500.0
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+text = "Campaign"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Tile_party" type="TextureButton" parent="MainTiles"]
+layout_mode = 0
+offset_left = 1020.0
+offset_top = 36.0
+offset_right = 1300.0
+offset_bottom = 526.0
+disabled = true
+modulate = Color(0.55, 0.55, 0.55, 1)
+texture_normal = ExtResource("tile_party")
+texture_pressed = ExtResource("tile_party_hover")
+texture_hover = ExtResource("tile_party_hover")
+texture_disabled = ExtResource("tile_party")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="MainTiles/Tile_party"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 420.0
+offset_right = 280.0
+offset_bottom = 500.0
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+text = "Party"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Icon_options" type="TextureButton" parent="MainTiles"]
+layout_mode = 0
+offset_left = 532.0
+offset_top = 548.0
+offset_right = 604.0
+offset_bottom = 620.0
+texture_normal = ExtResource("icon_options")
+texture_pressed = ExtResource("icon_options_hover")
+texture_hover = ExtResource("icon_options_hover")
+texture_disabled = ExtResource("icon_options")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Icon_help" type="TextureButton" parent="MainTiles"]
+layout_mode = 0
+offset_left = 628.0
+offset_top = 548.0
+offset_right = 700.0
+offset_bottom = 620.0
+disabled = true
+modulate = Color(0.55, 0.55, 0.55, 1)
+texture_normal = ExtResource("icon_help")
+texture_pressed = ExtResource("icon_help_hover")
+texture_hover = ExtResource("icon_help_hover")
+texture_disabled = ExtResource("icon_help")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Icon_editor" type="TextureButton" parent="MainTiles"]
+layout_mode = 0
+offset_left = 724.0
+offset_top = 548.0
+offset_right = 796.0
+offset_bottom = 620.0
+disabled = true
+modulate = Color(0.55, 0.55, 0.55, 1)
+texture_normal = ExtResource("icon_editor")
+texture_pressed = ExtResource("icon_editor_hover")
+texture_hover = ExtResource("icon_editor_hover")
+texture_disabled = ExtResource("icon_editor")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Icon_exit" type="TextureButton" parent="MainTiles"]
+layout_mode = 0
+offset_left = 820.0
+offset_top = 548.0
+offset_right = 892.0
+offset_bottom = 620.0
+texture_normal = ExtResource("icon_exit")
+texture_pressed = ExtResource("icon_exit_hover")
+texture_hover = ExtResource("icon_exit_hover")
+texture_disabled = ExtResource("icon_exit")
+ignore_texture_size = true
+stretch_mode = 5
+
+[connection signal="pressed" from="Back_Button" to="." method="_on_Back_Button_pressed"]
+[connection signal="pressed" from="MainTiles/Tile_solo" to="." method="_on_Solo_pressed"]
+[connection signal="pressed" from="MainTiles/Icon_options" to="." method="_on_Settings_Button_pressed"]
+[connection signal="pressed" from="MainTiles/Icon_exit" to="." method="_on_Exit_Button_pressed"]
 [connection signal="pressed" from="Play_Button" to="." method="_on_Play_Button_pressed"]
 [connection signal="button_up" from="Delete_Button" to="." method="_on_Delete_Button_button_up"]
 [connection signal="pressed" from="Exit_Button" to="." method="_on_Exit_Button_pressed"]
@@ -277,5 +484,6 @@ text = "0.4.1"
 [connection signal="item_selected" from="SongsMenu" to="." method="_select_song"]
 [connection signal="item_selected" from="PlaylistSelector" to="." method="_on_PlaylistSelector_item_selected"]
 [connection signal="item_selected" from="DifficultyMenu" to="." method="_select_difficulty"]
+[connection signal="item_selected" from="CharacteristicSelector" to="." method="_on_CharacteristicSelector_item_selected"]
 [connection signal="pressed" from="LoadPlaylists_Button" to="." method="_on_LoadPlaylists_Button_pressed"]
 [connection signal="timeout" from="song_prev/stop_prev" to="." method="_on_stop_prev_timeout"]

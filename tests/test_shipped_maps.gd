@@ -9,8 +9,23 @@ func test_timelapse_shipped_map_loads() -> void:
 	_assert_shipped_map(TIMELAPSE_PATH, false)
 
 
+const BUILT_IN_PATH: String = 	"res://game/data/maps/Songs/Jaroslav Beck - Beat Saber (Built in)/"
+
+
+# Maps that are not part of the repository (the Songs folder is ignored by git)
+# are only checked when they are present locally.
 func test_golden_shipped_map_loads() -> void:
+	if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(GOLDEN_PATH)):
+		print("  (skipped: %s is not present)" % GOLDEN_PATH)
+		return
 	_assert_shipped_map(GOLDEN_PATH, true)
+
+
+func test_built_in_beat_saber_map_loads() -> void:
+	if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(BUILT_IN_PATH)):
+		print("  (skipped: %s is not present)" % BUILT_IN_PATH)
+		return
+	_assert_shipped_map(BUILT_IN_PATH, true)
 
 
 func _assert_shipped_map(map_path: String, expect_lighting: bool) -> void:

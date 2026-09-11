@@ -26,6 +26,53 @@ var _cover_texture_create_sw := StopwatchFactory.create("cover_texture_create",1
 @onready var cover := $cover as TextureRect
 @onready var songs_menu := $SongsMenu as ItemList
 @onready var diff_menu := $DifficultyMenu as ItemList
+@onready var characteristic_menu := $CharacteristicSelector as OptionButton
+# difficulties of the selected characteristic, in list order
+var _visible_difficulties: Array[DifficultyInfo] = []
+var _characteristics: Array[String] = []
+
+const DIFFICULTY_LABELS := {
+	"Easy": "Easy", "Normal": "Normal", "Hard": "Hard", "Expert": "Expert", "ExpertPlus": "Expert+"
+}
+const CHARACTERISTIC_LABELS := {
+	"Standard": "Standard", "OneSaber": "One Saber", "NoArrows": "No Arrows",
+	"90Degree": "90 Degree", "360Degree": "360 Degree", "Lightshow": "Lightshow", "Lawless": "Lawless"
+}
+
+func _difficulty_label(diff: DifficultyInfo) -> String:
+	if diff.custom_name != diff.difficulty and not diff.custom_name.is_empty():
+		return diff.custom_name
+	return String(DIFFICULTY_LABELS.get(diff.difficulty, diff.difficulty))
+
+func _rebuild_characteristics(map: MapInfo) -> void:
+	_characteristics.clear()
+	for diff: DifficultyInfo in map.difficulty_beatmaps:
+		var name: String = diff.characteristic if not diff.characteristic.is_empty() else "Standard"
+		if not _characteristics.has(name):
+			_characteristics.append(name)
+	characteristic_menu.clear()
+	for name: String in _characteristics:
+		characteristic_menu.add_item(String(CHARACTERISTIC_LABELS.get(name, name)))
+	characteristic_menu.visible = _characteristics.size() > 1
+	if not _characteristics.is_empty():
+		characteristic_menu.select(0)
+
+func _rebuild_difficulties(map: MapInfo) -> void:
+	_visible_difficulties.clear()
+	var wanted: String = _characteristics[characteristic_menu.selected] if not _characteristics.is_empty() else "Standard"
+	for diff: DifficultyInfo in map.difficulty_beatmaps:
+		var name: String = diff.characteristic if not diff.characteristic.is_empty() else "Standard"
+		if name == wanted:
+			_visible_difficulties.append(diff)
+	diff_menu.clear()
+	for diff: DifficultyInfo in _visible_difficulties:
+		var diff_index := diff_menu.add_item(_difficulty_label(diff))
+		diff_menu.set_item_tooltip(diff_index, diff.difficulty + " / " + diff.custom_name)
+
+func _on_CharacteristicSelector_item_selected(_id: int) -> void:
+	var map: MapInfo = _currently_selected_songlist_ref[current_selected]
+	_rebuild_difficulties(map)
+	_select_difficulty(0)
 @onready var delete_button := $Delete_Button as Button
 
 @onready var song_preview := $song_prev as AudioStreamPlayer
@@ -142,7 +189,7 @@ func _set_cur_playlist(songs: Array[MapInfo]) -> void:
 	var map_index := 0
 	for map in songs:
 		@warning_ignore("return_value_discarded")
-		songs_menu.add_item("%s - %s" % [map.song_author_name, map.song_name], default_song_icon)
+		songs_menu.add_item("%s - %s" % [map.song_name, map.song_author_name], default_song_icon)
 		var filepath := map.filepath + map.cover_image_filename
 		_bg_img_loader.load_texture(filepath, _on_cover_loaded, false, map_index)
 		map_index += 1
@@ -223,11 +270,8 @@ func _select_song(id: int) -> void :
 	if result != OK:
 		vr.log_file_error(result, map.filepath + map.song_filename, "BeepSaberMainMenu.gd at line 223 ")
 	
-	diff_menu.clear()
-	for diff in map.difficulty_beatmaps:
-		var diff_index := diff_menu.add_item(diff.custom_name)
-		diff_menu.set_item_tooltip(diff_index, diff.difficulty + " / " + diff.custom_name)
-	
+	_rebuild_characteristics(map)
+	_rebuild_difficulties(map)
 	_select_difficulty(0)
 
 func _on_stop_prev_timeout() -> void:
@@ -247,7 +291,10 @@ func _select_difficulty(id: int) -> void:
 	
 	# notify listeners that difficulty has changed
 	var map := _currently_selected_songlist_ref[current_selected]
-	var difficulty := map.difficulty_beatmaps[id]
+	if _visible_difficulties.is_empty():
+		return
+	id = clampi(id, 0, _visible_difficulties.size() - 1)
+	var difficulty := _visible_difficulties[id]
 	var mods := Map.get_mods_for_difficulty(difficulty)
 	var mods_needed := "\n".join(PackedStringArray(mods)) if not mods.is_empty() else "None"
 	($SongInfo_Label as Label).text = "
@@ -269,8 +316,10 @@ func _load_map_and_start(map: MapInfo) -> void:
 		vr.log_error("No _difficultyBeatmaps in set")
 		return
 	
-	var diff_info := set0[_map_difficulty]
-	
+	var diff_info: DifficultyInfo = set0[0]
+	if not _visible_difficulties.is_empty():
+		diff_info = _visible_difficulties[clampi(_map_difficulty, 0, _visible_difficulties.size() - 1)]
+
 	start_map.emit(map, diff_info)
 
 func _on_Delete_Button_button_up() -> void:
@@ -338,7 +387,26 @@ func _ready() -> void:
 	$version.text = beepsaber_game.version
 	if OS.get_name() == &"Web":
 		$Exit_Button.hide()
+	_show_tiles(true)
 
+
+# The main menu tiles (Solo / Online / Campaign / Party) sit over the level
+# selection; only one of the two is shown at a time.
+func _show_tiles(show_tiles: bool) -> void:
+	for child: Node in get_children():
+		if child is Control and child.name != "MainTiles":
+			(child as Control).visible = not show_tiles
+	($MainTiles as Panel).visible = show_tiles
+	# the characteristic dropdown is only shown when a level has several
+	if not show_tiles:
+		characteristic_menu.visible = _characteristics.size() > 1
+
+func _on_Solo_pressed() -> void:
+	_show_tiles(false)
+
+func _on_Back_Button_pressed() -> void:
+	song_preview.stop()
+	_show_tiles(true)
 
 func _on_Play_Button_pressed() -> void:
 	song_preview.stop()

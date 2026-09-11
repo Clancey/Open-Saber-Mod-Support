@@ -748,6 +748,7 @@ func _find_difficulty(info: MapInfo, query: String) -> DifficultyInfo:
 			filename.to_lower() == wanted
 			or stem.to_lower() == wanted
 			or difficulty.difficulty.to_lower() == wanted
+			or (difficulty.difficulty + difficulty.characteristic).to_lower() == wanted
 			or difficulty.custom_name.to_lower() == wanted
 		):
 			return difficulty
