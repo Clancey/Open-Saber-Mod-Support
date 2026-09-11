@@ -3,12 +3,15 @@
 importer="wavefront_obj"
 importer_version=1
 type="Mesh"
-uid="uid://d0wuevsd3otsn"
-valid=false
+uid="uid://cr6irod5kf21g"
+path="res://.godot/imported/box_frame.obj-047bd92fd1b95d2af2f2f6589ac0ed26.mesh"
 
 [deps]
 
+files=["res://.godot/imported/box_frame.obj-047bd92fd1b95d2af2f2f6589ac0ed26.mesh"]
+
 source_file="res://game/assets/beatsaber/meshes/box_frame.obj"
+dest_files=["res://.godot/imported/box_frame.obj-047bd92fd1b95d2af2f2f6589ac0ed26.mesh", "res://.godot/imported/box_frame.obj-047bd92fd1b95d2af2f2f6589ac0ed26.mesh"]
 
 [params]
 

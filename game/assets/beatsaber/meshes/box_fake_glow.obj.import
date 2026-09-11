@@ -3,12 +3,15 @@
 importer="wavefront_obj"
 importer_version=1
 type="Mesh"
-uid="uid://cbndgqu8d5s8x"
-valid=false
+uid="uid://pvoqcdvc6dl"
+path="res://.godot/imported/box_fake_glow.obj-25d708c561f058571665ed53adb0a6bb.mesh"
 
 [deps]
 
+files=["res://.godot/imported/box_fake_glow.obj-25d708c561f058571665ed53adb0a6bb.mesh"]
+
 source_file="res://game/assets/beatsaber/meshes/box_fake_glow.obj"
+dest_files=["res://.godot/imported/box_fake_glow.obj-25d708c561f058571665ed53adb0a6bb.mesh", "res://.godot/imported/box_fake_glow.obj-25d708c561f058571665ed53adb0a6bb.mesh"]
 
 [params]
 

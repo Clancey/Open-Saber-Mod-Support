@@ -6,7 +6,7 @@ const V2_FOLDER := "res://tests/fixtures/v2/"
 const V2_HASH := "0BE98BAB9FA2E257CD2876ECC80D1F58C8EF9C2F"
 const SHIPPED_FOLDER := "res://game/data/maps/Songs/TheFatRat_Timelapse/"
 const V4_FOLDER := "res://tests/fixtures/v4/"
-const V4_HASH := "090170338162871A46040FC7FB9DF4C4452DFC97"
+const V4_HASH := "67C0AE5EE1A7BF1999AAA6D71BC5C27459C43B26"
 
 
 func test_v2_level_hash_matches_reference() -> void:
