@@ -97,12 +97,27 @@ const SCENE_LIGHTS: Dictionary = {
 const SCENE_LIGHT_ENERGY_SCALE: float = 0.45
 var _scene_lights: Dictionary = {}
 
+var _scene_light_specs: Dictionary = {}
+
 func _collect_scene_lights() -> void:
 	_scene_lights.clear()
-	for light_name: String in SCENE_LIGHTS.keys():
-		var light: Node = get_node_or_null("Level/" + light_name)
-		if light is DirectionalLight3D:
-			_scene_lights[light_name] = light
+	_scene_light_specs.clear()
+	var level: Node = get_node_or_null("Level")
+	if level == null:
+		return
+	for child: Node in level.get_children():
+		if not (child is DirectionalLight3D):
+			continue
+		var light_name := String(child.name)
+		if child.has_meta(&"light_weights"):
+			# generated environments carry their DirectionalLightWithIds weights
+			var weights: Dictionary = child.get_meta(&"light_weights")
+			_scene_light_specs[light_name] = {"weights": weights, "intensity": float(child.get_meta(&"light_intensity", 1.0))}
+		elif SCENE_LIGHTS.has(light_name):
+			_scene_light_specs[light_name] = SCENE_LIGHTS[light_name]
+		else:
+			continue
+		_scene_lights[light_name] = child
 
 func _update_scene_lights() -> void:
 	if _scene_lights.is_empty():
@@ -116,7 +131,7 @@ func _update_scene_lights() -> void:
 			lit = holder_visible
 		type_colors.append(_get_current_light_color(type) if (holder_visible and lit) else Color.BLACK)
 	for light_name: String in _scene_lights.keys():
-		var spec: Dictionary = SCENE_LIGHTS[light_name]
+		var spec: Dictionary = _scene_light_specs[light_name]
 		var weights: Dictionary = spec["weights"]
 		var mixed := Color.BLACK
 		for type_value: Variant in weights.keys():

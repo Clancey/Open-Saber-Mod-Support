@@ -42,6 +42,8 @@ var gamestate: GameState = gamestate_bootup
 
 @onready var points_label_driver := $Points_label_driver as PointsLabelDriver
 @onready var event_driver := $event_driver as EventDriver
+const DEFAULT_ENVIRONMENT_SCENE := "res://game/event_driver.tscn"
+var _environment_scene_path := DEFAULT_ENVIRONMENT_SCENE
 @onready var world_environment := $WorldEnvironment as WorldEnvironment
 
 @onready var multiplier_label := $Multiplier_Label as Label3D
@@ -106,8 +108,47 @@ var is_loading_map: bool = false
 var _load_generation: int = 0
 var _load_thread: Thread
 
+## Beat Saber environments are separate scenes generated from the original
+## (game/environments/<EnvironmentName>.tscn); unknown names fall back to "The First".
+static func environment_scene_for(info: MapInfo, map_difficulty: DifficultyInfo) -> String:
+	var env_name := info.environment_name
+	if not info.environment_names.is_empty():
+		var index: int = clampi(map_difficulty.environment_name_index, 0, info.environment_names.size() - 1)
+		env_name = info.environment_names[index]
+	if OS.has_environment("OPENSABER_ENVIRONMENT"):
+		env_name = OS.get_environment("OPENSABER_ENVIRONMENT")  # debug override
+	env_name = env_name.strip_edges()
+	if env_name.is_empty() or not env_name.is_valid_filename():
+		return DEFAULT_ENVIRONMENT_SCENE
+	var path := "res://game/environments/%s.tscn" % env_name
+	return path if ResourceLoader.exists(path) else DEFAULT_ENVIRONMENT_SCENE
+
+func _ensure_environment(scene_path: String) -> void:
+	if scene_path == _environment_scene_path:
+		return
+	var packed := load(scene_path) as PackedScene
+	if packed == null:
+		return
+	var next_driver := packed.instantiate() as EventDriver
+	if next_driver == null:
+		return
+	var index := event_driver.get_index()
+	var was_disabled := event_driver.disabled
+	event_driver.environment_palette_changed.disconnect(_on_environment_palette_changed)
+	remove_child(event_driver)
+	event_driver.queue_free()
+	next_driver.name = "event_driver"
+	add_child(next_driver)
+	move_child(next_driver, index)
+	event_driver = next_driver
+	_environment_scene_path = scene_path
+	@warning_ignore("return_value_discarded")
+	event_driver.environment_palette_changed.connect(_on_environment_palette_changed)
+	event_driver.disabled = was_disabled
+
 func start_map(info: MapInfo, map_difficulty: DifficultyInfo) -> void:
 	_load_generation += 1
+	_ensure_environment(environment_scene_for(info, map_difficulty))
 	var generation: int = _load_generation
 	is_loading_map = true
 	Scoreboard.paused = true

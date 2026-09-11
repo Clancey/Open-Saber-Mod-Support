@@ -38,12 +38,28 @@ var _materials: Array[ShaderMaterial] = []
 
 func _ready() -> void:
 	_sets.clear()
-	# Small rings: 30 rings, 3.5 m apart, from 14 m ahead, 1.4 m up
-	_sets.append(_make_set($SmallRings as MultiMeshInstance3D, 30, Vector3(0.0, 1.4, -14.0), 3.5,
-		45.0, 5.0, 10.0, 90.0, 10.0, 4.0, 1.0, 3.5, 5.0, true))
-	# Big rings: 15 rings, 8 m apart, from 7 m ahead, 5 m up
-	_sets.append(_make_set($BigRings as MultiMeshInstance3D, 15, Vector3(0.0, 5.0, -7.0), 8.0,
-		45.0, 0.0, 10.0, 90.0, 5.0, 2.0, 8.0, 8.0, 5.0, false))
+	# Generated environments describe each ring set in the MultiMeshInstance3D's
+	# metadata (see scratchpad env_export.py); "The First" uses the fixed sets.
+	var described := false
+	for child: Node in get_children():
+		if child is MultiMeshInstance3D and child.has_meta(&"count"):
+			described = true
+			var instance := child as MultiMeshInstance3D
+			var ring_set := _make_set(instance, int(instance.get_meta(&"count")), instance.get_meta(&"origin") as Vector3,
+				float(instance.get_meta(&"step")), float(instance.get_meta(&"startup_angle")), float(instance.get_meta(&"startup_step")),
+				float(instance.get_meta(&"startup_flexy")), float(instance.get_meta(&"spin_rotation")), float(instance.get_meta(&"spin_step")),
+				float(instance.get_meta(&"spin_flexy")), float(instance.get_meta(&"zoom_min")), float(instance.get_meta(&"zoom_max")),
+				float(instance.get_meta(&"zoom_speed")), bool(instance.get_meta(&"has_zoom")))
+			if instance.has_meta(&"mesh_basis"):
+				ring_set.mesh_basis = instance.get_meta(&"mesh_basis") as Basis
+			_sets.append(ring_set)
+	if not described and has_node(^"SmallRings") and has_node(^"BigRings"):
+		# Small rings: 30 rings, 3.5 m apart, from 14 m ahead, 1.4 m up
+		_sets.append(_make_set($SmallRings as MultiMeshInstance3D, 30, Vector3(0.0, 1.4, -14.0), 3.5,
+			45.0, 5.0, 10.0, 90.0, 10.0, 4.0, 1.0, 3.5, 5.0, true))
+		# Big rings: 15 rings, 8 m apart, from 7 m ahead, 5 m up
+		_sets.append(_make_set($BigRings as MultiMeshInstance3D, 15, Vector3(0.0, 5.0, -7.0), 8.0,
+			45.0, 0.0, 10.0, 90.0, 5.0, 2.0, 8.0, 8.0, 5.0, false))
 	for ring_set: RingSet in _sets:
 		var material := ring_set.multimesh_instance.material_override as ShaderMaterial
 		if material != null:

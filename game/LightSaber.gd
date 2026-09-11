@@ -16,7 +16,9 @@ class_name LightSaber
 @onready var controller := get_parent() as BeepSaberController
 
 @export var offset_pos := Vector3.ZERO
-@export var offset_rot := Vector3.ZERO
+## The saber blade runs along +Y; the controllers use the OpenXR aim pose
+## (-Z forward), so by default the blade continues the pointing direction.
+@export var offset_rot := Vector3(-90.0, 0.0, 0.0)
 var extra_offset_pos := Vector3.ZERO
 var extra_offset_rot := Vector3.ZERO
 

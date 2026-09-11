@@ -307,6 +307,11 @@ func _position_player() -> void:
 	_camera.rotation = Vector3.ZERO
 	_left_controller.global_transform = Transform3D(Basis.IDENTITY, Vector3(-0.25, 1.2, -0.5))
 	_right_controller.global_transform = Transform3D(Basis.IDENTITY, Vector3(0.25, 1.2, -0.5))
+	# the bot drives the controller basis directly with the blade along +Y
+	for controller: Node in [_left_controller, _right_controller]:
+		for child: Node in controller.get_children():
+			if child is LightSaber:
+				(child as LightSaber).offset_rot = Vector3.ZERO
 
 func _connect_cube_pool() -> void:
 	var track: Node = _game.track

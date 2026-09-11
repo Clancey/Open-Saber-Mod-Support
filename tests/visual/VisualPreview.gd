@@ -26,12 +26,30 @@ func _ready() -> void:
 			_output_path = arg.trim_prefix("--out=")
 	_build_scene()
 
+func _debug_environment(environment: EventDriver) -> void:
+	for type in range(5):
+		var holder: Node3D = environment._get_light_holder(type)
+		var batch := holder.get_node_or_null("LightBatch") as MultiMeshInstance3D
+		var count: int = batch.multimesh.instance_count if (batch != null and batch.multimesh != null) else -1
+		var first := ""
+		if count > 0:
+			first = str(batch.multimesh.get_instance_transform(0).origin) + " " + str(batch.multimesh.get_instance_custom_data(0))
+		print("ENVDEBUG|type=%d holder_visible=%s batch_visible=%s instances=%d lights=%d lit=%s first=%s" % [type, holder.visible, batch.visible if batch else false, count, environment.light_manager._get_type_lights(type).size(), environment.light_manager.has_visible_lights(type), first])
+	for child: Node in environment.get_node("Level").get_children():
+		if child is DirectionalLight3D:
+			print("ENVDEBUG|light %s energy=%.2f color=%s" % [child.name, (child as DirectionalLight3D).light_energy, (child as DirectionalLight3D).light_color])
+
 func _build_scene() -> void:
 	if OS.has_environment("PREVIEW_ENV"):
 		# the full "The First" environment with all lights on, seen from the player's place
-		var environment := ENVIRONMENT_SCENE.instantiate() as EventDriver
+		var environment_scene: PackedScene = ENVIRONMENT_SCENE
+		if OS.has_environment("PREVIEW_ENV_SCENE"):
+			environment_scene = load(OS.get_environment("PREVIEW_ENV_SCENE")) as PackedScene
+		var environment := environment_scene.instantiate() as EventDriver
 		add_child(environment)
 		environment.call_deferred("set_all_on", LEFT_COLOR, RIGHT_COLOR)
+		if OS.has_environment("PREVIEW_DEBUG"):
+			call_deferred("_debug_environment", environment)
 		($Floor as MeshInstance3D).visible = false
 		($Camera3D as Camera3D).position = Vector3(0.0, 1.7, 1.0)
 		($Sun as DirectionalLight3D).visible = false
