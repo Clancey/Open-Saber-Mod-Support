@@ -25,7 +25,8 @@ disable_receive_shadows = true
 
 [sub_resource type="TextMesh" id="TextMesh_siova"]
 text = "A"
-font_size = 8
+font_size = 5
+horizontal_alignment = 1
 vertical_alignment = 0
 depth = 0.0
 
@@ -52,7 +53,7 @@ depth = 0.0
 
 [sub_resource type="TextMesh" id="TextMesh_title"]
 resource_local_to_scene = true
-text = "LEVEL COMPLETE"
+text = "LEVEL CLEARED"
 font_size = 7
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -1359,25 +1360,25 @@ mesh = SubResource("QuadMesh_le4ok")
 script = ExtResource("1_jacne")
 
 [node name="PercentIndicator" parent="." instance=ExtResource("2_dpn16")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0.06, 0.1)
 
 [node name="Repeat" parent="." instance=ExtResource("4_n4s7s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, -0.35, 0.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, -0.4, 0.1)
 size = Vector2(0.5, 0.125)
-text = "Repeat"
+text = "RESTART"
 
 [node name="MainMenu" parent="." instance=ExtResource("4_n4s7s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.35, 0.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.4, 0.1)
 size = Vector2(0.5, 0.125)
-text = "Main Menu"
+text = "CONTINUE"
 
 [node name="Details" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0.25, 0.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.62, 0.2, 0.1)
 material_override = SubResource("StandardMaterial3D_cwpr4")
 mesh = SubResource("TextMesh_siova")
 
 [node name="GradeMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.693, 0, 0.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0.06, 0.1)
 mesh = SubResource("QuadMesh_u7okp")
 
 [node name="NameLabel" type="MeshInstance3D" parent="."]
@@ -1391,11 +1392,11 @@ material_override = ExtResource("6_2vw0d")
 mesh = SubResource("TextMesh_title")
 
 [node name="FCMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, -0.25, 0.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, -0.24, 0.1)
 mesh = SubResource("QuadMesh_eor5b")
 
 [node name="NRMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0.3, 0.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.62, -0.24, 0.1)
 mesh = SubResource("QuadMesh_k3idy")
 
 [node name="FCViewport" type="SubViewport" parent="."]

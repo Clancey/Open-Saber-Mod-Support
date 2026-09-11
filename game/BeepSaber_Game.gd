@@ -377,6 +377,14 @@ func _debug_screenshot() -> void:
 	await get_tree().create_timer(3.0).timeout
 	while not menu.menu_ready:
 		await get_tree().process_frame
+	if OS.get_environment("OPENSABER_MENU_SCREEN") == "pause":
+		pause_menu.visible = true
+		(pause_menu.ui_control as PausePanel).set_pause_text("Beat Saber", "Expert")
+	elif OS.get_environment("OPENSABER_MENU_SCREEN") == "results":
+		main_menu.visible = false
+		endscore._show()
+		endscore.show_score(412345, 380000, 0.93, "Beat Saber - Expert", true, true)
+		await get_tree().create_timer(5.5).timeout
 	await get_tree().create_timer(1.0).timeout
 	var image: Image = get_viewport().get_texture().get_image()
 	print("SCREENSHOT|saved=%s|error=%d" % [path, image.save_png(path)])

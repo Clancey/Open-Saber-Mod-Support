@@ -61,8 +61,8 @@ func show_score(score: int, record: int, percent: float, song_string: String, is
 	_show_result(
 		percent,
 		song_string,
-		"LEVEL COMPLETE",
-		"Your Score:\n%d\n\nRecord:\n%d" % [score, record],
+		"LEVEL CLEARED",
+		"SCORE\n%d\n\nBEST\n%d" % [score, record],
 		is_full_combo,
 		is_new_record
 	)
@@ -72,7 +72,7 @@ func show_failed(score: int, percent: float, song_string: String) -> void:
 		percent,
 		song_string,
 		"LEVEL FAILED",
-		"Your Score:\n%d" % score,
+		"SCORE\n%d" % score,
 		false,
 		false
 	)
@@ -105,20 +105,12 @@ func _show_result(
 	title_label.text = title
 	details_mesh.text = details
 	
-	if percent >= 0.98:
-		grade_label.text = "[center][rainbow freq=0.5 sat=0.7 val=2]S"
-	elif percent >= 0.90:
-		grade_label.text = "[center]A"
-	elif percent >= 0.80:
-		grade_label.text = "[center]B"
-	elif percent >= 0.70:
-		grade_label.text = "[center]C"
-	elif percent >= 0.60:
-		grade_label.text = "[center]D"
-	elif percent >= 0.50:
-		grade_label.text = "[center]E"
+	# Beat Saber's rank thresholds (SS / S / A / B / C / D / E)
+	var rank := PercentIndicator.rank_for(percent)
+	if rank == "SS":
+		grade_label.text = "[center][rainbow freq=0.5 sat=0.7 val=2]SS"
 	else:
-		grade_label.text = "[center]F"
+		grade_label.text = "[center]%s" % rank
 	
 	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.tween_property(self,^"animated_percent",percent,3.0).from(0.0)
