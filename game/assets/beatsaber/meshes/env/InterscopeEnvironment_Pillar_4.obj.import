@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cso25hvbnu83a"
+path="res://.godot/imported/InterscopeEnvironment_Pillar_4.obj-33114ec4a9767cd1f19ef2ef91e2535a.mesh"
+
+[deps]
+
+files=["res://.godot/imported/InterscopeEnvironment_Pillar_4.obj-33114ec4a9767cd1f19ef2ef91e2535a.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_Pillar_4.obj"
+dest_files=["res://.godot/imported/InterscopeEnvironment_Pillar_4.obj-33114ec4a9767cd1f19ef2ef91e2535a.mesh", "res://.godot/imported/InterscopeEnvironment_Pillar_4.obj-33114ec4a9767cd1f19ef2ef91e2535a.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

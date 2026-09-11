@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://brle6wmrx5ejr"
+path="res://.godot/imported/FitBeatEnvironment_Mirror_0.obj-261da444fc6925b6c5fe988ba21f0edd.mesh"
+
+[deps]
+
+files=["res://.godot/imported/FitBeatEnvironment_Mirror_0.obj-261da444fc6925b6c5fe988ba21f0edd.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/FitBeatEnvironment_Mirror_0.obj"
+dest_files=["res://.godot/imported/FitBeatEnvironment_Mirror_0.obj-261da444fc6925b6c5fe988ba21f0edd.mesh", "res://.godot/imported/FitBeatEnvironment_Mirror_0.obj-261da444fc6925b6c5fe988ba21f0edd.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

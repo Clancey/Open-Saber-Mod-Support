@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bih7mnr6q3ccm"
+path="res://.godot/imported/InterscopeEnvironment_WheelsFront_18.obj-69f5681c5adc80f767562d13d6a41aab.mesh"
+
+[deps]
+
+files=["res://.godot/imported/InterscopeEnvironment_WheelsFront_18.obj-69f5681c5adc80f767562d13d6a41aab.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_WheelsFront_18.obj"
+dest_files=["res://.godot/imported/InterscopeEnvironment_WheelsFront_18.obj-69f5681c5adc80f767562d13d6a41aab.mesh", "res://.godot/imported/InterscopeEnvironment_WheelsFront_18.obj-69f5681c5adc80f767562d13d6a41aab.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

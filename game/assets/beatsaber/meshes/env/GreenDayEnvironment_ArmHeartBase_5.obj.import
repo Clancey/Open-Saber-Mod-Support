@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dcq0sb6hlp128"
+path="res://.godot/imported/GreenDayEnvironment_ArmHeartBase_5.obj-dd9a01c9a348f33d8b0138c7a76b869e.mesh"
+
+[deps]
+
+files=["res://.godot/imported/GreenDayEnvironment_ArmHeartBase_5.obj-dd9a01c9a348f33d8b0138c7a76b869e.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/GreenDayEnvironment_ArmHeartBase_5.obj"
+dest_files=["res://.godot/imported/GreenDayEnvironment_ArmHeartBase_5.obj-dd9a01c9a348f33d8b0138c7a76b869e.mesh", "res://.godot/imported/GreenDayEnvironment_ArmHeartBase_5.obj-dd9a01c9a348f33d8b0138c7a76b869e.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

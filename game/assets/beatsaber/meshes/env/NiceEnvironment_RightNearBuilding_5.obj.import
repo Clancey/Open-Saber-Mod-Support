@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dan3v58g7hnv8"
+path="res://.godot/imported/NiceEnvironment_RightNearBuilding_5.obj-7c684bb980618d3f9a795a8c90176050.mesh"
+
+[deps]
+
+files=["res://.godot/imported/NiceEnvironment_RightNearBuilding_5.obj-7c684bb980618d3f9a795a8c90176050.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/NiceEnvironment_RightNearBuilding_5.obj"
+dest_files=["res://.godot/imported/NiceEnvironment_RightNearBuilding_5.obj-7c684bb980618d3f9a795a8c90176050.mesh", "res://.godot/imported/NiceEnvironment_RightNearBuilding_5.obj-7c684bb980618d3f9a795a8c90176050.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

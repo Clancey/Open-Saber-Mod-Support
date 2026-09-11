@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://ite1jlp66ke3"
+path="res://.godot/imported/PanicEnvironment_TrackConstruction_7.obj-dbf9014b0787f96c7734ecb268296992.mesh"
+
+[deps]
+
+files=["res://.godot/imported/PanicEnvironment_TrackConstruction_7.obj-dbf9014b0787f96c7734ecb268296992.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/PanicEnvironment_TrackConstruction_7.obj"
+dest_files=["res://.godot/imported/PanicEnvironment_TrackConstruction_7.obj-dbf9014b0787f96c7734ecb268296992.mesh", "res://.godot/imported/PanicEnvironment_TrackConstruction_7.obj-dbf9014b0787f96c7734ecb268296992.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

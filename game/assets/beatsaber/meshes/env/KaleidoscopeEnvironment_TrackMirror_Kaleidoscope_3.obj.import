@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://buyy3vaiwct23"
+path="res://.godot/imported/KaleidoscopeEnvironment_TrackMirror_Kaleidoscope_3.obj-accf4e6341f63381169d465ab260bfde.mesh"
+
+[deps]
+
+files=["res://.godot/imported/KaleidoscopeEnvironment_TrackMirror_Kaleidoscope_3.obj-accf4e6341f63381169d465ab260bfde.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/KaleidoscopeEnvironment_TrackMirror_Kaleidoscope_3.obj"
+dest_files=["res://.godot/imported/KaleidoscopeEnvironment_TrackMirror_Kaleidoscope_3.obj-accf4e6341f63381169d465ab260bfde.mesh", "res://.godot/imported/KaleidoscopeEnvironment_TrackMirror_Kaleidoscope_3.obj-accf4e6341f63381169d465ab260bfde.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

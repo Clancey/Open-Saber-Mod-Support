@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://b6cmbo3x0xhyg"
+path="res://.godot/imported/RocketEnvironment_RLCar_6.obj-a4ce47e499396f8b516fa939120acbfb.mesh"
+
+[deps]
+
+files=["res://.godot/imported/RocketEnvironment_RLCar_6.obj-a4ce47e499396f8b516fa939120acbfb.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/RocketEnvironment_RLCar_6.obj"
+dest_files=["res://.godot/imported/RocketEnvironment_RLCar_6.obj-a4ce47e499396f8b516fa939120acbfb.mesh", "res://.godot/imported/RocketEnvironment_RLCar_6.obj-a4ce47e499396f8b516fa939120acbfb.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

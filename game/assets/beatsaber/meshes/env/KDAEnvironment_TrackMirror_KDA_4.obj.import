@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://c8sm5jkaieyal"
+path="res://.godot/imported/KDAEnvironment_TrackMirror_KDA_4.obj-8f14db533d1fd9aa5c3452ee0c3bf25b.mesh"
+
+[deps]
+
+files=["res://.godot/imported/KDAEnvironment_TrackMirror_KDA_4.obj-8f14db533d1fd9aa5c3452ee0c3bf25b.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/KDAEnvironment_TrackMirror_KDA_4.obj"
+dest_files=["res://.godot/imported/KDAEnvironment_TrackMirror_KDA_4.obj-8f14db533d1fd9aa5c3452ee0c3bf25b.mesh", "res://.godot/imported/KDAEnvironment_TrackMirror_KDA_4.obj-8f14db533d1fd9aa5c3452ee0c3bf25b.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

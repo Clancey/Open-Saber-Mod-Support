@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://ci5r0f6vgyeye"
+path="res://.godot/imported/HalloweenEnvironment_SkeletonHand_14.obj-ccbf39984d7e860d8498332ed832c393.mesh"
+
+[deps]
+
+files=["res://.godot/imported/HalloweenEnvironment_SkeletonHand_14.obj-ccbf39984d7e860d8498332ed832c393.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/HalloweenEnvironment_SkeletonHand_14.obj"
+dest_files=["res://.godot/imported/HalloweenEnvironment_SkeletonHand_14.obj-ccbf39984d7e860d8498332ed832c393.mesh", "res://.godot/imported/HalloweenEnvironment_SkeletonHand_14.obj-ccbf39984d7e860d8498332ed832c393.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

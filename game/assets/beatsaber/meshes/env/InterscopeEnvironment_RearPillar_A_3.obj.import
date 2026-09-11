@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://ddy3na5aywmy7"
+path="res://.godot/imported/InterscopeEnvironment_RearPillar_A_3.obj-720a77c45611eb83da5e1fcc653ecb8e.mesh"
+
+[deps]
+
+files=["res://.godot/imported/InterscopeEnvironment_RearPillar_A_3.obj-720a77c45611eb83da5e1fcc653ecb8e.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_RearPillar_A_3.obj"
+dest_files=["res://.godot/imported/InterscopeEnvironment_RearPillar_A_3.obj-720a77c45611eb83da5e1fcc653ecb8e.mesh", "res://.godot/imported/InterscopeEnvironment_RearPillar_A_3.obj-720a77c45611eb83da5e1fcc653ecb8e.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

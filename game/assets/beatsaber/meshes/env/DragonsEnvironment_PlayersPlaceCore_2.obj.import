@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://b50umwb4m4yi6"
+path="res://.godot/imported/DragonsEnvironment_PlayersPlaceCore_2.obj-3fd7e6f29cf124fd53d6973ea5f84d3c.mesh"
+
+[deps]
+
+files=["res://.godot/imported/DragonsEnvironment_PlayersPlaceCore_2.obj-3fd7e6f29cf124fd53d6973ea5f84d3c.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/DragonsEnvironment_PlayersPlaceCore_2.obj"
+dest_files=["res://.godot/imported/DragonsEnvironment_PlayersPlaceCore_2.obj-3fd7e6f29cf124fd53d6973ea5f84d3c.mesh", "res://.godot/imported/DragonsEnvironment_PlayersPlaceCore_2.obj-3fd7e6f29cf124fd53d6973ea5f84d3c.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dayk1112ignul"
+path="res://.godot/imported/SkrillexEnvironment_Mirror_0.obj-2504612bad16ed48ffb6a1c832be4eb6.mesh"
+
+[deps]
+
+files=["res://.godot/imported/SkrillexEnvironment_Mirror_0.obj-2504612bad16ed48ffb6a1c832be4eb6.mesh"]
+
+source_file="res://game/assets/beatsaber/meshes/env/SkrillexEnvironment_Mirror_0.obj"
+dest_files=["res://.godot/imported/SkrillexEnvironment_Mirror_0.obj-2504612bad16ed48ffb6a1c832be4eb6.mesh", "res://.godot/imported/SkrillexEnvironment_Mirror_0.obj-2504612bad16ed48ffb6a1c832be4eb6.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false
