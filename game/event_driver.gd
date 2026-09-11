@@ -94,7 +94,7 @@ const SCENE_LIGHTS: Dictionary = {
 	"LightRight": {"weights": {2: 0.7, 3: 1.0}, "intensity": 1.5},
 	"LightBack": {"weights": {0: 1.0, 1: 1.0}, "intensity": 1.5},
 }
-const SCENE_LIGHT_ENERGY_SCALE: float = 0.45
+const SCENE_LIGHT_ENERGY_SCALE: float = 0.3
 var _scene_lights: Dictionary = {}
 
 var _scene_light_specs: Dictionary = {}
@@ -150,7 +150,8 @@ func _update_scene_lights() -> void:
 			light.light_energy = 0.0
 			continue
 		var peak: float = maxf(mixed.r, maxf(mixed.g, mixed.b))
-		light.light_color = Color(mixed.r / peak, mixed.g / peak, mixed.b / peak, 1.0)
+		# the construction takes the light tint only lightly (mostly grey in the original)
+		light.light_color = Color(mixed.r / peak, mixed.g / peak, mixed.b / peak, 1.0).lerp(Color.WHITE, 0.4)
 		light.light_energy = luminance * SCENE_LIGHT_ENERGY_SCALE
 
 func _physics_process(_delta: float) -> void:
