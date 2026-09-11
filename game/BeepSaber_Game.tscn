@@ -76,16 +76,16 @@ shader_parameter/left_color = Color(1, 0, 0, 1)
 shader_parameter/right_color = Color(0, 0, 1, 1)
 
 [sub_resource type="TextMesh" id="TextMesh_cx1im"]
-text = "x 0
-Combo 000"
-font_size = 6
-horizontal_alignment = 0
+text = "COMBO
+0"
+font_size = 7
 vertical_alignment = 0
 depth = 0.0
 
 [sub_resource type="TextMesh" id="TextMesh_0bbpk"]
-text = "Score: 000000"
-font_size = 6
+text = "SCORE
+0"
+font_size = 7
 vertical_alignment = 0
 depth = 0.0
 
@@ -97,6 +97,43 @@ shader_parameter/how_full = 0.75
 
 [sub_resource type="QuadMesh" id="QuadMesh_02xdc"]
 size = Vector2(0.5, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="HudPanelMat"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 0.72)
+
+[sub_resource type="StandardMaterial3D" id="HudLineMat"]
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 1)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 1.6
+
+[sub_resource type="StandardMaterial3D" id="HudProgressBgMat"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 0.75)
+
+[sub_resource type="StandardMaterial3D" id="HudProgressFillMat"]
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 1)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+
+[sub_resource type="QuadMesh" id="HudPanelQuad"]
+size = Vector2(1.4, 2.65)
+
+[sub_resource type="QuadMesh" id="HudLineQuad"]
+size = Vector2(1.4, 0.05)
+
+[sub_resource type="QuadMesh" id="HudProgressQuad"]
+size = Vector2(1.0, 0.06)
+
+[sub_resource type="TextMesh" id="TextMesh_progress"]
+text = "0:00 / 0:00"
+font_size = 5
+depth = 0.0
 
 [node name="BeepSaber" type="Node3D" groups=["main_game"]]
 script = ExtResource("9")
@@ -187,20 +224,75 @@ keyboard = NodePath("../../Keyboard_highscore")
 beepsaber_game = NodePath("../..")
 song_uploader_ref = NodePath("../../SongUploader")
 
+[node name="HudLeftPanel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 1.325, -7.05)
+layers = 3
+material_override = SubResource("HudPanelMat")
+mesh = SubResource("HudPanelQuad")
+
+[node name="HudLeftTop" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 2.65, -7.04)
+layers = 3
+material_override = SubResource("HudLineMat")
+mesh = SubResource("HudLineQuad")
+
+[node name="ComboLineTop" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 0.6, 0, 0, 0, 1, -3.2, 2.03, -7.03)
+layers = 3
+material_override = SubResource("HudLineMat")
+mesh = SubResource("HudLineQuad")
+
+[node name="ComboLineBottom" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 0.6, 0, 0, 0, 1, -3.2, 1.62, -7.03)
+layers = 3
+material_override = SubResource("HudLineMat")
+mesh = SubResource("HudLineQuad")
+
+[node name="HudRightPanel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 1.325, -7.05)
+layers = 3
+material_override = SubResource("HudPanelMat")
+mesh = SubResource("HudPanelQuad")
+
+[node name="HudRightTop" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 2.65, -7.04)
+layers = 3
+material_override = SubResource("HudLineMat")
+mesh = SubResource("HudLineQuad")
+
+[node name="SongProgressBg" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.1, -7.02)
+layers = 3
+material_override = SubResource("HudProgressBgMat")
+mesh = SubResource("HudProgressQuad")
+
+[node name="SongProgressFill" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.001, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 0.1, -7.01)
+layers = 3
+material_override = SubResource("HudProgressFillMat")
+mesh = SubResource("HudProgressQuad")
+
+[node name="SongProgress_Label" type="MeshInstance3D" parent="."]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 3.2, 0.28, -7)
+visible = false
+layers = 3
+material_override = ExtResource("13_3xkki")
+mesh = SubResource("TextMesh_progress")
+
 [node name="Multiplier_Label" type="MeshInstance3D" parent="."]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -3.2, 1.2, -7)
+transform = Transform3D(3.2, 0, 0, 0, 3.2, 0, 0, 0, 3.2, -3.2, 2.4, -7)
 material_override = ExtResource("13_3xkki")
 mesh = SubResource("TextMesh_cx1im")
 skeleton = NodePath("")
 
 [node name="Point_Label" type="MeshInstance3D" parent="."]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 3.2, 1.9, -7)
+transform = Transform3D(3.2, 0, 0, 0, 3.2, 0, 0, 0, 3.2, 3.2, 2.4, -7)
 material_override = ExtResource("13_3xkki")
 mesh = SubResource("TextMesh_0bbpk")
 skeleton = NodePath("")
 
 [node name="Percent_Indicator" parent="." instance=ExtResource("16")]
-transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 3.2, 0.7, -7)
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 3.2, 1.15, -7)
 material_override = SubResource("ShaderMaterial_6dld2")
 mesh = SubResource("QuadMesh_02xdc")
 

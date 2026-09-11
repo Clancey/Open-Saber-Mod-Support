@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://eanpmi5g7x0r"
+path="res://.godot/imported/teko_bold.fnt-1b84b22e43c9f1bae8e7760123693b32.fontdata"
+
+[deps]
+
+source_file="res://game/ui/fonts/teko_bold.fnt"
+dest_files=["res://.godot/imported/teko_bold.fnt-1b84b22e43c9f1bae8e7760123693b32.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

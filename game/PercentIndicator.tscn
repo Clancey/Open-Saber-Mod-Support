@@ -36,6 +36,6 @@ material_override = ExtResource("3_wm8ff")
 mesh = SubResource("TextMesh_bcnkh")
 
 [node name="RankLabel" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.36, 0.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0.1)
 material_override = ExtResource("3_wm8ff")
 mesh = SubResource("TextMesh_rank")

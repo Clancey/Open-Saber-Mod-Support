@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://cxxx7mdsp78"
+path="res://.godot/imported/teko_medium.fnt-bee12657ba049f9ad54767f16a4b4737.fontdata"
+
+[deps]
+
+source_file="res://game/ui/fonts/teko_medium.fnt"
+dest_files=["res://.godot/imported/teko_medium.fnt-bee12657ba049f9ad54767f16a4b4737.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

@@ -1,6 +1,7 @@
-[gd_resource type="Theme" load_steps=14 format=3]
+[gd_resource type="Theme" load_steps=18 format=3]
 
-[ext_resource type="FontVariation" path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard_font.tres" id="font"]
+[ext_resource type="FontFile" path="res://game/ui/fonts/teko_medium.fnt" id="font"]
+[ext_resource type="FontFile" path="res://game/ui/fonts/teko_bold.fnt" id="font_bold"]
 
 [sub_resource type="StyleBoxFlat" id="panel"]
 bg_color = Color(0, 0, 0, 0.6)
@@ -121,6 +122,29 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxFlat" id="row_normal"]
+bg_color = Color(1, 1, 1, 0.07)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="row_hover"]
+bg_color = Color(1, 1, 1, 0.16)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="row_selected"]
+bg_color = Color(0, 0.75, 1, 0.45)
+border_width_left = 3
+border_color = Color(0, 0.75, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [sub_resource type="StyleBoxFlat" id="popup_panel"]
 bg_color = Color(0.03, 0.03, 0.05, 0.96)
 corner_radius_top_left = 10
@@ -130,7 +154,7 @@ corner_radius_bottom_left = 10
 
 [resource]
 default_font = ExtResource("font")
-default_font_size = 22
+default_font_size = 30
 Button/colors/font_color = Color(1, 1, 1, 0.9)
 Button/colors/font_disabled_color = Color(1, 1, 1, 0.3)
 Button/colors/font_focus_color = Color(1, 1, 1, 1)
@@ -148,6 +172,7 @@ ItemList/colors/font_color = Color(1, 1, 1, 0.9)
 ItemList/colors/font_hovered_color = Color(1, 1, 1, 1)
 ItemList/colors/font_selected_color = Color(1, 1, 1, 1)
 ItemList/constants/v_separation = 6
+ItemList/font_sizes/font_size = 30
 ItemList/constants/icon_margin = 8
 ItemList/styles/focus = SubResource("focus")
 ItemList/styles/hovered = SubResource("list_hovered")
@@ -155,6 +180,7 @@ ItemList/styles/panel = SubResource("list_panel")
 ItemList/styles/selected = SubResource("list_selected")
 ItemList/styles/selected_focus = SubResource("list_selected")
 Label/colors/font_color = Color(1, 1, 1, 0.9)
+Label/font_sizes/font_size = 30
 LineEdit/colors/font_color = Color(1, 1, 1, 0.9)
 LineEdit/styles/normal = SubResource("list_panel")
 OptionButton/colors/font_color = Color(1, 1, 1, 0.9)
@@ -168,10 +194,17 @@ Panel/styles/panel = SubResource("panel")
 PanelContainer/styles/panel = SubResource("panel")
 PlayButton/base_type = &"Button"
 PlayButton/colors/font_color = Color(1, 1, 1, 1)
-PlayButton/font_sizes/font_size = 28
+PlayButton/fonts/font = ExtResource("font_bold")
+PlayButton/font_sizes/font_size = 34
 PlayButton/styles/hover = SubResource("play_hover")
 PlayButton/styles/normal = SubResource("play_normal")
 PlayButton/styles/pressed = SubResource("play_hover")
+LevelRow/base_type = &"Button"
+LevelRow/styles/normal = SubResource("row_normal")
+LevelRow/styles/hover = SubResource("row_hover")
+LevelRow/styles/pressed = SubResource("row_selected")
+LevelRow/styles/hover_pressed = SubResource("row_selected")
+LevelRow/styles/focus = SubResource("focus")
 PopupMenu/colors/font_color = Color(1, 1, 1, 0.9)
 PopupMenu/colors/font_hover_color = Color(1, 1, 1, 1)
 PopupMenu/styles/hover = SubResource("list_selected")

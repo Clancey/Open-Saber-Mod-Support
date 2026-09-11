@@ -47,6 +47,12 @@ var gamestate: GameState = gamestate_bootup
 @onready var multiplier_label := $Multiplier_Label as MeshInstance3D
 @onready var point_label := $Point_Label as MeshInstance3D
 @onready var percent_indicator := $Percent_Indicator as PercentIndicator
+@onready var song_progress_fill := $SongProgressFill as MeshInstance3D
+@onready var song_progress_label := $SongProgress_Label as MeshInstance3D
+var _hud_nodes: Array[NodePath] = [
+	^"HudLeftPanel", ^"HudLeftTop", ^"HudRightPanel", ^"HudRightTop",
+	^"SongProgressBg", ^"SongProgressFill", ^"ComboLineTop", ^"ComboLineBottom"
+]
 @onready var energy_bar := $EnergyBar as EnergyBar
 
 @onready var map_source_dialogs := $MapSourceDialogs as Node3D
@@ -229,8 +235,28 @@ func _exit_tree() -> void:
 # the provided 'next_state'.
 func _transition_game_state(next_state: GameState) -> void:
 	gamestate = next_state
-	energy_bar.visible = next_state == gamestate_playing or next_state == gamestate_paused
+	var hud_visible := next_state == gamestate_playing or next_state == gamestate_paused
+	energy_bar.visible = hud_visible
+	for hud_path: NodePath in _hud_nodes:
+		var hud_node := get_node_or_null(hud_path) as Node3D
+		if hud_node != null:
+			hud_node.visible = hud_visible
 	gamestate._ready(self)
+
+static func _format_time(seconds: float) -> String:
+	var total := maxi(int(seconds), 0)
+	return "%d:%02d" % [total / 60, total % 60]
+
+# Beat Saber's song progress panel under the score: a bar plus elapsed / total time
+func _update_song_progress() -> void:
+	if song_player.stream == null:
+		return
+	var length: float = song_player.stream.get_length()
+	var played: float = clampf(NoteMovementData.song_time, 0.0, length)
+	var fraction: float = played / length if length > 0.0 else 0.0
+	song_progress_fill.scale.x = maxf(fraction, 0.001)
+	song_progress_fill.position.x = 2.7 + fraction * 0.5
+	(song_progress_label.mesh as TextMesh).text = "%s / %s" % [_format_time(played), _format_time(length)]
 
 func show_MapSourceDialogs(showing: bool = true) -> void:
 	map_source_dialogs.visible = showing
@@ -292,6 +318,7 @@ func _physics_process(dt: float) -> void:
 	_update_head_tracking()
 	if gamestate == gamestate_playing and not Scoreboard.paused and not is_loading_map:
 		_update_song_clock(dt)
+		_update_song_progress()
 
 	gamestate._physics_process(self)
 	
@@ -347,7 +374,10 @@ func _debug_screenshot() -> void:
 	var path := OS.get_environment("OPENSABER_SCREENSHOT")
 	if path.is_empty():
 		return
-	await get_tree().create_timer(4.0).timeout
+	await get_tree().create_timer(3.0).timeout
+	while not menu.menu_ready:
+		await get_tree().process_frame
+	await get_tree().create_timer(1.0).timeout
 	var image: Image = get_viewport().get_texture().get_image()
 	print("SCREENSHOT|saved=%s|error=%d" % [path, image.save_png(path)])
 	get_tree().quit()

@@ -24,7 +24,7 @@ var _cover_texture_create_sw := StopwatchFactory.create("cover_texture_create",1
 @onready var _bg_img_loader := preload("res://game/scripts/BackgroundImgLoader.gd").new()
 
 @onready var cover := $cover as TextureRect
-@onready var songs_menu := $SongsMenu as ItemList
+@onready var songs_menu := $SongsMenu as LevelList
 @onready var diff_menu := $DifficultyMenu as ItemList
 @onready var characteristic_menu := $CharacteristicSelector as OptionButton
 # difficulties of the selected characteristic, in list order
@@ -189,7 +189,8 @@ func _set_cur_playlist(songs: Array[MapInfo]) -> void:
 	var map_index := 0
 	for map in songs:
 		@warning_ignore("return_value_discarded")
-		songs_menu.add_item("%s - %s" % [map.song_name, map.song_author_name], default_song_icon)
+		var detail := "%d BPM" % int(map.beats_per_minute) if map.beats_per_minute > 0.0 else ""
+		songs_menu.add_level(map.song_name, map.song_author_name, detail, default_song_icon)
 		var filepath := map.filepath + map.cover_image_filename
 		_bg_img_loader.load_texture(filepath, _on_cover_loaded, false, map_index)
 		map_index += 1
@@ -387,11 +388,15 @@ func _ready() -> void:
 	$version.text = beepsaber_game.version
 	if OS.get_name() == &"Web":
 		$Exit_Button.hide()
-	_show_tiles(true)
+	_show_tiles(OS.get_environment("OPENSABER_MENU_SCREEN") != "levels")
+	menu_ready = true
 
 
 # The main menu tiles (Solo / Online / Campaign / Party) sit over the level
 # selection; only one of the two is shown at a time.
+## set once the level list has been populated (used by the screenshot debug aid)
+var menu_ready := false
+
 func _show_tiles(show_tiles: bool) -> void:
 	for child: Node in get_children():
 		if child is Control and child.name != "MainTiles":

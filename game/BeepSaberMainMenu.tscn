@@ -2,6 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://dvcjel72een6o" path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme" id="1"]
 [ext_resource type="Theme" path="res://game/ui/beat_saber_theme.tres" id="bs_theme"]
+[ext_resource type="Script" path="res://game/ui/LevelList.gd" id="level_list_script"]
 [ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_solo.png" id="tile_solo"]
 [ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_solo_hover.png" id="tile_solo_hover"]
 [ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/tile_online.png" id="tile_online"]
@@ -185,7 +186,7 @@ stretch_mode = 5
 
 [node name="SongInfo_Label" type="Label" parent="."]
 layout_mode = 0
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 22
 theme_override_constants/line_spacing = -2
 autowrap_mode = 3
 offset_left = 856.0
@@ -197,13 +198,13 @@ Song Title: Time Lapse
 Beatmap Author: Timeweaver
 Play Count: 10"
 
-[node name="SongsMenu" type="ItemList" parent="."]
+[node name="SongsMenu" type="ScrollContainer" parent="."]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 76.0
 offset_right = 800.0
 offset_bottom = 596.0
-fixed_icon_size = Vector2i(64, 64)
+script = ExtResource("level_list_script")
 
 [node name="PlaylistSelector" type="OptionButton" parent="."]
 layout_mode = 0
@@ -215,8 +216,9 @@ flat = true
 
 [node name="DifficultyMenu" type="ItemList" parent="."]
 layout_mode = 0
-max_columns = 6
+max_columns = 5
 same_column_width = true
+fixed_column_width = 96
 auto_height = true
 offset_left = 856.0
 offset_top = 288.0
@@ -260,7 +262,7 @@ offset_right = -760.0
 offset_bottom = -4.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(1, 1, 1, 0.5)
 text = "Manually Upload Custom Songs: 
 asdasdasd"
@@ -291,7 +293,7 @@ offset_right = -16.0
 offset_bottom = -6.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(1, 1, 1, 0.5)
 horizontal_alignment = 2
 text = "0.4.1"
@@ -329,7 +331,7 @@ offset_left = 0.0
 offset_top = 420.0
 offset_right = 280.0
 offset_bottom = 500.0
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 text = "Solo"
 horizontal_alignment = 1
@@ -356,7 +358,7 @@ offset_left = 0.0
 offset_top = 420.0
 offset_right = 280.0
 offset_bottom = 500.0
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 text = "Online"
 horizontal_alignment = 1
@@ -383,7 +385,7 @@ offset_left = 0.0
 offset_top = 420.0
 offset_right = 280.0
 offset_bottom = 500.0
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 text = "Campaign"
 horizontal_alignment = 1
@@ -410,7 +412,7 @@ offset_left = 0.0
 offset_top = 420.0
 offset_right = 280.0
 offset_bottom = 500.0
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 48
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 text = "Party"
 horizontal_alignment = 1
