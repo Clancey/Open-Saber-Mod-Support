@@ -136,7 +136,10 @@ func _update_scene_lights() -> void:
 		var mixed := Color.BLACK
 		for type_value: Variant in weights.keys():
 			var weight: float = float(weights[type_value])
-			var c: Color = type_colors[int(type_value)]
+			var type_index: int = int(type_value)
+			if type_index < 0 or type_index >= type_colors.size():
+				continue  # light ids beyond the five basic event types (newer environments)
+			var c: Color = type_colors[type_index]
 			mixed.r += c.r * weight
 			mixed.g += c.g * weight
 			mixed.b += c.b * weight

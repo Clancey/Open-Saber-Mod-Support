@@ -1,0 +1,620 @@
+[gd_scene load_steps=48 format=3]
+
+[ext_resource type="Script" path="res://game/event_driver.gd" id="script"]
+[ext_resource type="Script" path="res://game/environments/TrackLaneRings.gd" id="rings_script"]
+[ext_resource type="Shader" path="res://game/data/light_bar.gdshader" id="light_bar_shader"]
+[ext_resource type="Shader" path="res://game/data/runway_floor.gdshader" id="runway_shader"]
+[ext_resource type="Shader" path="res://game/data/ring.gdshader" id="ring_shader"]
+[ext_resource type="Shader" path="res://game/data/sky_gradient.gdshader" id="sky_shader"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env_players_place.obj" id="players_place_mesh"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_Mirror_0.obj" id="mesh_0"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_PlayersPlaceCore_1.obj" id="mesh_1"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_TrackMirror_Interscope_2.obj" id="mesh_2"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_RearPillar_A_3.obj" id="mesh_3"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_Pillar_4.obj" id="mesh_4"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_RampFar_5.obj" id="mesh_5"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_FloorFar_6.obj" id="mesh_6"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_CeilingNear_7.obj" id="mesh_7"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_CeilingFar_8.obj" id="mesh_8"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_FloorBack_9.obj" id="mesh_9"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_FloorBackFar_10.obj" id="mesh_10"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_RearPillar_B_11.obj" id="mesh_11"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_RearPillar_C_12.obj" id="mesh_12"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_WheelsFront_13.obj" id="mesh_13"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_Body_14.obj" id="mesh_14"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_RearWheels_15.obj" id="mesh_15"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_WheelsFront_16.obj" id="mesh_16"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_Body_17.obj" id="mesh_17"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_WheelsFront_18.obj" id="mesh_18"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_Body_19.obj" id="mesh_19"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_FrontWheels_20.obj" id="mesh_20"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_Body_21.obj" id="mesh_21"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/InterscopeEnvironment_Body_22.obj" id="mesh_22"]
+
+[sub_resource type="BoxMesh" id="unit_box"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="light_bar_mat"]
+render_priority = 0
+shader = ExtResource("light_bar_shader")
+
+[sub_resource type="StandardMaterial3D" id="bar_cyan"]
+shading_mode = 0
+albedo_color = Color(0, 0.706, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="dark_env"]
+albedo_color = Color(0.18, 0.19, 0.22, 1)
+metallic = 0.2
+roughness = 0.62
+
+[sub_resource type="StandardMaterial3D" id="mirror_floor"]
+albedo_color = Color(0.03, 0.035, 0.045, 1)
+metallic = 0.85
+metallic_specular = 0.8
+roughness = 0.12
+
+[sub_resource type="SphereMesh" id="sky_sphere"]
+radius = 500.0
+height = 1000.0
+radial_segments = 24
+rings = 16
+
+[sub_resource type="ShaderMaterial" id="sky_mat"]
+shader = ExtResource("sky_shader")
+shader_parameter/left_color = Color(0.85, 0.085, 0.085, 1)
+shader_parameter/right_color = Color(0.188, 0.675, 1, 1)
+shader_parameter/base_color = Color(0, 0, 0, 1)
+shader_parameter/bottom_intensity = 0.25
+shader_parameter/horizon_intensity = 0.1
+shader_parameter/brightness = 1.0
+
+[sub_resource type="PlaneMesh" id="runway_plane"]
+size = Vector2(4.76, 247.2)
+
+[sub_resource type="ShaderMaterial" id="runway_mat"]
+shader = ExtResource("runway_shader")
+shader_parameter/base_color = Color(0.02, 0.022, 0.03, 1)
+shader_parameter/left_color = Color(0.85, 0.085, 0.085, 1)
+shader_parameter/right_color = Color(0.188, 0.675, 1, 1)
+shader_parameter/event_color = Color(0, 0, 0, 1)
+shader_parameter/lane_spacing = 0.6
+shader_parameter/runway_half_width = 2.38
+shader_parameter/edge_width = 0.03
+
+[sub_resource type="PlaneMesh" id="players_place_plane"]
+size = Vector2(3, 2)
+
+[sub_resource type="Animation" id="LeftWavingLasers_anim"]
+resource_name = "rotate"
+length = 2.25
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("laser1:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="LeftWavingLasers_lib"]
+_data = {
+&"rotate": SubResource("LeftWavingLasers_anim")
+}
+
+[sub_resource type="Animation" id="RightWavingLasers_anim"]
+resource_name = "rotate"
+length = 2.25
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("laser1:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="RightWavingLasers_lib"]
+_data = {
+&"rotate": SubResource("RightWavingLasers_anim")
+}
+
+[sub_resource type="ParticleProcessMaterial" id="dust_mat"]
+emission_shape = 3
+emission_box_extents = Vector3(6, 3, 12)
+direction = Vector3(0, 0, 1)
+spread = 180.0
+initial_velocity_min = 0.05
+initial_velocity_max = 0.2
+gravity = Vector3(0, 0, 0)
+scale_min = 0.6
+scale_max = 1.0
+color = Color(0.7, 0.8, 1, 0.35)
+
+[sub_resource type="StandardMaterial3D" id="dust_draw_mat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+
+[sub_resource type="QuadMesh" id="dust_quad"]
+material = SubResource("dust_draw_mat")
+size = Vector2(0.012, 0.012)
+
+[node name="event_driver" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Level" type="Node3D" parent="."]
+
+[node name="Sphere" type="MeshInstance3D" parent="Level"]
+layers = 3
+material_override = SubResource("sky_mat")
+mesh = SubResource("sky_sphere")
+
+[node name="Mirror_0" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+material_override = SubResource("mirror_floor")
+mesh = ExtResource("mesh_0")
+
+[node name="SaberBurnMarksArea_1" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_1")
+
+[node name="Floor_2" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, -12.9)
+material_override = SubResource("mirror_floor")
+mesh = ExtResource("mesh_2")
+
+[node name="FloorDepthWrite_3" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, -12.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_2")
+
+[node name="RearPillar_A_L_4" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 0, -1, 0, 1, 0, 1, 0, -1.34359e-07, -4, 0, 11.6)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="RearPillar_A_R_5" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 0, -1, 0, 1, 0, 1, 0, -1.34359e-07, 4, 0, 11.6)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PillarL_6" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -47.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="PillarR_7" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.5, 0, -47.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="PillarL_8" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -37.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="PillarR_9" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.5, 0, -37.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="PillarL_10" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -27.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="PillarR_11" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.5, 0, -27.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="PillarL_12" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -17.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="PillarR_13" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.5, 0, -17.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="PillarL_14" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -7.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="PillarR_15" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.5, 0, -7.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="RampFar_16" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, -0.03, -57.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_5")
+
+[node name="FloorFar_17" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, -47.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_6")
+
+[node name="CeilingNear_18" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 4, -12.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_7")
+
+[node name="CeilingFar_19" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 4, -47.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_8")
+
+[node name="FloorBack_20" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, -0.01, 184.39)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_9")
+
+[node name="FloorBackFar_21" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, -0.01, 204.09)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_10")
+
+[node name="RearPillar_B_L_22" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 0, -1, 0, 1, 0, 1, 0, -1.34359e-07, -10, 0, 5)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_11")
+
+[node name="RearPillar_B_R_23" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 0, -1, 0, 1, 0, 1, 0, -1.34359e-07, 10, 0, 5)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_11")
+
+[node name="RearPillar_C_L_24" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 0, -1, 0, 1, 0, 1, 0, -1.34359e-07, -13, 0, -1)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_12")
+
+[node name="RearPillar_C_R_25" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 0, -1, 0, 1, 0, 1, 0, -1.34359e-07, 13, 0, -1)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_12")
+
+[node name="FrontWheels_26" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, 4.4647, -0.00599999, -21.2017)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_13")
+
+[node name="Body_27" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, 4.46, 0.097, -21.2)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_14")
+
+[node name="RearWheels_28" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, 5.77369, 0.32, -11.6781)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_15")
+
+[node name="FrontWheels_29" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, 4.46, -0.01, -11.2)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_16")
+
+[node name="Body_30" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, 4.46, -0.01, -11.2)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_17")
+
+[node name="FrontWheels_31" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -4.43745, 0.015, -21.1918)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_18")
+
+[node name="Body_32" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -4.4459, 0.017, -21.1949)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_19")
+
+[node name="RearWheels_33" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -5.65109, 0.320778, -11.6335)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_15")
+
+[node name="FrontWheels_34" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -4.43369, -0.013, -11.1904)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_20")
+
+[node name="Body_35" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -4.46, 0.17, -11.2)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_21")
+
+[node name="FrontWheels_36" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -3.47488, 0.321, -30.6449)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_15")
+
+[node name="Body_37" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -4.96805, 0.091, -31.1884)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_22")
+
+[node name="FrontWheels_38" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, 3.47488, 0.321, -30.6449)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_15")
+
+[node name="Body_39" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, 4.96805, 0.091, -31.1884)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_22")
+
+[node name="FrontWheels_40" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -3.47488, 0.321, -40.6449)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_15")
+
+[node name="Body_41" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -4.96805, 0.091, -41.1884)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_22")
+
+[node name="FrontWheels_42" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, 3.47488, 0.321, -40.6449)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_15")
+
+[node name="Body_43" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, -0.34202, 4.96805, 0.091, -41.1884)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_22")
+
+[node name="PlayersPlaceConstruction" type="MeshInstance3D" parent="Level"]
+layers = 3
+material_override = SubResource("dark_env")
+mesh = ExtResource("players_place_mesh")
+
+[node name="PlayersPlaceMirror" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.006, 0)
+material_override = SubResource("mirror_floor")
+mesh = SubResource("players_place_plane")
+
+[node name="floor" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -131.35)
+material_override = SubResource("runway_mat")
+mesh = SubResource("runway_plane")
+
+[node name="DiagonalLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/DiagonalLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="laser1" type="Node3D" parent="Level/DiagonalLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/DiagonalLasers/laser1"]
+layers = 3
+transform = Transform3D(0.452548, -2.54558, 0, 0.452548, 2.54558, -0, 0, 0, 0.64, -5.55, 1.8, -37.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/DiagonalLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/DiagonalLasers/laser2"]
+layers = 3
+transform = Transform3D(0.452548, 2.54558, 0, -0.452548, 2.54558, 0, 0, 0, 0.64, 5.55, 1.8, -37.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/DiagonalLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/DiagonalLasers/laser3"]
+layers = 3
+transform = Transform3D(0, -6, 1.07487e-07, 0, -8.06153e-07, -0.8, 0.8, 0, 0, 0, 4.2, -37.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="SquareLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/SquareLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers"]
+layers = 3
+transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, 0, -50, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser1" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser1"]
+layers = 3
+transform = Transform3D(0.452548, -2.54558, 0, 0.452548, 2.54558, -0, 0, 0, 0.64, -5.55, 1.8, -7.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser2"]
+layers = 3
+transform = Transform3D(0.452548, 2.54558, 0, -0.452548, 2.54558, 0, 0, 0, 0.64, 5.55, 1.8, -7.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser3"]
+layers = 3
+transform = Transform3D(0, -6, 1.07487e-07, 0, -8.06153e-07, -0.8, 0.8, 0, 0, 0, 4.2, -7.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="LeftWavingLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/LeftWavingLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="laser1" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser1"]
+layers = 3
+transform = Transform3D(0.452548, -2.54558, 0, 0.452548, 2.54558, -0, 0, 0, 0.64, -5.55, 1.8, -27.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser2"]
+layers = 3
+transform = Transform3D(0.452548, 2.54558, 0, -0.452548, 2.54558, 0, 0, 0, 0.64, 5.55, 1.8, -27.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser3"]
+layers = 3
+transform = Transform3D(0, -6, 1.07487e-07, 0, -8.06153e-07, -0.8, 0.8, 0, 0, 0, 4.2, -27.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Level/LeftWavingLasers"]
+libraries = {
+&"": SubResource("LeftWavingLasers_lib")
+}
+autoplay = "rotate"
+speed_scale = 0.0
+
+[node name="RightWavingLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/RightWavingLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="laser1" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser1"]
+layers = 3
+transform = Transform3D(0.452548, -2.54558, 0, 0.452548, 2.54558, -0, 0, 0, 0.64, -5.55, 1.8, -17.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser2"]
+layers = 3
+transform = Transform3D(0.452548, 2.54558, 0, -0.452548, 2.54558, 0, 0, 0, 0.64, 5.55, 1.8, -17.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser3"]
+layers = 3
+transform = Transform3D(0, -6, 1.07487e-07, 0, -8.06153e-07, -0.8, 0.8, 0, 0, 0, 4.2, -17.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Level/RightWavingLasers"]
+libraries = {
+&"": SubResource("RightWavingLasers_lib")
+}
+autoplay = "rotate"
+speed_scale = 0.0
+
+[node name="TrackLights" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="Bar1" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.452548, -2.54558, 0, 0.452548, 2.54558, -0, 0, 0, 0.64, -5.55, 1.8, -47.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar2" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.452548, 2.54558, 0, -0.452548, 2.54558, 0, 0, 0, 0.64, 5.55, 1.8, -47.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar3" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0, -6, 1.07487e-07, 0, -8.06153e-07, -0.8, 0.8, 0, 0, 0, 4.2, -47.9)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Dust" type="GPUParticles3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -6)
+amount = 220
+lifetime = 8.0
+preprocess = 8.0
+visibility_aabb = AABB(-8, -4, -14, 16, 8, 28)
+process_material = SubResource("dust_mat")
+draw_pass_1 = SubResource("dust_quad")
+
+[node name="rings" type="Node3D" parent="Level"]
+script = ExtResource("rings_script")

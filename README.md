@@ -54,6 +54,14 @@ Gameplay objects and the default environment are rebuilt from measurements of th
   neon tubes with their light IDs, rotating lasers, runway and platform; `game/environments/TrackLaneRings.gd`
   reproduces the ring spin/zoom effects). HUD panels sit where Beat Saber puts them (combo left, score right,
   energy bar on the runway start).
+* **Other environments**: `game/environments/<EnvironmentName>.tscn` is loaded when a map's Info.dat names it
+  (`_environmentName` / `environmentNames`), falling back to "The First". The scenes are generated from the
+  generated meshes (static meshes, neon tubes grouped by light id, rotating laser pivots,
+  ring sets and the scene-light weights stored as node metadata, so `event_driver.gd` and `TrackLaneRings.gd`
+  drive them unchanged). Shipped: Origins, Triangle, Nice, BigMirror, KDA, Monstercat, Dragons, CrabRave, Panic, Rocket, GreenDay,
+  Timbaland, FitBeat, LinkinPark, BTS, Kaleidoscope, Interscope, Skrillex, Billie, Halloween, Gaga.
+  Set `OPENSABER_ENVIRONMENT=<Name>` to force one, or `PREVIEW_ENV_SCENE=res://game/environments/<Name>.tscn`
+  with the visual preview below.
 * Default colors are Beat Saber's "The First" scheme. Chain links use the original slice mesh, note cuts spawn the
   original's sparkle/explosion bursts, bombs explode, and the environment's directional lights follow the light
   events with the original per-light weights.
@@ -88,7 +96,13 @@ Quest build (Godot 4.7, gradle build template from the 4.7 export templates, Ope
 ```
 JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home /Applications/Godot4.7.app/Contents/MacOS/Godot --headless --path . --export-debug "Oculus Quest (DEBUG)" ../BeepSaberBin/OpenSaber.apk
 ```
-Install with `adb install -r ../BeepSaberBin/OpenSaber.apk`.
+On Windows the same works with the console build of Godot (the Android SDK / JDK / debug keystore paths come
+from the editor settings); add `--install-android-build-template` the first time so `android/build` exists:
+```
+Godot_v4.7.2-stable_win64_console.exe --headless --xr-mode off --path . --install-android-build-template --export-debug "Oculus Quest (DEBUG)" ../BeepSaberBin/OpenSaber.apk
+```
+Install with `adb install -r ../BeepSaberBin/OpenSaber.apk` (uninstall first if the headset has a build signed with
+another key) and start it with `adb shell am start -n org.godotengine.open_saber/com.godot.game.GodotAppLauncher`.
 
 # Credits
 The included Music Track is Time Lapse by TheFatRat (https://www.youtube.com/watch?v=3fxq7kqyWO8)

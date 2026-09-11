@@ -1,0 +1,1192 @@
+[gd_scene load_steps=36 format=3]
+
+[ext_resource type="Script" path="res://game/event_driver.gd" id="script"]
+[ext_resource type="Script" path="res://game/environments/TrackLaneRings.gd" id="rings_script"]
+[ext_resource type="Shader" path="res://game/data/light_bar.gdshader" id="light_bar_shader"]
+[ext_resource type="Shader" path="res://game/data/runway_floor.gdshader" id="runway_shader"]
+[ext_resource type="Shader" path="res://game/data/ring.gdshader" id="ring_shader"]
+[ext_resource type="Shader" path="res://game/data/sky_gradient.gdshader" id="sky_shader"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env_players_place.obj" id="players_place_mesh"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/SkrillexEnvironment_Mirror_0.obj" id="mesh_0"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/SkrillexEnvironment_PlayersPlaceConstruction_1.obj" id="mesh_1"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/SkrillexEnvironment_PlayersPlaceCore_2.obj" id="mesh_2"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/SkrillexEnvironment_SkrillexTrackPlaneC_3.obj" id="mesh_3"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/SkrillexEnvironment_Core_4.obj" id="mesh_4"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/SkrillexEnvironment_ring0_tubes.obj" id="ring_mesh_0"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/SkrillexEnvironment_ring1_tubes.obj" id="ring_mesh_1"]
+
+[sub_resource type="BoxMesh" id="unit_box"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="light_bar_mat"]
+render_priority = 0
+shader = ExtResource("light_bar_shader")
+
+[sub_resource type="StandardMaterial3D" id="bar_cyan"]
+shading_mode = 0
+albedo_color = Color(0, 0.706, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="dark_env"]
+albedo_color = Color(0.18, 0.19, 0.22, 1)
+metallic = 0.2
+roughness = 0.62
+
+[sub_resource type="StandardMaterial3D" id="mirror_floor"]
+albedo_color = Color(0.03, 0.035, 0.045, 1)
+metallic = 0.85
+metallic_specular = 0.8
+roughness = 0.12
+
+[sub_resource type="SphereMesh" id="sky_sphere"]
+radius = 500.0
+height = 1000.0
+radial_segments = 24
+rings = 16
+
+[sub_resource type="ShaderMaterial" id="sky_mat"]
+shader = ExtResource("sky_shader")
+shader_parameter/left_color = Color(0.85, 0.085, 0.085, 1)
+shader_parameter/right_color = Color(0.188, 0.675, 1, 1)
+shader_parameter/base_color = Color(0, 0.0546948, 0.0726415, 1)
+shader_parameter/bottom_intensity = 0.25
+shader_parameter/horizon_intensity = 0.1
+shader_parameter/brightness = 1.0
+
+[sub_resource type="PlaneMesh" id="runway_plane"]
+size = Vector2(4.76, 247.2)
+
+[sub_resource type="ShaderMaterial" id="runway_mat"]
+shader = ExtResource("runway_shader")
+shader_parameter/base_color = Color(0.02, 0.022, 0.03, 1)
+shader_parameter/left_color = Color(0.85, 0.085, 0.085, 1)
+shader_parameter/right_color = Color(0.188, 0.675, 1, 1)
+shader_parameter/event_color = Color(0, 0, 0, 1)
+shader_parameter/lane_spacing = 0.6
+shader_parameter/runway_half_width = 2.38
+shader_parameter/edge_width = 0.03
+
+[sub_resource type="PlaneMesh" id="players_place_plane"]
+size = Vector2(3, 2)
+
+[sub_resource type="Animation" id="LeftWavingLasers_anim"]
+resource_name = "rotate"
+length = 2.25
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("laser1:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="LeftWavingLasers_lib"]
+_data = {
+&"rotate": SubResource("LeftWavingLasers_anim")
+}
+
+[sub_resource type="Animation" id="RightWavingLasers_anim"]
+resource_name = "rotate"
+length = 2.25
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("laser1:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="RightWavingLasers_lib"]
+_data = {
+&"rotate": SubResource("RightWavingLasers_anim")
+}
+
+[sub_resource type="ParticleProcessMaterial" id="dust_mat"]
+emission_shape = 3
+emission_box_extents = Vector3(6, 3, 12)
+direction = Vector3(0, 0, 1)
+spread = 180.0
+initial_velocity_min = 0.05
+initial_velocity_max = 0.2
+gravity = Vector3(0, 0, 0)
+scale_min = 0.6
+scale_max = 1.0
+color = Color(0.7, 0.8, 1, 0.35)
+
+[sub_resource type="StandardMaterial3D" id="dust_draw_mat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+
+[sub_resource type="QuadMesh" id="dust_quad"]
+material = SubResource("dust_draw_mat")
+size = Vector2(0.012, 0.012)
+
+[sub_resource type="ShaderMaterial" id="ring_mat_0"]
+shader = ExtResource("ring_shader")
+shader_parameter/ring_color = Color(0, 0, 0, 0)
+shader_parameter/chrome_color = Vector3(0.05, 0.055, 0.07)
+shader_parameter/idle_energy = 0.35
+shader_parameter/lit_energy = 2.2
+
+[sub_resource type="MultiMesh" id="ring_mm_0"]
+transform_format = 1
+mesh = ExtResource("ring_mesh_0")
+
+[sub_resource type="ShaderMaterial" id="ring_mat_1"]
+shader = ExtResource("ring_shader")
+shader_parameter/ring_color = Color(0, 0, 0, 0)
+shader_parameter/chrome_color = Vector3(0.05, 0.055, 0.07)
+shader_parameter/idle_energy = 0.35
+shader_parameter/lit_energy = 2.2
+
+[sub_resource type="MultiMesh" id="ring_mm_1"]
+transform_format = 1
+mesh = ExtResource("ring_mesh_1")
+
+[node name="event_driver" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Level" type="Node3D" parent="."]
+
+[node name="Sphere" type="MeshInstance3D" parent="Level"]
+layers = 3
+material_override = SubResource("sky_mat")
+mesh = SubResource("sky_sphere")
+
+[node name="Mirror_0" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+material_override = SubResource("mirror_floor")
+mesh = ExtResource("mesh_0")
+
+[node name="Construction_1" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_1")
+
+[node name="SaberBurnMarksArea_2" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_2")
+
+[node name="PlaneC_3" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__1__4" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -25)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__2__5" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -50)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__3__6" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -75)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__4__7" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -100)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__5__8" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -125)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__6__9" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -150)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__7__10" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 25)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__8__11" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 50)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__9__12" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 75)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__10__13" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 100)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__11__14" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 125)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__12__15" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 150)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__13__16" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -175)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__14__17" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -200)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__15__18" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -225)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__16__19" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -250)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__17__20" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -275)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC_21" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 0)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__1__22" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -25)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__2__23" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -50)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__3__24" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -75)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__4__25" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -100)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__5__26" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -125)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__6__27" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -150)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__7__28" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 25)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__8__29" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 50)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__9__30" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 75)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__10__31" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 100)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__11__32" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 125)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__12__33" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 150)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__13__34" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -175)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__14__35" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -200)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__15__36" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -225)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__16__37" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -250)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__17__38" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, -1, 0, 1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -275)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC_39" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, 0)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__1__40" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -25)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__2__41" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -50)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__3__42" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -75)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__4__43" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -100)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__5__44" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -125)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__6__45" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -150)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__7__46" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, 25)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__8__47" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, 50)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__9__48" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, 75)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__10__49" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, 100)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__11__50" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, 125)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__12__51" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, 150)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__13__52" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -175)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__14__53" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -200)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__15__54" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -225)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__16__55" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -250)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__17__56" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 1.5, -275)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC_57" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 0)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__1__58" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -25)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__2__59" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -50)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__3__60" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -75)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__4__61" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -100)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__5__62" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -125)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__6__63" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -150)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__7__64" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 25)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__8__65" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 50)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__9__66" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 75)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__10__67" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 100)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__11__68" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 125)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__12__69" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, 150)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__13__70" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -175)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__14__71" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -200)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__15__72" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -225)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__16__73" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -250)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="PlaneC__17__74" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-1.34359e-07, 1, 0, -1, -1.34359e-07, 0, 0, 0, 1, 0, 1.5, -275)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="Core_75" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.8, -5.61761e-07, 0, -4.49408e-07, 1, 0, 0, 0, -4, -0.23, 7.5, -99.1)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="Core_76" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.8, -5.61761e-07, 0, 4.49408e-07, -1, 0, 0, 0, 4, -0.23, -4.5, -20.9)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="PlayersPlaceConstruction" type="MeshInstance3D" parent="Level"]
+layers = 3
+material_override = SubResource("dark_env")
+mesh = ExtResource("players_place_mesh")
+
+[node name="PlayersPlaceMirror" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.006, 0)
+material_override = SubResource("mirror_floor")
+mesh = SubResource("players_place_plane")
+
+[node name="floor" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -131.35)
+material_override = SubResource("runway_mat")
+mesh = SubResource("runway_plane")
+
+[node name="DiagonalLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/DiagonalLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="laser1" type="Node3D" parent="Level/DiagonalLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/DiagonalLasers/laser1"]
+layers = 3
+transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, 0, -50, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="SquareLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/SquareLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers"]
+layers = 3
+transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, 0, -50, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser1" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser1"]
+layers = 3
+transform = Transform3D(0.16, 0, -0, 0, 0.000151644, 0.16, 0, -2000, 1.21315e-08, 9.5, 6, 60)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser2"]
+layers = 3
+transform = Transform3D(0.16, 0, -0, 0, 0.000151644, 0.16, 0, -2000, 1.21315e-08, 4.5, 11, 60)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser3"]
+layers = 3
+transform = Transform3D(0.16, -0.000151644, -0, 1.23589e-22, 2.03748e-11, 0.16, -1.21315e-08, -2000, 1.62998e-15, -4.5, 11, 60)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser4" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser4"]
+layers = 3
+transform = Transform3D(0.16, -0.000151644, -0, 1.23589e-22, 2.03748e-11, 0.16, -1.21315e-08, -2000, 1.62998e-15, -9.5, 6, 60)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser5" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser5"]
+layers = 3
+transform = Transform3D(0.226274, -3.53553, 0, 0.226274, 3.53553, -6.31151e-08, 4.46291e-08, 6.97329e-07, 0.32, 5, 6.5, -180)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser6" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser6"]
+layers = 3
+transform = Transform3D(0.226274, 3.53553, 0, -0.226274, 3.53553, -5.23343e-09, -3.7006e-09, 5.78218e-08, 0.32, -5, 6.5, -180)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="LeftWavingLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/LeftWavingLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="laser1" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser1"]
+layers = 3
+transform = Transform3D(0.48, 0, 0, 0, -0.000335897, -0.48, 0, 2500, -6.44922e-08, -20, 1.5, -50)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser2"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, 0.169706, 3.53553, -0, 0, 0, 0.24, -7.4, -5.9, 10)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser3"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, 0.169706, 3.53553, -0, 0, 0, 0.24, -7.4, -5.9, -15)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser4" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser4"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, 0.169706, 3.53553, -0, 0, 0, 0.24, -7.4, -5.9, -40)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser5" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser5"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, 0.169706, 3.53553, -0, 0, 0, 0.24, -7.4, -5.9, -65)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser6" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser6"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, 0.169706, 3.53553, -0, 0, 0, 0.24, -7.4, -5.9, -90)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser7" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser7"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, 0.169706, 3.53553, -0, 0, 0, 0.24, -7.4, -5.9, -115)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser8" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser8"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, 0.169706, 3.53553, -0, 0, 0, 0.24, -7.4, -5.9, -140)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser9" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser9"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, -0.169706, 3.53553, 0, 0, 0, 0.24, -7.4, 8.9, 10)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser10" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser10"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, -0.169706, 3.53553, 0, 0, 0, 0.24, -7.4, 8.9, -15)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser11" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser11"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, -0.169706, 3.53553, 0, 0, 0, 0.24, -7.4, 8.9, -40)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser12" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser12"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, -0.169706, 3.53553, 0, 0, 0, 0.24, -7.4, 8.9, -65)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser13" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser13"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, -0.169706, 3.53553, 0, 0, 0, 0.24, -7.4, 8.9, -90)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser14" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser14"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, -0.169706, 3.53553, 0, 0, 0, 0.24, -7.4, 8.9, -115)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser15" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser15"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, -0.169706, 3.53553, 0, 0, 0, 0.24, -7.4, 8.9, -140)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser16" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser16"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, -9.5, 1.5, 10)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser17" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser17"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, -9.5, 1.5, -15)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser18" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser18"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, -9.5, 1.5, -40)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser19" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser19"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, -9.5, 1.5, -65)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser20" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser20"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, -9.5, 1.5, -90)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser21" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser21"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, -9.5, 1.5, -115)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser22" type="Node3D" parent="Level/LeftWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser22"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, -9.5, 1.5, -140)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Level/LeftWavingLasers"]
+libraries = {
+&"": SubResource("LeftWavingLasers_lib")
+}
+autoplay = "rotate"
+speed_scale = 0.0
+
+[node name="RightWavingLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/RightWavingLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="laser1" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser1"]
+layers = 3
+transform = Transform3D(0.48, 0, 0, 0, -0.000335897, -0.48, 0, 2500, -6.44922e-08, 20, 1.5, -50)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser2"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, -0.169706, -3.53553, -0, 0, 0, -0.24, 7.4, -5.9, 10)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser3"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, -0.169706, -3.53553, -0, 0, 0, -0.24, 7.4, -5.9, -15)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser4" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser4"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, -0.169706, -3.53553, -0, 0, 0, -0.24, 7.4, -5.9, -40)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser5" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser5"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, -0.169706, -3.53553, -0, 0, 0, -0.24, 7.4, -5.9, -65)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser6" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser6"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, -0.169706, -3.53553, -0, 0, 0, -0.24, 7.4, -5.9, -90)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser7" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser7"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, -0.169706, -3.53553, -0, 0, 0, -0.24, 7.4, -5.9, -115)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser8" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser8"]
+layers = 3
+transform = Transform3D(0.169706, -3.53553, 0, -0.169706, -3.53553, -0, 0, 0, -0.24, 7.4, -5.9, -140)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser9" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser9"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, 0.169706, -3.53553, 0, 0, 0, -0.24, 7.4, 8.9, 10)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser10" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser10"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, 0.169706, -3.53553, 0, 0, 0, -0.24, 7.4, 8.9, -15)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser11" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser11"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, 0.169706, -3.53553, 0, 0, 0, -0.24, 7.4, 8.9, -40)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser12" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser12"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, 0.169706, -3.53553, 0, 0, 0, -0.24, 7.4, 8.9, -65)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser13" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser13"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, 0.169706, -3.53553, 0, 0, 0, -0.24, 7.4, 8.9, -90)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser14" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser14"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, 0.169706, -3.53553, 0, 0, 0, -0.24, 7.4, 8.9, -115)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser15" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser15"]
+layers = 3
+transform = Transform3D(0.169706, 3.53553, 0, 0.169706, -3.53553, 0, 0, 0, -0.24, 7.4, 8.9, -140)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser16" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser16"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, 9.5, 1.5, 10)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser17" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser17"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, 9.5, 1.5, -15)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser18" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser18"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, 9.5, 1.5, -40)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser19" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser19"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, 9.5, 1.5, -65)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser20" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser20"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, 9.5, 1.5, -90)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser21" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser21"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, 9.5, 1.5, -115)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser22" type="Node3D" parent="Level/RightWavingLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser22"]
+layers = 3
+transform = Transform3D(0.24, 0, 0, 0, 4, 0, 0, 0, 0.24, 9.5, 1.5, -140)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Level/RightWavingLasers"]
+libraries = {
+&"": SubResource("RightWavingLasers_lib")
+}
+autoplay = "rotate"
+speed_scale = 0.0
+
+[node name="TrackLights" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="Bar1" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.16, 0, 0, 0, -0.000151644, 0.16, 0, -2000, -1.21315e-08, -9.5, -3, 60)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar2" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.16, 0, 0, 0, -0.000151644, 0.16, 0, -2000, -1.21315e-08, -4.5, -8, 60)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar3" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.16, 0.000151644, -0, -1.23589e-22, 2.03748e-11, 0.16, 1.21315e-08, -2000, 1.62998e-15, 4.5, -8, 60)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar4" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.16, 0.000151644, -0, -1.23589e-22, 2.03748e-11, 0.16, 1.21315e-08, -2000, 1.62998e-15, 9.5, -3, 60)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar5" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.226274, -3.53553, -0, 0.226274, 3.53553, 6.31811e-08, -4.46758e-08, -6.98059e-07, 0.32, -5, -3.5, -180)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar6" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.226274, 3.53553, 0, -0.226274, 3.53553, -4.98135e-09, -3.52234e-09, 5.50366e-08, 0.32, 5, -3.5, -180)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Dust" type="GPUParticles3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -6)
+amount = 220
+lifetime = 8.0
+preprocess = 8.0
+visibility_aabb = AABB(-8, -4, -14, 16, 8, 28)
+process_material = SubResource("dust_mat")
+draw_pass_1 = SubResource("dust_quad")
+
+[node name="rings" type="Node3D" parent="Level"]
+script = ExtResource("rings_script")
+
+[node name="RingSet0" type="MultiMeshInstance3D" parent="Level/rings"]
+layers = 3
+material_override = SubResource("ring_mat_0")
+multimesh = SubResource("ring_mm_0")
+metadata/count = 5
+metadata/origin = Vector3(0, 1.5, -15)
+metadata/step = 60
+metadata/startup_angle = 45
+metadata/startup_step = 0
+metadata/startup_flexy = 10
+metadata/spin_rotation = 90
+metadata/spin_step = 0
+metadata/spin_flexy = 1
+metadata/zoom_min = 60
+metadata/zoom_max = 60
+metadata/zoom_speed = 2
+metadata/has_zoom = true
+metadata/mesh_basis = Basis(1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+[node name="RingSet1" type="MultiMeshInstance3D" parent="Level/rings"]
+layers = 3
+material_override = SubResource("ring_mat_1")
+multimesh = SubResource("ring_mm_1")
+metadata/count = 5
+metadata/origin = Vector3(0, 1.5, -30)
+metadata/step = 60
+metadata/startup_angle = 45
+metadata/startup_step = 0
+metadata/startup_flexy = 10
+metadata/spin_rotation = 90
+metadata/spin_step = 0
+metadata/spin_flexy = 1
+metadata/zoom_min = 60
+metadata/zoom_max = 60
+metadata/zoom_speed = 2
+metadata/has_zoom = true
+metadata/mesh_basis = Basis(1, 0, 0, 0, 1, 0, 0, 0, 1)

@@ -1,0 +1,1177 @@
+[gd_scene load_steps=33 format=3]
+
+[ext_resource type="Script" path="res://game/event_driver.gd" id="script"]
+[ext_resource type="Script" path="res://game/environments/TrackLaneRings.gd" id="rings_script"]
+[ext_resource type="Shader" path="res://game/data/light_bar.gdshader" id="light_bar_shader"]
+[ext_resource type="Shader" path="res://game/data/runway_floor.gdshader" id="runway_shader"]
+[ext_resource type="Shader" path="res://game/data/ring.gdshader" id="ring_shader"]
+[ext_resource type="Shader" path="res://game/data/sky_gradient.gdshader" id="sky_shader"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env_players_place.obj" id="players_place_mesh"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/KDAEnvironment_Crystal_0.obj" id="mesh_0"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/KDAEnvironment_Spear_1.obj" id="mesh_1"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/KDAEnvironment_Trail_2.obj" id="mesh_2"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/KDAEnvironment_Construction_KDA_3.obj" id="mesh_3"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/KDAEnvironment_TrackMirror_KDA_4.obj" id="mesh_4"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/KDAEnvironment_Mirror_5.obj" id="mesh_5"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/KDAEnvironment_PlayersPlaceConstruction_6.obj" id="mesh_6"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/env/KDAEnvironment_PlayersPlaceCore_7.obj" id="mesh_7"]
+
+[sub_resource type="BoxMesh" id="unit_box"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="light_bar_mat"]
+render_priority = 0
+shader = ExtResource("light_bar_shader")
+
+[sub_resource type="StandardMaterial3D" id="bar_cyan"]
+shading_mode = 0
+albedo_color = Color(0, 0.706, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="dark_env"]
+albedo_color = Color(0.18, 0.19, 0.22, 1)
+metallic = 0.2
+roughness = 0.62
+
+[sub_resource type="StandardMaterial3D" id="mirror_floor"]
+albedo_color = Color(0.03, 0.035, 0.045, 1)
+metallic = 0.85
+metallic_specular = 0.8
+roughness = 0.12
+
+[sub_resource type="SphereMesh" id="sky_sphere"]
+radius = 500.0
+height = 1000.0
+radial_segments = 24
+rings = 16
+
+[sub_resource type="ShaderMaterial" id="sky_mat"]
+shader = ExtResource("sky_shader")
+shader_parameter/left_color = Color(0.85, 0.085, 0.085, 1)
+shader_parameter/right_color = Color(0.188, 0.675, 1, 1)
+shader_parameter/base_color = Color(0, 0, 0, 1)
+shader_parameter/bottom_intensity = 0.25
+shader_parameter/horizon_intensity = 0.1
+shader_parameter/brightness = 1.0
+
+[sub_resource type="PlaneMesh" id="runway_plane"]
+size = Vector2(4.76, 247.2)
+
+[sub_resource type="ShaderMaterial" id="runway_mat"]
+shader = ExtResource("runway_shader")
+shader_parameter/base_color = Color(0.02, 0.022, 0.03, 1)
+shader_parameter/left_color = Color(0.85, 0.085, 0.085, 1)
+shader_parameter/right_color = Color(0.188, 0.675, 1, 1)
+shader_parameter/event_color = Color(0, 0, 0, 1)
+shader_parameter/lane_spacing = 0.6
+shader_parameter/runway_half_width = 2.38
+shader_parameter/edge_width = 0.03
+
+[sub_resource type="PlaneMesh" id="players_place_plane"]
+size = Vector2(3, 2)
+
+[sub_resource type="Animation" id="LeftWavingLasers_anim"]
+resource_name = "rotate"
+length = 2.25
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("laser1:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 360.0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("laser2:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 90, 0), Vector3(0, 450.0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("laser3:rotation_degrees")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 180, 0), Vector3(0, 540.0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("laser4:rotation_degrees")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 270, 0), Vector3(0, 630.0, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("laser5:rotation_degrees")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 360.0, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("laser6:rotation_degrees")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 90, 0), Vector3(0, 450.0, 0)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("laser7:rotation_degrees")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 180, 0), Vector3(0, 540.0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="LeftWavingLasers_lib"]
+_data = {
+&"rotate": SubResource("LeftWavingLasers_anim")
+}
+
+[sub_resource type="Animation" id="RightWavingLasers_anim"]
+resource_name = "rotate"
+length = 2.25
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("laser1:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 360.0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("laser2:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 90, 0), Vector3(0, 450.0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("laser3:rotation_degrees")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 180, 0), Vector3(0, 540.0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("laser4:rotation_degrees")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 270, 0), Vector3(0, 630.0, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("laser5:rotation_degrees")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 360.0, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("laser6:rotation_degrees")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 90, 0), Vector3(0, 450.0, 0)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("laser7:rotation_degrees")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 2.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 180, 0), Vector3(0, 540.0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="RightWavingLasers_lib"]
+_data = {
+&"rotate": SubResource("RightWavingLasers_anim")
+}
+
+[sub_resource type="ParticleProcessMaterial" id="dust_mat"]
+emission_shape = 3
+emission_box_extents = Vector3(6, 3, 12)
+direction = Vector3(0, 0, 1)
+spread = 180.0
+initial_velocity_min = 0.05
+initial_velocity_max = 0.2
+gravity = Vector3(0, 0, 0)
+scale_min = 0.6
+scale_max = 1.0
+color = Color(0.7, 0.8, 1, 0.35)
+
+[sub_resource type="StandardMaterial3D" id="dust_draw_mat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+
+[sub_resource type="QuadMesh" id="dust_quad"]
+material = SubResource("dust_draw_mat")
+size = Vector2(0.012, 0.012)
+
+[node name="event_driver" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Level" type="Node3D" parent="."]
+
+[node name="Sphere" type="MeshInstance3D" parent="Level"]
+layers = 3
+material_override = SubResource("sky_mat")
+mesh = SubResource("sky_sphere")
+
+[node name="DirectionalLight_0" type="DirectionalLight3D" parent="Level"]
+transform = Transform3D(-0.978148, -0.0036286, 0.20788, -8.70629e-11, -0.999848, -0.0174526, 0.207912, -0.0170713, 0.977999, 0, 8, 0)
+light_color = Color(0, 0.752941, 1, 1)
+light_energy = 0.0
+shadow_enabled = false
+metadata/light_weights = {2: 1, 3: 0.7}
+metadata/light_intensity = 1.5
+
+[node name="DirectionalLight_1" type="DirectionalLight3D" parent="Level"]
+transform = Transform3D(-0.978148, 0.00181441, -0.207904, 1.22904e-11, -0.999962, -0.00872684, -0.207912, -0.00853614, 0.97811, 0, 8, 0)
+light_color = Color(0, 0.752941, 1, 1)
+light_energy = 0.0
+shadow_enabled = false
+metadata/light_weights = {2: 0.7, 3: 1}
+metadata/light_intensity = 1.5
+
+[node name="DirectionalLight_2" type="DirectionalLight3D" parent="Level"]
+transform = Transform3D(-1, 0, -0, -0, -0.992546, -0.121869, -0, -0.121869, 0.992546, 0, 8, 0)
+light_color = Color(0, 0.752941, 1, 1)
+light_energy = 0.0
+shadow_enabled = false
+metadata/light_weights = {0: 0.7, 1: 0.5, 2: 0.5, 3: 0.5, 4: 0.7}
+metadata/light_intensity = 1.5
+
+[node name="DirectionalLight_3" type="DirectionalLight3D" parent="Level"]
+transform = Transform3D(-1, 0, -0, -0, -0.891007, 0.453991, -0, 0.453991, 0.891007, 0, 8, 0)
+light_color = Color(0, 0.752941, 1, 1)
+light_energy = 0.0
+shadow_enabled = false
+metadata/light_weights = {0: 1, 1: 1}
+metadata/light_intensity = 1.5
+
+[node name="DirectionalLight_4" type="DirectionalLight3D" parent="Level"]
+transform = Transform3D(-1, 0, -0, -0, -1.34359e-07, -1, -0, -1, 1.34359e-07, 0, 8, 0)
+light_color = Color(0, 0.752941, 1, 1)
+light_energy = 0.0
+shadow_enabled = false
+metadata/light_weights = {1: 1, 2: 1, 3: 1}
+metadata/light_intensity = 1.2
+
+[node name="Crystal_0" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.595929, -0.730502, 0.33352, -0.796132, 0.483095, -0.364407, 0.105079, -0.482687, -0.869467, -4.28228, 3.93419, -9.92977)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_0")
+
+[node name="Spear_1" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.595929, -0.730502, 0.33352, -0.796132, 0.483095, -0.364407, 0.105079, -0.482687, -0.869467, -4.28228, 3.93419, -9.92977)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_1")
+
+[node name="Trail_2" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(-0.984808, -0.173648, 2.33312e-08, 0, -1.34359e-07, -1, 0.173648, -0.984808, 1.32318e-07, -3.47064, -2.287, -30.8993)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_2")
+
+[node name="Crystal_3" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(0.595929, -0.521359, 0.610781, 0.796132, 0.483095, -0.364407, 0.105079, -0.703424, -0.702961, 4.28228, 3.93419, -9.92977)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_0")
+
+[node name="Spear_4" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(0.595929, -0.521359, 0.610781, 0.796132, 0.483095, -0.364407, 0.105079, -0.703424, -0.702961, 4.28228, 3.93419, -9.92977)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_1")
+
+[node name="Trail_5" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(0.984808, 0.173648, -2.33312e-08, -0, -1.34359e-07, -1, 0.173648, -0.984808, 1.32318e-07, 3.47064, -2.287, -30.8993)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_2")
+
+[node name="Construction_6" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_3")
+
+[node name="FloorMirror_7" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.25)
+material_override = SubResource("mirror_floor")
+mesh = ExtResource("mesh_4")
+
+[node name="FloorMirrorSetDepth_8" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.25)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_4")
+
+[node name="Mirror_9" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+material_override = SubResource("mirror_floor")
+mesh = ExtResource("mesh_5")
+
+[node name="Construction_10" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_6")
+
+[node name="SaberBurnMarksArea_11" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+material_override = SubResource("dark_env")
+mesh = ExtResource("mesh_7")
+
+[node name="PlayersPlaceConstruction" type="MeshInstance3D" parent="Level"]
+layers = 3
+material_override = SubResource("dark_env")
+mesh = ExtResource("players_place_mesh")
+
+[node name="PlayersPlaceMirror" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.006, 0)
+material_override = SubResource("mirror_floor")
+mesh = SubResource("players_place_plane")
+
+[node name="floor" type="MeshInstance3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -131.35)
+material_override = SubResource("runway_mat")
+mesh = SubResource("runway_plane")
+
+[node name="DiagonalLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/DiagonalLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="laser1" type="Node3D" parent="Level/DiagonalLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/DiagonalLasers/laser1"]
+layers = 3
+transform = Transform3D(0.08, 0, 0, 0, 250, 0, 0, 0, 0.08, 4, -125.3, -36.46)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/DiagonalLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/DiagonalLasers/laser2"]
+layers = 3
+transform = Transform3D(0.08, 0, 0, 0, 250, 0, 0, 0, 0.08, 4, -125.3, -26.46)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/DiagonalLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/DiagonalLasers/laser3"]
+layers = 3
+transform = Transform3D(0.08, 0, 0, 0, 250, 0, 0, 0, 0.08, 4, -125.3, -16.46)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser4" type="Node3D" parent="Level/DiagonalLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/DiagonalLasers/laser4"]
+layers = 3
+transform = Transform3D(0.08, 0, 0, 0, 250, 0, 0, 0, 0.08, -4, -125.3, -36.46)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser5" type="Node3D" parent="Level/DiagonalLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/DiagonalLasers/laser5"]
+layers = 3
+transform = Transform3D(0.08, 0, 0, 0, 250, 0, 0, 0, 0.08, -4, -125.3, -26.46)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser6" type="Node3D" parent="Level/DiagonalLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/DiagonalLasers/laser6"]
+layers = 3
+transform = Transform3D(0.08, 0, 0, 0, 250, 0, 0, 0, 0.08, -4, -125.3, -16.46)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="SquareLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/SquareLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers"]
+layers = 3
+transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, 0, -50, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser1" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser1"]
+layers = 3
+transform = Transform3D(0.128, 0, 0, 0, -6.71794e-05, 0.128, 0, -500, -1.71979e-08, 0, 5, -7.5)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser2"]
+layers = 3
+transform = Transform3D(0.128, 0, 0, 0, -6.71794e-05, 0.128, 0, -500, -1.71979e-08, -5, 8, -7.5)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser3"]
+layers = 3
+transform = Transform3D(0.128, 0, 0, 0, -6.71794e-05, 0.128, 0, -500, -1.71979e-08, 5, 8, -7.5)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser4" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser4"]
+layers = 3
+transform = Transform3D(0.128, 0, 0, 0, -6.71794e-05, 0.128, 0, -500, -1.71979e-08, -16, 8, -7.5)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser5" type="Node3D" parent="Level/SquareLasers"]
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/SquareLasers/laser5"]
+layers = 3
+transform = Transform3D(0.128, 0, 0, 0, -6.71794e-05, 0.128, 0, -500, -1.71979e-08, 16, 8, -7.5)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="LeftWavingLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/LeftWavingLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="laser1" type="Node3D" parent="Level/LeftWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.3, -35)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser1"]
+layers = 3
+transform = Transform3D(0.0917722, 409.576, 0, -0.131064, 286.788, 0, 0, 0, 0.16, 204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/LeftWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.3, -37.5)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser2"]
+layers = 3
+transform = Transform3D(0.0917722, 409.576, 0, -0.131064, 286.788, 0, 0, 0, 0.16, 204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/LeftWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.3, -40)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser3"]
+layers = 3
+transform = Transform3D(0.0917722, 409.576, 0, -0.131064, 286.788, 0, 0, 0, 0.16, 204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser4" type="Node3D" parent="Level/LeftWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.3, -42.5)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser4"]
+layers = 3
+transform = Transform3D(0.0917722, 409.576, 0, -0.131064, 286.788, 0, 0, 0, 0.16, 204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser5" type="Node3D" parent="Level/LeftWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.3, -45)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser5"]
+layers = 3
+transform = Transform3D(0.0917722, 409.576, 0, -0.131064, 286.788, 0, 0, 0, 0.16, 204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser6" type="Node3D" parent="Level/LeftWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.3, -47.5)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser6"]
+layers = 3
+transform = Transform3D(0.0917722, 409.576, 0, -0.131064, 286.788, 0, 0, 0, 0.16, 204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser7" type="Node3D" parent="Level/LeftWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.3, -50)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/LeftWavingLasers/laser7"]
+layers = 3
+transform = Transform3D(0.0917722, 409.576, 0, -0.131064, 286.788, 0, 0, 0, 0.16, 204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Level/LeftWavingLasers"]
+libraries = {
+&"": SubResource("LeftWavingLasers_lib")
+}
+autoplay = "rotate"
+speed_scale = 0.0
+
+[node name="RightWavingLasers" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/RightWavingLasers"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="laser1" type="Node3D" parent="Level/RightWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.3, -35)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser1"]
+layers = 3
+transform = Transform3D(0.0917722, -409.576, 0, 0.131064, 286.788, -0, 0, 0, 0.16, -204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser2" type="Node3D" parent="Level/RightWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.3, -37.5)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser2"]
+layers = 3
+transform = Transform3D(0.0917722, -409.576, 0, 0.131064, 286.788, -0, 0, 0, 0.16, -204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser3" type="Node3D" parent="Level/RightWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.3, -40)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser3"]
+layers = 3
+transform = Transform3D(0.0917722, -409.576, 0, 0.131064, 286.788, -0, 0, 0, 0.16, -204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser4" type="Node3D" parent="Level/RightWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.3, -42.5)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser4"]
+layers = 3
+transform = Transform3D(0.0917722, -409.576, 0, 0.131064, 286.788, -0, 0, 0, 0.16, -204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser5" type="Node3D" parent="Level/RightWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.3, -45)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser5"]
+layers = 3
+transform = Transform3D(0.0917722, -409.576, 0, 0.131064, 286.788, -0, 0, 0, 0.16, -204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser6" type="Node3D" parent="Level/RightWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.3, -47.5)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser6"]
+layers = 3
+transform = Transform3D(0.0917722, -409.576, 0, 0.131064, 286.788, -0, 0, 0, 0.16, -204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="laser7" type="Node3D" parent="Level/RightWavingLasers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.3, -50)
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/RightWavingLasers/laser7"]
+layers = 3
+transform = Transform3D(0.0917722, -409.576, 0, 0.131064, 286.788, -0, 0, 0, 0.16, -204.788, 143.394, 0)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Level/RightWavingLasers"]
+libraries = {
+&"": SubResource("RightWavingLasers_lib")
+}
+autoplay = "rotate"
+speed_scale = 0.0
+
+[node name="TrackLights" type="Node3D" parent="Level"]
+
+[node name="LightBatch" type="MultiMeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+material_override = SubResource("light_bar_mat")
+
+[node name="Bar1" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.183544, -2.04788, 0, 0.262129, 1.43394, -0, 0, 0, 0.32, 0.97394, 3.93303, -65)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar2" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.183544, 2.04788, 0, -0.262129, 1.43394, 0, 0, 0, 0.32, -0.97394, 3.93303, -65)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar3" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.064, 0, 0, 0, -6.71794e-05, 0.064, 0, -500, -8.59897e-09, -2, 0.0999664, -258)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar4" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.064, 0, 0, 0, -6.71794e-05, 0.064, 0, -500, -8.59897e-09, 2, 0.0999664, -258)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar5" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0591193, 0.383022, -0, -0.0229819, 0.866025, 0.0222673, 0.00852889, -0.321394, 0.0600014, -8.20849, 0.433013, -20.4807)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar6" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0607295, -0.315579, -0, 0.0184331, 0.866025, 0.0261576, -0.0082548, -0.387827, 0.0584104, -13.8778, 0.433013, -24.0439)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar7" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0607295, -0.315579, -0, 0.0184331, 0.866025, 0.0261576, -0.0082548, -0.387827, 0.0584104, 10.3822, 0.433013, -51.5439)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar8" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.467213, -0, 0.0292889, 0.866025, 0.0128904, -0.00602257, -0.178078, 0.0626884, 4.73639, 0.433013, -31.189)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar9" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0420101, -0.377203, 0, 0.0127727, 0.0868241, -0.0617199, 0.0465619, 0.316511, 0.0169308, -9.1486, 0.0434121, -2.04174)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar10" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0637583, 0.0434121, -0, -0.00483052, 0.433013, 0.0316333, 0.00274654, -0.246202, 0.0556357, -17.5983, 0.216506, -23.0131)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar11" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0591193, 0.383022, -0, -0.0229819, 0.866025, 0.0222673, 0.00852889, -0.321394, 0.0600014, -5.60849, 0.433013, -33.2207)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar12" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0557528, -0.245519, -0, 0.031242, 0.433013, 0.0069237, -0.0033998, -0.0471211, 0.0636244, -11.9728, 0.216506, -13.9136)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar13" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.061811, -0.259297, -0, 0.0161465, 0.939693, 0.0147795, -0.00383227, -0.223031, 0.0622701, 12.6204, 0.469846, -10.5915)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar14" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0572199, -0.447945, 0, 0.0277695, 0.866025, -0.0159014, 0.00712297, 0.222139, 0.0619931, -8.81397, 0.433013, -13.0689)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar15" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0572199, -0.447945, 0, 0.0277695, 0.866025, -0.0159014, 0.00712297, 0.222139, 0.0619931, -3.39397, 0.433013, -9.50893)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar16" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0639771, 0.0267346, -0, -0.00171059, 0.999391, 0.00143623, 3.8397e-05, -0.022433, 0.0639839, 8.29337, 0.499695, -30.8112)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar17" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.467213, -0, 0.0292889, 0.866025, 0.0128904, -0.00602257, -0.178078, 0.0626884, 16.1664, 0.433013, -28.429)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar18" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0607295, -0.15779, -0, 0.0184331, 0.433013, 0.0261576, -0.0082548, -0.193914, 0.0584104, 3.77111, 0.216506, -16.677)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar19" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0478882, 0.663414, -0, -0.0283718, 0.5, 0.0476135, 0.0315874, -0.55667, 0.0427663, 7.03171, 0.25, -48.2183)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar20" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.052495, -0.572028, -0, 0.0188629, 0.422618, 0.0548509, -0.0313762, -0.702978, 0.0329754, -7.93601, 0.211309, -18.1015)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar21" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.467213, -0, 0.0292889, 0.866025, 0.0128904, -0.00602257, -0.178078, 0.0626884, 6.91639, 0.433013, -78.269)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar22" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0576888, 0.216506, 0, -0.0266256, 0.433013, -0.0177504, -0.00768616, 0.125, 0.0614892, -16.4917, 0.216506, -10.0875)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar23" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.467213, -0, 0.0292889, 0.866025, 0.0128904, -0.00602257, -0.178078, 0.0626884, -6.81361, 0.433013, -71.369)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar24" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0480393, -0.660741, -0, 0.0398363, 0.707107, 0.0214725, -0.0141878, -0.251837, 0.0602904, 11.7596, 0.353553, -18.6359)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar25" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0478882, 0.663414, -0, -0.0283718, 0.5, 0.0476135, 0.0315874, -0.55667, 0.0427663, 4.61171, 0.25, -34.9683)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar26" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.233607, -0, 0.0292889, 0.433013, 0.0128904, -0.00602257, -0.0890389, 0.0626884, 15.0632, 0.216506, -6.11452)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar27" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.467213, -0, 0.0292889, 0.866025, 0.0128904, -0.00602257, -0.178078, 0.0626884, 6.91639, 0.433013, -14.149)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar28" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0597179, -0.359636, 0, 0.0217798, 0.882948, -0.0206982, 0.0074438, 0.30177, 0.0605606, -5.91982, 0.441474, -23.0291)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar29" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0576888, 0.216506, 0, -0.0266256, 0.433013, -0.0177504, -0.00768616, 0.125, 0.0614892, -10.5317, 0.216506, -9.9675)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar30" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0576888, 0.433013, 0, -0.0266256, 0.866025, -0.0177504, -0.00768616, 0.25, 0.0614892, -12.1135, 0.433013, -26.855)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar31" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.467213, -0, 0.0292889, 0.866025, 0.0128904, -0.00602257, -0.178078, 0.0626884, 6.26639, 0.433013, -62.319)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar32" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.467213, -0, 0.0292889, 0.866025, 0.0128904, -0.00602257, -0.178078, 0.0626884, 6.91639, 0.433013, -39.409)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar33" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0591193, 0.191511, -0, -0.0229819, 0.433013, 0.0222673, 0.00852889, -0.160697, 0.0600014, 9.13576, 0.216506, -16.9303)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar34" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0576888, 0.433013, 0, -0.0266256, 0.866025, -0.0177504, -0.00768616, 0.25, 0.0614892, 4.21651, 0.433013, -23.115)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar35" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0637583, 0.0868241, -0, -0.00483052, 0.866025, 0.0316333, 0.00274654, -0.492404, 0.0556357, -7.49659, 0.433013, -23.9662)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar36" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0478882, 0.331707, -0, -0.0283718, 0.25, 0.0476135, 0.0315874, -0.278335, 0.0427663, -9.44415, 0.125, -50.9292)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar37" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0557528, -0.245519, -0, 0.031242, 0.433013, 0.0069237, -0.0033998, -0.0471211, 0.0636244, -3.47276, 0.216506, -57.9636)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar38" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0478882, 0.663414, -0, -0.0283718, 0.5, 0.0476135, 0.0315874, -0.55667, 0.0427663, -3.24829, 0.25, -38.6683)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar39" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0607295, -0.15779, -0, 0.0184331, 0.433013, 0.0261576, -0.0082548, -0.193914, 0.0584104, 19.4811, 0.216506, -32.377)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar40" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0597179, -0.359636, 0, 0.0217798, 0.882948, -0.0206982, 0.0074438, 0.30177, 0.0605606, 8.07018, 0.441474, 0.00088512)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar41" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0611259, 0.296311, 0, -0.0175314, 0.882948, -0.0244012, -0.00723035, 0.364147, 0.0591657, -12.7218, 0.441474, -32.0079)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar42" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0607295, -0.15779, -0, 0.0184331, 0.433013, 0.0261576, -0.0082548, -0.193914, 0.0584104, 10.1311, 0.216506, -4.47696)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar43" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0637583, 0.0868241, -0, -0.00483052, 0.866025, 0.0316333, 0.00274654, -0.492404, 0.0556357, -12.1766, 0.433013, -8.7462)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar44" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0630572, 0.085505, -0, -0.00962005, 0.433013, 0.0305197, 0.00521918, -0.234923, 0.0562543, 8.41275, 0.216506, -41.4075)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar45" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0611259, 0.296311, 0, -0.0175314, 0.882948, -0.0244012, -0.00723035, 0.364147, 0.0591657, -3.35184, 0.441474, -17.4979)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar46" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.063997, 0.00484837, -0, -0.000475423, 0.383022, 0.0411357, 0.000398882, -0.321357, 0.0490291, -5.57758, 0.191511, -9.58068)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar47" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.467213, -0, 0.0292889, 0.866025, 0.0128904, -0.00602257, -0.178078, 0.0626884, -9.84361, 0.433013, -25.619)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar48" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.233607, -0, 0.0292889, 0.433013, 0.0128904, -0.00602257, -0.0890389, 0.0626884, 11.8132, 0.216506, -56.1445)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar49" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0607295, -0.315579, -0, 0.0184331, 0.866025, 0.0261576, -0.0082548, -0.387827, 0.0584104, 6.45221, 0.433013, -6.66391)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar50" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.233607, -0, 0.0292889, 0.433013, 0.0128904, -0.00602257, -0.0890389, 0.0626884, 10.1232, 0.216506, -1.66452)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar51" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0617643, 0.131001, -0, -0.0163273, 0.469846, 0.0145795, 0.00381986, -0.109923, 0.0623172, 12.1255, 0.234923, -14.155)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar52" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0639815, 0.0240642, -0, -0.00133416, 0.866025, 0.0319722, 0.000769384, -0.49942, 0.0554417, -7.98797, 0.433013, -4.69971)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar53" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0618588, 0.256504, -0, -0.014709, 0.866025, 0.0284191, 0.00728961, -0.429192, 0.0573442, -7.77175, 0.433013, -69.1146)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar54" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0480393, -0.660741, -0, 0.0398363, 0.707107, 0.0214725, -0.0141878, -0.251837, 0.0602904, 9.32963, 0.353553, -23.0459)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar55" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0478882, 0.663414, -0, -0.0283718, 0.5, 0.0476135, 0.0315874, -0.55667, 0.0427663, -6.05422, 0.25, -2.40209)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar56" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0291735, -0.445032, -0, 0.0528131, 0.211309, 0.0239834, -0.0213468, -0.0854102, 0.0593363, -4.28252, 0.105655, -29.3627)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar57" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0466645, -0.342186, -0, 0.0315656, 0.262736, 0.0443692, -0.030365, -0.252742, 0.0461235, 6.77891, 0.131368, -19.8864)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar58" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0490268, 0.642788, 0, -0.0411384, 0.766045, 0, 0, 0, 0.064, -9.09861, 0.383022, -64)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar59" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.233607, -0, 0.0292889, 0.433013, 0.0128904, -0.00602257, -0.0890389, 0.0626884, 15.0032, 0.216506, -17.4745)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar60" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0537976, -0.270838, 0, 0.0291622, 0.353553, -0.0346058, 0.0187451, 0.22726, 0.0538371, -3.99542, 0.176777, -13.2464)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar61" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0591193, 0.383022, -0, -0.0229819, 0.866025, 0.0222673, 0.00852889, -0.321394, 0.0600014, 9.94151, 0.433013, -65.1107)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar62" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.467213, -0, 0.0292889, 0.866025, 0.0128904, -0.00602257, -0.178078, 0.0626884, 14.1764, 0.433013, -31.789)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar63" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0580378, -0.421474, 0, 0.0257602, 0.866025, -0.0189845, 0.00800147, 0.268999, 0.0611195, -11.3807, 0.433013, -2.6855)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar64" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0591193, 0.383022, -0, -0.0229819, 0.866025, 0.0222673, 0.00852889, -0.321394, 0.0600014, 9.94151, 0.433013, -39.8507)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar65" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0597179, -0.359636, 0, 0.0217798, 0.882948, -0.0206982, 0.0074438, 0.30177, 0.0605606, -6.83982, 0.441474, -27.1491)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar66" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0478882, 0.331707, -0, -0.0283718, 0.25, 0.0476135, 0.0315874, -0.278335, 0.0427663, 6.46585, 0.125, -11.3492)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar67" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0543535, -0.527953, 0, 0.0281328, 0.707107, -0.0354478, 0.0187148, 0.470389, 0.0532865, 9.52602, 0.353553, -10.0048)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar68" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0478882, 0.663414, -0, -0.0283718, 0.5, 0.0476135, 0.0315874, -0.55667, 0.0427663, 6.54171, 0.25, -55.7183)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar69" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0607295, -0.315579, -0, 0.0184331, 0.866025, 0.0261576, -0.0082548, -0.387827, 0.0584104, 10.9722, 0.433013, -34.0839)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar70" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0639837, -0.0112974, 0, 0.00127713, 0.441474, -0.030019, 0.000678276, 0.234464, 0.0565231, -6.66331, 0.220737, 0.452579)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar71" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0618588, 0.256504, -0, -0.014709, 0.866025, 0.0284191, 0.00728961, -0.429192, 0.0573442, -11.3217, 0.433013, -24.0046)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar72" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0607295, -0.315579, -0, 0.0184331, 0.866025, 0.0261576, -0.0082548, -0.387827, 0.0584104, -14.2278, 0.433013, -17.8839)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar73" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.034879, 0.838446, -0, -0.0523002, 0.53117, 0.0143191, 0.0120058, -0.121933, 0.0623776, -13.8308, 0.265603, -5.14096)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar74" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0460616, -0.347136, 0, 0.0260915, 0.211309, -0.0518041, 0.0359661, 0.291282, 0.0375811, 4.18643, 0.105655, -43.0644)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar75" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0490268, 0.642788, 0, -0.0411384, 0.766045, 0, 0, 0, 0.064, -7.04861, 0.383022, -37.83)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar76" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0478882, 0.663414, -0, -0.0283718, 0.5, 0.0476135, 0.0315874, -0.55667, 0.0427663, -18.2783, 0.25, -29.1983)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar77" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.063997, 0.00484837, -0, -0.000475423, 0.383022, 0.0411357, 0.000398882, -0.321357, 0.0490291, -4.27758, 0.191511, -49.1607)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar78" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0565853, -0.467213, -0, 0.0292889, 0.866025, 0.0128904, -0.00602257, -0.178078, 0.0626884, 13.5964, 0.433013, -27.099)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar79" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0591193, 0.383022, -0, -0.0229819, 0.866025, 0.0222673, 0.00852889, -0.321394, 0.0600014, 4.06151, 0.433013, -12.0307)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Bar80" type="MeshInstance3D" parent="Level/TrackLights"]
+layers = 3
+transform = Transform3D(0.0607295, -0.315579, -0, 0.0184331, 0.866025, 0.0261576, -0.0082548, -0.387827, 0.0584104, -10.1178, 0.433013, -17.3639)
+material_override = SubResource("bar_cyan")
+mesh = SubResource("unit_box")
+
+[node name="Dust" type="GPUParticles3D" parent="Level"]
+layers = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -6)
+amount = 220
+lifetime = 8.0
+preprocess = 8.0
+visibility_aabb = AABB(-8, -4, -14, 16, 8, 28)
+process_material = SubResource("dust_mat")
+draw_pass_1 = SubResource("dust_quad")
+
+[node name="rings" type="Node3D" parent="Level"]
+script = ExtResource("rings_script")
