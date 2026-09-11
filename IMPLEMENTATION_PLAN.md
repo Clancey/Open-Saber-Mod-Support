@@ -61,3 +61,10 @@ Schedule: Stage 1 and Stage 2a run in parallel. Stage 2b and Stage 3 run in para
 **Success Criteria**: `tests/test_scoreboard.gd` passes; harness with `--bot=0` reports `AUTOPLAY|FAILED`; normal run reaches energy 1.0; screenshots show colored sabers, per-side sky tint, energy bar in view; draw calls stay ~50.
 **Tests**: 38 headless tests; harness runs on Golden and Timelapse.
 **Status**: In Progress (fail mode verified on desktop; visual refinement of sabers/sky/energy-bar placement running)
+
+## Stage 8: Look and Feel Parity with the Original
+**Goal**: Gameplay objects, movement and the default environment match Beat Saber.
+**Success Criteria**: Notes travel at the map NJS with Beat Saber's spawn-ahead, jump arc and rotation; notes/bombs/walls/sabers use the original meshes and equivalent materials; the environment is "The First" layout with its light-ID mapping; harness runs clean.
+**Tests**: 38 headless tests; `tests/visual/VisualPreview.tscn` screenshot; harness on Timelapse with `--nofail=1`.
+**Status**: Complete for movement, notes, bombs, walls, sabers, trails, HUD placement, colors and environment layout. Follow-ups: cut particle effects, menu look, per-event scene light intensities.
+**Files**: `game/scripts/NoteMovementData.gd`, `game/BeepCube/*`, `game/Bomb/*`, `game/Wall/*`, `game/Chain/ChainLink.gd`, `game/Arc/Arc.gd`, `game/sabers/default/*`, `game/event_driver.tscn` (+ `game/environments/TrackLaneRings.gd`), `game/assets/beatsaber/`.

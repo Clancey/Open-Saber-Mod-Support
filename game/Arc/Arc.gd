@@ -15,9 +15,10 @@ var arc_info: ArcInfo = null
 var activator_cube: BeepCube = null
 
 var speed: float
-var movement_direction: Vector3 = Vector3.BACK
-var distance_moved: float = 0.0
-var despawn_distance: float = 0.0
+var tail_jump := NoteMovementData.Jump.new()
+var _yaw_basis := Basis.IDENTITY
+var _has_yaw := false
+var _tail_xy := Vector2.ZERO
 var _instance_material: ShaderMaterial
 
 func _ready() -> void:
@@ -31,15 +32,9 @@ func spawn(info: ArcInfo, current_beat: float, _activator_cube: BeepCube = null,
 	transform = Transform3D.IDENTITY
 
 	arc_info = info
-	var default_njs: float = Map.current_difficulty.note_jump_movement_speed
-	var effective_njs: float = info.get_note_jump_movement_speed(default_njs)
-	var movement_scale := effective_njs / default_njs if default_njs > 0.0 and effective_njs > 0.0 else 1.0
-	speed = (
-		Constants.BEAT_DISTANCE
-		* Map.current_info.beats_per_minute
-		* 0.016666666666666667
-		* movement_scale
-	)
+	var njs: float = info.get_note_jump_movement_speed(NoteMovementData.default_njs)
+	var start_beat_offset: float = info.get_note_jump_start_beat_offset(NoteMovementData.default_start_beat_offset)
+	speed = njs
 
 	var arc_color: Color = custom_color
 	if arc_color == Color.TRANSPARENT:
@@ -55,22 +50,27 @@ func spawn(info: ArcInfo, current_beat: float, _activator_cube: BeepCube = null,
 	else:
 		start_magnet()
 	
+	# arcs connect the notes at their cut positions (the peak of the jump arc)
 	var head_position_2d := info.get_head_position()
 	var tail_position_2d := info.get_tail_position()
+	var head_time := Map.beat_to_seconds(info.head_beat)
+	var tail_time := Map.beat_to_seconds(info.tail_beat)
 	var head_pos := Vector3(
-		Constants.LANE_DISTANCE * head_position_2d.x + Constants.LANE_ZERO_X,
-		Constants.LANE_DISTANCE * head_position_2d.y + Constants.LAYER_ZERO_Y,
-		-(info.head_beat - current_beat) * Constants.BEAT_DISTANCE * movement_scale
+		NoteMovementData.line_x(head_position_2d.x),
+		BeepCube._highest_jump_y(head_position_2d.y) + NoteMovementData.jump_offset_y,
+		-(tail_time - head_time) * njs
 	)
 	var tail_pos := Vector3(
-		Constants.LANE_DISTANCE * tail_position_2d.x + Constants.LANE_ZERO_X,
-		Constants.LANE_DISTANCE * tail_position_2d.y + Constants.LAYER_ZERO_Y,
-		-(info.tail_beat - current_beat) * Constants.BEAT_DISTANCE * movement_scale
+		NoteMovementData.line_x(tail_position_2d.x),
+		BeepCube._highest_jump_y(tail_position_2d.y) + NoteMovementData.jump_offset_y,
+		0.0
 	)
-	transform.origin = tail_pos
-	distance_moved = 0.0
-	despawn_distance = Constants.MISS_Z - tail_pos.z
-	
+	_tail_xy = Vector2(tail_pos.x, tail_pos.y)
+	tail_jump.setup(tail_time, njs, start_beat_offset, _tail_xy, _tail_xy, tail_pos.y, tail_pos.y)
+	_has_yaw = info.has_world_rotation
+	_yaw_basis = Basis(Vector3.UP, deg_to_rad(info.world_rotation_degrees.y)) if _has_yaw else Basis.IDENTITY
+	_apply_movement()
+
 	var head_rotation: Vector2 = Constants.ROTATION_UNIT_VECTORS[info.head_cut_direction] if info.head_cut_direction >= 0 and info.head_cut_direction <= 8 else Vector2.ZERO
 	head_rotation *= info.head_control_point_length_multiplier
 	var tail_rotation: Vector2 = -Constants.ROTATION_UNIT_VECTORS[info.tail_cut_direction] if info.tail_cut_direction >= 0 and info.tail_cut_direction <= 8 else Vector2.ZERO
@@ -112,17 +112,15 @@ func spawn(info: ArcInfo, current_beat: float, _activator_cube: BeepCube = null,
 			curve.set_point_out(smoothpoint_id + 1, smooth_dir * distance)
 	
 	curve.add_point(tail_pos - tail_pos, Vector3(tail_rotation.x, tail_rotation.y, 0.0) * arc_angle_force, Vector3.ZERO)
-	ColorNoteInfo.NoodleData.apply_rotations(
-		self,
-		0.0,
-		info.local_rotation_degrees,
-		info.has_local_rotation,
-		info.world_rotation_degrees,
-		info.has_world_rotation
-	)
-	movement_direction = ColorNoteInfo.NoodleData.get_movement_direction(
-		info.world_rotation_degrees, info.has_world_rotation
-	)
+
+func _apply_movement() -> void:
+	tail_jump.update(NoteMovementData.song_time)
+	var local_position := Vector3(_tail_xy.x, _tail_xy.y, tail_jump.local_position.z)
+	visual.visible = tail_jump.phase != NoteMovementData.Phase.WAITING
+	var world_position := local_position
+	if _has_yaw:
+		world_position = _yaw_basis * local_position
+	transform = Transform3D(_yaw_basis, world_position)
 
 func _on_activator_cube_cutted(correct_saber: bool) -> void:
 	var cube := activator_cube
@@ -143,14 +141,12 @@ func _disconnect_activator_cube() -> void:
 func start_magnet() -> void:
 	_instance_material.set_shader_parameter(&"saber_magnet", arc_info.color + 1)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if activator_cube and activator_cube.is_released():
 		_disconnect_activator_cube()
 	if Scoreboard.paused or not is_visible_in_tree() or not Map.current_info: return
-	var frame_distance := speed * delta
-	transform.origin += movement_direction * frame_distance
-	distance_moved += frame_distance
-	if distance_moved >= despawn_distance:
+	_apply_movement()
+	if tail_jump.phase == NoteMovementData.Phase.FINISHED:
 		hide_arc()
 		release()
 

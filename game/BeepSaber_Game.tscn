@@ -185,19 +185,19 @@ beepsaber_game = NodePath("../..")
 song_uploader_ref = NodePath("../../SongUploader")
 
 [node name="Multiplier_Label" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 1.375, -2.5)
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -3.2, 1.2, -7)
 material_override = ExtResource("13_3xkki")
 mesh = SubResource("TextMesh_cx1im")
 skeleton = NodePath("")
 
 [node name="Point_Label" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.375, -2.5)
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 3.2, 1.9, -7)
 material_override = ExtResource("13_3xkki")
 mesh = SubResource("TextMesh_0bbpk")
 skeleton = NodePath("")
 
 [node name="Percent_Indicator" parent="." instance=ExtResource("16")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1, -2.5)
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 3.2, 0.7, -7)
 material_override = SubResource("ShaderMaterial_6dld2")
 mesh = SubResource("QuadMesh_02xdc")
 

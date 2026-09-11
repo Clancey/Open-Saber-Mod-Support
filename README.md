@@ -38,15 +38,41 @@ Maps saved or exported by [ChroMapper](https://github.com/Caeden117/ChroMapper) 
 Per-object `customData` (v2 `_`-prefixed and v3 unprefixed keys) is honoured for Chroma `color`, Noodle Extensions `coordinates`, `worldRotation` (Y), `localRotation`, `noteJumpMovementSpeed`, `noteJumpStartBeatOffset`, `uninteractable`/fake objects and obstacle `size`; `track`/`animation`/gravity/look flags are ignored safely. Mapping Extensions 1000-based positions/rotations/sizes are supported. Requirements/suggestions from Info.dat set the mod flags automatically.
 See `doc/chromapper_format_spec.md` for the exact keys ChroMapper writes.
 
+# Look and feel (Beat Saber parity)
+Gameplay objects and the default environment are rebuilt from measurements of the original game:
+
+* **Movement** (`game/scripts/NoteMovementData.gd`): notes, bombs, chains, arcs and walls follow Beat Saber's
+  `NoteMovement`/`FloorMovement`/`ObstacleMovement` model. Objects travel at the map's note jump speed,
+  spawn `0.5 s + half jump duration` ahead (`4` beats halved until the half jump distance is under `18 m`, plus the
+  map's start beat offset), rise along the gravity arc from their line layer to the cut heights `0.85/1.4/1.9 m`,
+  wobble into their cut rotation during the first half of the jump and turn to face the player. Positions are
+  evaluated from a smoothed song clock instead of per-frame velocity, so they never drift from the audio.
+* **Notes/bombs/walls/sabers**: generated meshes (`game/assets/beatsaber/meshes`) with shaders that mimic the
+  `NoteHD`, `BombMaterial`, `ObstacleCore/Frame`, `SaberBlade` and `SaberTrail` materials (colors, rim dimming, cut
+  edge glow, 0.4 s trail with a white section, 1 m blade).
+* **Environment** (`game/event_driver.tscn`, generated from the "The First" scene: rings, pillars, buildings,
+  neon tubes with their light IDs, rotating lasers, runway and platform; `game/environments/TrackLaneRings.gd`
+  reproduces the ring spin/zoom effects). HUD panels sit where Beat Saber puts them (combo left, score right,
+  energy bar on the runway start).
+* Default colors are Beat Saber's "The First" scheme.
+
+Visual smoke test (renders notes, bomb, wall and swinging sabers to a PNG; add `PREVIEW_ENV=1` in the environment
+to include the stage, `PREVIEW_ENV=only` for the stage alone):
+```
+Godot --path . --xr-mode off --resolution 1280x720 tests/visual/VisualPreview.tscn -- --out=/tmp/preview.png
+```
+
 # Tests and local playtesting
 Unit tests (headless):
 ```
-/Applications/Godot4.7.app/Contents/MacOS/Godot --headless --path . -s tests/run.gd
+/Applications/Godot4.7.app/Contents/MacOS/Godot --headless --xr-mode off --path . -s tests/run.gd
 ```
+(`--xr-mode off` keeps an installed OpenXR runtime from holding the headless process open at exit.)
 Automated desktop playtest with emulated controllers (no headset needed): plays a map, cuts the notes, records FPS/draw calls/score/lighting per second, saves screenshots and `report.json`:
 ```
 /Applications/Godot4.7.app/Contents/MacOS/Godot --path . --xr-mode off --resolution 1280x720 tests/autoplay/AutoPlayHarness.tscn -- --song="res://game/data/maps/Songs/48088 (Golden - sammy & Tonkie)/" --diff=ExpertStandard --duration=45 --out=/tmp/autoplay --shot-every=5
 ```
+Add `--nofail=1` to keep the run going when the non-dodging bot stands inside walls, and `--bot=0` to only watch.
 
 Quest build (Godot 4.7, gradle build template from the 4.7 export templates, OpenXR vendors addon 5.1.0):
 ```

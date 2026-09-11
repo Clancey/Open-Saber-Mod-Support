@@ -2,8 +2,8 @@ extends MeshInstance3D
 class_name EnergyBar
 
 const TWEEN_DURATION: float = 0.15
-const BAR_POSITION: Vector3 = Vector3(0.0, 0.28, -2.4)
-const BAR_TILT_DEGREES: float = 25.0
+const BAR_POSITION: Vector3 = Vector3(0.0, 0.03, -7.75)
+const BAR_TILT_DEGREES: float = 0.0
 
 var displayed_energy: float = Scoreboard.energy:
 	set(value):

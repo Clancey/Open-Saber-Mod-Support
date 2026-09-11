@@ -18,6 +18,7 @@ var gamestate_settings := GameStateSettings.new()
 var gamestate: GameState = gamestate_bootup
 
 @onready var xr_origin := $XROrigin3D as XROrigin3D
+@onready var xr_camera := $XROrigin3D/XRCamera3D as XRCamera3D
 @onready var left_controller := $XROrigin3D/LeftController as BeepSaberController
 @onready var right_controller := $XROrigin3D/RightController as BeepSaberController
 @onready var left_saber := $XROrigin3D/LeftController/LeftLightSaber as LightSaber
@@ -77,6 +78,9 @@ var gamestate: GameState = gamestate_bootup
 # AudioStreamPlayer has reset it's playback_position to zero. This flag is set
 # to false once the AudioStreamPlayer reset is detected.
 var _audio_synced_after_restart := false
+# smoothed song clock shared with every object on the track
+var _song_clock := 0.0
+var _song_clock_valid := false
 
 var _in_wall := false
 var _environment_left_color: Color = Color.BLACK
@@ -141,6 +145,14 @@ func start_map(info: MapInfo, map_difficulty: DifficultyInfo) -> void:
 
 	update_left_color(Map.color_left)
 	update_right_color(Map.color_right)
+	NoteMovementData.setup(
+		Map.current_info.beats_per_minute,
+		_effective_note_jump_speed(map_difficulty),
+		map_difficulty.note_jump_start_beat_offset,
+		_player_height()
+	)
+	_song_clock_valid = false
+	_update_head_tracking()
 	if Map.event_stack.is_empty():
 		event_driver.set_all_on(Map.color_left, Map.color_right)
 	else:
@@ -277,10 +289,57 @@ func _physics_process(dt: float) -> void:
 	if gamestate == gamestate_playing and _in_wall:
 		Scoreboard.drain(dt)
 
+	_update_head_tracking()
+	if gamestate == gamestate_playing and not Scoreboard.paused and not is_loading_map:
+		_update_song_clock(dt)
+
 	gamestate._physics_process(self)
 	
 	_check_and_update_saber(left_controller, left_saber)
 	_check_and_update_saber(right_controller, right_saber)
+
+# Beat Saber falls back to a per-difficulty default when a map does not specify
+# a note jump movement speed.
+static func _effective_note_jump_speed(map_difficulty: DifficultyInfo) -> float:
+	if map_difficulty.note_jump_movement_speed > 0.01:
+		return map_difficulty.note_jump_movement_speed
+	match map_difficulty.difficulty_rank:
+		9:
+			return 16.0
+		7:
+			return 12.0
+		_:
+			return 10.0
+
+func _player_height() -> float:
+	if xr_camera != null and xr_camera.position.y > 0.5:
+		return xr_camera.position.y
+	return 1.8
+
+func _update_head_tracking() -> void:
+	if xr_camera == null:
+		return
+	NoteMovementData.head_position = xr_camera.global_position
+	NoteMovementData.head_z = xr_camera.global_position.z
+
+# Audio playback position is only updated per mix chunk, so keep our own
+# clock that advances every frame and is gently corrected toward the audio.
+func _update_song_clock(dt: float) -> void:
+	if not song_player.playing:
+		return
+	var raw := song_player.get_playback_position() 		+ AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()
+	raw = maxf(raw, 0.0)
+	if not _song_clock_valid:
+		_song_clock = raw
+		_song_clock_valid = true
+	else:
+		_song_clock += dt
+		var error := raw - _song_clock
+		if absf(error) > 0.05:
+			_song_clock = raw
+		else:
+			_song_clock += error * 0.1
+	NoteMovementData.song_time = _song_clock
 
 func _enter_tree() -> void:
 	GlobalReferences.main_game_scene = self

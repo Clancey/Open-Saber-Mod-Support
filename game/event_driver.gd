@@ -38,7 +38,7 @@ var events_by_type: Dictionary = {}
 # Light ID system (Chroma)
 var light_manager: LightManager = null
 
-@onready var ring_holder: = $Level / rings as Node3D
+@onready var ring_holder: = $Level / rings as TrackLaneRings
 @onready var diagonal_lasers_holder: = $Level / DiagonalLasers as Node3D
 @onready var square_lasers_holder: = $Level / SquareLasers as Node3D
 @onready var left_waving_lasers_holder: = $Level / LeftWavingLasers as Node3D
@@ -61,9 +61,7 @@ var light_manager: LightManager = null
 @onready var right_waving_lasers_material: = ($Level / RightWavingLasers / laser1 / Bar7 as MeshInstance3D).material_override as StandardMaterial3D
 @onready var track_lights_material: = ($Level / TrackLights / Bar1 as MeshInstance3D).material_override as StandardMaterial3D
 @onready var floor_material: = ($Level / floor as MeshInstance3D).material_override as ShaderMaterial
-@onready var ring_material: = ($Level / rings / ring as MeshInstance3D).material_override as ShaderMaterial
 
-@onready var ring_anim_player: = $Level / rings / AnimationPlayer as AnimationPlayer
 @onready var left_laser_anim_player: = $Level / LeftWavingLasers / AnimationPlayer as AnimationPlayer
 @onready var right_laser_anim_player: = $Level / RightWavingLasers / AnimationPlayer as AnimationPlayer
 
@@ -102,13 +100,8 @@ func _physics_process(_delta: float) -> void:
 	if left_lasers_active or right_lasers_active:
 		light_manager.sync_batched_transforms()
 
-func _process(delta: float) -> void :
-	if ring_rot_speed > 0:
-		for ring in ring_holder.get_children():
-			if ring is Node3D:
-				var rot: = ring_rot_speed
-				if ring_rot_inv_dir: rot *= -1
-				(ring as Node3D).rotate_z((rot * delta) * (float(ring.get_index() + 1) / 5))
+func _process(_delta: float) -> void :
+	pass
 
 func update_left_color(color: Color) -> void :
 	normal_left_color = color
@@ -219,18 +212,9 @@ func process_event(data: EventInfo) -> void :
 				if not floor_lights_active:
 					_apply_floor_idle()
 			EventInfo.TYPE_RING_SPIN:
-				if ring_spin_tween != null:
-					ring_spin_tween.kill()
-				ring_spin_tween = ring_holder.create_tween()
-				if absf(ring_rot_speed) < 1.0:
-					ring_rot_inv_dir = not ring_rot_inv_dir
-				@warning_ignore("return_value_discarded")
-				ring_spin_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT).tween_property(self, ^"ring_rot_speed", 0.0, 2.0).from(3.0)
-				ring_spin_tween.play()
+				ring_holder.spin()
 			EventInfo.TYPE_RING_ZOOM:
-				ring_anim_player.stop(false)
-				ring_anim_player.play(&"out" if rings_in else &"in")
-				rings_in = not rings_in
+				ring_holder.zoom()
 			EventInfo.TYPE_LEFT_LASER_SPEED:
 				var val: = float(data.value) * 0.125
 				left_laser_anim_player.speed_scale = val
@@ -451,7 +435,7 @@ func _on_light_fade_finished(
 func _on_Tween_tween_step(value: Color, id: int) -> void :
 	sphere_material.set_shader_parameter(INTENSITY_PARAMS[id], value.v)
 	if id == EventInfo.TYPE_SQUARE_LASERS:
-		ring_material.set_shader_parameter(&"ring_color", value)
+		ring_holder.set_ring_color(value)
 
 func _event_fade_duration(data: EventInfo) -> float:
 	var duration_beats: float = float(data.custom_data.get("_v3FadeDurationBeats", 0.0))

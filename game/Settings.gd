@@ -5,8 +5,9 @@ var config := ConfigFile.new()
 const SECTION := "OpenSaber"
 const CONFIG_PATH := "user://config.ini"
 const OLD_CONFIG_PATH := "user://config.dat"
-const DEFAULT_COLOR_LEFT := Color("ff1a1a")
-const DEFAULT_COLOR_RIGHT := Color("1a1aff")
+# Beat Saber's "The First" color scheme
+const DEFAULT_COLOR_LEFT := Color(0.7843137, 0.0784314, 0.0784314)
+const DEFAULT_COLOR_RIGHT := Color(0.1568627, 0.5568628, 0.8235294)
 const MIN_SABER_COLOR_CHANNEL := 0.15
 const MIN_SABER_COLOR_ALPHA := 0.5
 var SABER_VISUALS: Array[PackedStringArray] = [
@@ -166,7 +167,7 @@ var default_values = {
 	audio_sfx = 0.8,
 	spectator_view = false,
 	spectator_hud = true,
-	obstacle_color = Color(1,0,0)
+	obstacle_color = Color(1.0, 0.1882353, 0.1882353)
 }
 
 func cast_or_default(key: String, to_type: int = -1) -> Variant:

@@ -11,12 +11,15 @@ var _mat: ShaderMaterial
 var piece_left : CutPiece = null
 var piece_right : CutPiece = null
 var link_info: ChainInfo = null
-var movement_direction: Vector3 = Vector3.BACK
-var distance_moved: float = 0.0
-var collision_enable_distance: float = 0.0
-var miss_distance: float = 0.0
+var jump := NoteMovementData.Jump.new()
+var _end_rotation := Basis.IDENTITY
+var _yaw_basis := Basis.IDENTITY
+var _local_basis := Basis.IDENTITY
+var _has_yaw := false
+var _missed := false
 var _default_collision_size_z: float
 var _default_collision_origin_z: float
+const COLLISION_ENABLE_DISTANCE := 3.0
 
 func _ready() -> void:
 	_mat = mi.material_override as ShaderMaterial
@@ -58,17 +61,10 @@ static func construct_chain(chain_info: ChainInfo, current_beat: float, note_inf
 	# you just drew is the mid point of the curve.
 
 	# Get precise positions using the same logic as BeepCube (handles Mapping Extensions)
-	var head_note_pos := chain_info.get_head_position()
-	var tail_note_pos := chain_info.get_tail_position()
-
-	var head_pos := Vector2(
-		head_note_pos.x * Constants.LANE_DISTANCE + Constants.LANE_ZERO_X,
-		head_note_pos.y * Constants.LANE_DISTANCE + Constants.LAYER_ZERO_Y
-	)
-	var tail_pos := Vector2(
-		tail_note_pos.x * Constants.LANE_DISTANCE + Constants.LANE_ZERO_X,
-		tail_note_pos.y * Constants.LANE_DISTANCE + Constants.LAYER_ZERO_Y
-	)
+	# Positions are kept in lane space (line index / line layer) and converted
+	# to world space per link so every link gets Beat Saber's jump arc.
+	var head_pos := chain_info.get_head_position()
+	var tail_pos := chain_info.get_tail_position()
 	var cut_direction := chain_info.head_cut_direction
 	var head_direction: Vector2 = Constants.ROTATION_UNIT_VECTORS[cut_direction] if cut_direction >= 0 and cut_direction <= 8 else Vector2.ZERO
 	var mid_pos := head_pos + (head_direction * head_pos.distance_to(tail_pos) * 0.5)
@@ -78,90 +74,100 @@ static func construct_chain(chain_info: ChainInfo, current_beat: float, note_inf
 		chain_link.spawn(chain_info, current_beat, head_pos, tail_pos, mid_pos, i)
 		i += 1
 
-func spawn(chain_info: ChainInfo, current_beat: float, head_pos: Vector2, tail_pos: Vector2, mid_pos: Vector2, link_index: int) -> void:
+func spawn(chain_info: ChainInfo, _current_beat: float, head_pos: Vector2, tail_pos: Vector2, mid_pos: Vector2, link_index: int) -> void:
 	# re-enable our process_mode first otherwise it seems like Godot-internals
-	# can behave weirdly (ex. AnimationPlayer won't always play correctly)
+	# can behave weirdly
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	transform = Transform3D.IDENTITY
 	link_info = chain_info
+	_missed = false
 	var collision := $Area3D/CollisionShape3D as CollisionShape3D
 	(collision.shape as BoxShape3D).size.z = _default_collision_size_z
 	collision.transform.origin.z = _default_collision_origin_z
-	
+
 	var default_color := Map.color_left if chain_info.color == 0 else Map.color_right
 	var color := chain_info.get_color(default_color)
-	var default_njs: float = Map.current_difficulty.note_jump_movement_speed
-	var effective_njs: float = chain_info.get_note_jump_movement_speed(default_njs)
-	var movement_scale := effective_njs / default_njs if default_njs > 0.0 and effective_njs > 0.0 else 1.0
-	speed = (
-		Constants.BEAT_DISTANCE
-		* Map.current_info.beats_per_minute
-		* 0.016666666666666667
-		* movement_scale
-	)
+	var njs: float = chain_info.get_note_jump_movement_speed(NoteMovementData.default_njs)
+	var start_beat_offset: float = chain_info.get_note_jump_start_beat_offset(NoteMovementData.default_start_beat_offset)
+	speed = njs
 	which_saber = chain_info.color
-	
+
 	var lerp_factor := float(link_index) / float(chain_info.slice_count - 1) * chain_info.squish_factor
 	beat = lerpf(chain_info.head_beat, chain_info.tail_beat, lerp_factor)
-	
+
 	var q0 := head_pos.lerp(mid_pos, lerp_factor)
 	var q1 := mid_pos.lerp(tail_pos, lerp_factor)
 	var bezier_pos := q0.lerp(q1, lerp_factor)
-	
-	transform.origin.x = bezier_pos.x
-	transform.origin.y = bezier_pos.y
-	transform.origin.z = -(beat - current_beat) * Constants.BEAT_DISTANCE * movement_scale
-	var initial_z := transform.origin.z
-	distance_moved = 0.0
-	collision_enable_distance = maxf(0.0, -3.0 - initial_z)
-	miss_distance = Constants.MISS_Z - initial_z
-	
+
+	var x := NoteMovementData.line_x(bezier_pos.x)
+	var line_y := NoteMovementData.line_y(bezier_pos.y)
+	var highest_y := BeepCube._highest_jump_y(bezier_pos.y)
+	var note_time := Map.beat_to_seconds(beat)
+	jump.setup(note_time, njs, start_beat_offset, Vector2(x, line_y), Vector2(x, line_y), highest_y, line_y)
+
 	var chain_rotation := q0.angle_to_point(q1) - TAU*0.25
-	ColorNoteInfo.NoodleData.apply_rotations(
-		self,
-		chain_rotation,
-		chain_info.local_rotation_degrees,
-		chain_info.has_local_rotation,
-		chain_info.world_rotation_degrees,
-		chain_info.has_world_rotation
-	)
-	movement_direction = ColorNoteInfo.NoodleData.get_movement_direction(
-		chain_info.world_rotation_degrees, chain_info.has_world_rotation
-	)
-	
+	_end_rotation = Basis(Vector3.BACK, chain_rotation)
+	_has_yaw = chain_info.has_world_rotation
+	_yaw_basis = Basis(Vector3.UP, deg_to_rad(chain_info.world_rotation_degrees.y)) if _has_yaw else Basis.IDENTITY
+	_local_basis = Basis.IDENTITY
+	if chain_info.has_local_rotation:
+		_local_basis = Basis.from_euler(Vector3(
+			deg_to_rad(chain_info.local_rotation_degrees.x),
+			deg_to_rad(chain_info.local_rotation_degrees.y),
+			deg_to_rad(chain_info.local_rotation_degrees.z)
+		))
+
 	# little bit of forgiveness.  if the chain link is more than a meter away
 	# from the chain head, its hitbox is extended to halfway between the link
 	# and the head.
-	var z_distance_from_head := (beat - chain_info.head_beat) * Constants.BEAT_DISTANCE
+	var z_distance_from_head := (note_time - Map.beat_to_seconds(chain_info.head_beat)) * njs
 	if z_distance_from_head > 1.0:
 		var new_size := z_distance_from_head * 0.5
 		(collision.shape as BoxShape3D).size.z = new_size
 		collision.transform.origin.z = new_size * 0.5 - 0.25
-	
+
 	piece_left.set_color(color)
 	piece_right.set_color(color)
 	_mat.set_shader_parameter(&"color", color)
-	
-	var anim := $AnimationPlayer as AnimationPlayer
-	var anim_speed := effective_njs / 9.0
-	anim.speed_scale = maxf(min_speed,anim_speed)
-	anim.play(&"Spawn")
-	
-	mi.visible = true
-	if chain_info.uninteractable:
-		set_collision_disabled(true)
 
-func _physics_process(delta: float) -> void:
+	set_collision_disabled(true)
+	_apply_movement()
+	mi.visible = true
+	visible = true
+
+func _physics_process(_delta: float) -> void:
 	if Scoreboard.paused or not is_visible_in_tree() or not Map.current_info:
 		return
-	var frame_distance := speed * delta
-	transform.origin += movement_direction * frame_distance
-	distance_moved += frame_distance
-	var collision := $Area3D/CollisionShape3D as CollisionShape3D
-	if distance_moved >= collision_enable_distance and collision.disabled:
-		set_collision_disabled(false)
-	if distance_moved > miss_distance:
+	_apply_movement()
+	if jump.phase == NoteMovementData.Phase.FINISHED:
 		on_miss()
+		return
+	if not _missed and NoteMovementData.song_time >= jump.missed_time:
+		on_miss()
+		return
+	var collision := $Area3D/CollisionShape3D as CollisionShape3D
+	if jump.phase == NoteMovementData.Phase.JUMPING and collision.disabled \
+			and jump.local_position.z >= jump.beat_z() - COLLISION_ENABLE_DISTANCE:
+		set_collision_disabled(false)
+
+# BurstSliderGameNoteController: links do not wobble or turn toward the player
+func _apply_movement() -> void:
+	jump.update(NoteMovementData.song_time)
+	var local_position := jump.local_position
+	if jump.phase == NoteMovementData.Phase.WAITING:
+		mi.visible = false
+		transform.origin = local_position
+		return
+	mi.visible = true
+	var note_basis := _end_rotation
+	if jump.phase == NoteMovementData.Phase.JUMPING and jump.progress < 0.375:
+		var t: float = sin(jump.progress / 0.375 * PI * 0.5)
+		note_basis = Basis(Quaternion.IDENTITY.slerp(_end_rotation.get_rotation_quaternion(), t))
+	elif jump.phase == NoteMovementData.Phase.MOVING:
+		note_basis = Basis.IDENTITY
+	var world_position := local_position
+	if _has_yaw:
+		world_position = _yaw_basis * local_position
+	transform = Transform3D(_yaw_basis * note_basis * _local_basis, world_position)
 
 # call this when clearing the track
 func clear_from_track() -> void:
@@ -173,6 +179,7 @@ func clear_from_track() -> void:
 
 func hide_cube() -> void:
 	mi.visible = false
+	visible = false
 	set_collision_disabled(true)
 	# disable processing on this node and all children to help with performance
 	process_mode = Node.PROCESS_MODE_DISABLED # disable to help with performance
@@ -193,6 +200,7 @@ func cut(saber_type: int, _cut_speed: Vector3, cut_plane: Plane, _controller: Be
 		release()# release now instead of waiting for cut pieces to die off
 
 func on_miss() -> void:
+	_missed = true
 	if link_info != null and not link_info.uninteractable:
 		Scoreboard.reset_combo()
 	hide_cube()

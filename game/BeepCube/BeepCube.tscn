@@ -1,98 +1,69 @@
-[gd_scene load_steps=12 format=3 uid="uid://dvj8dorx2l7s0"]
+[gd_scene load_steps=16 format=3 uid="uid://dvj8dorx2l7s0"]
 
 [ext_resource type="Script" uid="uid://brbavsh8gpkhe" path="res://game/BeepCube/BeepCube.gd" id="1_7mymb"]
-[ext_resource type="PackedScene" uid="uid://bghawm0dmboxm" path="res://game/BeepCube/BeepCubeMesh.glb" id="2_sbb11"]
-[ext_resource type="Shader" uid="uid://cupcyi03bwler" path="res://game/BeepCube/BeepCube.gdshader" id="3_7slj3"]
-[ext_resource type="Texture2D" uid="uid://drc5tdiltfqnk" path="res://game/BeepCube/BeepCubeEmission.png" id="4_10m2m"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/note_cube.obj" id="2_cube"]
+[ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/note_arrow.obj" id="3_arrow"]
+[ext_resource type="Shader" path="res://game/BeepCube/NoteHD.gdshader" id="4_note"]
+[ext_resource type="Shader" path="res://game/BeepCube/NoteArrow.gdshader" id="5_arrowsh"]
+[ext_resource type="Shader" path="res://game/data/glow_sprite.gdshader" id="6_glow"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/textures/arrow_glow.png" id="7_arrowtex"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/textures/note_circle_glow.png" id="8_circletex"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/textures/notes_reflection.png" id="9_refl"]
 [ext_resource type="PackedScene" uid="uid://cplhsipk6vhem" path="res://game/BeepCube/BeepCube_SliceParticles.tscn" id="5_tissj"]
 
 [sub_resource type="BoxShape3D" id="1"]
 size = Vector3(0.8, 0.5, 1)
 
 [sub_resource type="BoxShape3D" id="2"]
-size = Vector3(0.375, 0.375, 0.375)
+size = Vector3(0.35, 0.35, 0.35)
 
-[sub_resource type="Animation" id="Animation_tbh3g"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:scale")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0.8, 0.8, 0.8)]
-}
-
-[sub_resource type="Animation" id="3"]
-length = 0.8
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:position")
-tracks/0/interp = 2
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.6, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 0,
-"values": [Vector3(0, 0, -2), Vector3(0, 0, 0), Vector3(0, 0.5, 0), Vector3(0, 0, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".:rotation_degrees")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Vector3(0, 0, -180), Vector3(0, 0, -180), Vector3(0, 0, 0)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath(".:scale")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Vector3(0.1, 0.1, 0.1), Vector3(0.1, 0.1, 0.1), Vector3(1, 1, 1)]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_7xfev"]
-_data = {
-&"RESET": SubResource("Animation_tbh3g"),
-&"Spawn": SubResource("3")
-}
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_x86ma"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_note"]
 resource_local_to_scene = true
 render_priority = 0
-shader = ExtResource("3_7slj3")
+shader = ExtResource("4_note")
 shader_parameter/color = Color(1, 0, 0, 1)
-shader_parameter/texture_emission = ExtResource("4_10m2m")
-shader_parameter/metallic = 0.3
-shader_parameter/roughness = 0.16
-shader_parameter/sub_emission_energy = 0.22
-shader_parameter/symbol_emission_energy = 3.6
-shader_parameter/rim_emission_energy = 0.55
-shader_parameter/cut_face_emission_energy = 4.0
-shader_parameter/edge_darkening = 0.28
-shader_parameter/bottom_darkening = 0.18
+shader_parameter/albedo_multiplier = 0.9
+shader_parameter/emission_energy = 0.16
+shader_parameter/rim_dim = 0.55
+shader_parameter/rim_dim_power = 2.2
+shader_parameter/roughness_value = 0.3
+shader_parameter/metallic_value = 0.0
+shader_parameter/reflection_texture = ExtResource("9_refl")
+shader_parameter/reflection_intensity = 0.1
+shader_parameter/cut_face_emission_energy = 2.5
 shader_parameter/cutted = false
 shader_parameter/cut_dist_from_center = 0.0
 shader_parameter/cut_vanish = 0.0
 shader_parameter/cut_angle = 0.0
 shader_parameter/cut_white_margin = 0.04
-shader_parameter/is_dot = false
 shader_parameter/is_chain_head = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_arrow"]
+render_priority = 1
+shader = ExtResource("5_arrowsh")
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/emission_energy = 2.2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_arrowglow"]
+resource_local_to_scene = true
+render_priority = 2
+shader = ExtResource("6_glow")
+shader_parameter/color = Color(1, 0, 0, 1)
+shader_parameter/glow_texture = ExtResource("7_arrowtex")
+shader_parameter/intensity = 1.3
+shader_parameter/fade = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_circleglow"]
+resource_local_to_scene = true
+render_priority = 2
+shader = ExtResource("6_glow")
+shader_parameter/color = Color(1, 0, 0, 1)
+shader_parameter/glow_texture = ExtResource("8_circletex")
+shader_parameter/intensity = 1.6
+shader_parameter/fade = 1.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_glow"]
+size = Vector2(1, 1)
 
 [node name="BeepCube" type="Node3D"]
 script = ExtResource("1_7mymb")
@@ -112,15 +83,31 @@ monitoring = false
 shape = SubResource("2")
 disabled = true
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-root_node = NodePath("../BeepCubeMesh")
-libraries = {
-&"": SubResource("AnimationLibrary_7xfev")
-}
-
-[node name="BeepCubeMesh" parent="." instance=ExtResource("2_sbb11")]
-transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+[node name="NoteCube" type="MeshInstance3D" parent="."]
 layers = 3
-material_override = SubResource("ShaderMaterial_x86ma")
+mesh = ExtResource("2_cube")
+material_override = SubResource("ShaderMaterial_note")
+
+[node name="NoteArrow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.108, 0.2535)
+layers = 3
+cast_shadow = 0
+mesh = ExtResource("3_arrow")
+material_override = SubResource("ShaderMaterial_arrow")
+
+[node name="NoteArrowGlow" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.56, 0, 0, 0, 0.28, 0, 0, 0, 0.5504, 0, 0.1036, 0.2532)
+layers = 3
+cast_shadow = 0
+mesh = SubResource("QuadMesh_glow")
+material_override = SubResource("ShaderMaterial_arrowglow")
+
+[node name="NoteCircleGlow" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0.2532)
+visible = false
+layers = 3
+cast_shadow = 0
+mesh = SubResource("QuadMesh_glow")
+material_override = SubResource("ShaderMaterial_circleglow")
 
 [node name="SliceParticles" parent="." instance=ExtResource("5_tissj")]

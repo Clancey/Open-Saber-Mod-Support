@@ -1,0 +1,45 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://tests/visual/VisualPreview.gd" id="1_script"]
+
+[sub_resource type="Environment" id="1"]
+background_mode = 1
+background_color = Color(0.02, 0.015, 0.03, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_sky_contribution = 0.37
+glow_enabled = true
+glow_intensity = 1.63
+glow_strength = 0.83
+glow_bloom = 0.03
+glow_blend_mode = 1
+glow_hdr_threshold = 1.04
+fog_enabled = true
+fog_light_color = Color(0.05, 0.04, 0.1, 1)
+fog_density = 0.012
+fog_sky_affect = 0.0
+
+[sub_resource type="PlaneMesh" id="2"]
+size = Vector2(12, 12)
+
+[node name="VisualPreview" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("1")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 0.6)
+fov = 70.0
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.766044, 0.642788, 0, -0.642788, 0.766044, 0, 3, 0)
+light_energy = 0.9
+
+[node name="Fill" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.5, 0.612372, -0.612372, 0, 0.707107, 0.707107, 0.866025, -0.353553, 0.353553, 0, 3, 0)
+light_energy = 0.35
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)
+mesh = SubResource("2")

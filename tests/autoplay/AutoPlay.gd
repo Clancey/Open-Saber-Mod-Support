@@ -254,6 +254,8 @@ func _parse_arguments() -> void:
 				_shot_every = maxf(0.0, value.to_float())
 			"--bot":
 				_bot_enabled = value != "0"
+			"--nofail":
+				Settings.no_fail = value != "0"
 		index += 1
 	if not _song_path.ends_with("/"):
 		_song_path += "/"

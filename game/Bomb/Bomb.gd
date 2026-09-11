@@ -1,27 +1,26 @@
 extends Cuttable
 class_name Bomb
 
-@export var min_speed := 0.5
+const COLLISION_ENABLE_DISTANCE := 3.0
+
 @onready var collision_shape: CollisionShape3D = $Area3D/CollisionShape3D
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var color_mesh: MeshInstance3D = $BombAnimation/Mesh/Icosphere2
+@onready var mesh_instance: MeshInstance3D = $Mesh
 
 var bomb_info: BombInfo = null
-var color_material: StandardMaterial3D = null
-var default_albedo_color: Color = Color.WHITE
-var default_emission_color: Color = Color.BLACK
-var movement_direction: Vector3 = Vector3.BACK
-var distance_moved: float = 0.0
-var collision_enable_distance: float = 0.0
-var miss_distance: float = 0.0
+var _mat: ShaderMaterial = null
+var _default_color: Color = Color(0.283, 0.283, 0.283)
+var jump := NoteMovementData.Jump.new()
+var _middle_rotation := Quaternion.IDENTITY
+var _yaw_basis := Basis.IDENTITY
+var _local_basis := Basis.IDENTITY
+var _has_yaw := false
+var _last_rotation := Basis.IDENTITY
+var _missed := false
 
 func _ready() -> void:
-	var source_material := color_mesh.material_override as StandardMaterial3D
-	if source_material != null:
-		color_material = source_material.duplicate(true) as StandardMaterial3D
-		default_albedo_color = color_material.albedo_color
-		default_emission_color = color_material.emission
-		color_mesh.material_override = color_material
+	_mat = mesh_instance.material_override as ShaderMaterial
+	if _mat != null:
+		_default_color = _mat.get_shader_parameter(&"color")
 
 func set_collision_disabled(value: bool) -> void:
 	if bomb_info != null and bomb_info.uninteractable and not value:
@@ -37,64 +36,101 @@ func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: Beep
 	release()
 
 func on_miss() -> void:
+	_missed = true
 	hide_bomb()
 	release()
 
-func spawn(info: BombInfo, current_beat: float) -> void:
+func spawn(info: BombInfo, _current_beat: float) -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = true
-	transform = Transform3D.IDENTITY
 	bomb_info = info
+	beat = info.beat
+	_missed = false
 	set_collision_disabled(true)
 
-	var default_njs: float = Map.current_difficulty.note_jump_movement_speed
-	var effective_njs: float = info.get_note_jump_movement_speed(default_njs)
-	var movement_scale := effective_njs / default_njs if default_njs > 0.0 and effective_njs > 0.0 else 1.0
-	speed = Constants.BEAT_DISTANCE * Map.current_info.beats_per_minute / 60.0 * movement_scale
-	beat = info.beat
+	var njs: float = info.get_note_jump_movement_speed(NoteMovementData.default_njs)
+	var start_beat_offset: float = info.get_note_jump_start_beat_offset(NoteMovementData.default_start_beat_offset)
+	speed = njs
 
-	var p := info.get_position()
-	transform.origin.x = p.x * Constants.LANE_DISTANCE + Constants.LANE_ZERO_X
-	transform.origin.y = p.y * Constants.LANE_DISTANCE + Constants.LAYER_ZERO_Y
-	transform.origin.z = -(info.beat - current_beat) * Constants.BEAT_DISTANCE * movement_scale
-	var initial_z := transform.origin.z
-	distance_moved = 0.0
-	collision_enable_distance = maxf(0.0, -3.0 - initial_z)
-	miss_distance = Constants.MISS_Z - initial_z
-	ColorNoteInfo.NoodleData.apply_rotations(
-		self,
-		0.0,
-		info.local_rotation_degrees,
-		info.has_local_rotation,
-		info.world_rotation_degrees,
-		info.has_world_rotation
-	)
-	movement_direction = ColorNoteInfo.NoodleData.get_movement_direction(
-		info.world_rotation_degrees, info.has_world_rotation
-	)
-	if color_material != null:
-		var bomb_color := info.get_color(default_albedo_color)
-		color_material.albedo_color = bomb_color
-		color_material.emission = bomb_color if info.has_custom_color else default_emission_color
-	
-	var anim_speed := effective_njs / 9.0
-	animation_player.stop()
-	animation_player.speed_scale = maxf(min_speed, anim_speed)
-	animation_player.play(&"Spawn")
-	animation_player.seek(0.0, true)
-	if info.uninteractable:
-		set_collision_disabled(true)
+	var lane := info.get_position()
+	var x := NoteMovementData.line_x(lane.x)
+	var line_y := NoteMovementData.line_y(lane.y)
+	var highest_y := BeepCube._highest_jump_y(lane.y)
+	var note_time := Map.beat_to_seconds(info.beat)
+	jump.setup(note_time, njs, start_beat_offset, Vector2(x, line_y), Vector2(x, line_y), highest_y, line_y)
 
-func _physics_process(delta: float) -> void:
+	var wobble := NoteMovementData.random_rotation_offset(note_time, x, line_y)
+	_middle_rotation = Quaternion.from_euler(Vector3(
+		deg_to_rad(wobble.x), deg_to_rad(wobble.y), deg_to_rad(wobble.z)
+	))
+	_has_yaw = info.has_world_rotation
+	_yaw_basis = Basis(Vector3.UP, deg_to_rad(info.world_rotation_degrees.y)) if _has_yaw else Basis.IDENTITY
+	_local_basis = Basis.IDENTITY
+	if info.has_local_rotation:
+		_local_basis = Basis.from_euler(Vector3(
+			deg_to_rad(info.local_rotation_degrees.x),
+			deg_to_rad(info.local_rotation_degrees.y),
+			deg_to_rad(info.local_rotation_degrees.z)
+		))
+	_last_rotation = Basis.IDENTITY
+
+	if _mat != null:
+		var bomb_color := info.get_color(_default_color)
+		_mat.set_shader_parameter(&"color", bomb_color)
+		_mat.set_shader_parameter(&"custom_color", info.has_custom_color)
+	_apply_movement()
+
+func _physics_process(_delta: float) -> void:
 	if Scoreboard.paused or not is_visible_in_tree() or not Map.current_info:
 		return
-	var frame_distance := speed * delta
-	transform.origin += movement_direction * frame_distance
-	distance_moved += frame_distance
-	if distance_moved >= collision_enable_distance and collision_shape.disabled:
-		set_collision_disabled(false)
-	if distance_moved > miss_distance:
+	_apply_movement()
+	if jump.phase == NoteMovementData.Phase.FINISHED:
 		on_miss()
+		return
+	if not _missed and NoteMovementData.song_time >= jump.missed_time:
+		on_miss()
+		return
+	if jump.phase == NoteMovementData.Phase.JUMPING and collision_shape.disabled \
+			and jump.local_position.z >= jump.beat_z() - COLLISION_ENABLE_DISTANCE:
+		set_collision_disabled(false)
+
+func _apply_movement() -> void:
+	jump.update(NoteMovementData.song_time)
+	var local_position := jump.local_position
+	if jump.phase == NoteMovementData.Phase.WAITING:
+		mesh_instance.visible = false
+		transform.origin = local_position
+		return
+	mesh_instance.visible = true
+	var note_basis := _last_rotation
+	if jump.phase == NoteMovementData.Phase.JUMPING and jump.progress < 0.5:
+		note_basis = _jump_rotation(jump.progress, local_position)
+		_last_rotation = note_basis
+	elif jump.phase == NoteMovementData.Phase.MOVING:
+		note_basis = Basis.IDENTITY
+		_last_rotation = note_basis
+	var world_position := local_position
+	if _has_yaw:
+		world_position = _yaw_basis * local_position
+	transform = Transform3D(_yaw_basis * note_basis * _local_basis, world_position)
+
+func _jump_rotation(progress: float, local_position: Vector3) -> Basis:
+	var q: Quaternion
+	if progress < 0.125:
+		q = Quaternion.IDENTITY.slerp(_middle_rotation, sin(progress * PI * 4.0))
+	else:
+		q = _middle_rotation.slerp(Quaternion.IDENTITY, sin((progress - 0.125) * PI * 2.0))
+	var head := NoteMovementData.head_position
+	head.y = lerpf(head.y, local_position.y, 0.8)
+	if _has_yaw:
+		head = _yaw_basis.inverse() * head
+	var away_from_head := local_position - head
+	if away_from_head.length_squared() > 0.0001:
+		var up := Basis(q).y
+		if absf(up.dot(away_from_head.normalized())) < 0.999:
+			var look := Basis.looking_at(away_from_head, up).get_rotation_quaternion()
+			q = q.slerp(look, clampf(progress * 2.0, 0.0, 1.0))
+	return Basis(q)
 
 func clear_from_track() -> void:
 	hide_bomb()
@@ -104,5 +140,4 @@ func clear_from_track() -> void:
 func hide_bomb() -> void:
 	visible = false
 	set_collision_disabled(true)
-	animation_player.stop()
 	process_mode = Node.PROCESS_MODE_DISABLED

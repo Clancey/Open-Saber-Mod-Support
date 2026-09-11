@@ -1,36 +1,21 @@
-[gd_scene load_steps=4 format=3 uid="uid://buhdimf18mwbo"]
+[gd_scene load_steps=5 format=3 uid="uid://buhdimf18mwbo"]
 
 [ext_resource type="Script" uid="uid://b8yca2giq6yxo" path="res://game/sabers/default/tail.gd" id="1_mawj2"]
-
-[sub_resource type="Shader" id="Shader_saber_tail"]
-code = "shader_type spatial;
-render_mode unshaded, blend_add, cull_disabled, depth_draw_never;
-
-uniform vec4 color : source_color = vec4(1.0, 0.0, 0.0, 1.0);
-uniform float emission_strength : hint_range(1.0, 8.0) = 2.0;
-
-void fragment() {
-	float alpha = COLOR.a * color.a;
-	ALBEDO = color.rgb * 0.35 * alpha;
-	EMISSION = color.rgb * emission_strength * alpha;
-	ALPHA = alpha;
-}
-"
+[ext_resource type="Shader" path="res://game/sabers/default/SaberTrail.gdshader" id="2_shader"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/textures/full_trail.png" id="3_tex"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_saber_tail"]
 resource_local_to_scene = true
-shader = SubResource("Shader_saber_tail")
+shader = ExtResource("2_shader")
 shader_parameter/color = Color(1, 0, 0, 1)
-shader_parameter/emission_strength = 2.0
-
-[sub_resource type="ImmediateMesh" id="ImmediateMesh_f67k3"]
-resource_local_to_scene = true
+shader_parameter/trail_texture = ExtResource("3_tex")
+shader_parameter/intensity = 1.0
 
 [node name="tail" type="Node3D"]
 script = ExtResource("1_mawj2")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
+top_level = true
 layers = 3
 cast_shadow = 0
 material_override = SubResource("ShaderMaterial_saber_tail")
-mesh = SubResource("ImmediateMesh_f67k3")
