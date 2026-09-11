@@ -18,7 +18,10 @@ this stand alone version was forked so that it can be changed and developed inde
 ![screenshot02](doc/images/OS0.4.0_2.gif)
 ![screenshot03](doc/images/OS0.4.0_3.gif)
 # About the implementation
-This game uses Godot 4.7. The implementation supports to load and play maps from [BeatSaver](https://beatsaver.com/).
+This game uses Godot 4.7. The implementation supports to load and play maps from [BeatSaver](https://beatsaver.com/):
+the in-game browser offers the site's Latest, Top Rated, Most Played, Curated, Ranked and Verified Mappers views,
+text search with sort / AI-map / NPS / mod filters, and BeatSaver's curated playlists (including the monthly
+curator picks) with one-click download of a whole playlist.
 To export for android headsets the godot openxr vendors plugin may be needed
 
 There is one demo song included that is part of the deployed package.
