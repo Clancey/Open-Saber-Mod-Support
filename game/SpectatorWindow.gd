@@ -1,8 +1,8 @@
 extends Window
 class_name SpectatorWindow
 
-@onready var point_label := $Camera3D/PointLabel as MeshInstance3D
-@onready var multiplier_label := $Camera3D/MultiplierLabel as MeshInstance3D
+@onready var point_label := $Camera3D/PointLabel as Label3D
+@onready var multiplier_label := $Camera3D/MultiplierLabel as Label3D
 # made local to reposition the text to be flush with the circle
 @onready var percent_indicator := $Camera3D/PIPivot/PercentIndicator as PercentIndicator
 @onready var spectator_camera := $Camera3D as Camera3D
@@ -62,9 +62,9 @@ func on_scoreboard_update() -> void:
 	else:
 		hit_rate = 1.0
 	
-	(point_label.mesh as TextMesh).text = "SCORE
+	point_label.text = "SCORE
 %d" % Scoreboard.points
-	(multiplier_label.mesh as TextMesh).text = "COMBO
+	multiplier_label.text = "COMBO
 %d" % Scoreboard.combo
 	percent_indicator.update_percent(hit_rate)
 

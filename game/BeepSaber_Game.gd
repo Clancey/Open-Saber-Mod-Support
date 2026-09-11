@@ -44,11 +44,11 @@ var gamestate: GameState = gamestate_bootup
 @onready var event_driver := $event_driver as EventDriver
 @onready var world_environment := $WorldEnvironment as WorldEnvironment
 
-@onready var multiplier_label := $Multiplier_Label as MeshInstance3D
-@onready var point_label := $Point_Label as MeshInstance3D
+@onready var multiplier_label := $Multiplier_Label as Label3D
+@onready var point_label := $Point_Label as Label3D
 @onready var percent_indicator := $Percent_Indicator as PercentIndicator
 @onready var song_progress_fill := $SongProgressFill as MeshInstance3D
-@onready var song_progress_label := $SongProgress_Label as MeshInstance3D
+@onready var song_progress_label := $SongProgress_Label as Label3D
 var _hud_nodes: Array[NodePath] = [
 	^"HudLeftPanel", ^"HudLeftTop", ^"HudRightPanel", ^"HudRightTop",
 	^"SongProgressBg", ^"SongProgressFill", ^"ComboLineTop", ^"ComboLineBottom"
@@ -256,7 +256,7 @@ func _update_song_progress() -> void:
 	var fraction: float = played / length if length > 0.0 else 0.0
 	song_progress_fill.scale.x = maxf(fraction, 0.001)
 	song_progress_fill.position.x = 2.7 + fraction * 0.5
-	(song_progress_label.mesh as TextMesh).text = "%s / %s" % [_format_time(played), _format_time(length)]
+	song_progress_label.text = "%s / %s" % [_format_time(played), _format_time(length)]
 
 func show_MapSourceDialogs(showing: bool = true) -> void:
 	map_source_dialogs.visible = showing
@@ -592,8 +592,8 @@ func _display_points() -> void:
 	
 	# Beat Saber's HUD: "COMBO" panel on the left, "SCORE" panel on the right
 	# with the multiplier circle and the immediate rank below it
-	(point_label.mesh as TextMesh).text = "SCORE\n%d" % Scoreboard.points
-	(multiplier_label.mesh as TextMesh).text = "COMBO\n%d" % Scoreboard.combo
+	point_label.text = "SCORE\n%d" % Scoreboard.points
+	multiplier_label.text = "COMBO\n%d" % Scoreboard.combo
 	percent_indicator.update_percent(hit_rate)
 	percent_indicator.update_multiplier(Scoreboard.multiplier)
 

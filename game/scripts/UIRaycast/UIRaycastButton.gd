@@ -20,7 +20,7 @@ signal released
 @export var text := "Button":
 	set(txt):
 		text = txt
-		(($Text as MeshInstance3D).mesh as TextMesh).text = txt
+		($Text as Label3D).text = txt
 
 var back_shader: ShaderMaterial
 var held := false
@@ -36,8 +36,7 @@ func _ready() -> void:
 	mesh.size.y = size.y
 	back_shader = back_panel.material_override as ShaderMaterial
 	
-	var text_mesh := $Text as MeshInstance3D
-	(text_mesh.mesh as TextMesh).text = text
+	($Text as Label3D).text = text
 
 func ui_raycast_hit_event(_pos: Vector3, click: bool, release: bool) -> void:
 	if click:

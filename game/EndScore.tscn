@@ -1,5 +1,7 @@
-[gd_scene load_steps=26 format=3 uid="uid://i5nhm2p2kqay"]
+[gd_scene load_steps=25 format=3 uid="uid://i5nhm2p2kqay"]
 
+[ext_resource type="FontFile" path="res://game/ui/fonts/teko_bold.fnt" id="teko_bold"]
+[ext_resource type="FontFile" path="res://game/ui/fonts/teko_medium.fnt" id="teko_medium"]
 [ext_resource type="Shader" uid="uid://lty4t7agwgb7" path="res://game/UI_Panel.gdshader" id="1_cfcnp"]
 [ext_resource type="Script" uid="uid://do1ecop7u4xqy" path="res://game/EndScore.gd" id="1_jacne"]
 [ext_resource type="PackedScene" uid="uid://63fr72w7kh2w" path="res://game/PercentIndicator.tscn" id="2_dpn16"]
@@ -18,18 +20,6 @@ shader_parameter/highlight = 0.0
 material = SubResource("ShaderMaterial_igkn4")
 size = Vector2(2, 1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cwpr4"]
-resource_local_to_scene = true
-shading_mode = 0
-disable_receive_shadows = true
-
-[sub_resource type="TextMesh" id="TextMesh_siova"]
-text = "A"
-font_size = 5
-horizontal_alignment = 1
-vertical_alignment = 0
-depth = 0.0
-
 [sub_resource type="ViewportTexture" id="ViewportTexture_i0bkh"]
 viewport_path = NodePath("GradeViewport")
 
@@ -43,21 +33,6 @@ albedo_texture = SubResource("ViewportTexture_i0bkh")
 resource_local_to_scene = true
 material = SubResource("StandardMaterial3D_snkgs")
 size = Vector2(0.5, 0.5)
-
-[sub_resource type="TextMesh" id="TextMesh_o35jt"]
-text = "Name"
-font_size = 4
-horizontal_alignment = 0
-vertical_alignment = 0
-depth = 0.0
-
-[sub_resource type="TextMesh" id="TextMesh_title"]
-resource_local_to_scene = true
-text = "LEVEL CLEARED"
-font_size = 7
-horizontal_alignment = 1
-vertical_alignment = 1
-depth = 0.0
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_nxvg3"]
 viewport_path = NodePath("FCViewport")
@@ -1350,7 +1325,7 @@ cache/0/160/0/kerning_overrides/80/0 = Vector2(0, 0)
 cache/0/160/0/kerning_overrides/160/0 = Vector2(0, 0)
 
 [sub_resource type="Theme" id="Theme_553gf"]
-default_font = SubResource("9")
+default_font = ExtResource("teko_bold")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_iqqq6"]
 size = Vector3(2, 1, 0.001)
@@ -1372,24 +1347,37 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.4, 0.1)
 size = Vector2(0.5, 0.125)
 text = "CONTINUE"
 
-[node name="Details" type="MeshInstance3D" parent="."]
+[node name="Details" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.62, 0.2, 0.1)
-material_override = SubResource("StandardMaterial3D_cwpr4")
-mesh = SubResource("TextMesh_siova")
+text = "SCORE
+0"
+font = ExtResource("teko_bold")
+font_size = 14
+outline_size = 0
+render_priority = 2
+vertical_alignment = 0
 
 [node name="GradeMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0.06, 0.1)
 mesh = SubResource("QuadMesh_u7okp")
 
-[node name="NameLabel" type="MeshInstance3D" parent="."]
+[node name="NameLabel" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.925, 0.45, 0.1)
-material_override = ExtResource("6_2vw0d")
-mesh = SubResource("TextMesh_o35jt")
+text = "Name"
+font = ExtResource("teko_medium")
+font_size = 14
+outline_size = 0
+render_priority = 2
+horizontal_alignment = 0
+vertical_alignment = 0
 
-[node name="Title" type="MeshInstance3D" parent="."]
+[node name="Title" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.37, 0.11)
-material_override = ExtResource("6_2vw0d")
-mesh = SubResource("TextMesh_title")
+text = "LEVEL CLEARED"
+font = ExtResource("teko_bold")
+font_size = 26
+outline_size = 0
+render_priority = 2
 
 [node name="FCMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, -0.24, 0.1)

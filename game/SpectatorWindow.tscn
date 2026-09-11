@@ -1,24 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://iiatb07725bg"]
+[gd_scene load_steps=8 format=3 uid="uid://iiatb07725bg"]
 
+[ext_resource type="FontFile" path="res://game/ui/fonts/teko_bold.fnt" id="teko_bold"]
 [ext_resource type="Script" uid="uid://dyiousbd7vvuq" path="res://game/SpectatorWindow.gd" id="1_s3dpd"]
 [ext_resource type="Script" uid="uid://bn24emgv1l4us" path="res://game/PercentIndicator.gd" id="3_be825"]
 [ext_resource type="Shader" uid="uid://bkt21vetmleqj" path="res://game/PercentIndicator.gdshader" id="4_a2ftq"]
-[ext_resource type="Material" uid="uid://dqox51k4cngtf" path="res://game/Text.material" id="4_ometx"]
-
-[sub_resource type="TextMesh" id="TextMesh_shlsn"]
-text = " x 0
- Combo 000"
-font_size = 5
-horizontal_alignment = 0
-vertical_alignment = 0
-depth = 0.0
-
-[sub_resource type="TextMesh" id="TextMesh_pr0ke"]
-text = "Score: 000000"
-font_size = 5
-horizontal_alignment = 2
-vertical_alignment = 0
-depth = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qq5ao"]
 resource_local_to_scene = true
@@ -28,12 +13,6 @@ shader_parameter/how_full = 0.0
 
 [sub_resource type="QuadMesh" id="QuadMesh_02xdc"]
 size = Vector2(0.25, 0.25)
-
-[sub_resource type="TextMesh" id="TextMesh_270nm"]
-resource_local_to_scene = true
-text = "0%"
-font_size = 5
-depth = 0.0
 
 [node name="SpectatorWindow" type="Window"]
 handle_input_locally = false
@@ -47,16 +26,26 @@ script = ExtResource("1_s3dpd")
 transform = Transform3D(0.866025, -0.25, 0.433013, 0, 0.866025, 0.5, -0.5, -0.433013, 0.75, 2, 3, 3)
 cull_mask = 2
 
-[node name="MultiplierLabel" type="MeshInstance3D" parent="Camera3D"]
-transform = Transform3D(1, 2.98023e-08, 2.98023e-08, -2.98023e-08, 1, 0, -2.98023e-08, -5.96046e-08, 1, 0, 0, 0)
+[node name="MultiplierLabel" type="Label3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 layers = 2
-material_override = ExtResource("4_ometx")
-mesh = SubResource("TextMesh_shlsn")
+text = "COMBO
+0"
+font = ExtResource("teko_bold")
+outline_size = 0
+render_priority = 2
+font_size = 14
+vertical_alignment = 0
 
-[node name="PointLabel" type="MeshInstance3D" parent="Camera3D"]
+[node name="PointLabel" type="Label3D" parent="Camera3D"]
 layers = 2
-material_override = ExtResource("4_ometx")
-mesh = SubResource("TextMesh_pr0ke")
+text = "SCORE
+0"
+font = ExtResource("teko_bold")
+outline_size = 0
+render_priority = 2
+font_size = 14
+vertical_alignment = 0
 
 [node name="PIPivot" type="Node3D" parent="Camera3D"]
 
@@ -67,9 +56,13 @@ material_override = SubResource("ShaderMaterial_qq5ao")
 mesh = SubResource("QuadMesh_02xdc")
 script = ExtResource("3_be825")
 
-[node name="PercentLabel" type="MeshInstance3D" parent="Camera3D/PIPivot/PercentIndicator"]
-material_override = ExtResource("4_ometx")
-mesh = SubResource("TextMesh_270nm")
+[node name="PercentLabel" type="Label3D" parent="Camera3D/PIPivot/PercentIndicator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.01)
+text = "0%"
+font = ExtResource("teko_bold")
+outline_size = 0
+render_priority = 2
+font_size = 14
 
 [connection signal="close_requested" from="." to="." method="close"]
 [connection signal="size_changed" from="." to="." method="reposition_ui_elements"]

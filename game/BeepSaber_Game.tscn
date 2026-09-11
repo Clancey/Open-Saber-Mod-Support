@@ -1,5 +1,6 @@
-[gd_scene load_steps=46 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=47 format=3 uid="uid://dqb3ybvpsfcbw"]
 
+[ext_resource type="FontFile" path="res://game/ui/fonts/teko_bold.fnt" id="teko_bold"]
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://crstqa7v6ehg3" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DCanvas.tscn" id="3"]
@@ -75,20 +76,6 @@ shader = ExtResource("8_7x23q")
 shader_parameter/left_color = Color(1, 0, 0, 1)
 shader_parameter/right_color = Color(0, 0, 1, 1)
 
-[sub_resource type="TextMesh" id="TextMesh_cx1im"]
-text = "COMBO
-0"
-font_size = 7
-vertical_alignment = 0
-depth = 0.0
-
-[sub_resource type="TextMesh" id="TextMesh_0bbpk"]
-text = "SCORE
-0"
-font_size = 7
-vertical_alignment = 0
-depth = 0.0
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6dld2"]
 resource_local_to_scene = true
 render_priority = 0
@@ -129,11 +116,6 @@ size = Vector2(1.4, 0.05)
 
 [sub_resource type="QuadMesh" id="HudProgressQuad"]
 size = Vector2(1.0, 0.06)
-
-[sub_resource type="TextMesh" id="TextMesh_progress"]
-text = "0:00 / 0:00"
-font_size = 5
-depth = 0.0
 
 [node name="BeepSaber" type="Node3D" groups=["main_game"]]
 script = ExtResource("9")
@@ -237,13 +219,13 @@ material_override = SubResource("HudLineMat")
 mesh = SubResource("HudLineQuad")
 
 [node name="ComboLineTop" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.5, 0, 0, 0, 0.6, 0, 0, 0, 1, -3.2, 2.03, -7.03)
+transform = Transform3D(0.5, 0, 0, 0, 0.6, 0, 0, 0, 1, -3.2, 1.9, -7.03)
 layers = 3
 material_override = SubResource("HudLineMat")
 mesh = SubResource("HudLineQuad")
 
 [node name="ComboLineBottom" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.5, 0, 0, 0, 0.6, 0, 0, 0, 1, -3.2, 1.62, -7.03)
+transform = Transform3D(0.5, 0, 0, 0, 0.6, 0, 0, 0, 1, -3.2, 1.3, -7.03)
 layers = 3
 material_override = SubResource("HudLineMat")
 mesh = SubResource("HudLineQuad")
@@ -272,27 +254,43 @@ layers = 3
 material_override = SubResource("HudProgressFillMat")
 mesh = SubResource("HudProgressQuad")
 
-[node name="SongProgress_Label" type="MeshInstance3D" parent="."]
-transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 3.2, 0.28, -7)
+[node name="SongProgress_Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.28, -7)
 visible = false
 layers = 3
-material_override = ExtResource("13_3xkki")
-mesh = SubResource("TextMesh_progress")
+text = "0:00 / 0:00"
+font = ExtResource("teko_bold")
+outline_size = 0
+no_depth_test = true
+render_priority = 2
+font_size = 36
 
-[node name="Multiplier_Label" type="MeshInstance3D" parent="."]
-transform = Transform3D(3.2, 0, 0, 0, 3.2, 0, 0, 0, 3.2, -3.2, 2.4, -7)
-material_override = ExtResource("13_3xkki")
-mesh = SubResource("TextMesh_cx1im")
-skeleton = NodePath("")
+[node name="Multiplier_Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 2.42, -7)
+layers = 3
+text = "COMBO
+0"
+font = ExtResource("teko_bold")
+outline_size = 0
+no_depth_test = true
+render_priority = 2
+font_size = 76
+vertical_alignment = 0
 
-[node name="Point_Label" type="MeshInstance3D" parent="."]
-transform = Transform3D(3.2, 0, 0, 0, 3.2, 0, 0, 0, 3.2, 3.2, 2.4, -7)
-material_override = ExtResource("13_3xkki")
-mesh = SubResource("TextMesh_0bbpk")
-skeleton = NodePath("")
+[node name="Point_Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 2.42, -7)
+layers = 3
+text = "SCORE
+0"
+font = ExtResource("teko_bold")
+outline_size = 0
+no_depth_test = true
+render_priority = 2
+font_size = 76
+vertical_alignment = 0
 
 [node name="Percent_Indicator" parent="." instance=ExtResource("16")]
-transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 3.2, 1.15, -7)
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 3.2, 0.95, -7)
 material_override = SubResource("ShaderMaterial_6dld2")
 mesh = SubResource("QuadMesh_02xdc")
 

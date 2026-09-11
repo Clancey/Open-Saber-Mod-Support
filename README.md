@@ -62,7 +62,7 @@ Gameplay objects and the default environment are rebuilt from measurements of th
   the level list rows (cover, song, author, BPM) with the cover / characteristic / difficulty / details column on
   the right, and the pause and "LEVEL CLEARED" results panels in the original layouts. The HUD has the combo panel
   with its combo lines on the left and the score panel with the multiplier circle, immediate rank and song progress
-  bar on the right.
+  bar on the right; all 3D text (HUD, cut scores, results, 3D buttons) is Label3D in the same Teko font.
   Set `OPENSABER_SCREENSHOT=<png path>` in the environment to save a menu screenshot and quit;
   `OPENSABER_MENU_SCREEN=levels|pause|results` picks the screen.
 

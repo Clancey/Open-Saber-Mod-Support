@@ -7,20 +7,18 @@ class_name PercentIndicator
 
 var how_full := 0.0
 var how_full_display := 0.0
-var label: TextMesh
-var rank_label: TextMesh
+var label: Label3D
+var rank_label: Label3D
 var shader: ShaderMaterial
 var _multiplier := 1
 
 func _ready() -> void:
 	shader = material_override as ShaderMaterial
-	var label_instance = $PercentLabel as MeshInstance3D
-	label = label_instance.mesh as TextMesh
-	label_instance.layers = layers
-	var rank_instance := get_node_or_null("RankLabel") as MeshInstance3D
-	if rank_instance != null:
-		rank_label = rank_instance.mesh as TextMesh
-		rank_instance.layers = layers
+	label = $PercentLabel as Label3D
+	label.layers = layers
+	rank_label = get_node_or_null("RankLabel") as Label3D
+	if rank_label != null:
+		rank_label.layers = layers
 
 func _process(delta: float) -> void:
 	how_full_display = lerpf(how_full_display, how_full, delta*8)

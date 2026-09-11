@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://bxsfwm7o1kryl"]
 
+[ext_resource type="FontFile" path="res://game/ui/fonts/teko_bold.fnt" id="teko_bold"]
 [ext_resource type="Script" uid="uid://del255mvusofv" path="res://game/scripts/UIRaycast/UIRaycastButton.gd" id="1_xb2lf"]
-[ext_resource type="Material" uid="uid://dqox51k4cngtf" path="res://game/Text.material" id="2_3kli4"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5e240"]
 resource_local_to_scene = true
@@ -37,12 +37,6 @@ shader_parameter/highlight = 0.0
 resource_local_to_scene = true
 size = Vector2(0.25, 0.0625)
 
-[sub_resource type="TextMesh" id="TextMesh_u68ff"]
-resource_local_to_scene = true
-text = "Button"
-font_size = 4
-depth = 0.0
-
 [node name="RaycastButton" type="Area3D"]
 collision_layer = 2
 collision_mask = 0
@@ -55,7 +49,10 @@ shape = SubResource("BoxShape3D_5e240")
 material_override = SubResource("ShaderMaterial_tyoha")
 mesh = SubResource("QuadMesh_sv6mk")
 
-[node name="Text" type="MeshInstance3D" parent="."]
+[node name="Text" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.025)
-material_override = ExtResource("2_3kli4")
-mesh = SubResource("TextMesh_u68ff")
+text = "Button"
+font = ExtResource("teko_bold")
+font_size = 16
+outline_size = 0
+render_priority = 2

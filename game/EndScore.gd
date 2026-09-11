@@ -62,7 +62,7 @@ func show_score(score: int, record: int, percent: float, song_string: String, is
 		percent,
 		song_string,
 		"LEVEL CLEARED",
-		"SCORE\n%d\n\nBEST\n%d" % [score, record],
+		"SCORE\n%d\nBEST\n%d" % [score, record],
 		is_full_combo,
 		is_new_record
 	)
@@ -85,16 +85,15 @@ func _show_result(
 	is_full_combo: bool,
 	is_new_record: bool
 ) -> void:
-	var details_mesh := ($Details as MeshInstance3D).mesh as TextMesh
-	var details_material := ($Details as MeshInstance3D).material_override as StandardMaterial3D
+	var details_label := $Details as Label3D
 	var percent_indicator := $PercentIndicator as PercentIndicator
 	var grade_label := $GradeViewport/GradeLabel as RichTextLabel
 	var fc_label := $FCViewport/FCLabel as RichTextLabel
 	var nr_label := $NRViewport/NRLabel as RichTextLabel
-	var name_label := ($NameLabel as MeshInstance3D).mesh as TextMesh
-	var title_label := ($Title as MeshInstance3D).mesh as TextMesh
+	var name_label := $NameLabel as Label3D
+	var title_label := $Title as Label3D
 	
-	details_material.albedo_color = Color.TRANSPARENT
+	details_label.modulate = Color.TRANSPARENT
 	grade_label.modulate = Color.TRANSPARENT
 	fc_label.modulate = Color.TRANSPARENT
 	nr_label.modulate = Color.TRANSPARENT
@@ -103,7 +102,7 @@ func _show_result(
 	nr_label.visible = is_new_record
 	name_label.text = song_string
 	title_label.text = title
-	details_mesh.text = details
+	details_label.text = details
 	
 	# Beat Saber's rank thresholds (SS / S / A / B / C / D / E)
 	var rank := PercentIndicator.rank_for(percent)
@@ -122,7 +121,7 @@ func _show_result(
 	
 	percent_indicator.update_percent(animated_percent)
 	tw = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT).set_parallel()
-	tw.tween_property(details_material,^"albedo_color",Color.WHITE,2).from(Color.TRANSPARENT)
+	tw.tween_property(details_label,^"modulate",Color.WHITE,2).from(Color.TRANSPARENT)
 	tw.tween_property(grade_label,^"modulate",Color.WHITE,2).from(Color.TRANSPARENT)
 	tw.tween_property(fc_label,^"modulate",Color.WHITE,2).from(Color.TRANSPARENT)
 	tw.tween_property(nr_label,^"modulate",Color.WHITE,2).from(Color.TRANSPARENT)

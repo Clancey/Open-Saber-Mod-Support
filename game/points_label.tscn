@@ -1,5 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://deoh1pl5kvqei"]
+[gd_scene load_steps=5 format=3 uid="uid://deoh1pl5kvqei"]
 
+[ext_resource type="FontFile" path="res://game/ui/fonts/teko_bold.fnt" id="teko_bold"]
 [ext_resource type="Script" uid="uid://chqmv5dvvm0af" path="res://game/points_label.gd" id="2"]
 
 [sub_resource type="Animation" id="6"]
@@ -35,16 +36,6 @@ _data = {
 &"hit": SubResource("6")
 }
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1gu7s"]
-shading_mode = 0
-disable_receive_shadows = true
-
-[sub_resource type="TextMesh" id="TextMesh_toqpu"]
-material = SubResource("StandardMaterial3D_1gu7s")
-text = "x"
-font_size = 4
-depth = 0.0
-
 [node name="points_label" type="Node3D"]
 script = ExtResource("2")
 
@@ -53,7 +44,9 @@ libraries = {
 "": SubResource("AnimationLibrary_cdesj")
 }
 
-[node name="mesh_instance" type="MeshInstance3D" parent="."]
+[node name="mesh_instance" type="Label3D" parent="."]
 transform = Transform3D(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-mesh = SubResource("TextMesh_toqpu")
-skeleton = NodePath("")
+text = "x"
+font = ExtResource("teko_bold")
+font_size = 16
+outline_size = 0
