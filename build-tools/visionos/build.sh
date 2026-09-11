@@ -98,14 +98,10 @@ echo "== importing =="
 
 echo
 echo "== tests =="
-# The shipped Beat Saber / Golden maps are copyrighted and are not in the repo,
-# so the four level-hash tests that need them fail on every clean clone. They are
-# allowlisted by name rather than by ignoring the exit code, so any *other*
-# failure still stops the build.
-ENV_DEPENDENT_FAILURES=(
-	"test_level_hash.test_level_hash_is_cached_on_map_info_and_empty_when_missing"
-	"test_level_hash.test_song_key_format_and_matching"
-	"test_level_hash.test_v2_level_hash_matches_reference"
+# This test already fails on godot-4-port without any visionOS change (verified
+# at a28677e: 48 passed, 1 failed), so it is allowlisted by name rather than by
+# ignoring the exit code, and any *other* failure still stops the build.
+KNOWN_FAILURES=(
 	"test_level_hash.test_v4_level_hash_uses_beatmap_and_lightshow_files"
 )
 TEST_LOG="$(mktemp -t opensaber-visionos-tests)"
@@ -117,7 +113,7 @@ UNEXPECTED=0
 while read -r _ test_name; do
 	[[ -z "$test_name" ]] && continue
 	allowed=0
-	for known in "${ENV_DEPENDENT_FAILURES[@]}"; do
+	for known in "${KNOWN_FAILURES[@]}"; do
 		[[ "$test_name" == "$known" ]] && allowed=1 && break
 	done
 	if [[ "$allowed" -eq 0 ]]; then
@@ -127,7 +123,7 @@ while read -r _ test_name; do
 done < <(grep "^FAIL " "$TEST_LOG" || true)
 
 if grep -qE "Parse Error|Compile Error|Failed to instantiate an autoload" "$TEST_LOG"; then
-	echo "error: a script failed to compile; see the test log above" >&2
+	echo "error: a script or scene failed to load; see the test log above" >&2
 	UNEXPECTED=1
 fi
 rm -f "$TEST_LOG"
