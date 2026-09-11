@@ -1,0 +1,3057 @@
+{
+"bomb.obj": {
+"max": [
+0.2736,
+0.2841,
+0.2376
+],
+"min": [
+-0.2917,
+-0.2583,
+-0.2376
+],
+"verts": 214
+},
+"box_fake_glow.obj": {
+"max": [
+1.5,
+1.5,
+1.5
+],
+"min": [
+-1.5,
+-1.5,
+-1.5
+],
+"verts": 96
+},
+"box_frame.obj": {
+"max": [
+1.0,
+1.0,
+1.0
+],
+"min": [
+-1.0,
+-1.0,
+-1.0
+],
+"verts": 40
+},
+"chain_link.obj": {
+"max": [
+0.2474,
+0.04,
+0.2474
+],
+"min": [
+-0.2474,
+-0.04,
+-0.2474
+],
+"verts": 300
+},
+"env/BTSEnvironment_BTSConstruction_1.obj": {
+"max": [
+1.15,
+-0.001,
+210.75
+],
+"min": [
+-1.15,
+-0.101,
+7.7509
+],
+"verts": 92
+},
+"env/BTSEnvironment_Hemisphere_7.obj": {
+"max": [
+1000.0002,
+1000.0,
+1000.0
+],
+"min": [
+-999.9998,
+-1000.0004,
+0.0001
+],
+"verts": 938
+},
+"env/BTSEnvironment_HighClouds_6.obj": {
+"max": [
+16.3261,
+16.3539,
+193.61
+],
+"min": [
+-1257.5991,
+-7.3081,
+120.0
+],
+"verts": 6600
+},
+"env/BTSEnvironment_LowClouds_5.obj": {
+"max": [
+8.9842,
+0.0,
+78.254
+],
+"min": [
+-638.2139,
+-16.5452,
+0.0
+],
+"verts": 14585
+},
+"env/BTSEnvironment_Mirror_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/BTSEnvironment_PillarFull_8.obj": {
+"max": [
+1.75,
+0.005,
+1.75
+],
+"min": [
+-1.75,
+-112.75,
+-1.75
+],
+"verts": 24
+},
+"env/BTSEnvironment_PlayersPlaceConstruction_3.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/BTSEnvironment_PlayersPlaceCore_4.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/BTSEnvironment_Reflector_9.obj": {
+"max": [
+0.9511,
+1.0,
+0.8211
+],
+"min": [
+-0.9511,
+-1.0,
+-0.4093
+],
+"verts": 108
+},
+"env/BTSEnvironment_TrackMirror_BTS_0.obj": {
+"max": [
+1.45,
+0.0,
+250.95
+],
+"min": [
+-0.85,
+0.0,
+-0.05
+],
+"verts": 16
+},
+"env/BigMirrorEnvironment_BigMirrorConstruction_2.obj": {
+"max": [
+8.35,
+0.3,
+262.0
+],
+"min": [
+-8.35,
+-160.5,
+-238.0
+],
+"verts": 376
+},
+"env/BigMirrorEnvironment_BigMirrorFloor_0.obj": {
+"max": [
+7.85,
+0.0,
+92.5
+],
+"min": [
+-7.85,
+0.0,
+0.25
+],
+"verts": 4
+},
+"env/BigMirrorEnvironment_GameBackColumns_1.obj": {
+"max": [
+9.5,
+200.0009,
+58.874
+],
+"min": [
+-9.5,
+-200.0009,
+-98.8741
+],
+"verts": 192
+},
+"env/BigMirrorEnvironment_LeftNearBuilding_6.obj": {
+"max": [
+32.5,
+47.0,
+41.5
+],
+"min": [
+23.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/BigMirrorEnvironment_Mirror_3.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/BigMirrorEnvironment_PlayersPlaceConstruction_4.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/BigMirrorEnvironment_PlayersPlaceCore_5.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/BigMirrorEnvironment_RightNearBuilding_7.obj": {
+"max": [
+-23.5,
+47.0,
+41.5
+],
+"min": [
+-32.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/BigMirrorEnvironment_Ring_8.obj": {
+"max": [
+0.4,
+24.8342,
+24.8342
+],
+"min": [
+-0.4,
+-24.8342,
+-24.8342
+],
+"verts": 304
+},
+"env/BillieEnvironment_BackMountains_0.obj": {
+"max": [
+421.2456,
+418.6792,
+69.2726
+],
+"min": [
+-397.0392,
+-45.5844,
+-19.1505
+],
+"verts": 2271
+},
+"env/BillieEnvironment_BillieClouds_12.obj": {
+"max": [
+45.7989,
+40.0,
+39.5553
+],
+"min": [
+-42.211,
+-40.6998,
+-4.6261
+],
+"verts": 306
+},
+"env/BillieEnvironment_BillieRail_4.obj": {
+"max": [
+0.05,
+0.05,
+43.25
+],
+"min": [
+-0.05,
+-0.05,
+-0.1
+],
+"verts": 24
+},
+"env/BillieEnvironment_FrontMountains_1.obj": {
+"max": [
+367.0235,
+142.024,
+69.2725
+],
+"min": [
+-475.6125,
+-491.1227,
+-19.0567
+],
+"verts": 4894
+},
+"env/BillieEnvironment_Mirror_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/BillieEnvironment_PlayersPlaceCore_3.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/BillieEnvironment_RailingCurve_13.obj": {
+"max": [
+2.5503,
+0.6095,
+0.0674
+],
+"min": [
+-2.5503,
+-0.3095,
+-0.0601
+],
+"verts": 1044
+},
+"env/BillieEnvironment_RailingFull_5.obj": {
+"max": [
+2.483,
+9.4653,
+0.1757
+],
+"min": [
+-2.4829,
+-11.9335,
+-0.2513
+],
+"verts": 4944
+},
+"env/BillieEnvironment_Rain_Instance_6.obj": {
+"max": [
+8.4552,
+0.7454,
+8.4898
+],
+"min": [
+-8.489,
+-0.7488,
+-8.5036
+],
+"verts": 3138
+},
+"env/BillieEnvironment_WaterfallFalling_11.obj": {
+"max": [
+2.25,
+0.021,
+0.02
+],
+"min": [
+-2.25,
+-13.3628,
+-1.5007
+],
+"verts": 62
+},
+"env/BillieEnvironment_WaterfallFlatClose_8.obj": {
+"max": [
+2.25,
+-0.0,
+68.0
+],
+"min": [
+-2.25,
+-0.0,
+0.1
+],
+"verts": 4
+},
+"env/BillieEnvironment_WaterfallFlatFar_7.obj": {
+"max": [
+2.25,
+-0.0,
+138.25
+],
+"min": [
+-2.25,
+-0.0,
+0.1
+],
+"verts": 4
+},
+"env/BillieEnvironment_WaterfallSetDepthOnly_9.obj": {
+"max": [
+2.25,
+-0.0,
+206.0
+],
+"min": [
+-2.25,
+-0.0,
+0.1
+],
+"verts": 4
+},
+"env/BillieEnvironment_WaterfallTransition_10.obj": {
+"max": [
+2.25,
+0.021,
+1.3725
+],
+"min": [
+-2.25,
+0.021,
+0.02
+],
+"verts": 4
+},
+"env/CrabRaveEnvironment_Construction_8.obj": {
+"max": [
+2.5,
+0.1,
+107.75
+],
+"min": [
+-2.5,
+-0.2,
+7.6
+],
+"verts": 112
+},
+"env/CrabRaveEnvironment_FarBuildings_7.obj": {
+"max": [
+12.5,
+8.0,
+79.0
+],
+"min": [
+-12.5,
+-97.0,
+54.5
+],
+"verts": 176
+},
+"env/CrabRaveEnvironment_LeftNearBuilding_1.obj": {
+"max": [
+32.5,
+47.0,
+41.5
+],
+"min": [
+23.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/CrabRaveEnvironment_Mirror_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/CrabRaveEnvironment_PlayersPlaceConstruction_3.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/CrabRaveEnvironment_PlayersPlaceCore_4.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/CrabRaveEnvironment_RightNearBuilding_0.obj": {
+"max": [
+-23.5,
+47.0,
+41.5
+],
+"min": [
+-32.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/CrabRaveEnvironment_Ring_9.obj": {
+"max": [
+0.3458,
+5.1587,
+5.1587
+],
+"min": [
+-0.25,
+-5.1587,
+-5.1587
+],
+"verts": 282
+},
+"env/CrabRaveEnvironment_TrackMirror_CrabRave_5.obj": {
+"max": [
+2.375,
+0.0,
+247.2
+],
+"min": [
+-2.375,
+0.0,
+-0.05
+],
+"verts": 4
+},
+"env/CrabRaveEnvironment_VConstruction_6.obj": {
+"max": [
+61.0155,
+10.8269,
+15.5
+],
+"min": [
+-61.0155,
+-120.8269,
+14.5
+],
+"verts": 48
+},
+"env/DragonsEnvironment_HallConstruction_5.obj": {
+"max": [
+61.7759,
+23.4746,
+200.1
+],
+"min": [
+-61.7759,
+-49.7373,
+-94.0158
+],
+"verts": 2046
+},
+"env/DragonsEnvironment_Mirror_0.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/DragonsEnvironment_PlayersPlaceConstruction_1.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/DragonsEnvironment_PlayersPlaceCore_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/DragonsEnvironment_Ring_8.obj": {
+"max": [
+0.4,
+24.8342,
+24.8342
+],
+"min": [
+-0.4,
+-24.8342,
+-24.8342
+],
+"verts": 304
+},
+"env/DragonsEnvironment_RotatingPanels_7.obj": {
+"max": [
+1.0,
+4.15,
+0.5
+],
+"min": [
+-1.0,
+-4.15,
+-0.5
+],
+"verts": 160
+},
+"env/DragonsEnvironment_TrackConstruction_4.obj": {
+"max": [
+3.15,
+0.051,
+100.0
+],
+"min": [
+-1.35,
+-0.05,
+-100.13
+],
+"verts": 128
+},
+"env/DragonsEnvironment_TrackMirror_Dragons_3.obj": {
+"max": [
+2.05,
+0.0,
+169.5372
+],
+"min": [
+-0.25,
+0.0,
+-0.0113
+],
+"verts": 16
+},
+"env/DragonsEnvironment_Underground_6.obj": {
+"max": [
+8.0,
+-3.0,
+36.5
+],
+"min": [
+-10.0,
+-57.1,
+10.5
+],
+"verts": 364
+},
+"env/FitBeatEnvironment_Mirror_0.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/FitBeatEnvironment_PlayersPlaceConstruction_1.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/FitBeatEnvironment_PlayersPlaceCore_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/FitBeatEnvironment_Ring_6.obj": {
+"max": [
+0.4,
+24.8342,
+24.8342
+],
+"min": [
+-0.4,
+-24.8342,
+-24.8342
+],
+"verts": 304
+},
+"env/FitBeatEnvironment_RotatingPanels_5.obj": {
+"max": [
+1.0,
+4.15,
+0.5
+],
+"min": [
+-1.0,
+-4.15,
+-0.5
+],
+"verts": 160
+},
+"env/FitBeatEnvironment_TrackConstruction_4.obj": {
+"max": [
+2.05,
+0.051,
+100.0
+],
+"min": [
+-0.25,
+-0.05,
+-99.98
+],
+"verts": 80
+},
+"env/FitBeatEnvironment_TrackMirror_FitBeat_3.obj": {
+"max": [
+2.05,
+0.0,
+247.2
+],
+"min": [
+-0.25,
+0.0,
+-0.0113
+],
+"verts": 16
+},
+"env/GagaEnvironment_BackCube_4.obj": {
+"max": [
+2.75,
+0.0,
+0.0
+],
+"min": [
+-2.75,
+-0.25,
+-0.5
+],
+"verts": 24
+},
+"env/GagaEnvironment_Construction_1.obj": {
+"max": [
+2.1123,
+0.0,
+79.7988
+],
+"min": [
+-2.1123,
+-0.075,
+-14.6001
+],
+"verts": 524
+},
+"env/GagaEnvironment_Disk_9.obj": {
+"max": [
+3.4704,
+0.6,
+3.5061
+],
+"min": [
+-3.4704,
+-0.6,
+-3.5061
+],
+"verts": 320
+},
+"env/GagaEnvironment_Logo_001_8.obj": {
+"max": [
+17.2178,
+21.1523,
+0.3109
+],
+"min": [
+-17.2178,
+-13.9135,
+-0.0
+],
+"verts": 1869
+},
+"env/GagaEnvironment_Mirror_0.obj": {
+"max": [
+2.2219,
+0.0,
+79.7988
+],
+"min": [
+-2.2219,
+0.0,
+-14.6001
+],
+"verts": 521
+},
+"env/GagaEnvironment_Mirror_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/GagaEnvironment_PlayersPlaceCore_3.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/GagaEnvironment_RunwayPier_6.obj": {
+"max": [
+0.4219,
+4.7119,
+0.0524
+],
+"min": [
+-0.7383,
+-4.6848,
+-12.483
+],
+"verts": 308
+},
+"env/GagaEnvironment_RunwayPier_7.obj": {
+"max": [
+0.4754,
+4.4119,
+0.0453
+],
+"min": [
+-0.7383,
+-4.3848,
+-38.5297
+],
+"verts": 760
+},
+"env/GagaEnvironment_Strip_10.obj": {
+"max": [
+83.3278,
+83.3278,
+83.3278
+],
+"min": [
+-83.3278,
+-83.3278,
+-83.3278
+],
+"verts": 58
+},
+"env/GagaEnvironment_TeslaTowerMesh_11.obj": {
+"max": [
+7.4776,
+2.959,
+7.6257
+],
+"min": [
+-7.5071,
+-98.1907,
+-7.6037
+],
+"verts": 409
+},
+"env/GagaEnvironment_TubeElement_5.obj": {
+"max": [
+20.2942,
+-6.7828,
+74.7667
+],
+"min": [
+-8.3865,
+-35.6261,
+-156.4736
+],
+"verts": 5760
+},
+"env/GagaEnvironment_transform1_12.obj": {
+"max": [
+190.3723,
+47.2016,
+35.8767
+],
+"min": [
+-181.354,
+-63.8124,
+-88.5945
+],
+"verts": 240
+},
+"env/GreenDayEnvironment_ArmHeartBase_5.obj": {
+"max": [
+4593.5234,
+1876.1359,
+4303.0142
+],
+"min": [
+-460.9227,
+-10144.1172,
+3366.7087
+],
+"verts": 5972
+},
+"env/GreenDayEnvironment_BackgroundBuildings_6.obj": {
+"max": [
+2057.5549,
+3731.5354,
+6204.7192
+],
+"min": [
+-3414.6458,
+-12683.0771,
+1719.499
+],
+"verts": 33007
+},
+"env/GreenDayEnvironment_Mirror_0.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/GreenDayEnvironment_PlayersPlaceConstruction_1.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/GreenDayEnvironment_PlayersPlaceCore_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/GreenDayEnvironment_SpeakersLeft_7.obj": {
+"max": [
+1563.0741,
+669.3754,
+3307.6577
+],
+"min": [
+577.2235,
+-11331.1992,
+2321.8069
+],
+"verts": 23369
+},
+"env/GreenDayEnvironment_SpeakersRight_8.obj": {
+"max": [
+1563.0741,
+741.795,
+3307.6577
+],
+"min": [
+577.2235,
+-11331.1992,
+2321.8069
+],
+"verts": 23794
+},
+"env/GreenDayEnvironment_TrackConstruction_4.obj": {
+"max": [
+2.05,
+0.051,
+100.0
+],
+"min": [
+-0.25,
+-0.05,
+-99.98
+],
+"verts": 80
+},
+"env/GreenDayEnvironment_TrackMirror_3.obj": {
+"max": [
+2.05,
+0.0,
+247.2
+],
+"min": [
+-0.25,
+0.0,
+0.0
+],
+"verts": 16
+},
+"env/GreenDayEnvironment_ring0_tubes.obj": {
+"max": [
+6.075,
+0.75,
+0.075
+],
+"min": [
+-6.075,
+-0.75,
+-0.075
+],
+"verts": 16
+},
+"env/HalloweenEnvironment_Box001_1.obj": {
+"max": [
+0.255,
+0.075,
+0.6474
+],
+"min": [
+-0.255,
+-0.0064,
+-0.0117
+],
+"verts": 144
+},
+"env/HalloweenEnvironment_Box004_2.obj": {
+"max": [
+0.2466,
+0.075,
+0.6405
+],
+"min": [
+-0.2466,
+-0.0064,
+0.0
+],
+"verts": 160
+},
+"env/HalloweenEnvironment_Box007_4.obj": {
+"max": [
+0.3,
+0.15,
+0.8278
+],
+"min": [
+-0.3,
+-0.15,
+0.0
+],
+"verts": 220
+},
+"env/HalloweenEnvironment_Box008_5.obj": {
+"max": [
+0.3,
+0.15,
+0.8278
+],
+"min": [
+-0.3,
+-0.15,
+0.0
+],
+"verts": 256
+},
+"env/HalloweenEnvironment_Box009_6.obj": {
+"max": [
+0.3,
+0.15,
+0.451
+],
+"min": [
+-0.3,
+-0.15,
+0.0
+],
+"verts": 238
+},
+"env/HalloweenEnvironment_Box010_7.obj": {
+"max": [
+0.3,
+0.15,
+0.1256
+],
+"min": [
+-0.3,
+-0.15,
+0.0
+],
+"verts": 104
+},
+"env/HalloweenEnvironment_Castle_15.obj": {
+"max": [
+19.8827,
+26.1456,
+0.6353
+],
+"min": [
+-31.6545,
+-2.6027,
+0.6353
+],
+"verts": 105
+},
+"env/HalloweenEnvironment_CrowSitting_8.obj": {
+"max": [
+0.107,
+0.3964,
+0.1614
+],
+"min": [
+-0.107,
+-0.15,
+-0.1969
+],
+"verts": 448
+},
+"env/HalloweenEnvironment_House_9.obj": {
+"max": [
+8.6613,
+12.5119,
+70.3267
+],
+"min": [
+-11.7686,
+-0.8478,
+-0.0072
+],
+"verts": 260
+},
+"env/HalloweenEnvironment_PlayersPlaceCore_0.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/HalloweenEnvironment_PumpkinsLight_11.obj": {
+"max": [
+11.6718,
+4.3959,
+41.4852
+],
+"min": [
+-12.269,
+-0.2722,
+6.1203
+],
+"verts": 2791
+},
+"env/HalloweenEnvironment_PumpkinsMain_10.obj": {
+"max": [
+11.927,
+4.6172,
+42.3102
+],
+"min": [
+-12.5999,
+-0.6103,
+3.2043
+],
+"verts": 7944
+},
+"env/HalloweenEnvironment_SkeletonHand_14.obj": {
+"max": [
+0.1594,
+0.831,
+0.1222
+],
+"min": [
+-0.1823,
+-0.1584,
+-0.2497
+],
+"verts": 660
+},
+"env/HalloweenEnvironment_Spooky2_2DTrees_12.obj": {
+"max": [
+7.834,
+11.2567,
+42.518
+],
+"min": [
+-8.275,
+-1.2555,
+15.4003
+],
+"verts": 1307
+},
+"env/HalloweenEnvironment_Spooky2_3DTrees_13.obj": {
+"max": [
+7.2315,
+8.5881,
+12.4423
+],
+"min": [
+-7.8455,
+-0.9885,
+-1.3326
+],
+"verts": 4636
+},
+"env/HalloweenEnvironment_Tombstone_3.obj": {
+"max": [
+0.2497,
+0.7047,
+0.0612
+],
+"min": [
+-0.2497,
+-0.0983,
+-0.0612
+],
+"verts": 182
+},
+"env/HalloweenEnvironment_Tree1Depth_18.obj": {
+"max": [
+4.0439,
+8.9031,
+3.8711
+],
+"min": [
+-4.0967,
+-1.6679,
+-4.2116
+],
+"verts": 2062
+},
+"env/HalloweenEnvironment_Tree1_19.obj": {
+"max": [
+4.0439,
+8.9031,
+0.2603
+],
+"min": [
+-5.0248,
+-1.5575,
+0.1494
+],
+"verts": 784
+},
+"env/HalloweenEnvironment_Tree2_17.obj": {
+"max": [
+3.894,
+15.5357,
+0.0
+],
+"min": [
+-8.3934,
+-0.8004,
+-0.0
+],
+"verts": 345
+},
+"env/HalloweenEnvironment_Tree3_16.obj": {
+"max": [
+3.665,
+8.9579,
+0.0
+],
+"min": [
+-8.0607,
+-0.5146,
+0.0
+],
+"verts": 141
+},
+"env/HalloweenEnvironment_ZombieHand_20.obj": {
+"max": [
+0.1009,
+0.6634,
+0.1106
+],
+"min": [
+-0.1747,
+-0.1351,
+-0.2562
+],
+"verts": 1309
+},
+"env/InterscopeEnvironment_Body_14.obj": {
+"max": [
+0.9779,
+1.2481,
+2.3748
+],
+"min": [
+-0.9779,
+0.1184,
+-2.3073
+],
+"verts": 4977
+},
+"env/InterscopeEnvironment_Body_17.obj": {
+"max": [
+1.0555,
+1.3364,
+2.5315
+],
+"min": [
+-1.0555,
+0.1522,
+-2.3654
+],
+"verts": 4832
+},
+"env/InterscopeEnvironment_Body_19.obj": {
+"max": [
+1.0513,
+1.3321,
+2.453
+],
+"min": [
+-1.0513,
+0.0508,
+-2.4615
+],
+"verts": 3852
+},
+"env/InterscopeEnvironment_Body_21.obj": {
+"max": [
+0.9173,
+0.9234,
+2.5267
+],
+"min": [
+-0.9173,
+0.0913,
+-2.6931
+],
+"verts": 5551
+},
+"env/InterscopeEnvironment_Body_22.obj": {
+"max": [
+0.8408,
+1.1876,
+2.3683
+],
+"min": [
+-0.8408,
+0.2597,
+-2.085
+],
+"verts": 520
+},
+"env/InterscopeEnvironment_CeilingFar_8.obj": {
+"max": [
+10.0,
+0.0,
+10.0
+],
+"min": [
+-10.0,
+0.0,
+-10.0
+],
+"verts": 12
+},
+"env/InterscopeEnvironment_CeilingNear_7.obj": {
+"max": [
+20.0,
+0.0,
+25.0
+],
+"min": [
+-20.0,
+-0.0,
+-19.4996
+],
+"verts": 23
+},
+"env/InterscopeEnvironment_FloorBackFar_10.obj": {
+"max": [
+178.252,
+0.0,
+173.8
+],
+"min": [
+-256.952,
+0.0,
+27.2194
+],
+"verts": 4
+},
+"env/InterscopeEnvironment_FloorBack_9.obj": {
+"max": [
+-15.248,
+0.0,
+173.8
+],
+"min": [
+-64.752,
+0.0,
+154.0194
+],
+"verts": 4
+},
+"env/InterscopeEnvironment_FloorFar_6.obj": {
+"max": [
+10.0,
+0.0,
+10.0
+],
+"min": [
+-10.0,
+0.0,
+-10.0
+],
+"verts": 12
+},
+"env/InterscopeEnvironment_FrontWheels_20.obj": {
+"max": [
+0.8889,
+0.6599,
+1.9608
+],
+"min": [
+-0.8889,
+-0.0005,
+1.3004
+],
+"verts": 2346
+},
+"env/InterscopeEnvironment_Mirror_0.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/InterscopeEnvironment_Pillar_4.obj": {
+"max": [
+12.25,
+4.25,
+0.5
+],
+"min": [
+0.8207,
+-0.25,
+-0.5
+],
+"verts": 32
+},
+"env/InterscopeEnvironment_PlayersPlaceCore_1.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/InterscopeEnvironment_RampFar_5.obj": {
+"max": [
+-12.0,
+0.0,
+173.75
+],
+"min": [
+-68.0,
+0.0,
+0.0
+],
+"verts": 4
+},
+"env/InterscopeEnvironment_RearPillar_A_3.obj": {
+"max": [
+12.25,
+4.25,
+0.5
+],
+"min": [
+0.8207,
+-0.25,
+-0.5
+],
+"verts": 32
+},
+"env/InterscopeEnvironment_RearPillar_B_11.obj": {
+"max": [
+12.25,
+4.25,
+0.5
+],
+"min": [
+-3.2793,
+-0.25,
+-0.5
+],
+"verts": 32
+},
+"env/InterscopeEnvironment_RearPillar_C_12.obj": {
+"max": [
+7.75,
+4.25,
+0.5
+],
+"min": [
+2.1735,
+-0.25,
+-0.5
+],
+"verts": 32
+},
+"env/InterscopeEnvironment_RearWheels_15.obj": {
+"max": [
+0.8543,
+0.4389,
+0.3581
+],
+"min": [
+-0.8543,
+-0.3581,
+-0.3581
+],
+"verts": 959
+},
+"env/InterscopeEnvironment_TrackMirror_Interscope_2.obj": {
+"max": [
+13.5,
+0.0,
+25.0
+],
+"min": [
+-13.5,
+-0.0,
+-23.5081
+],
+"verts": 28
+},
+"env/InterscopeEnvironment_WheelsFront_13.obj": {
+"max": [
+0.8707,
+0.6669,
+1.775
+],
+"min": [
+-0.8707,
+-0.0054,
+1.1027
+],
+"verts": 2827
+},
+"env/InterscopeEnvironment_WheelsFront_16.obj": {
+"max": [
+0.8653,
+0.7175,
+1.8934
+],
+"min": [
+-0.8653,
+0.004,
+1.18
+],
+"verts": 2132
+},
+"env/InterscopeEnvironment_WheelsFront_18.obj": {
+"max": [
+1.0407,
+0.6861,
+1.8091
+],
+"min": [
+-1.0407,
+-0.0264,
+1.0966
+],
+"verts": 1966
+},
+"env/KDAEnvironment_Construction_KDA_3.obj": {
+"max": [
+100.0,
+15.5,
+257.85
+],
+"min": [
+-100.0,
+-100.1,
+-242.15
+],
+"verts": 212
+},
+"env/KDAEnvironment_Crystal_0.obj": {
+"max": [
+0.2613,
+0.0019,
+0.1684
+],
+"min": [
+-0.2613,
+-0.8246,
+-0.0291
+],
+"verts": 24
+},
+"env/KDAEnvironment_Mirror_5.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/KDAEnvironment_PlayersPlaceConstruction_6.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/KDAEnvironment_PlayersPlaceCore_7.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/KDAEnvironment_Spear_1.obj": {
+"max": [
+1.4142,
+1.4142,
+0.1643
+],
+"min": [
+-1.4142,
+-3.7952,
+-0.1653
+],
+"verts": 70
+},
+"env/KDAEnvironment_TrackMirror_KDA_4.obj": {
+"max": [
+100.0,
+0.0,
+130.25
+],
+"min": [
+-100.0,
+0.0,
+-99.75
+],
+"verts": 9
+},
+"env/KDAEnvironment_Trail_2.obj": {
+"max": [
+8.0786,
+51.2499,
+14.2567
+],
+"min": [
+-8.4935,
+-20.0792,
+0.5569
+],
+"verts": 288
+},
+"env/KaleidoscopeEnvironment_ConeBig_6.obj": {
+"max": [
+15.057,
+3471.9124,
+15.057
+],
+"min": [
+-15.057,
+3.0489,
+-15.057
+],
+"verts": 32
+},
+"env/KaleidoscopeEnvironment_ConeSmall_5.obj": {
+"max": [
+3.7462,
+29.693,
+3.7462
+],
+"min": [
+-3.7462,
+-1.075,
+-3.7462
+],
+"verts": 52
+},
+"env/KaleidoscopeEnvironment_Construction_Kaleidoscope_4.obj": {
+"max": [
+1.15,
+0.0031,
+210.75
+],
+"min": [
+-1.15,
+-0.101,
+7.7509
+],
+"verts": 74
+},
+"env/KaleidoscopeEnvironment_Mirror_0.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/KaleidoscopeEnvironment_PlayersPlaceConstruction_1.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/KaleidoscopeEnvironment_PlayersPlaceCore_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/KaleidoscopeEnvironment_TrackMirror_Kaleidoscope_3.obj": {
+"max": [
+1.45,
+0.0,
+250.95
+],
+"min": [
+-0.85,
+0.0,
+-0.05
+],
+"verts": 16
+},
+"env/LinkinParkEnvironment_Floor_5.obj": {
+"max": [
+3.65,
+10.0,
+-0.1299
+],
+"min": [
+-3.65,
+-10.0,
+-0.1299
+],
+"verts": 12
+},
+"env/LinkinParkEnvironment_Mirror_1.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/LinkinParkEnvironment_PlayersPlaceCore_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/LinkinParkEnvironment_Top_6.obj": {
+"max": [
+3.65,
+10.0,
+4.8008
+],
+"min": [
+-3.65,
+-10.0,
+-0.2896
+],
+"verts": 123
+},
+"env/LinkinParkEnvironment_TrackConstruction_LinkinPark_4.obj": {
+"max": [
+2.05,
+0.051,
+21.9045
+],
+"min": [
+-0.25,
+-0.05,
+-99.98
+],
+"verts": 48
+},
+"env/LinkinParkEnvironment_TrackMirror_LinkinPark_3.obj": {
+"max": [
+1.45,
+0.0,
+123.45
+],
+"min": [
+-0.85,
+0.0,
+-0.05
+],
+"verts": 12
+},
+"env/LinkinParkEnvironment_TunnelRings_0.obj": {
+"max": [
+4.2855,
+50.0,
+5.035
+],
+"min": [
+-4.2855,
+-0.59,
+-0.8725
+],
+"verts": 1410
+},
+"env/MonstercatEnvironment_Construction_Monstercat_8.obj": {
+"max": [
+2.5,
+0.1,
+107.75
+],
+"min": [
+-2.5,
+-0.2,
+7.6
+],
+"verts": 112
+},
+"env/MonstercatEnvironment_FarBuildings_7.obj": {
+"max": [
+12.5,
+8.0,
+79.0
+],
+"min": [
+-12.5,
+-97.0,
+54.5
+],
+"verts": 176
+},
+"env/MonstercatEnvironment_LeftNearBuilding_1.obj": {
+"max": [
+32.5,
+47.0,
+41.5
+],
+"min": [
+23.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/MonstercatEnvironment_Mirror_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/MonstercatEnvironment_PlayersPlaceConstruction_3.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/MonstercatEnvironment_PlayersPlaceCore_4.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/MonstercatEnvironment_RightNearBuilding_0.obj": {
+"max": [
+-23.5,
+47.0,
+41.5
+],
+"min": [
+-32.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/MonstercatEnvironment_Ring_9.obj": {
+"max": [
+0.3458,
+5.1587,
+5.1587
+],
+"min": [
+-0.25,
+-5.1587,
+-5.1587
+],
+"verts": 282
+},
+"env/MonstercatEnvironment_TrackMirror_Monstercat_5.obj": {
+"max": [
+2.375,
+0.0,
+247.2
+],
+"min": [
+-2.375,
+0.0,
+-0.05
+],
+"verts": 4
+},
+"env/MonstercatEnvironment_VConstruction_6.obj": {
+"max": [
+61.0155,
+10.8269,
+15.5
+],
+"min": [
+-61.0155,
+-120.8269,
+14.5
+],
+"verts": 48
+},
+"env/NiceEnvironment_Floor_0.obj": {
+"max": [
+100.0,
+1.1984,
+500.0
+],
+"min": [
+-100.0,
+-0.4,
+-500.0
+],
+"verts": 84
+},
+"env/NiceEnvironment_GameBackColumns_1.obj": {
+"max": [
+9.5,
+200.0009,
+58.874
+],
+"min": [
+-9.5,
+-200.0009,
+-98.8741
+],
+"verts": 192
+},
+"env/NiceEnvironment_LeftNearBuilding_6.obj": {
+"max": [
+32.5,
+47.0,
+41.5
+],
+"min": [
+23.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/NiceEnvironment_Mirror_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/NiceEnvironment_PlayersPlaceConstruction_3.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/NiceEnvironment_PlayersPlaceCore_4.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/NiceEnvironment_RightNearBuilding_5.obj": {
+"max": [
+-23.5,
+47.0,
+41.5
+],
+"min": [
+-32.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/NiceEnvironment_Ring_7.obj": {
+"max": [
+0.3458,
+5.1587,
+5.1587
+],
+"min": [
+-0.25,
+-5.1587,
+-5.1587
+],
+"verts": 282
+},
+"env/NiceEnvironment_Ring_8.obj": {
+"max": [
+0.4,
+24.8342,
+24.8342
+],
+"min": [
+-0.4,
+-24.8342,
+-24.8342
+],
+"verts": 304
+},
+"env/OriginsEnvironment_CombinedMesh_1.obj": {
+"max": [
+3.25,
+-0.001,
+207.78
+],
+"min": [
+-3.25,
+-0.101,
+7.78
+],
+"verts": 144
+},
+"env/OriginsEnvironment_Construction_Origins_0.obj": {
+"max": [
+100.0,
+0.2,
+10.0
+],
+"min": [
+-100.0,
+-100.1,
+7.5
+],
+"verts": 92
+},
+"env/OriginsEnvironment_Mirror_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/OriginsEnvironment_PlayersPlaceConstruction_3.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/OriginsEnvironment_PlayersPlaceCore_4.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/OriginsEnvironment_TrackMirror_Origins_5.obj": {
+"max": [
+3.55,
+0.0,
+247.2
+],
+"min": [
+-2.95,
+0.0,
+-0.05
+],
+"verts": 24
+},
+"env/OriginsEnvironment_ring0_tubes.obj": {
+"max": [
+23.22,
+23.22,
+0.07
+],
+"min": [
+-23.22,
+-23.22,
+-0.07
+],
+"verts": 32
+},
+"env/PanicEnvironment_BottomCones_4.obj": {
+"max": [
+8.0,
+50.0,
+40.0
+],
+"min": [
+-8.0,
+0.0,
+-40.0
+],
+"verts": 80
+},
+"env/PanicEnvironment_GameBackColumns_0.obj": {
+"max": [
+9.5,
+200.0009,
+58.874
+],
+"min": [
+-9.5,
+-200.0009,
+-98.8741
+],
+"verts": 192
+},
+"env/PanicEnvironment_Mirror_1.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/PanicEnvironment_PlayersPlaceConstruction_2.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/PanicEnvironment_PlayersPlaceCore_3.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/PanicEnvironment_Rotating4Panels_8.obj": {
+"max": [
+0.3,
+4.1,
+0.5
+],
+"min": [
+-0.3,
+-4.1,
+-0.5
+],
+"verts": 48
+},
+"env/PanicEnvironment_TopCones_5.obj": {
+"max": [
+59.0,
+50.0,
+62.0
+],
+"min": [
+-141.0,
+-35.3553,
+-8.0
+],
+"verts": 160
+},
+"env/PanicEnvironment_TrackConstruction_7.obj": {
+"max": [
+2.05,
+0.051,
+100.0
+],
+"min": [
+-0.25,
+-0.05,
+-99.98
+],
+"verts": 80
+},
+"env/PanicEnvironment_TrackMirror_Panic_6.obj": {
+"max": [
+2.05,
+0.0,
+247.2
+],
+"min": [
+-0.25,
+0.0,
+0.0
+],
+"verts": 16
+},
+"env/RocketEnvironment_Arena_1.obj": {
+"max": [
+84.4719,
+148.7646,
+55.9546
+],
+"min": [
+-84.8402,
+-63.5586,
+-2.2956
+],
+"verts": 15694
+},
+"env/RocketEnvironment_Construction_RocketLeague_2.obj": {
+"max": [
+102.0,
+0.15,
+117.4447
+],
+"min": [
+-98.0,
+-100.6,
+-0.75
+],
+"verts": 288
+},
+"env/RocketEnvironment_GameBackColumns_7.obj": {
+"max": [
+9.5,
+200.0009,
+58.874
+],
+"min": [
+-9.5,
+-200.0009,
+-98.8741
+],
+"verts": 192
+},
+"env/RocketEnvironment_Mirror_3.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/RocketEnvironment_Mirror_RocketLeague_0.obj": {
+"max": [
+80.0,
+0.0,
+183.0
+],
+"min": [
+-80.0,
+0.0,
+7.75
+],
+"verts": 8
+},
+"env/RocketEnvironment_PlayersPlaceConstruction_4.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/RocketEnvironment_PlayersPlaceCore_5.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/RocketEnvironment_RLCar_6.obj": {
+"max": [
+3.9957,
+2.8809,
+11.7288
+],
+"min": [
+-8.5724,
+-2.2654,
+-0.0048
+],
+"verts": 33820
+},
+"env/SkrillexEnvironment_Core_4.obj": {
+"max": [
+3.0334,
+0.1242,
+19.3939
+],
+"min": [
+-2.3115,
+-0.1242,
+0.0125
+],
+"verts": 72
+},
+"env/SkrillexEnvironment_Mirror_0.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/SkrillexEnvironment_PlayersPlaceConstruction_1.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/SkrillexEnvironment_PlayersPlaceCore_2.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/SkrillexEnvironment_SkrillexTrackPlaneC_3.obj": {
+"max": [
+15.25,
+-4.25,
+25.0
+],
+"min": [
+4.25,
+-15.0,
+0.0
+],
+"verts": 12
+},
+"env/SkrillexEnvironment_ring0_tubes.obj": {
+"max": [
+56.4,
+56.4,
+0.4
+],
+"min": [
+-56.4,
+-56.4,
+-0.4
+],
+"verts": 96
+},
+"env/SkrillexEnvironment_ring1_tubes.obj": {
+"max": [
+56.4,
+56.4,
+0.4
+],
+"min": [
+-56.4,
+-56.4,
+-0.4
+],
+"verts": 96
+},
+"env/TimbalandEnvironment_GameBackColumns_9.obj": {
+"max": [
+9.5,
+200.0009,
+58.874
+],
+"min": [
+-9.5,
+-200.0009,
+-98.8741
+],
+"verts": 192
+},
+"env/TimbalandEnvironment_LeftNearBuilding_3.obj": {
+"max": [
+32.5,
+47.0,
+41.5
+],
+"min": [
+23.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/TimbalandEnvironment_MainStructure_Timbaland_0.obj": {
+"max": [
+136.2326,
+163.2426,
+116.8941
+],
+"min": [
+-136.2327,
+-163.2426,
+3.1059
+],
+"verts": 288
+},
+"env/TimbalandEnvironment_Mirror_6.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/TimbalandEnvironment_PlayersPlaceConstruction_7.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/TimbalandEnvironment_PlayersPlaceCore_8.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/TimbalandEnvironment_RightNearBuilding_2.obj": {
+"max": [
+-23.5,
+47.0,
+41.5
+],
+"min": [
+-32.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/TimbalandEnvironment_Ring_10.obj": {
+"max": [
+0.0508,
+5.1587,
+3.4048
+],
+"min": [
+-0.2542,
+-5.1587,
+-3.4048
+],
+"verts": 56
+},
+"env/TimbalandEnvironment_TopStructure_Timbaland_1.obj": {
+"max": [
+0.5,
+0.5,
+80.1317
+],
+"min": [
+-0.5,
+-4.3338,
+-1.0
+],
+"verts": 240
+},
+"env/TimbalandEnvironment_TrackConstruction_Timbaland_5.obj": {
+"max": [
+58.0238,
+0.314,
+168.2001
+],
+"min": [
+-58.0238,
+-135.9954,
+7.4854
+],
+"verts": 362
+},
+"env/TimbalandEnvironment_TrackMirror_Timbaland_4.obj": {
+"max": [
+2.375,
+0.0,
+247.2
+],
+"min": [
+-2.375,
+0.0,
+-0.0532
+],
+"verts": 4
+},
+"env/TriangleEnvironment_FloorConstruction_Triangle_0.obj": {
+"max": [
+17.75,
+0.25,
+500.0
+],
+"min": [
+-17.75,
+-160.5,
+-500.0
+],
+"verts": 160
+},
+"env/TriangleEnvironment_GameBackColumns_2.obj": {
+"max": [
+9.5,
+200.0009,
+58.874
+],
+"min": [
+-9.5,
+-200.0009,
+-98.8741
+],
+"verts": 192
+},
+"env/TriangleEnvironment_LeftNearBuilding_6.obj": {
+"max": [
+32.5,
+47.0,
+41.5
+],
+"min": [
+23.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/TriangleEnvironment_Mirror_3.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/TriangleEnvironment_PlayersPlaceConstruction_4.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env/TriangleEnvironment_PlayersPlaceCore_5.obj": {
+"max": [
+1.5,
+-0.0001,
+1.0
+],
+"min": [
+-1.5,
+-0.0001,
+-1.0
+],
+"verts": 4
+},
+"env/TriangleEnvironment_RightNearBuilding_7.obj": {
+"max": [
+-23.5,
+47.0,
+41.5
+],
+"min": [
+-32.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env/TriangleEnvironment_Ring_8.obj": {
+"max": [
+1.1133,
+12.5484,
+8.3033
+],
+"min": [
+-0.116,
+-12.5484,
+-10.7738
+],
+"verts": 126
+},
+"env/TriangleEnvironment_Ring_9.obj": {
+"max": [
+0.4,
+24.8342,
+24.8342
+],
+"min": [
+-0.4,
+-24.8342,
+-24.8342
+],
+"verts": 304
+},
+"env/TriangleEnvironment_TrackMirror_Triangle_1.obj": {
+"max": [
+2.375,
+0.0,
+247.2
+],
+"min": [
+-2.375,
+0.0,
+-0.05
+],
+"verts": 4
+},
+"env_back_columns.obj": {
+"max": [
+9.5,
+200.0009,
+58.874
+],
+"min": [
+-9.5,
+-200.0009,
+-98.8741
+],
+"verts": 192
+},
+"env_building_left.obj": {
+"max": [
+32.5,
+47.0,
+41.5
+],
+"min": [
+23.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env_building_right.obj": {
+"max": [
+-23.5,
+47.0,
+41.5
+],
+"min": [
+-32.5,
+-127.5,
+16.5
+],
+"verts": 216
+},
+"env_players_place.obj": {
+"max": [
+1.5,
+0.005,
+1.0
+],
+"min": [
+-1.5,
+-112.75,
+-1.0
+],
+"verts": 20
+},
+"env_track_construction.obj": {
+"max": [
+14.55,
+0.25,
+500.0
+],
+"min": [
+-14.55,
+-160.5,
+-500.0
+],
+"verts": 320
+},
+"note_arrow.obj": {
+"max": [
+0.15,
+0.042,
+0.005
+],
+"min": [
+-0.15,
+-0.048,
+-0.005
+],
+"verts": 30
+},
+"note_cube.obj": {
+"max": [
+0.2474,
+0.2474,
+0.2474
+],
+"min": [
+-0.2474,
+-0.2474,
+-0.2474
+],
+"verts": 512
+},
+"ring_big.obj": {
+"max": [
+0.4,
+24.8342,
+24.8342
+],
+"min": [
+-0.4,
+-24.8342,
+-24.8342
+],
+"verts": 304
+},
+"ring_small.obj": {
+"max": [
+0.3458,
+5.1587,
+5.1587
+],
+"min": [
+-0.25,
+-5.1587,
+-5.1587
+],
+"verts": 282
+},
+"saber_blade.obj": {
+"max": [
+0.0178,
+0.0,
+0.0178
+],
+"min": [
+-0.0178,
+-0.995,
+-0.0178
+],
+"verts": 66
+},
+"saber_glowing_edges.obj": {
+"max": [
+0.0178,
+0.1717,
+0.0178
+],
+"min": [
+-0.0178,
+-1.0017,
+-0.0178
+],
+"verts": 332
+},
+"saber_handle.obj": {
+"max": [
+0.0178,
+0.165,
+0.0178
+],
+"min": [
+-0.0178,
+0.0067,
+-0.0178
+],
+"verts": 66
+}
+}

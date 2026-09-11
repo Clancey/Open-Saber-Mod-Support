@@ -15,7 +15,7 @@ const LOGO_RED := Color(1.0, 0.031, 0.031)
 const LOGO_BLUE := Color(0.0, 0.66, 1.0)
 const LOGO_ENERGY := 2.6
 
-## note piles from the original DefaultMenuEnvironment (x, y, z in Godot space, yaw degrees, colour index)
+## decorative note piles in the menu environment (x, y, z in Godot space, yaw degrees, colour index)
 const NOTES := [
 	[9.77, 0.226, -5.03, -4.0, 0], [-5.38, 0.226, -5.67, 72.0, 1], [-4.95, 0.3, -6.14, 40.0, 0],
 	[-5.55, 0.29, -6.26, -60.0, 1], [-6.06, 0.226, -6.58, 106.0, 0], [8.79, 0.226, -1.11, 102.0, 1],

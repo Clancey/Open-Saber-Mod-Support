@@ -1,4 +1,5 @@
-"""Procedural replacements gameplay textures, drawn from scratch at the sizes the shaders expect."""
+"""Procedural gameplay textures: drawn from scratch with PIL/numpy at the
+sizes the shaders and materials expect."""
 import os, math
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter

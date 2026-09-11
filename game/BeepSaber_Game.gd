@@ -108,7 +108,7 @@ var is_loading_map: bool = false
 var _load_generation: int = 0
 var _load_thread: Thread
 
-## Beat Saber environments are separate scenes generated from the original
+## Beat Saber environments are separate scenes
 ## (game/environments/<EnvironmentName>.tscn); unknown names fall back to "The First".
 static func environment_scene_for(info: MapInfo, map_difficulty: DifficultyInfo) -> String:
 	var env_name := info.environment_name

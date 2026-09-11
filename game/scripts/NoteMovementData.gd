@@ -1,9 +1,8 @@
 class_name NoteMovementData
 extends RefCounted
 
-# Beat Saber's beatmap-object movement model, ported from the original game's
-# SpawnMovement / MovementDataProvider / NoteMovement /
-# FloorMovement classes.
+# Movement model for beatmap objects: how notes, bombs, chains, arcs and walls
+# travel toward the player and arrive on their beat.
 #
 # Coordinate conventions (Godot): the player faces -Z, +X is the player's right.
 # Objects travel from far away (-Z) toward the player and pass the "beat
@@ -95,7 +94,7 @@ static func half_jump_duration_in_beats(njs: float, start_beat_offset: float) ->
 static func half_jump_duration(njs: float, start_beat_offset: float) -> float:
 	return one_beat_duration() * half_jump_duration_in_beats(njs, start_beat_offset)
 
-## Seconds before an object's beat at which the original game spawns it.
+## Seconds before an object's beat at which it spawns.
 static func spawn_ahead_time(njs: float, start_beat_offset: float) -> float:
 	return MOVE_DURATION + half_jump_duration(njs, start_beat_offset)
 
