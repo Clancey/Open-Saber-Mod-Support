@@ -18,7 +18,10 @@ file explains how to do that.
 | `RemotePlayer.tscn/.gd` | Avatar: headset box, name tag, two `default_saber` instances tinted with the viewer's left/right colours; `Head`, `LeftHand`, `RightHand` transforms replicated by a `MultiplayerSynchronizer` at 20 Hz. |
 | `MultiplayerAvatars.gd` | Spawns one `RemotePlayer` per roster entry, side by side on X (1.2 m apart, peer-id order) with the local player at the origin. |
 | `LocalPlayerBroadcaster.gd` | Feeds the local XR camera and controller transforms into the local avatar every frame. |
-| `LobbyPanel.tscn/.gd` | Themed lobby UI: Host, 4-character code spinners + Join, big lobby code, roster with ready state and live scores, Ready toggle, host-only Start, Leave. |
+| `LobbyPanel.tscn/.gd` | Themed lobby UI: Host, 4-character code spinners + Join, big lobby code, roster with ready/song state and live scores, Ready toggle, host-only Pick Song and Start, Leave. Owns a `LobbyMapFetcher`. |
+| `LobbySongKey.gd` | Builds/parses the JSON lobby song key and matches it against local maps (hash, then folder, then name + author). |
+| `LobbyMapFetcher.gd` | Checks the selected song locally, otherwise looks it up on BeatSaver by level hash (then id), downloads and installs it, refreshes the menu. |
+| `MapDownloader.gd` | Reusable download + unzip of a BeatSaver zip into the Songs folder (the logic from `BeatSaverPanel`). |
 
 ## Server facts that shaped the client
 
@@ -67,9 +70,32 @@ pings 150 ms apart, then one every 5 s. The host answers with its
 `start_song` broadcasts `start_at` in host time and every receiver converts it
 locally, so all peers start within roughly half the RTT jitter of each other.
 
-`song_key` is an opaque string chosen by the caller. The natural choice is the
-map folder path (`MapInfo.filepath`) plus the difficulty name; peers that do
-not own the map will need a download step (see "What remains").
+## Song key and downloads
+
+`song_key` is a JSON object string built by `LobbySongKey.make(map)`:
+
+```json
+{"hash": "B68BF61AC6BE0E128BE32A85810D42E7C53F4756",
+ "folder": "Jaroslav Beck - Beat Saber (Built in)",
+ "name": "Beat Saber", "author": "Jaroslav Beck", "beatsaver_id": ""}
+```
+
+`hash` is Beat Saber's level id (`MapInfo.level_hash()`: SHA1, uppercase hex,
+of Info.dat's bytes followed by every listed beatmap file's bytes in Info.dat
+order; v4 maps also hash their lightshow files), the id BeatSaver indexes maps
+by. `beatsaver_id` is filled when the folder follows the `1a2b (Song - Mapper)`
+convention. A plain non-JSON key is treated as a folder name (debug hook).
+`lobby_difficulty_key` stays `"<difficulty>|<characteristic>"`.
+
+Flow: the host picks a level -> `MultiplayerSession.select_song(key, diff)`
+broadcasts `song_selected` (late joiners get it on connect) -> every peer's
+`LobbyMapFetcher.resolve(key)` finds the map locally (hash, folder, name +
+author) or GETs `api.beatsaver.com/maps/hash/<hash>` (fallback
+`/maps/id/<id>`), picks the version whose hash matches, downloads its zip,
+unpacks it into `APPDATA/Songs/<map name>/`, rehashes it and refreshes the
+menu. The peer then reports `set_has_song(true)`; the roster shows GETTING
+SONG / HAS SONG / READY per player, the Ready toggle is disabled until the
+song is ready, and Start stays gated on `all_ready()`.
 
 ## Wiring into the game (not done yet)
 
@@ -103,6 +129,9 @@ not own the map will need a download step (see "What remains").
   clock sync and code validation tests.
 * `godot --headless --xr-mode off --path . -s tests/multiplayer/smoke.gd` -
   builds the session, panel, avatars and a WebRTC peer without networking.
+* `godot --headless --xr-mode off --path . -s tests/multiplayer/fetch_smoke.gd`
+  - downloads a small known map from the live BeatSaver API into a throwaway
+  folder and checks the installed folder's level hash equals BeatSaver's.
 * `godot --headless --xr-mode off --path . -s tests/multiplayer/live_lobby.gd`
   - creates a throwaway lobby on the real worker, joins it from a second
   session in the same process, and checks WebRTC connectivity, roster/ready/
@@ -117,8 +146,11 @@ After adding scripts with `class_name`, run the editor once (or
 * Main-menu wiring and the in-game start countdown (above).
 * In-game HUD for other players' scores (Beat Saber shows a ranked list next
   to the track); `roster_changed` has everything it needs.
-* Map availability: hosts should pick maps everyone has, or `song_key` should
-  carry a BeatSaver key so peers can download it before readying up.
+* Maps that are not on BeatSaver (Beat Sage output, WIPs) cannot be fetched;
+  the panel tells the player to ask the host for another song. Peer-to-peer
+  transfer over the data channel would cover those.
+* The v4 hash rule (beatmap + lightshow files) is self-consistent between
+  peers but not yet verified against a BeatSaver-hosted v4 map.
 * TURN: `WebRtcClient.ICE_SERVERS` is STUN-only, so two players behind strict
   NATs (typical mobile hotspots) will not connect. Add TURN credentials there.
 * Late joiners / spectating a song in progress (the server's GAME_STATE

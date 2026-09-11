@@ -27,6 +27,9 @@ signal roster_changed(players: Array[Dictionary])
 signal song_start_requested(song_key: String, difficulty: String, local_start_time_ms: int)
 signal clock_synced(offset_ms: int, rtt_ms: int)
 signal player_finished(id: int, score: int, percent: float, rank: String)
+## The host picked a song (also sent to late joiners). Every peer then checks
+## whether it has the map and reports set_has_song().
+signal song_selected(song_key: String, difficulty: String)
 
 ## Shown to the other players; set it before hosting or joining.
 var player_name := "Player"
@@ -115,7 +118,7 @@ func get_local_id() -> int:
 
 
 ## Sorted by peer id, host (1) first. Each entry:
-## {id, name, ready, score, combo, percent, finished, rank}
+## {id, name, ready, has_song, score, combo, percent, finished, rank}
 func get_players() -> Array[Dictionary]:
 	var ids: Array = _players.keys()
 	ids.sort()
@@ -142,6 +145,15 @@ func all_ready() -> bool:
 	return true
 
 
+func all_have_song() -> bool:
+	if _players.is_empty():
+		return false
+	for player: Dictionary in _players.values():
+		if not bool(player.get("has_song", false)):
+			return false
+	return true
+
+
 # --- Ready / scores ---------------------------------------------------------
 
 func set_ready(ready: bool) -> void:
@@ -149,6 +161,18 @@ func set_ready(ready: bool) -> void:
 		return
 	_players[_my_id]["ready"] = ready
 	_rpc_set_ready.rpc(ready)
+	_emit_roster()
+
+
+## Whether this peer has the selected song installed (the lobby's map fetcher
+## reports it once the map is found locally or downloaded).
+func set_has_song(has_song: bool) -> void:
+	if state != State.IN_LOBBY:
+		return
+	if bool(_players[_my_id].get("has_song", false)) == has_song:
+		return
+	_players[_my_id]["has_song"] = has_song
+	_rpc_set_has_song.rpc(has_song)
 	_emit_roster()
 
 
@@ -180,6 +204,15 @@ func report_finished(score: int, percent: float, rank: String) -> void:
 
 
 # --- Song start / clock -----------------------------------------------------
+
+## Host only: announce the chosen song right away so every peer can fetch it.
+## Everyone (host included) gets song_selected; readiness and has_song reset.
+func select_song(song_key: String, difficulty: String) -> bool:
+	if not is_host():
+		return false
+	_rpc_song_selected.rpc(song_key, difficulty)
+	return true
+
 
 ## Host only. Everyone (host included) gets song_start_requested with the
 ## start time converted to their own Time.get_ticks_msec() clock, about
@@ -296,9 +329,10 @@ func _on_peer_connected(id: int) -> void:
 		return
 	if not _players.has(id):
 		_players[id] = _new_player(id, "Player %d" % (id % 100))
-	var me: Dictionary = _players[_my_id]
-	_rpc_player_state.rpc_id(id, str(me["name"]), bool(me["ready"]), int(me["score"]),
-		int(me["combo"]), float(me["percent"]), bool(me["finished"]), str(me["rank"]))
+	if _my_id == 1 and current_song_key != "":
+		# Late joiner: tell it what was picked before it reports its own state.
+		_rpc_song_selected.rpc_id(id, current_song_key, current_difficulty)
+	_announce_state(id)
 	if id == 1 and _my_id != 1:
 		_start_clock_sync()
 	_emit_roster()
@@ -339,6 +373,8 @@ func _teardown(reason: String) -> void:
 	_players.clear()
 	_my_id = 0
 	lobby_code = ""
+	current_song_key = ""
+	current_difficulty = ""
 	_score_dirty = false
 	_clock.clear()
 	print("[Session] Left lobby: ", reason)
@@ -352,6 +388,7 @@ func _new_player(id: int, display_name: String) -> Dictionary:
 		"id": id,
 		"name": display_name,
 		"ready": false,
+		"has_song": false,
 		"score": 0,
 		"combo": 0,
 		"percent": 1.0,
@@ -362,6 +399,17 @@ func _new_player(id: int, display_name: String) -> Dictionary:
 
 func _emit_roster() -> void:
 	roster_changed.emit(get_players())
+
+
+## Sends this peer's full state to one peer (or everyone with peer_id 0).
+func _announce_state(peer_id: int = 0) -> void:
+	var me: Dictionary = _players[_my_id]
+	var args: Array = [str(me["name"]), bool(me["ready"]), bool(me.get("has_song", false)),
+		int(me["score"]), int(me["combo"]), float(me["percent"]), bool(me["finished"]), str(me["rank"])]
+	if peer_id == 0:
+		_rpc_player_state.rpc.callv(args)
+	else:
+		_rpc_player_state.rpc_id.callv([peer_id] + args)
 
 
 func _flush_score(now: int) -> void:
@@ -400,7 +448,7 @@ func _send_ping() -> void:
 # --- RPCs -------------------------------------------------------------------
 
 @rpc("any_peer", "call_remote", "reliable")
-func _rpc_player_state(display_name: String, ready: bool, score: int, combo: int,
+func _rpc_player_state(display_name: String, ready: bool, has_song: bool, score: int, combo: int,
 		percent: float, finished: bool, rank: String) -> void:
 	var id := multiplayer.get_remote_sender_id()
 	if id == 0 or state != State.IN_LOBBY:
@@ -409,6 +457,7 @@ func _rpc_player_state(display_name: String, ready: bool, score: int, combo: int
 		"id": id,
 		"name": display_name,
 		"ready": ready,
+		"has_song": has_song,
 		"score": score,
 		"combo": combo,
 		"percent": percent,
@@ -425,6 +474,33 @@ func _rpc_set_ready(ready: bool) -> void:
 		return
 	_players[id]["ready"] = ready
 	_emit_roster()
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_set_has_song(has_song: bool) -> void:
+	var id := multiplayer.get_remote_sender_id()
+	if not _players.has(id):
+		return
+	_players[id]["has_song"] = has_song
+	_emit_roster()
+
+
+@rpc("authority", "call_local", "reliable")
+func _rpc_song_selected(song_key: String, difficulty: String) -> void:
+	if state != State.IN_LOBBY:
+		return
+	var changed := song_key != current_song_key or difficulty != current_difficulty
+	current_song_key = song_key
+	current_difficulty = difficulty
+	if changed:
+		# A new pick invalidates everyone's readiness and song ownership; each
+		# peer re-announces its own state after checking/downloading the map.
+		for player: Dictionary in _players.values():
+			player["ready"] = false
+			player["has_song"] = false
+		_announce_state()
+	_emit_roster()
+	song_selected.emit(song_key, difficulty)
 
 
 @rpc("any_peer", "call_remote", "unreliable_ordered")

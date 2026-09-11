@@ -3,10 +3,11 @@ class_name LobbyPanel
 
 # Multiplayer lobby UI: host, join by 4-character code (letter spinners so no
 # keyboard is needed), the code shown large once in a lobby, the roster with
-# ready state and live scores, a Ready toggle and the host-only Start button.
-# Talks to the MultiplayerSession autoload; the main menu tells it which song
-# is selected through set_selected_song() and reacts to
-# MultiplayerSession.song_start_requested itself.
+# ready/song state and live scores, a Ready toggle and the host-only Pick Song
+# and Start buttons. Talks to the MultiplayerSession autoload; the main menu
+# tells it which song the host picked through set_selected_song() (broadcast
+# to everyone as song_selected) and reacts to song_start_requested itself.
+# A LobbyMapFetcher child checks/downloads the selected song on every peer.
 
 signal start_pressed(song_key: String, difficulty: String)
 signal closed()
@@ -21,6 +22,7 @@ var selected_song_label := ""
 
 var _code_indices: Array[int] = [0, 0, 0, 0]
 var _rows: Dictionary = {}  # peer id -> row Control
+var _fetcher: LobbyMapFetcher
 
 @onready var _title := $VBox/Title as Label
 @onready var _status := $VBox/Status as Label
@@ -40,6 +42,16 @@ var _rows: Dictionary = {}  # peer id -> row Control
 
 func _ready() -> void:
 	_build_code_entry()
+	_fetcher = LobbyMapFetcher.new()
+	_fetcher.name = "MapFetcher"
+	var parent := get_parent()
+	if parent != null and parent.has_method("get_all_songs"):
+		_fetcher.main_menu = parent
+	_fetcher.state_changed.connect(_on_fetch_state_changed)
+	_fetcher.progress.connect(_on_fetch_progress)
+	_fetcher.song_ready.connect(_on_song_ready)
+	_fetcher.song_unavailable.connect(_on_song_unavailable)
+	add_child(_fetcher)
 	_host_button.pressed.connect(_on_host_pressed)
 	_join_button.pressed.connect(_on_join_pressed)
 	_ready_button.toggled.connect(_on_ready_toggled)
@@ -49,17 +61,26 @@ func _ready() -> void:
 	MultiplayerSession.lobby_joined.connect(_on_lobby_joined)
 	MultiplayerSession.lobby_left.connect(_on_lobby_left)
 	MultiplayerSession.roster_changed.connect(_on_roster_changed)
-	if has_node("/root/UI_AudioEngine"):
+	MultiplayerSession.song_selected.connect(_on_song_selected)
+	# The main menu attaches click sounds to all of its children (this panel
+	# included); only do it here when the panel is used on its own.
+	if has_node("/root/UI_AudioEngine") and _fetcher.main_menu == null:
 		UI_AudioEngine.attach_children(self)
 	refresh()
 
 
-## Called by the menu whenever the level selection changes.
+## Called by the menu when the host picked a level. Online hosts broadcast it
+## (song_selected then updates this panel on every peer); otherwise it only
+## updates the local selection.
 func set_selected_song(song_key: String, difficulty: String, display_label: String = "") -> void:
-	selected_song_key = song_key
-	selected_difficulty = difficulty
-	selected_song_label = display_label if display_label != "" else song_key
-	refresh()
+	if MultiplayerSession.is_host():
+		if MultiplayerSession.select_song(song_key, difficulty):
+			return
+	_apply_selection(song_key, difficulty, display_label)
+
+
+func get_fetcher() -> LobbyMapFetcher:
+	return _fetcher
 
 
 func get_entered_code() -> String:
@@ -96,9 +117,11 @@ func refresh() -> void:
 	if online:
 		_code_label.text = MultiplayerSession.lobby_code
 		_status.text = "HOSTING - SHARE THIS CODE" if MultiplayerSession.is_host() else "LOBBY CODE"
-		_song_label.text = "SONG: %s" % selected_song_label if selected_song_label != "" else "NO SONG SELECTED"
-		_ready_button.set_pressed_no_signal(bool(MultiplayerSession.get_player(MultiplayerSession.get_local_id()).get("ready", false)))
+		_song_label.text = _song_line()
+		var me := MultiplayerSession.get_player(MultiplayerSession.get_local_id())
+		_ready_button.set_pressed_no_signal(bool(me.get("ready", false)))
 		_ready_button.text = "READY!" if _ready_button.button_pressed else "READY"
+		_ready_button.disabled = not _song_available()
 		_start_button.visible = MultiplayerSession.is_host()
 		_pick_button.visible = MultiplayerSession.is_host()
 		_start_button.disabled = not (MultiplayerSession.all_ready() and selected_song_key != "")
@@ -107,6 +130,72 @@ func refresh() -> void:
 		_status.text = "CONNECTING..."
 	else:
 		_status.text = "HOST A LOBBY OR ENTER A CODE"
+
+
+# --- Song selection / download state ---------------------------------------
+
+func _apply_selection(song_key: String, difficulty: String, display_label: String = "") -> void:
+	selected_song_key = song_key
+	selected_difficulty = difficulty
+	selected_song_label = display_label if display_label != "" else _label_for(song_key, difficulty)
+	if song_key != "":
+		_fetcher.resolve(song_key)
+	refresh()
+
+
+static func _label_for(song_key: String, difficulty: String) -> String:
+	var label := LobbySongKey.display_name(song_key)
+	var parts := difficulty.split("|")
+	if parts.size() > 0 and not parts[0].is_empty():
+		label += " (%s)" % parts[0]
+	return label
+
+
+func _song_available() -> bool:
+	return selected_song_key != "" and _fetcher != null and _fetcher.is_ready()
+
+
+func _song_line() -> String:
+	if selected_song_key == "":
+		return "PICK A SONG" if MultiplayerSession.is_host() else "WAITING FOR THE HOST TO PICK A SONG"
+	if _fetcher == null:
+		return "SONG: %s" % selected_song_label
+	match _fetcher.state:
+		LobbyMapFetcher.State.READY:
+			return "SONG: %s (READY)" % selected_song_label
+		LobbyMapFetcher.State.DOWNLOADING:
+			return "DOWNLOADING %s %d%%" % [selected_song_label, roundi(_fetcher.last_fraction * 100.0)]
+		LobbyMapFetcher.State.EXTRACTING:
+			return "INSTALLING %s..." % selected_song_label
+		LobbyMapFetcher.State.UNAVAILABLE:
+			if _fetcher.last_reason == "not_found":
+				return "NOT ON BEATSAVER, ASK THE HOST TO PICK ANOTHER"
+			return "DOWNLOAD FAILED, ASK THE HOST TO PICK ANOTHER"
+		_:
+			return "CHECKING %s..." % selected_song_label
+
+
+func _on_song_selected(song_key: String, difficulty: String) -> void:
+	_apply_selection(song_key, difficulty)
+
+
+func _on_fetch_state_changed(_state: int, _detail: String) -> void:
+	refresh()
+
+
+func _on_fetch_progress(_fraction: float) -> void:
+	_song_label.text = _song_line()
+	call_deferred("_request_canvas_redraw")
+
+
+func _on_song_ready(_song_key: String, _map: MapInfo) -> void:
+	MultiplayerSession.set_has_song(true)
+	refresh()
+
+
+func _on_song_unavailable(_song_key: String, _reason: String) -> void:
+	MultiplayerSession.set_has_song(false)
+	refresh()
 
 
 # --- Code entry -------------------------------------------------------------
@@ -206,7 +295,7 @@ func _make_row() -> Control:
 	content.add_child(score_label)
 	var ready_label := Label.new()
 	ready_label.name = "Ready"
-	ready_label.custom_minimum_size = Vector2(96, 0)
+	ready_label.custom_minimum_size = Vector2(120, 0)
 	ready_label.add_theme_font_size_override("font_size", 26)
 	ready_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	content.add_child(ready_label)
@@ -230,12 +319,19 @@ func _fill_row(row: Control, player: Dictionary) -> void:
 		score_text = "%d  x%d  %d%%" % [int(player["score"]), int(player["combo"]), roundi(float(player["percent"]) * 100.0)]
 	(content.get_node("Score") as Label).text = score_text
 	var ready_label := content.get_node("Ready") as Label
+	var has_song := bool(player.get("has_song", false))
 	if bool(player["finished"]):
 		ready_label.text = "DONE"
 		ready_label.add_theme_color_override("font_color", Color(0.6, 0.8, 1.0))
 	elif bool(player["ready"]):
 		ready_label.text = "READY"
 		ready_label.add_theme_color_override("font_color", Color(0.45, 1.0, 0.55))
+	elif selected_song_key != "" and not has_song:
+		ready_label.text = "GETTING SONG" if not is_me or _fetcher.state != LobbyMapFetcher.State.UNAVAILABLE else "NO SONG"
+		ready_label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.35))
+	elif has_song:
+		ready_label.text = "HAS SONG"
+		ready_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.55))
 	else:
 		ready_label.text = "..."
 		ready_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.4))
@@ -273,6 +369,9 @@ func _on_lobby_joined(_code: String) -> void:
 
 
 func _on_lobby_left(reason: String) -> void:
+	selected_song_key = ""
+	selected_difficulty = ""
+	selected_song_label = ""
 	refresh()
 	match reason:
 		"lobby_not_found":

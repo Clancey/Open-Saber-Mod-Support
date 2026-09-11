@@ -62,6 +62,26 @@ func _run() -> void:
 			return str(_a.get_player(_b.get_local_id()).get("name", "")) == "GuestBot" 				and str(_b.get_player(1).get("name", "")) == "HostBot")
 		_check(ok, "names exchanged over RPC both ways")
 
+	# Song announcement: host picks, B gets song_selected, everyone's has_song
+	# resets, B reports has_song and A sees it.
+	var picks: Array = []
+	_b.song_selected.connect(func(song_key: String, difficulty: String) -> void: picks.append([song_key, difficulty]))
+	var key := JSON.stringify({"hash": "ABC", "folder": "F", "name": "Song", "author": "Artist", "beatsaver_id": ""})
+	_check(_a.select_song(key, "Expert|Standard"), "host select_song accepted")
+	_check(not _b.select_song(key, "Expert|Standard"), "guest select_song refused")
+	ok = await _wait_until(func() -> bool: return picks.size() > 0 and str(_b.current_song_key) == key)
+	_check(ok, "B received song_selected with the JSON key")
+	if ok:
+		_check(str(picks[0][1]) == "Expert|Standard", "difficulty travels with the pick")
+	_check(not bool(_a.get_player(_b.get_local_id()).get("has_song", false)), "B has no song yet as seen by A")
+	_b.set_has_song(true)
+	ok = await _wait_until(func() -> bool: return bool(_a.get_player(_b.get_local_id()).get("has_song", false)))
+	_check(ok, "has_song replicated from B to A")
+	_check(not _a.all_have_song(), "A itself has not reported the song")
+	_a.set_has_song(true)
+	ok = await _wait_until(func() -> bool: return _b.all_have_song())
+	_check(ok, "all_have_song true on B once both reported")
+
 	print("LIVE: waiting for clock sync...")
 	ok = await _wait_until(func() -> bool: return _b.is_clock_synced())
 	_check(ok, "B synced its clock (rtt %d ms, host time %d)" % [_b.get_clock_rtt_ms(), _b.get_host_time_ms()])

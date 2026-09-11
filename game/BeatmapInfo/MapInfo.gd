@@ -67,6 +67,67 @@ func get_key() -> String:
 		level_author_name
 	]
 
+var _level_hash := ""
+
+## Beat Saber level hash (SHA1 hex, uppercase), the id BeatSaver indexes maps by.
+## Computed once per MapInfo from the files in `filepath`.
+func level_hash() -> String:
+	if _level_hash.is_empty():
+		_level_hash = compute_level_hash(filepath)
+	return _level_hash
+
+## SHA1 (uppercase hex) of the raw bytes of Info.dat followed by the raw bytes
+## of every difficulty beatmap file in the order Info.dat lists them (v2/v3).
+## v4 maps list a beatmap and a lightshow file per difficulty; both are hashed,
+## each file once, in listed order. Returns "" if a file is missing.
+static func compute_level_hash(folder: String) -> String:
+	var dir: String = folder if folder.ends_with("/") else folder + "/"
+	var info_name: String = Map.find_file_case_insensitive(dir, "info.dat")
+	if info_name.is_empty():
+		return ""
+	var info_bytes: PackedByteArray = FileAccess.get_file_as_bytes(dir + info_name)
+	if info_bytes.is_empty():
+		return ""
+	var parsed: Variant = JSON.parse_string(info_bytes.get_string_from_utf8())
+	if not parsed is Dictionary:
+		return ""
+	var context := HashingContext.new()
+	if context.start(HashingContext.HASH_SHA1) != OK:
+		return ""
+	@warning_ignore("return_value_discarded")
+	context.update(info_bytes)
+	for filename: String in hashed_beatmap_files(parsed as Dictionary):
+		var actual: String = filename
+		if not FileAccess.file_exists(dir + actual):
+			actual = Map.find_file_case_insensitive(dir, filename)
+			if actual.is_empty():
+				return ""
+		@warning_ignore("return_value_discarded")
+		context.update(FileAccess.get_file_as_bytes(dir + actual))
+	return context.finish().hex_encode().to_upper()
+
+## The beatmap files that take part in the level hash, in Info.dat order.
+static func hashed_beatmap_files(info_dict: Dictionary) -> Array[String]:
+	var files: Array[String] = []
+	if info_dict.has("_difficultyBeatmapSets"):
+		for set_value: Variant in Utils.get_array(info_dict, "_difficultyBeatmapSets", []):
+			if not set_value is Dictionary:
+				continue
+			for diff_value: Variant in Utils.get_array(set_value as Dictionary, "_difficultyBeatmaps", []):
+				if diff_value is Dictionary:
+					var filename: String = Utils.get_str(diff_value as Dictionary, "_beatmapFilename", "")
+					if not filename.is_empty():
+						files.append(filename)
+	else:
+		for diff_value: Variant in Utils.get_array(info_dict, "difficultyBeatmaps", []):
+			if not diff_value is Dictionary:
+				continue
+			for key: String in ["beatmapDataFilename", "lightshowDataFilename"]:
+				var filename: String = Utils.get_str(diff_value as Dictionary, key, "")
+				if not filename.is_empty() and not files.has(filename):
+					files.append(filename)
+	return files
+
 static func new_v2(info_dict: Dictionary, load_path: String) -> MapInfo:
 	# mix all the difficulty sets into a single one
 	var diffs: Array[DifficultyInfo] = []

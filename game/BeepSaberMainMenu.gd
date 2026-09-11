@@ -441,23 +441,26 @@ func _on_lobby_pick_song() -> void:
 	_lobby_picking = true
 	_show_tiles(false)
 
+## JSON song key ({hash, folder, name, author, beatsaver_id}) so peers can
+## match the song by level hash first and download it from BeatSaver if needed.
 static func lobby_song_key(map: MapInfo) -> String:
-	return map.filepath.trim_suffix("/").get_file()
+	return LobbySongKey.make(map)
+
+## The loaded song list, for the lobby's map fetcher.
+func get_all_songs() -> Array[MapInfo]:
+	return _all_songs
 
 static func lobby_difficulty_key(diff: DifficultyInfo) -> String:
 	return "%s|%s" % [diff.difficulty, diff.characteristic]
 
 func _find_lobby_map(song_key: String) -> MapInfo:
-	for map: MapInfo in _all_songs:
-		if lobby_song_key(map) == song_key:
-			return map
-	return null
+	return LobbySongKey.find_map(song_key, _all_songs)
 
 ## Every peer (host included) starts the song at the agreed local time.
 func _on_song_start_requested(song_key: String, difficulty: String, local_start_time_ms: int) -> void:
 	var map := _find_lobby_map(song_key)
 	if map == null:
-		lobby_panel.call("show_status", "YOU DO NOT HAVE THE SONG %s" % song_key)
+		lobby_panel.call("show_status", "YOU DO NOT HAVE THE SONG %s" % LobbySongKey.display_name(song_key))
 		return
 	var chosen: DifficultyInfo = null
 	for diff: DifficultyInfo in map.difficulty_beatmaps:
