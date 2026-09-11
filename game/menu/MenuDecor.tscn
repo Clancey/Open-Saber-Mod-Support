@@ -1,0 +1,70 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://game/menu/MenuDecor.gd" id="script"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/logo_open.png" id="tex_open"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/logo_open_e.png" id="tex_open_e"]
+[ext_resource type="Texture2D" path="res://game/assets/beatsaber/ui/logo_saber.png" id="tex_saber"]
+
+[sub_resource type="ParticleProcessMaterial" id="sparks_mat"]
+emission_shape = 1
+emission_sphere_radius = 0.1
+direction = Vector3(0, -1, 0)
+spread = 60.0
+initial_velocity_min = 2.0
+initial_velocity_max = 5.0
+gravity = Vector3(0, -6, 0)
+scale_min = 0.5
+scale_max = 1.0
+color = Color(1, 0.6, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="sparks_draw"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(2, 1.2, 0.5, 1)
+billboard_mode = 3
+
+[sub_resource type="QuadMesh" id="sparks_quad"]
+material = SubResource("sparks_draw")
+size = Vector2(0.06, 0.06)
+
+[node name="MenuDecor" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Logo" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11, -17)
+
+[node name="Open" type="Sprite3D" parent="Logo"]
+layers = 3
+pixel_size = 0.0055
+no_depth_test = true
+render_priority = 5
+texture = ExtResource("tex_open")
+
+[node name="OpenE" type="Sprite3D" parent="Logo"]
+layers = 3
+pixel_size = 0.0055
+no_depth_test = true
+render_priority = 5
+texture = ExtResource("tex_open_e")
+
+[node name="Saber" type="Sprite3D" parent="Logo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, -2.2, 0)
+layers = 3
+pixel_size = 0.0055
+no_depth_test = true
+render_priority = 5
+texture = ExtResource("tex_saber")
+
+[node name="Sparks" type="GPUParticles3D" parent="Logo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.5, 0.1)
+layers = 3
+emitting = false
+amount = 24
+lifetime = 0.4
+one_shot = true
+explosiveness = 0.9
+visibility_aabb = AABB(-3, -4, -1, 6, 6, 2)
+process_material = SubResource("sparks_mat")
+draw_pass_1 = SubResource("sparks_quad")

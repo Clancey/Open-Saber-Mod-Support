@@ -1,7 +1,8 @@
-[gd_scene load_steps=49 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=50 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="FontFile" path="res://game/ui/fonts/teko_bold.fnt" id="teko_bold"]
 [ext_resource type="Script" path="res://game/multiplayer/MultiplayerAvatars.gd" id="mp_avatars"]
+[ext_resource type="PackedScene" path="res://game/menu/MenuDecor.tscn" id="menu_decor"]
 [ext_resource type="Script" path="res://game/multiplayer/LocalPlayerBroadcaster.gd" id="mp_broadcaster"]
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
@@ -290,6 +291,8 @@ no_depth_test = true
 render_priority = 2
 font_size = 76
 vertical_alignment = 0
+
+[node name="MenuDecor" parent="." instance=ExtResource("menu_decor")]
 
 [node name="MultiplayerBoard" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 1.05, -7)

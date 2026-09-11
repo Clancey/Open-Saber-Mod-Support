@@ -326,6 +326,9 @@ func _exit_tree() -> void:
 func _transition_game_state(next_state: GameState) -> void:
 	gamestate = next_state
 	var hud_visible := next_state == gamestate_playing or next_state == gamestate_paused
+	var decor := get_node_or_null("MenuDecor") as Node3D
+	if decor != null:
+		decor.visible = next_state == gamestate_mapselection
 	energy_bar.visible = hud_visible
 	for hud_path: NodePath in _hud_nodes:
 		var hud_node := get_node_or_null(hud_path) as Node3D
@@ -467,6 +470,8 @@ func _debug_screenshot() -> void:
 	await get_tree().create_timer(3.0).timeout
 	while not menu.menu_ready:
 		await get_tree().process_frame
+	if OS.has_environment("OPENSABER_LOOK_UP"):
+		xr_camera.rotation_degrees.x = float(OS.get_environment("OPENSABER_LOOK_UP"))
 	if OS.get_environment("OPENSABER_MENU_SCREEN") == "lobby":
 		menu._show_lobby()
 		main_menu._input_update()
