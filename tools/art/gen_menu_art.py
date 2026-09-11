@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 import numpy as np
 
 OUT = r"D:\Projects\Open-Saber-Mod-Support\game\assets\beatsaber\ui"
-FONT = r"C:\Users\james\AppData\Local\Temp\claude\D--Projects-Open-Saber-Mod-Support\66f514bf-f0d7-4c6d-9d62-d125c421c556\scratchpad\fonts\Roboto-Bold.ttf"
+FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Roboto-Bold.ttf")  # any bold TTF works for the "?" icon
 SS = 3  # supersampling
 
 # ---------------------------------------------------------------- helpers
