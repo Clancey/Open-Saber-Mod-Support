@@ -1,0 +1,123 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Theme" path="res://game/ui/beat_saber_theme.tres" id="bs_theme"]
+[ext_resource type="Script" path="res://game/multiplayer/LobbyPanel.gd" id="script"]
+
+[node name="LobbyPanel" type="Panel"]
+theme = ExtResource("bs_theme")
+offset_right = 640.0
+offset_bottom = 640.0
+script = ExtResource("script")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 16.0
+offset_right = -24.0
+offset_bottom = -16.0
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 40
+text = "MULTIPLAYER"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_font_sizes/font_size = 26
+text = "HOST A LOBBY OR ENTER A CODE"
+horizontal_alignment = 1
+
+[node name="CodeLabel" type="Label" parent="VBox"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 96
+text = "ABCD"
+horizontal_alignment = 1
+
+[node name="Offline" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="HostButton" type="Button" parent="VBox/Offline"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_type_variation = &"PlayButton"
+text = "HOST LOBBY"
+
+[node name="JoinLabel" type="Label" parent="VBox/Offline"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 26
+text = "OR JOIN WITH A CODE"
+horizontal_alignment = 1
+
+[node name="JoinRow" type="HBoxContainer" parent="VBox/Offline"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="CodeEntry" type="HBoxContainer" parent="VBox/Offline/JoinRow"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="JoinButton" type="Button" parent="VBox/Offline/JoinRow"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "JOIN"
+
+[node name="Lobby" type="VBoxContainer" parent="VBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="SongLabel" type="Label" parent="VBox/Lobby"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.75)
+theme_override_font_sizes/font_size = 26
+text = "NO SONG SELECTED"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="RosterScroll" type="ScrollContainer" parent="VBox/Lobby"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Roster" type="VBoxContainer" parent="VBox/Lobby/RosterScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="Buttons" type="HBoxContainer" parent="VBox/Lobby"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LeaveButton" type="Button" parent="VBox/Lobby/Buttons"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "LEAVE"
+
+[node name="ReadyButton" type="Button" parent="VBox/Lobby/Buttons"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+text = "READY"
+
+[node name="StartButton" type="Button" parent="VBox/Lobby/Buttons"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"PlayButton"
+disabled = true
+text = "START"

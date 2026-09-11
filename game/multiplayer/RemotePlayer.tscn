@@ -1,0 +1,82 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://game/multiplayer/RemotePlayer.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bw3rjal5qlu0p" path="res://game/sabers/default/default_saber.tscn" id="2_saber"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_head"]
+size = Vector3(0.19, 0.11, 0.12)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_head"]
+albedo_color = Color(0.14, 0.14, 0.16, 1)
+roughness = 0.55
+
+[sub_resource type="BoxMesh" id="BoxMesh_visor"]
+size = Vector3(0.17, 0.06, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_visor"]
+albedo_color = Color(0.03, 0.03, 0.04, 1)
+metallic = 0.7
+roughness = 0.15
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_pose"]
+properties/0/path = NodePath("Head:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("Head:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("LeftHand:position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("LeftHand:rotation")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("RightHand:position")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath("RightHand:rotation")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+
+[node name="RemotePlayer" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="HeadMesh" type="MeshInstance3D" parent="Head"]
+layers = 3
+cast_shadow = 0
+mesh = SubResource("BoxMesh_head")
+surface_material_override/0 = SubResource("StandardMaterial3D_head")
+
+[node name="Visor" type="MeshInstance3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.06)
+layers = 3
+cast_shadow = 0
+mesh = SubResource("BoxMesh_visor")
+surface_material_override/0 = SubResource("StandardMaterial3D_visor")
+
+[node name="NameLabel" type="Label3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+layers = 3
+pixel_size = 0.003
+billboard = 1
+no_depth_test = true
+modulate = Color(1, 1, 1, 0.85)
+font_size = 48
+outline_size = 8
+
+[node name="LeftHand" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 1.2, -0.3)
+
+[node name="LeftSaber" parent="LeftHand" instance=ExtResource("2_saber")]
+
+[node name="RightHand" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.2, -0.3)
+
+[node name="RightSaber" parent="RightHand" instance=ExtResource("2_saber")]
+
+[node name="Sync" type="MultiplayerSynchronizer" parent="."]
+replication_interval = 0.05
+replication_config = SubResource("SceneReplicationConfig_pose")

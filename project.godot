@@ -34,6 +34,7 @@ PlayCount="*res://game/scripts/PlayCountTable.gd"
 StopwatchFactory="*res://addons/stopwatch/public/StopwatchFactory.gd"
 UI_AudioEngine="*res://game/ui/UI_AudioEngine/UI_AudioEngine.tscn"
 GlobalReferences="*res://game/scripts/global_references.gd"
+MultiplayerSession="*res://game/multiplayer/MultiplayerSession.gd"
 
 [debug]
 
