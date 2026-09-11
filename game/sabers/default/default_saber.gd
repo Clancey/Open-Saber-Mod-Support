@@ -32,8 +32,10 @@ func set_color(color: Color) -> void:
 	tail.set_color(color)
 
 func set_thickness(value: float) -> void:
-	blade.scale = Vector3(-value, -1.0, value)
-	glowing_edges.scale = Vector3(-value, -1.0, value)
+	# the blade nodes are rotated 180 degrees about Z so the mesh (authored
+	# along -Y) points along +Y; the scale setter keeps that rotation
+	blade.scale = Vector3(value, 1.0, value)
+	glowing_edges.scale = Vector3(value, 1.0, value)
 	(blade_glow.material_override as ShaderMaterial).set_shader_parameter(&"width", 0.1 * value)
 
 func set_trail(enabled: bool = true) -> void:
