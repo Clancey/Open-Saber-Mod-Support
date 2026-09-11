@@ -36,7 +36,7 @@ func set_thickness(value: float) -> void:
 	# along -Y) points along +Y; the scale setter keeps that rotation
 	blade.scale = Vector3(value, 1.0, value)
 	glowing_edges.scale = Vector3(value, 1.0, value)
-	(blade_glow.material_override as ShaderMaterial).set_shader_parameter(&"width", 0.1 * value)
+	(blade_glow.material_override as ShaderMaterial).set_shader_parameter(&"width", 0.12 * value)
 
 func set_trail(enabled: bool = true) -> void:
 	tail.set_enabled(enabled)

@@ -43,9 +43,9 @@ shader_parameter/emission_energy = 3.2
 resource_local_to_scene = true
 render_priority = 3
 shader = ExtResource("13_glowsh")
-shader_parameter/color = Color(1, 0, 0, 0.3)
+shader_parameter/color = Color(1, 0, 0, 0.7)
 shader_parameter/glow_texture = ExtResource("15_glowtex")
-shader_parameter/width = 0.1
+shader_parameter/width = 0.12
 shader_parameter/length = 1.0
 shader_parameter/center = 0.0
 shader_parameter/intensity = 1.0
@@ -267,6 +267,7 @@ material_override = SubResource("ShaderMaterial_handle")
 
 [node name="PommelGlow" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.17, 0)
+visible = false
 layers = 3
 cast_shadow = 0
 mesh = SubResource("QuadMesh_glow")
