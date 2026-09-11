@@ -62,6 +62,11 @@ Schedule: Stage 1 and Stage 2a run in parallel. Stage 2b and Stage 3 run in para
 **Tests**: 38 headless tests; harness runs on Golden and Timelapse.
 **Status**: In Progress (fail mode verified on desktop; visual refinement of sabers/sky/energy-bar placement running)
 
+## Stage 9: Online Multiplayer
+**Goal**: Beat Saber style lobbies over the user's WebRTC signaling worker (game id `open-saber`): host/join by code, ready-up, synchronized song start, live scores and avatars.
+**Status**: Foundation and wiring done (2026-09-11): `MultiplayerSession` autoload, lobby panel under the Online tile, host picks the song in the level list, synced start with countdown, score/finish broadcast, in-game ranking, remote avatars. Follow-ups: TURN server, host migration, downloading a missing map for joiners, results ranking on the end screen, avatar polish.
+**Files**: `game/multiplayer/*`, `addons/webrtc/`, `game/BeepSaberMainMenu.gd/.tscn`, `game/BeepSaber_Game.gd/.tscn`, `tests/test_clock_sync.gd`, `tests/multiplayer/`.
+
 ## Stage 8: Look and Feel Parity with the Original
 **Goal**: Gameplay objects, movement and the default environment match Beat Saber.
 **Success Criteria**: Notes travel at the map NJS with Beat Saber's spawn-ahead, jump arc and rotation; notes/bombs/walls/sabers use the original meshes and equivalent materials; the environment is "The First" layout with its light-ID mapping; harness runs clean.

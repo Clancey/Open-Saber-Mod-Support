@@ -53,7 +53,7 @@ var _environment_scene_path := DEFAULT_ENVIRONMENT_SCENE
 @onready var song_progress_label := $SongProgress_Label as Label3D
 var _hud_nodes: Array[NodePath] = [
 	^"HudLeftPanel", ^"HudLeftTop", ^"HudRightPanel", ^"HudRightTop",
-	^"SongProgressBg", ^"SongProgressFill", ^"ComboLineTop", ^"ComboLineBottom"
+	^"SongProgressBg", ^"SongProgressFill", ^"ComboLineTop", ^"ComboLineBottom", ^"MultiplayerBoard"
 ]
 @onready var energy_bar := $EnergyBar as EnergyBar
 
@@ -146,8 +146,10 @@ func _ensure_environment(scene_path: String) -> void:
 	event_driver.environment_palette_changed.connect(_on_environment_palette_changed)
 	event_driver.disabled = was_disabled
 
-func start_map(info: MapInfo, map_difficulty: DifficultyInfo) -> void:
+## synced_start_ms: multiplayer start time on this machine's Time.get_ticks_msec() clock (-1 = start now)
+func start_map(info: MapInfo, map_difficulty: DifficultyInfo, synced_start_ms: int = -1) -> void:
 	_load_generation += 1
+	_synced_start_ms = synced_start_ms
 	_ensure_environment(environment_scene_for(info, map_difficulty))
 	var generation: int = _load_generation
 	is_loading_map = true
@@ -220,8 +222,55 @@ func start_map(info: MapInfo, map_difficulty: DifficultyInfo) -> void:
 		return
 
 	is_loading_map = false
+	if _synced_start_ms > 0:
+		await _wait_for_synced_start()
+		if generation != _load_generation:
+			return
 	song_player.play(0.0)
 	_transition_game_state(gamestate_playing)
+
+var _synced_start_ms := -1
+
+## Multiplayer: hold the loaded song until the agreed start time, counting down.
+func _wait_for_synced_start() -> void:
+	var shown := ""
+	while true:
+		var remaining := _synced_start_ms - Time.get_ticks_msec()
+		if remaining <= 0:
+			break
+		if remaining <= 3000:
+			var label := str(ceili(remaining / 1000.0))
+			if label != shown:
+				shown = label
+				pause_countdown.visible = true
+				pause_countdown.set_label_text(label)
+		await get_tree().process_frame
+	pause_countdown.visible = false
+	_synced_start_ms = -1
+
+func _on_multiplayer_roster_changed(players: Array[Dictionary]) -> void:
+	var board := get_node_or_null("MultiplayerBoard") as Label3D
+	if board == null:
+		return
+	if not MultiplayerSession.is_online():
+		board.text = ""
+		return
+	var sorted := players.duplicate()
+	sorted.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a.get("score", 0)) > int(b.get("score", 0)))
+	var lines: PackedStringArray = []
+	var place := 1
+	for player: Dictionary in sorted:
+		if place > 8:
+			break
+		var marker := "  <" if int(player.get("id", 0)) == MultiplayerSession.get_local_id() else ""
+		lines.append("%d. %s  %d%s" % [place, str(player.get("name", "?")).to_upper(), int(player.get("score", 0)), marker])
+		place += 1
+	board.text = "\n".join(lines)
+
+func _on_multiplayer_lobby_left(_reason: String) -> void:
+	var board := get_node_or_null("MultiplayerBoard") as Label3D
+	if board != null:
+		board.text = ""
 
 static func _load_map_worker(
 	info: MapInfo,
@@ -418,6 +467,18 @@ func _debug_screenshot() -> void:
 	await get_tree().create_timer(3.0).timeout
 	while not menu.menu_ready:
 		await get_tree().process_frame
+	if OS.get_environment("OPENSABER_MENU_SCREEN") == "lobby":
+		menu._show_lobby()
+		main_menu._input_update()
+	elif OS.has_environment("OPENSABER_TEST_MP_START"):
+		# simulate a lobby start for the named song folder: the menu resolves the
+		# map, the game holds it until the synced time with the countdown
+		var key := OS.get_environment("OPENSABER_TEST_MP_START")
+		MultiplayerSession.song_start_requested.emit(key, "Expert|Standard", Time.get_ticks_msec() + 4000)
+		await get_tree().create_timer(2.5).timeout
+		print("MPTEST|countdown_visible=%s|label=%s|state_playing=%s" % [pause_countdown.visible, pause_countdown.get_label_text() if pause_countdown.has_method("get_label_text") else "?", gamestate == gamestate_playing])
+		await get_tree().create_timer(3.5).timeout
+		print("MPTEST|after_start|playing=%s|song_playing=%s|pos=%.2f" % [gamestate == gamestate_playing, song_player.playing, song_player.get_playback_position()])
 	if OS.get_environment("OPENSABER_MENU_SCREEN") == "pause":
 		pause_menu.visible = true
 		(pause_menu.ui_control as PausePanel).set_pause_text("Beat Saber", "Expert")
@@ -475,6 +536,10 @@ func _ready() -> void:
 	@warning_ignore("return_value_discarded")
 	event_driver.environment_palette_changed.connect(_on_environment_palette_changed)
 	_sync_pause_countdown_viewport()
+	@warning_ignore("return_value_discarded")
+	MultiplayerSession.roster_changed.connect(_on_multiplayer_roster_changed)
+	@warning_ignore("return_value_discarded")
+	MultiplayerSession.lobby_left.connect(_on_multiplayer_lobby_left)
 
 	# pre-allocate scenes in our scene pools
 	GlobalReferences.cube_pool = cube_pool
@@ -668,6 +733,8 @@ func _display_points() -> void:
 	multiplier_label.text = "COMBO\n%d" % Scoreboard.combo
 	percent_indicator.update_percent(hit_rate)
 	percent_indicator.update_multiplier(Scoreboard.multiplier)
+	if MultiplayerSession.is_online():
+		MultiplayerSession.report_score(Scoreboard.points, Scoreboard.combo, hit_rate)
 
 # accessor method for the player name selector UI element
 func _name_selector() -> NameSelector:
@@ -708,6 +775,8 @@ func _on_song_ended() -> void:
 		current_percent = Scoreboard.right_notes / (Scoreboard.right_notes + Scoreboard.wrong_notes)
 	else:
 		current_percent = 1.0
+	if MultiplayerSession.is_online():
+		MultiplayerSession.report_finished(Scoreboard.points, current_percent, PercentIndicator.rank_for(current_percent))
 	endscore.show_score(
 		Scoreboard.points,
 		highscore,

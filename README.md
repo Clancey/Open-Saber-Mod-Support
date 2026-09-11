@@ -83,6 +83,15 @@ to include the stage, `PREVIEW_ENV=only` for the stage alone):
 Godot --path . --xr-mode off --resolution 1280x720 tests/visual/VisualPreview.tscn -- --out=/tmp/preview.png
 ```
 
+# Online multiplayer
+The Online tile opens a lobby: host a 4-letter code or join one, ready up, and the host picks a song from the
+level list and starts it. Every player starts at the same moment (NTP-style clock sync over the peer mesh),
+sees the others as head-plus-sabers avatars beside the track, and a live ranking under the combo panel. Only
+the signaling (lobby codes and the WebRTC handshake) goes through the server at
+`wss://vr-cooking-game-server-prod.james-clancey.workers.dev` with game id `open-saber`; gameplay data is
+peer to peer. Details, API and what is still missing (TURN, host migration, map downloads for joiners) are in
+`game/multiplayer/README.md`.
+
 # Tests and local playtesting
 Unit tests (headless):
 ```

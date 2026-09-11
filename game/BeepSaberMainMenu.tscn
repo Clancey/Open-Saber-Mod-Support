@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://glii0poslcve"]
+[gd_scene load_steps=20 format=3 uid="uid://glii0poslcve"]
 
 [ext_resource type="Theme" uid="uid://dvcjel72een6o" path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard.theme" id="1"]
 [ext_resource type="Theme" path="res://game/ui/beat_saber_theme.tres" id="bs_theme"]
@@ -25,6 +25,7 @@
 [ext_resource type="FontFile" uid="uid://01k27lk2a4bw" path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" id="5"]
 [ext_resource type="PackedScene" uid="uid://dtipmx5ep1dkk" path="res://game/vr_slider.tscn" id="6"]
 [ext_resource type="FontVariation" uid="uid://ckoe517v8p3qp" path="res://OQ_Toolkit/OQ_UI2D/theme/oq_ui2d_standard_font.tres" id="7"]
+[ext_resource type="PackedScene" path="res://game/multiplayer/LobbyPanel.tscn" id="lobby_panel"]
 
 [sub_resource type="StyleBoxFlat" id="1"]
 bg_color = Color(0, 0, 0, 1)
@@ -476,6 +477,17 @@ stretch_mode = 5
 
 [connection signal="pressed" from="Back_Button" to="." method="_on_Back_Button_pressed"]
 [connection signal="pressed" from="MainTiles/Tile_solo" to="." method="_on_Solo_pressed"]
+[node name="LobbyPanel" parent="." instance=ExtResource("lobby_panel")]
+visible = false
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1408.0
+offset_bottom = 640.0
+
+[connection signal="pressed" from="MainTiles/Tile_online" to="." method="_on_Online_pressed"]
+[connection signal="closed" from="LobbyPanel" to="." method="_on_lobby_closed"]
+[connection signal="pick_song_requested" from="LobbyPanel" to="." method="_on_lobby_pick_song"]
 [connection signal="pressed" from="MainTiles/Icon_options" to="." method="_on_Settings_Button_pressed"]
 [connection signal="pressed" from="MainTiles/Icon_exit" to="." method="_on_Exit_Button_pressed"]
 [connection signal="pressed" from="Play_Button" to="." method="_on_Play_Button_pressed"]

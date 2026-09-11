@@ -1,6 +1,8 @@
-[gd_scene load_steps=47 format=3 uid="uid://dqb3ybvpsfcbw"]
+[gd_scene load_steps=49 format=3 uid="uid://dqb3ybvpsfcbw"]
 
 [ext_resource type="FontFile" path="res://game/ui/fonts/teko_bold.fnt" id="teko_bold"]
+[ext_resource type="Script" path="res://game/multiplayer/MultiplayerAvatars.gd" id="mp_avatars"]
+[ext_resource type="Script" path="res://game/multiplayer/LocalPlayerBroadcaster.gd" id="mp_broadcaster"]
 [ext_resource type="PackedScene" uid="uid://cs8e62lsifik5" path="res://game/floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d04fmtjhjx4oy" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DLabel.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://crstqa7v6ehg3" path="res://OQ_Toolkit/OQ_UI2D/OQ_UI2DCanvas.tscn" id="3"]
@@ -288,6 +290,28 @@ no_depth_test = true
 render_priority = 2
 font_size = 76
 vertical_alignment = 0
+
+[node name="MultiplayerBoard" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 1.05, -7)
+layers = 3
+text = ""
+font = ExtResource("teko_bold")
+font_size = 30
+outline_size = 0
+no_depth_test = true
+render_priority = 2
+vertical_alignment = 0
+
+[node name="MultiplayerAvatars" type="Node3D" parent="."]
+script = ExtResource("mp_avatars")
+spacing = 2.0
+
+[node name="LocalPlayerBroadcaster" type="Node" parent="."]
+script = ExtResource("mp_broadcaster")
+camera_path = NodePath("../XROrigin3D/XRCamera3D")
+left_controller_path = NodePath("../XROrigin3D/LeftController")
+right_controller_path = NodePath("../XROrigin3D/RightController")
+avatars_path = NodePath("../MultiplayerAvatars")
 
 [node name="Percent_Indicator" parent="." instance=ExtResource("16")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 3.2, 0.95, -7)

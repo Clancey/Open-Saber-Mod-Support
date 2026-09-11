@@ -10,6 +10,8 @@ class_name LobbyPanel
 
 signal start_pressed(song_key: String, difficulty: String)
 signal closed()
+## The host wants to choose the song in the level list.
+signal pick_song_requested()
 
 const ALPHABET := WebRtcSignaling.CODE_ALPHABET
 
@@ -33,6 +35,7 @@ var _rows: Dictionary = {}  # peer id -> row Control
 @onready var _ready_button := $VBox/Lobby/Buttons/ReadyButton as Button
 @onready var _start_button := $VBox/Lobby/Buttons/StartButton as Button
 @onready var _leave_button := $VBox/Lobby/Buttons/LeaveButton as Button
+@onready var _pick_button := $VBox/Lobby/Buttons/PickSongButton as Button
 
 
 func _ready() -> void:
@@ -42,6 +45,7 @@ func _ready() -> void:
 	_ready_button.toggled.connect(_on_ready_toggled)
 	_start_button.pressed.connect(_on_start_pressed)
 	_leave_button.pressed.connect(_on_leave_pressed)
+	_pick_button.pressed.connect(pick_song_requested.emit)
 	MultiplayerSession.lobby_joined.connect(_on_lobby_joined)
 	MultiplayerSession.lobby_left.connect(_on_lobby_left)
 	MultiplayerSession.roster_changed.connect(_on_roster_changed)
@@ -65,7 +69,23 @@ func get_entered_code() -> String:
 	return code
 
 
+func show_status(text: String) -> void:
+	_status.text = text
+
+
+## The VR canvas that hosts this panel only re-renders on pointer input;
+## ask it to redraw so roster/score changes show up without moving the laser.
+func _request_canvas_redraw() -> void:
+	var node: Node = get_parent()
+	while node != null:
+		if node.has_method("_input_update"):
+			node.call("_input_update")
+			return
+		node = node.get_parent()
+
+
 func refresh() -> void:
+	call_deferred("_request_canvas_redraw")
 	var online := MultiplayerSession.is_online()
 	var connecting := MultiplayerSession.state == MultiplayerSession.State.CONNECTING
 	_offline.visible = not online
@@ -80,6 +100,7 @@ func refresh() -> void:
 		_ready_button.set_pressed_no_signal(bool(MultiplayerSession.get_player(MultiplayerSession.get_local_id()).get("ready", false)))
 		_ready_button.text = "READY!" if _ready_button.button_pressed else "READY"
 		_start_button.visible = MultiplayerSession.is_host()
+		_pick_button.visible = MultiplayerSession.is_host()
 		_start_button.disabled = not (MultiplayerSession.all_ready() and selected_song_key != "")
 		_rebuild_roster(MultiplayerSession.get_players())
 	elif connecting:

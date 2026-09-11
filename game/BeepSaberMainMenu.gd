@@ -29,6 +29,9 @@ var _cover_texture_create_sw := StopwatchFactory.create("cover_texture_create",1
 @onready var characteristic_menu := $CharacteristicSelector as OptionButton
 # difficulties of the selected characteristic, in list order
 var _visible_difficulties: Array[DifficultyInfo] = []
+## true while the lobby host is choosing the song in the level list
+var _lobby_picking := false
+@onready var lobby_panel := $LobbyPanel as Control
 var _characteristics: Array[String] = []
 
 const DIFFICULTY_LABELS := {
@@ -74,6 +77,7 @@ func _on_CharacteristicSelector_item_selected(_id: int) -> void:
 	_rebuild_difficulties(map)
 	_select_difficulty(0)
 @onready var delete_button := $Delete_Button as Button
+@onready var play_button := $Play_Button as Button
 
 @onready var song_preview := $song_prev as AudioStreamPlayer
 var song_preview_transition_time := 1.0
@@ -389,6 +393,8 @@ func _ready() -> void:
 	if OS.get_name() == &"Web":
 		$Exit_Button.hide()
 	_show_tiles(OS.get_environment("OPENSABER_MENU_SCREEN") != "levels")
+	@warning_ignore("return_value_discarded")
+	MultiplayerSession.song_start_requested.connect(_on_song_start_requested)
 	menu_ready = true
 
 
@@ -402,19 +408,93 @@ func _show_tiles(show_tiles: bool) -> void:
 		if child is Control and child.name != "MainTiles":
 			(child as Control).visible = not show_tiles
 	($MainTiles as Panel).visible = show_tiles
+	lobby_panel.visible = false
+	if not show_tiles and _lobby_picking:
+		play_button.text = "SELECT"
+	elif not show_tiles:
+		play_button.text = "Play"
 	# the characteristic dropdown is only shown when a level has several
 	if not show_tiles:
 		characteristic_menu.visible = _characteristics.size() > 1
 
 func _on_Solo_pressed() -> void:
+	_lobby_picking = false
 	_show_tiles(false)
+
+## Online tile: the multiplayer lobby replaces the level list until the host
+## picks a song or the player leaves.
+func _show_lobby() -> void:
+	_show_tiles(true)
+	($MainTiles as Panel).visible = false
+	lobby_panel.visible = true
+	lobby_panel.call("refresh")
+
+func _on_Online_pressed() -> void:
+	song_preview.stop()
+	_show_lobby()
+
+func _on_lobby_closed() -> void:
+	_lobby_picking = false
+	_show_tiles(true)
+
+func _on_lobby_pick_song() -> void:
+	_lobby_picking = true
+	_show_tiles(false)
+
+static func lobby_song_key(map: MapInfo) -> String:
+	return map.filepath.trim_suffix("/").get_file()
+
+static func lobby_difficulty_key(diff: DifficultyInfo) -> String:
+	return "%s|%s" % [diff.difficulty, diff.characteristic]
+
+func _find_lobby_map(song_key: String) -> MapInfo:
+	for map: MapInfo in _all_songs:
+		if lobby_song_key(map) == song_key:
+			return map
+	return null
+
+## Every peer (host included) starts the song at the agreed local time.
+func _on_song_start_requested(song_key: String, difficulty: String, local_start_time_ms: int) -> void:
+	var map := _find_lobby_map(song_key)
+	if map == null:
+		lobby_panel.call("show_status", "YOU DO NOT HAVE THE SONG %s" % song_key)
+		return
+	var chosen: DifficultyInfo = null
+	for diff: DifficultyInfo in map.difficulty_beatmaps:
+		if lobby_difficulty_key(diff) == difficulty:
+			chosen = diff
+			break
+	if chosen == null and not map.difficulty_beatmaps.is_empty():
+		chosen = map.difficulty_beatmaps[0]
+	if chosen == null:
+		return
+	song_preview.stop()
+	_lobby_picking = false
+	beepsaber_game.start_map(map, chosen, local_start_time_ms)
 
 func _on_Back_Button_pressed() -> void:
 	song_preview.stop()
+	if _lobby_picking:
+		_lobby_picking = false
+		_show_lobby()
+		return
 	_show_tiles(true)
 
 func _on_Play_Button_pressed() -> void:
 	song_preview.stop()
+	if _lobby_picking:
+		var map: MapInfo = _currently_selected_songlist_ref[current_selected]
+		var diff: DifficultyInfo = null
+		if not _visible_difficulties.is_empty():
+			diff = _visible_difficulties[clampi(_map_difficulty, 0, _visible_difficulties.size() - 1)]
+		elif not map.difficulty_beatmaps.is_empty():
+			diff = map.difficulty_beatmaps[0]
+		if diff != null:
+			lobby_panel.call("set_selected_song", lobby_song_key(map), lobby_difficulty_key(diff),
+				"%s - %s (%s)" % [map.song_name, map.song_author_name, _difficulty_label(diff)])
+		_lobby_picking = false
+		_show_lobby()
+		return
 	_load_map_and_start(_currently_selected_songlist_ref[current_selected])
 
 
