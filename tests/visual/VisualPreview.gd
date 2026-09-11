@@ -9,6 +9,7 @@ const BOMB_SCENE: PackedScene = preload("res://game/Bomb/Bomb.tscn")
 const WALL_SCENE: PackedScene = preload("res://game/Wall/Wall.tscn")
 const SABER_SCENE: PackedScene = preload("res://game/sabers/default/default_saber.tscn")
 const ENVIRONMENT_SCENE: PackedScene = preload("res://game/event_driver.tscn")
+const CHAIN_LINK_SCENE: PackedScene = preload("res://game/Chain/ChainLink.tscn")
 
 const LEFT_COLOR := Color(0.7843, 0.0784, 0.0784)
 const RIGHT_COLOR := Color(0.1569, 0.5569, 0.8235)
@@ -54,6 +55,12 @@ func _build_scene() -> void:
 		note.rotation.z = Constants.CUBE_ROTATIONS[directions[i]]
 		note.is_dot = directions[i] == 8
 		note.call_deferred("_preview_setup", color)
+	# a chain: head note plus three links
+	for i in range(3):
+		var link := CHAIN_LINK_SCENE.instantiate() as ChainLink
+		add_child(link)
+		link.position = Vector3(-2.4, 0.95 - i * 0.16, -2.6)
+		link.call_deferred("_preview_setup", RIGHT_COLOR)
 	var bomb := BOMB_SCENE.instantiate() as Bomb
 	add_child(bomb)
 	bomb.position = Vector3(3.0, 1.4, -2.6)

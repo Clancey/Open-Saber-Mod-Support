@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://6du64wi28yi6"]
+[gd_scene load_steps=7 format=3 uid="uid://6du64wi28yi6"]
 
 [ext_resource type="Script" uid="uid://byluxuyjs1b1n" path="res://game/Bomb/Bomb.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://cplhsipk6vhem" path="res://game/BeepCube/BeepCube_SliceParticles.tscn" id="5_particles"]
 [ext_resource type="ArrayMesh" path="res://game/assets/beatsaber/meshes/bomb.obj" id="3_mesh"]
 [ext_resource type="Shader" path="res://game/Bomb/Bomb.gdshader" id="3_bomb"]
 [ext_resource type="Texture2D" path="res://game/assets/beatsaber/textures/notes_reflection.png" id="4_refl"]
@@ -37,3 +38,5 @@ monitoring = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
 shape = SubResource("1")
 disabled = true
+
+[node name="Explosion" parent="." instance=ExtResource("5_particles")]

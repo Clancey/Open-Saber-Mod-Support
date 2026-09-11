@@ -1,6 +1,7 @@
 [gd_scene load_steps=15 format=3 uid="uid://biylg2wsontn3"]
 
 [ext_resource type="FontFile" uid="uid://01k27lk2a4bw" path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" id="1"]
+[ext_resource type="Theme" path="res://game/ui/beat_saber_theme.tres" id="bs_theme"]
 [ext_resource type="Script" uid="uid://d6tn4tw5j5v6" path="res://game/settings_Panel.gd" id="2"]
 [ext_resource type="FontFile" uid="uid://cdsnr8tscm8y6" path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" id="3"]
 [ext_resource type="PackedScene" uid="uid://dtipmx5ep1dkk" path="res://game/vr_slider.tscn" id="4"]
@@ -227,10 +228,10 @@ border_width_bottom = 5
 border_color = Color(1, 1, 1, 1)
 
 [node name="settings_Panel" type="Panel"]
+theme = ExtResource("bs_theme")
 offset_right = 896.0
 offset_bottom = 576.0
 mouse_filter = 1
-theme_override_styles/panel = SubResource("1")
 script = ExtResource("2")
 
 [node name="settings" type="Label" parent="."]
@@ -696,9 +697,6 @@ offset_top = 496.0
 offset_right = 692.283
 offset_bottom = 556.0
 theme = SubResource("7")
-theme_override_styles/hover = SubResource("8")
-theme_override_styles/pressed = SubResource("9")
-theme_override_styles/normal = SubResource("10")
 text = "Default"
 
 [node name="apply" type="Button" parent="."]
@@ -708,9 +706,6 @@ offset_top = 496.0
 offset_right = 865.136
 offset_bottom = 556.0
 theme = SubResource("7")
-theme_override_styles/hover = SubResource("8")
-theme_override_styles/pressed = SubResource("9")
-theme_override_styles/normal = SubResource("10")
 text = "Apply"
 
 [node name="vr_slider" parent="." instance=ExtResource("4")]

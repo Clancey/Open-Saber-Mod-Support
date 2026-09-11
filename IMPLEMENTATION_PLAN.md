@@ -66,5 +66,5 @@ Schedule: Stage 1 and Stage 2a run in parallel. Stage 2b and Stage 3 run in para
 **Goal**: Gameplay objects, movement and the default environment match Beat Saber.
 **Success Criteria**: Notes travel at the map NJS with Beat Saber's spawn-ahead, jump arc and rotation; notes/bombs/walls/sabers use the original meshes and equivalent materials; the environment is "The First" layout with its light-ID mapping; harness runs clean.
 **Tests**: 38 headless tests; `tests/visual/VisualPreview.tscn` screenshot; harness on Timelapse with `--nofail=1`.
-**Status**: Complete for movement, notes, bombs, walls, sabers, trails, HUD placement, colors and environment layout. Follow-ups: cut particle effects, menu look, per-event scene light intensities.
+**Status**: Complete: movement, notes, bombs, walls, chain links, sabers, trails, cut/bomb particles, HUD placement, colors, environment layout, event-driven scene lights, menu theme and layout. Follow-ups: Teko font for score numbers (only SDF atlases ship), difficulty pill colors, per-environment layouts beyond "The First".
 **Files**: `game/scripts/NoteMovementData.gd`, `game/BeepCube/*`, `game/Bomb/*`, `game/Wall/*`, `game/Chain/ChainLink.gd`, `game/Arc/Arc.gd`, `game/sabers/default/*`, `game/event_driver.tscn` (+ `game/environments/TrackLaneRings.gd`), `game/assets/beatsaber/`.

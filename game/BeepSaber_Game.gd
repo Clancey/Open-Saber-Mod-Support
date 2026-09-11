@@ -341,6 +341,17 @@ func _update_song_clock(dt: float) -> void:
 			_song_clock += error * 0.1
 	NoteMovementData.song_time = _song_clock
 
+# Debug aid: OPENSABER_SCREENSHOT=<path> saves a screenshot of the menu after
+# a few seconds and quits (used to check the menu look without a headset).
+func _debug_screenshot() -> void:
+	var path := OS.get_environment("OPENSABER_SCREENSHOT")
+	if path.is_empty():
+		return
+	await get_tree().create_timer(4.0).timeout
+	var image: Image = get_viewport().get_texture().get_image()
+	print("SCREENSHOT|saved=%s|error=%d" % [path, image.save_png(path)])
+	get_tree().quit()
+
 func _enter_tree() -> void:
 	GlobalReferences.main_game_scene = self
 	
@@ -350,6 +361,7 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	@warning_ignore("return_value_discarded")
 	pause_countdown.visibility_changed.connect(_sync_pause_countdown_viewport)
+	_debug_screenshot()
 	@warning_ignore("return_value_discarded")
 	event_driver.environment_palette_changed.connect(_on_environment_palette_changed)
 	_sync_pause_countdown_viewport()

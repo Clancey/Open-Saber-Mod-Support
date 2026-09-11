@@ -137,7 +137,6 @@ func spawn(note_info_param: ColorNoteInfo, _current_beat: float, color : Color) 
 	set_collision_disabled(true)
 	_apply_movement()
 	mi.visible = true
-	visible = true
 
 static func _highest_jump_y(layer: float) -> float:
 	# Beat Saber tabulates the peak height per line layer; interpolate so that
@@ -235,8 +234,10 @@ func release() -> void:
 	super.release()
 
 func hide_cube() -> void:
+	# only the visuals are hidden: the cut pieces and particles are children
+	# of this node and keep playing after a cut
 	mi.visible = false
-	visible = false
+	_set_symbols_visible(false)
 	set_collision_disabled(true)
 	# disable processing on this node and all children to help with performance
 	process_mode = Node.PROCESS_MODE_DISABLED
@@ -323,4 +324,5 @@ func _start_cut_pieces(cutplane: Plane, cut_speed: Vector3) -> void:
 
 	slice_particles.global_transform.origin = global_transform.origin
 	slice_particles.rotation.z = cut_angle_abs+TAU*0.25
+	slice_particles.set_color(_mat.get_shader_parameter(&"color") as Color)
 	slice_particles.fire()

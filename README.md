@@ -54,7 +54,12 @@ Gameplay objects and the default environment are rebuilt from measurements of th
   neon tubes with their light IDs, rotating lasers, runway and platform; `game/environments/TrackLaneRings.gd`
   reproduces the ring spin/zoom effects). HUD panels sit where Beat Saber puts them (combo left, score right,
   energy bar on the runway start).
-* Default colors are Beat Saber's "The First" scheme.
+* Default colors are Beat Saber's "The First" scheme. Chain links use the original slice mesh, note cuts spawn the
+  original's sparkle/explosion bursts, bombs explode, and the environment's directional lights follow the light
+  events with the original per-light weights.
+* Menus use a Beat Saber style theme (`game/ui/beat_saber_theme.tres`: dark rounded panels, cyan highlights, cyan
+  Play button) and the level-selection layout (list on the left, cover / difficulty / details on the right).
+  Set `OPENSABER_SCREENSHOT=<png path>` in the environment to save a menu screenshot after 4 s and quit.
 
 Visual smoke test (renders notes, bomb, wall and swinging sabers to a PNG; add `PREVIEW_ENV=1` in the environment
 to include the stage, `PREVIEW_ENV=only` for the stage alone):

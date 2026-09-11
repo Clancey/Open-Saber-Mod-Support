@@ -222,28 +222,35 @@ mesh = SubResource("sky_sphere")
 [node name="LightFront" type="DirectionalLight3D" parent="Level"]
 transform = Transform3D(-1, -0, -0, 0, -0.992008, -0.121756, -0, -0.121756, 0.992008, 0, 8, 0)
 light_color = Color(0, 0.753, 1, 1)
-light_energy = 0.55
+light_energy = 0.0
 shadow_enabled = false
 directional_shadow_max_distance = 40.0
 
 [node name="LightTop" type="DirectionalLight3D" parent="Level"]
 transform = Transform3D(-1, -0, -0, 0, 0.000302, -0.999698, -0, -0.999698, -0.000302, 0, 8, 0)
 light_color = Color(0, 0.753, 1, 1)
-light_energy = 0.35
+light_energy = 0.0
 shadow_enabled = false
 directional_shadow_max_distance = 40.0
 
 [node name="LightLeft" type="DirectionalLight3D" parent="Level"]
 transform = Transform3D(-0.818577, 3.36e-05, -0.574405, 0.0400596, -0.99762, -0.0571488, -0.573007, -0.0697908, 0.816638, 0, 8, 0)
 light_color = Color(0, 0.753, 1, 1)
-light_energy = 0.3
+light_energy = 0.0
 shadow_enabled = false
 directional_shadow_max_distance = 40.0
 
 [node name="LightRight" type="DirectionalLight3D" parent="Level"]
 transform = Transform3D(-0.818577, -3.36e-05, 0.574405, -0.0400596, -0.99762, -0.0571488, 0.573007, -0.0697908, 0.816638, 0, 8, 0)
 light_color = Color(0, 0.753, 1, 1)
-light_energy = 0.3
+light_energy = 0.0
+shadow_enabled = false
+directional_shadow_max_distance = 40.0
+
+[node name="LightBack" type="DirectionalLight3D" parent="Level"]
+transform = Transform3D(-1, -0, -0, 0, -0.889568, 0.452952, -0, 0.452952, 0.889568, 0, 8, 0)
+light_color = Color(0, 0.753, 1, 1)
+light_energy = 0.0
 shadow_enabled = false
 directional_shadow_max_distance = 40.0
 

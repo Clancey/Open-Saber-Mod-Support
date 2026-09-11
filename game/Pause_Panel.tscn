@@ -1,6 +1,7 @@
 [gd_scene load_steps=12 format=3 uid="uid://f53k0dxxtenr"]
 
 [ext_resource type="FontFile" uid="uid://cdsnr8tscm8y6" path="res://OQ_Toolkit/OQ_UI2D/theme/Roboto-Medium.ttf" id="1"]
+[ext_resource type="Theme" path="res://game/ui/beat_saber_theme.tres" id="bs_theme"]
 [ext_resource type="FontFile" uid="uid://01k27lk2a4bw" path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" id="2"]
 [ext_resource type="Script" uid="uid://bfhpasuwj1hsm" path="res://game/Pause_Panel.gd" id="3"]
 
@@ -61,9 +62,9 @@ cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 default_font = SubResource("7")
 
 [node name="Pause_Panel" type="Panel"]
+theme = ExtResource("bs_theme")
 offset_right = 640.0
 offset_bottom = 576.0
-theme_override_styles/panel = SubResource("1")
 script = ExtResource("3")
 __meta__ = {
 "_edit_use_anchors_": false
@@ -75,9 +76,6 @@ offset_top = 480.0
 offset_right = 424.0
 offset_bottom = 544.0
 theme = SubResource("3")
-theme_override_styles/hover = SubResource("4")
-theme_override_styles/pressed = SubResource("5")
-theme_override_styles/normal = SubResource("6")
 text = "Main Menu"
 
 [node name="restart" type="Button" parent="."]
@@ -86,9 +84,6 @@ offset_top = 400.0
 offset_right = 424.0
 offset_bottom = 464.0
 theme = SubResource("3")
-theme_override_styles/hover = SubResource("4")
-theme_override_styles/pressed = SubResource("5")
-theme_override_styles/normal = SubResource("6")
 text = "Restart"
 
 [node name="continue" type="Button" parent="."]
@@ -97,9 +92,6 @@ offset_top = 320.0
 offset_right = 424.0
 offset_bottom = 384.0
 theme = SubResource("3")
-theme_override_styles/hover = SubResource("4")
-theme_override_styles/pressed = SubResource("5")
-theme_override_styles/normal = SubResource("6")
 text = "Continue"
 __meta__ = {
 "_edit_use_anchors_": false

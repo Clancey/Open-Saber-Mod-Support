@@ -82,9 +82,61 @@ func _ready() -> void :
 	light_manager = LightManager.new()
 	add_child(light_manager)
 	light_manager.initialize_lights(self)
+	_collect_scene_lights()
 	_update_environment_base()
 
+# Beat Saber's DirectionalLightWithIds: each scene light sums the current
+# colors of several light types with fixed weights (light IDs 1..5 = types 0..4).
+const SCENE_LIGHTS: Dictionary = {
+	"LightFront": {"weights": {1: 0.5, 2: 0.5, 3: 0.5, 4: 0.7}, "intensity": 1.5},
+	"LightTop": {"weights": {1: 1.0, 2: 1.0, 3: 1.0}, "intensity": 1.2},
+	"LightLeft": {"weights": {2: 1.0, 3: 0.7}, "intensity": 1.5},
+	"LightRight": {"weights": {2: 0.7, 3: 1.0}, "intensity": 1.5},
+	"LightBack": {"weights": {0: 1.0, 1: 1.0}, "intensity": 1.5},
+}
+const SCENE_LIGHT_ENERGY_SCALE: float = 0.45
+var _scene_lights: Dictionary = {}
+
+func _collect_scene_lights() -> void:
+	_scene_lights.clear()
+	for light_name: String in SCENE_LIGHTS.keys():
+		var light: Node = get_node_or_null("Level/" + light_name)
+		if light is DirectionalLight3D:
+			_scene_lights[light_name] = light
+
+func _update_scene_lights() -> void:
+	if _scene_lights.is_empty():
+		return
+	var type_colors: Array[Color] = []
+	for type: int in range(5):
+		var holder: Node3D = _get_light_holder(type)
+		var holder_visible: bool = holder != null and holder.visible
+		var lit: bool = is_instance_valid(light_manager) and light_manager.has_visible_lights(type)
+		if type == EventInfo.TYPE_SQUARE_LASERS:
+			lit = holder_visible
+		type_colors.append(_get_current_light_color(type) if (holder_visible and lit) else Color.BLACK)
+	for light_name: String in _scene_lights.keys():
+		var spec: Dictionary = SCENE_LIGHTS[light_name]
+		var weights: Dictionary = spec["weights"]
+		var mixed := Color.BLACK
+		for type_value: Variant in weights.keys():
+			var weight: float = float(weights[type_value])
+			var c: Color = type_colors[int(type_value)]
+			mixed.r += c.r * weight
+			mixed.g += c.g * weight
+			mixed.b += c.b * weight
+		var luminance: float = mixed.get_luminance() * float(spec["intensity"])
+		luminance = minf(luminance, 1.0)
+		var light := _scene_lights[light_name] as DirectionalLight3D
+		if luminance <= 0.001:
+			light.light_energy = 0.0
+			continue
+		var peak: float = maxf(mixed.r, maxf(mixed.g, mixed.b))
+		light.light_color = Color(mixed.r / peak, mixed.g / peak, mixed.b / peak, 1.0)
+		light.light_energy = luminance * SCENE_LIGHT_ENERGY_SCALE
+
 func _physics_process(_delta: float) -> void:
+	_update_scene_lights()
 	if not is_instance_valid(light_manager):
 		return
 	var left_lasers_active: bool = (

@@ -18,6 +18,7 @@ var _last_rotation := Basis.IDENTITY
 var _missed := false
 
 func _ready() -> void:
+	($Explosion as BeepCubeSliceParticles).top_level = true
 	_mat = mesh_instance.material_override as ShaderMaterial
 	if _mat != null:
 		_default_color = _mat.get_shader_parameter(&"color")
@@ -32,6 +33,10 @@ func cut(saber_type: int, cut_speed: Vector3, cut_plane: Plane, controller: Beep
 	if bomb_info == null or bomb_info.uninteractable:
 		return
 	Scoreboard.bad_cut(transform.origin)
+	var explosion := $Explosion as BeepCubeSliceParticles
+	explosion.global_transform.origin = global_transform.origin
+	explosion.set_color(Color(0.75, 0.75, 0.75))
+	explosion.fire()
 	hide_bomb()
 	release()
 
@@ -42,7 +47,7 @@ func on_miss() -> void:
 
 func spawn(info: BombInfo, _current_beat: float) -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	visible = true
+	($Explosion as BeepCubeSliceParticles).reset()
 	bomb_info = info
 	beat = info.beat
 	_missed = false
@@ -138,6 +143,6 @@ func clear_from_track() -> void:
 		release()
 
 func hide_bomb() -> void:
-	visible = false
+	mesh_instance.visible = false
 	set_collision_disabled(true)
 	process_mode = Node.PROCESS_MODE_DISABLED

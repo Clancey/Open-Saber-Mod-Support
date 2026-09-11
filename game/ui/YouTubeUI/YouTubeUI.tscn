@@ -1,6 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://cb8ftj7lpxrfy"]
 
 [ext_resource type="Theme" uid="uid://cbutfawaljce6" path="res://game/BlackWhiteThem.tres" id="1"]
+[ext_resource type="Theme" path="res://game/ui/beat_saber_theme.tres" id="bs_theme"]
 [ext_resource type="Script" uid="uid://s0bi7wrqafvy" path="res://game/ui/YouTubeUI/YouTubeUI.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://bw1m0m5qftnsb" path="res://game/ui/YouTubeUI/YouTubeAPI/YouTubeAPI.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://chg13dcum75og" path="res://game/scripts/HTTPRequestPool.tscn" id="4"]
@@ -9,9 +10,9 @@
 [ext_resource type="Script" uid="uid://0wxhm6egkj0g" path="res://game/vr_slider.gd" id="7"]
 
 [node name="YouTubeUI" type="Panel"]
+theme = ExtResource("bs_theme")
 offset_right = 1536.0
 offset_bottom = 960.0
-theme = ExtResource("1")
 script = ExtResource("2")
 
 [node name="YouTubeAPI" parent="." instance=ExtResource("3")]

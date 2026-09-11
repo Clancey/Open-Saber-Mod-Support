@@ -1,6 +1,7 @@
 [gd_scene load_steps=15 format=3 uid="uid://383dbnh6gxd3"]
 
 [ext_resource type="FontFile" uid="uid://01k27lk2a4bw" path="res://OQ_Toolkit/OQ_UI2D/theme/RobotoMono-Medium.ttf" id="1"]
+[ext_resource type="Theme" path="res://game/ui/beat_saber_theme.tres" id="bs_theme"]
 [ext_resource type="Script" uid="uid://b26jhmupwl0hk" path="res://game/ui/BeatSaverPanel/BeatSaverPanel.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://dtipmx5ep1dkk" path="res://game/vr_slider.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://cviyxvrpvyr0g" path="res://game/data/beepsaber_logo.png" id="5"]
@@ -86,10 +87,9 @@ cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 default_font = SubResource("9")
 
 [node name="BeatSaverPanel" type="Panel"]
+theme = ExtResource("bs_theme")
 offset_right = 1536.0
 offset_bottom = 960.0
-theme = ExtResource("6")
-theme_override_styles/panel = SubResource("1")
 script = ExtResource("2")
 
 [node name="ItemList" type="ItemList" parent="."]
@@ -100,7 +100,6 @@ offset_top = 80.0
 offset_right = 880.0
 offset_bottom = -112.0
 theme = SubResource("3")
-theme_override_colors/font_color = Color(1, 1, 1, 1)
 item_count = 3
 fixed_icon_size = Vector2i(80, 80)
 item_0/text = "Ítem 0"
@@ -116,10 +115,6 @@ offset_left = 331.875
 offset_top = 16.0
 offset_right = 563.875
 offset_bottom = 72.0
-theme_override_styles/disabled = SubResource("6")
-theme_override_styles/hover = SubResource("5")
-theme_override_styles/pressed = SubResource("6")
-theme_override_styles/normal = SubResource("7")
 text = "Plays"
 clip_text = true
 
@@ -131,9 +126,6 @@ offset_left = 344.0
 offset_top = -88.0
 offset_right = 552.0
 offset_bottom = -24.0
-theme_override_styles/hover = SubResource("5")
-theme_override_styles/pressed = SubResource("6")
-theme_override_styles/normal = SubResource("7")
 text = "Download"
 
 [node name="search" type="Button" parent="."]
@@ -144,9 +136,6 @@ offset_left = 624.0
 offset_top = -88.0
 offset_right = 832.0
 offset_bottom = -24.0
-theme_override_styles/hover = SubResource("5")
-theme_override_styles/pressed = SubResource("6")
-theme_override_styles/normal = SubResource("7")
 text = "Search"
 
 [node name="back" type="Button" parent="."]
@@ -157,9 +146,6 @@ offset_left = 16.0
 offset_top = -944.0
 offset_right = 224.0
 offset_bottom = -880.0
-theme_override_styles/hover = SubResource("5")
-theme_override_styles/pressed = SubResource("6")
-theme_override_styles/normal = SubResource("7")
 text = "Back"
 
 [node name="gotoMapsBy" type="Button" parent="."]
@@ -170,9 +156,6 @@ offset_left = 904.0
 offset_top = -88.0
 offset_right = 1112.0
 offset_bottom = -24.0
-theme_override_styles/hover = SubResource("5")
-theme_override_styles/pressed = SubResource("6")
-theme_override_styles/normal = SubResource("7")
 text = "Maps By XYZ"
 
 [node name="Label" type="Label" parent="."]

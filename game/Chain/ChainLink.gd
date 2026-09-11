@@ -128,11 +128,12 @@ func spawn(chain_info: ChainInfo, _current_beat: float, head_pos: Vector2, tail_
 	piece_left.set_color(color)
 	piece_right.set_color(color)
 	_mat.set_shader_parameter(&"color", color)
+	($CircleGlow as MeshInstance3D).visible = true
+	(($CircleGlow as MeshInstance3D).material_override as ShaderMaterial).set_shader_parameter(&"color", color.lerp(Color.WHITE, 0.6))
 
 	set_collision_disabled(true)
 	_apply_movement()
 	mi.visible = true
-	visible = true
 
 func _physics_process(_delta: float) -> void:
 	if Scoreboard.paused or not is_visible_in_tree() or not Map.current_info:
@@ -169,6 +170,13 @@ func _apply_movement() -> void:
 		world_position = _yaw_basis * local_position
 	transform = Transform3D(_yaw_basis * note_basis * _local_basis, world_position)
 
+# used by the visual preview harness: a static link of a given color
+func _preview_setup(color: Color) -> void:
+	_mat.set_shader_parameter(&"color", color)
+	(($CircleGlow as MeshInstance3D).material_override as ShaderMaterial).set_shader_parameter(&"color", color.lerp(Color.WHITE, 0.6))
+	($CircleGlow as MeshInstance3D).visible = true
+	mi.visible = true
+
 # call this when clearing the track
 func clear_from_track() -> void:
 	hide_cube()
@@ -179,7 +187,7 @@ func clear_from_track() -> void:
 
 func hide_cube() -> void:
 	mi.visible = false
-	visible = false
+	($CircleGlow as MeshInstance3D).visible = false
 	set_collision_disabled(true)
 	# disable processing on this node and all children to help with performance
 	process_mode = Node.PROCESS_MODE_DISABLED # disable to help with performance

@@ -151,7 +151,12 @@ func _set_cur_playlist(songs: Array[MapInfo]) -> void:
 		var selected_id := current_id[0]
 		if selected_id >= song_count:
 			selected_id = song_count - 1
+		songs_menu.select(selected_id)
 		_select_song(selected_id)
+	elif song_count > 0:
+		# like the original, always have a level selected
+		songs_menu.select(0)
+		_select_song(0)
 
 var default_song_icon := preload("res://game/data/beepsaber_logo.png")
 
@@ -245,17 +250,14 @@ func _select_difficulty(id: int) -> void:
 	var difficulty := map.difficulty_beatmaps[id]
 	var mods := Map.get_mods_for_difficulty(difficulty)
 	var mods_needed := "\n".join(PackedStringArray(mods)) if not mods.is_empty() else "None"
-	($SongInfo_Label as Label).text = """Song Author: %s
-	Song Title: %s
-	Beatmap Author: %s
-	Play Count: %d
-	Mods requrired: %s""" % [
-		map.song_author_name,
-		map.song_name,
-		map.level_author_name,
-		PlayCount.get_total_play_count(map),
-		mods_needed
-	]
+	($SongInfo_Label as Label).text = "
+".join(PackedStringArray([
+		"Song Author: %s" % map.song_author_name,
+		"Song Title: %s" % map.song_name,
+		"Beatmap Author: %s" % map.level_author_name,
+		"Play Count: %d" % PlayCount.get_total_play_count(map),
+		"Mods required: %s" % mods_needed,
+	]))
 	difficulty_changed.emit(map, difficulty.difficulty_rank)
 
 

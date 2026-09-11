@@ -176,7 +176,7 @@ controller = NodePath("../..")
 [node name="event_driver" parent="." instance=ExtResource("13")]
 
 [node name="MainMenu_OQ_UI2DCanvas" parent="." instance=ExtResource("3")]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1.5, -1)
+transform = Transform3D(3.4, 0, 0, 0, 3.4, 0, 0, 0, 1, 0, 1.55, -2.4)
 
 [node name="BeepSaberMainMenu" parent="MainMenu_OQ_UI2DCanvas" node_paths=PackedStringArray("main_song_player_ref", "keyboard", "beepsaber_game", "song_uploader_ref") instance=ExtResource("11")]
 main_song_player_ref = NodePath("../../SongPlayer")
