@@ -421,6 +421,37 @@ func _debug_screenshot() -> void:
 	if OS.get_environment("OPENSABER_MENU_SCREEN") == "pause":
 		pause_menu.visible = true
 		(pause_menu.ui_control as PausePanel).set_pause_text("Beat Saber", "Expert")
+	elif OS.get_environment("OPENSABER_MENU_SCREEN") == "beatsaver":
+		# show the BeatSaver browser where the main menu normally is so the
+		# flat-screen camera sees it, and give it time to fetch the first page
+		main_menu.visible = false
+		show_MapSourceDialogs(true)
+		map_source_dialogs.transform = Transform3D(Basis.IDENTITY.scaled(Vector3(1.3, 1.3, 1.3)), Vector3(0.0, 1.55, -2.4))
+		for c in map_source_dialogs.get_children():
+			if c is OQ_UI2DCanvas:
+				(c as OQ_UI2DCanvas)._hide()
+		var beatsaver_canvas := map_source_dialogs.get_node_or_null("BeatSaver_Canvas")
+		if beatsaver_canvas is OQ_UI2DCanvas:
+			(beatsaver_canvas as OQ_UI2DCanvas)._show()
+			var panel := (beatsaver_canvas as OQ_UI2DCanvas).ui_control
+			if panel is BeatSaverPanel:
+				var bs_panel := panel as BeatSaverPanel
+				bs_panel._show()
+				# OPENSABER_BEATSAVER_CATEGORY=<0..6> picks a browse category and
+				# OPENSABER_BEATSAVER_OPEN_FIRST=1 then selects and opens the
+				# first row (map details, or a playlist's maps)
+				var category := OS.get_environment("OPENSABER_BEATSAVER_CATEGORY")
+				if category.is_valid_int():
+					await get_tree().create_timer(1.0).timeout
+					bs_panel._on_category_pressed(int(category))
+				if OS.get_environment("OPENSABER_BEATSAVER_OPEN_FIRST") == "1":
+					await get_tree().create_timer(5.0).timeout
+					if bs_panel.item_list.item_count > 0 and not bs_panel.item_list.is_item_disabled(0):
+						bs_panel.item_list.select(0)
+						bs_panel._on_ItemList_item_selected(0)
+						if bs_panel._is_playlist_list(bs_panel.prev_request):
+							bs_panel._on_download_button_up()
+		await get_tree().create_timer(6.0).timeout
 	elif OS.get_environment("OPENSABER_MENU_SCREEN") == "results":
 		main_menu.visible = false
 		endscore._show()
