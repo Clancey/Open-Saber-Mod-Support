@@ -57,9 +57,14 @@ Gameplay objects and the default environment are rebuilt from measurements of th
 * Default colors are Beat Saber's "The First" scheme. Chain links use the original slice mesh, note cuts spawn the
   original's sparkle/explosion bursts, bombs explode, and the environment's directional lights follow the light
   events with the original per-light weights.
-* Menus use a Beat Saber style theme (`game/ui/beat_saber_theme.tres`: dark rounded panels, cyan highlights, cyan
-  Play button) and the level-selection layout (list on the left, cover / difficulty / details on the right).
-  Set `OPENSABER_SCREENSHOT=<png path>` in the environment to save a menu screenshot after 4 s and quit.
+* Menus use a Beat Saber style theme (`game/ui/beat_saber_theme.tres`: Teko font converted from the game's SDF
+  atlases, dark rounded panels, cyan highlights, cyan Play button), the Solo / Online / Campaign / Party tiles,
+  the level list rows (cover, song, author, BPM) with the cover / characteristic / difficulty / details column on
+  the right, and the pause and "LEVEL CLEARED" results panels in the original layouts. The HUD has the combo panel
+  with its combo lines on the left and the score panel with the multiplier circle, immediate rank and song progress
+  bar on the right.
+  Set `OPENSABER_SCREENSHOT=<png path>` in the environment to save a menu screenshot and quit;
+  `OPENSABER_MENU_SCREEN=levels|pause|results` picks the screen.
 
 Visual smoke test (renders notes, bomb, wall and swinging sabers to a PNG; add `PREVIEW_ENV=1` in the environment
 to include the stage, `PREVIEW_ENV=only` for the stage alone):
