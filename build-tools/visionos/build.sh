@@ -258,6 +258,57 @@ if grep -qE "SCRIPT ERROR|Parse Error|Failed to load|Cannot open file" "$EXPORT_
 fi
 
 echo
+echo "== scene manifest: immersion style =="
+# Godot names CompositorServices as the preferred default scene role but files the
+# immersion style under the UIKit role, so the runtime creates a CPImmersiveScene,
+# finds no configuration for that role and falls back to the mixed style. SwiftUI
+# reports that as a Fault and the headset shows an immersion-style prompt. Adding
+# the configuration under the role the app actually requests is the whole fix.
+INFO_PLIST="$EXPORT_DIR/OpenSaber/OpenSaber-Info.plist"
+if [[ ! -f "$INFO_PLIST" ]]; then
+	echo "error: exported Info.plist not found at $INFO_PLIST" >&2
+	exit 1
+fi
+PREFERRED_ROLE="$(/usr/libexec/PlistBuddy -c \
+	"Print :UIApplicationSceneManifest:UIApplicationPreferredDefaultSceneSessionRole" \
+	"$INFO_PLIST" 2>/dev/null || true)"
+if [[ "$PREFERRED_ROLE" != "CPSceneSessionRoleImmersiveSpaceApplication" ]]; then
+	# Silently skipping here would leave a green log next to an unpatched plist, so
+	# an unexpected role is a hard failure rather than a no-op.
+	echo "error: preferred default scene role is '${PREFERRED_ROLE:-<unset>}'," >&2
+	echo "  expected CPSceneSessionRoleImmersiveSpaceApplication. The template changed;" >&2
+	echo "  re-check which role needs the immersion style before shipping." >&2
+	exit 1
+fi
+ROLE_KEY=":UIApplicationSceneManifest:UISceneConfigurations:$PREFERRED_ROLE"
+if /usr/libexec/PlistBuddy -c "Print $ROLE_KEY" "$INFO_PLIST" >/dev/null 2>&1; then
+	echo "ok: $PREFERRED_ROLE already configured (template no longer needs the patch)"
+else
+	/usr/libexec/PlistBuddy \
+		-c "Add $ROLE_KEY array" \
+		-c "Add $ROLE_KEY:0 dict" \
+		-c "Add $ROLE_KEY:0:UISceneConfigurationName string Default Configuration" \
+		-c "Add $ROLE_KEY:0:UISceneInitialImmersionStyle string UIImmersionStyleFull" \
+		"$INFO_PLIST" >/dev/null
+fi
+# Read both values back out of the file rather than trusting the writes above.
+# The name matters as much as the style: UIKit looks the configuration up by
+# name and logs an error when it has to fall back to the first one defined.
+APPLIED_NAME="$(/usr/libexec/PlistBuddy -c \
+	"Print $ROLE_KEY:0:UISceneConfigurationName" "$INFO_PLIST" 2>/dev/null || true)"
+if [[ "$APPLIED_NAME" != "Default Configuration" ]]; then
+	echo "error: configuration name for $PREFERRED_ROLE is '${APPLIED_NAME:-<unset>}'" >&2
+	exit 1
+fi
+APPLIED_STYLE="$(/usr/libexec/PlistBuddy -c \
+	"Print $ROLE_KEY:0:UISceneInitialImmersionStyle" "$INFO_PLIST" 2>/dev/null || true)"
+if [[ "$APPLIED_STYLE" != "UIImmersionStyleFull" ]]; then
+	echo "error: immersion style for $PREFERRED_ROLE is '${APPLIED_STYLE:-<unset>}'" >&2
+	exit 1
+fi
+echo "ok: $PREFERRED_ROLE -> $APPLIED_NAME / $APPLIED_STYLE (read back from the exported plist)"
+
+echo
 echo "== xcodebuild ($XCODE_SDK / $XCODE_CONFIG) =="
 # Godot writes a manual-signing project, but the only profile that covers this
 # bundle id for the team is Xcode-managed, so app signing is switched to
@@ -300,7 +351,19 @@ echo "== artifact identity: checked =="
 echo "app: $APP"
 echo "target: $TARGET ($XCODE_SDK)"
 /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist"
-/usr/libexec/PlistBuddy -c "Print :UIApplicationSceneManifest" "$APP/Info.plist" 2>/dev/null | grep -i immersion || true
+# The patch above edits the export input; this reads the bundle that actually
+# ships, so a build that silently dropped it fails here instead of on a headset.
+SHIPPED_NAME="$(/usr/libexec/PlistBuddy -c \
+	"Print :UIApplicationSceneManifest:UISceneConfigurations:$PREFERRED_ROLE:0:UISceneConfigurationName" \
+	"$APP/Info.plist" 2>/dev/null || true)"
+SHIPPED_STYLE="$(/usr/libexec/PlistBuddy -c \
+	"Print :UIApplicationSceneManifest:UISceneConfigurations:$PREFERRED_ROLE:0:UISceneInitialImmersionStyle" \
+	"$APP/Info.plist" 2>/dev/null || true)"
+if [[ "$SHIPPED_NAME" != "Default Configuration" || "$SHIPPED_STYLE" != "UIImmersionStyleFull" ]]; then
+	echo "error: shipped $PREFERRED_ROLE is '${SHIPPED_NAME:-<unset>}' / '${SHIPPED_STYLE:-<unset>}'" >&2
+	exit 1
+fi
+echo "ok: shipped $PREFERRED_ROLE -> $SHIPPED_NAME / $SHIPPED_STYLE"
 EXECUTABLE="$APP/$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP/Info.plist")"
 verify_linked_engine "$EXECUTABLE" "$EXPECTED_ENGINE_COMMIT"
 
