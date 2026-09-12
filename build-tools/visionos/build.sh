@@ -16,10 +16,13 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # Pinned engine: Clancey/godot @ clancey-visionos.
+# The hashes may be overridden when developing the engine itself, which is a
+# deliberate act: an unpinned build is only as trustworthy as the engine you
+# can name. Leave them unset for reproducible builds.
 ENGINE_COMMIT="643c5348568a4a227bdc5119d6c8a0074fc3c9be"
 ENGINE_SDK_DIR="${GODOT_VISIONOS_SDK:-/Users/clancey/Projects/copilot-worktrees/godot-vision/clancey-shiny-fiesta/bin/visionos-sdk/${ENGINE_COMMIT}}"
-EDITOR_SHA256="60e435163f95a3dfed5af0a2a022f16b8f058e4aa2f7e99ee985ed13ad0f8fd0"
-TEMPLATE_SHA256="7a0d722034aec6d1b3927b6713f74011e00215a270d1800b37785106fa4c01a4"
+EDITOR_SHA256="${GODOT_VISIONOS_EDITOR_SHA256:-60e435163f95a3dfed5af0a2a022f16b8f058e4aa2f7e99ee985ed13ad0f8fd0}"
+TEMPLATE_SHA256="${GODOT_VISIONOS_TEMPLATE_SHA256:-7a0d722034aec6d1b3927b6713f74011e00215a270d1800b37785106fa4c01a4}"
 
 TARGET="${1:-device}"
 BUILD_TYPE="${2:-debug}"
@@ -65,7 +68,33 @@ case "$BUILD_TYPE" in
 esac
 
 GODOT="$ENGINE_SDK_DIR/godot.macos.editor.arm64"
-TEMPLATE="$PROJECT_ROOT/build-tools/visionos/visionos.zip"
+REPO_TEMPLATE="$PROJECT_ROOT/build-tools/visionos/visionos.zip"
+# The visionOS export presets hardcode `custom_template` to the repo template,
+# so pointing the exporter at a different engine means staging that file into
+# this exact path. GODOT_VISIONOS_TEMPLATE exists so an exploratory engine build
+# can be exercised without committing it; the working tree is always restored,
+# including on failure, so a build can never silently leave a patched template
+# behind for the next one to pick up.
+TEMPLATE="${GODOT_VISIONOS_TEMPLATE:-$REPO_TEMPLATE}"
+# Which engine the shipped binary must prove it linked. Overriding the template
+# without also declaring its commit would make the post-build gate assert the
+# pinned identity against a deliberately different engine.
+EXPECTED_ENGINE_COMMIT="${GODOT_VISIONOS_ENGINE_COMMIT:-$ENGINE_COMMIT}"
+TEMPLATE_BACKUP=""
+EXPORT_LOG=""
+
+cleanup() {
+	if [[ -n "$TEMPLATE_BACKUP" ]]; then
+		chmod u+w "$REPO_TEMPLATE" 2>/dev/null || true
+		cp "$TEMPLATE_BACKUP" "$REPO_TEMPLATE"
+		chmod a-w "$REPO_TEMPLATE" 2>/dev/null || true
+		rm -f "$TEMPLATE_BACKUP"
+		echo "restored the repository export template"
+	fi
+	[[ -n "$EXPORT_LOG" ]] && rm -f "$EXPORT_LOG"
+	return 0
+}
+trap cleanup EXIT
 
 verify_hash() {
 	local label="$1" path="$2" expected="$3"
@@ -86,9 +115,44 @@ verify_hash() {
 	echo "ok: $label $actual"
 }
 
+# A pinned template hash proves only which file was *available*, never which
+# engine the linker actually consumed -- export_presets.cfg hardcodes the
+# template path, so those can diverge silently. Godot embeds its build commit in
+# the binary, so this reads engine identity out of the shipped artifact itself.
+verify_linked_engine() {
+	local binary="$1" expected="$2" hashes
+	hashes="$(strings "$binary" 2>/dev/null | grep -oE '\b[0-9a-f]{40}\b' | sort -u)"
+	if ! grep -qFx "$expected" <<<"$hashes"; then
+		echo "error: shipped binary does not embed the expected engine commit" >&2
+		echo "  binary:   $binary" >&2
+		echo "  expected: $expected" >&2
+		echo "  embedded: $(tr '\n' ' ' <<<"$hashes")" >&2
+		exit 1
+	fi
+	# Negative control. Asserting only that the wanted commit is present is a
+	# test that cannot fail usefully: an override that silently fell back to the
+	# pinned engine would still pass. Require the identity we must NOT see to be
+	# absent as well.
+	if [[ "$expected" != "$ENGINE_COMMIT" ]] && grep -qFx "$ENGINE_COMMIT" <<<"$hashes"; then
+		echo "error: shipped binary embeds pinned engine $ENGINE_COMMIT despite an override" >&2
+		echo "  the export did not consume $TEMPLATE" >&2
+		exit 1
+	fi
+	echo "ok: linked engine $expected (verified in shipped binary)"
+}
+
 echo "== verifying pinned engine (commit $ENGINE_COMMIT) =="
 verify_hash "editor" "$GODOT" "$EDITOR_SHA256"
 verify_hash "export template" "$TEMPLATE" "$TEMPLATE_SHA256"
+
+if [[ "$TEMPLATE" != "$REPO_TEMPLATE" ]]; then
+	echo "== staging alternate export template =="
+	echo "  $TEMPLATE"
+	TEMPLATE_BACKUP="$(mktemp -t opensaber-visionos-template)"
+	cp "$REPO_TEMPLATE" "$TEMPLATE_BACKUP"
+	chmod u+w "$REPO_TEMPLATE"
+	cp "$TEMPLATE" "$REPO_TEMPLATE"
+fi
 
 cd "$PROJECT_ROOT"
 
@@ -135,7 +199,6 @@ mkdir -p "$EXPORT_DIR"
 # Godot can exit 0 with script errors on stderr, so the export log is captured
 # and scanned rather than trusted.
 EXPORT_LOG="$(mktemp -t opensaber-visionos-export)"
-trap 'rm -f "$EXPORT_LOG"' EXIT
 set +e
 "$GODOT" --headless --xr-mode off --path . "$EXPORT_FLAG" "$PRESET" "$EXPORT_DIR/OpenSaber.xcodeproj" 2>&1 | tee "$EXPORT_LOG"
 EXPORT_STATUS="${PIPESTATUS[0]}"
@@ -184,6 +247,7 @@ echo "target: $TARGET ($XCODE_SDK)"
 /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist"
 /usr/libexec/PlistBuddy -c "Print :UIApplicationSceneManifest" "$APP/Info.plist" 2>/dev/null | grep -i immersion || true
 EXECUTABLE="$APP/$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP/Info.plist")"
+verify_linked_engine "$EXECUTABLE" "$EXPECTED_ENGINE_COMMIT"
 shasum -a 256 "$EXECUTABLE" "$APP/Info.plist"
 find "$APP" -name "*.pck" -exec shasum -a 256 {} \;
 dwarfdump --uuid "$EXECUTABLE"
