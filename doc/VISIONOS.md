@@ -36,11 +36,33 @@ build-tools/visionos/build.sh device debug        # or: simulator, release
 The script verifies the engine hashes, imports, runs the test suite, exports the
 Xcode project, builds with `xcodebuild`, and prints the artifact's identity
 (bundle id, immersion style, executable/PCK/Info.plist hashes, dSYM UUID, and
-`codesign --verify` for device builds).
+`codesign --verify` for device builds). It also verifies the engine commit
+embedded in the shipped binary, because a template hash only proves which file
+was available, not which one the exporter linked.
 
 Device and simulator outputs go to separate directories (`build/visionos` and
 `build/visionos-simulator`) so a simulator build can never be mistaken for
 something that ran on hardware.
+
+### Simulator builds need a patched engine
+
+The pinned template only supports the `.layered` compositor layout, which the
+simulator cannot provide, so a simulator build against it exits at startup with
+a `fatalError`. Simulator support lives on the engine branch
+`clancey-visionos-dedicated-layout`; build its simulator slice, inject it into a
+copy of the template, and point the build at that copy:
+
+```bash
+GODOT_VISIONOS_TEMPLATE=/path/to/patched.zip \
+GODOT_VISIONOS_TEMPLATE_SHA256=<sha256 of that zip> \
+GODOT_VISIONOS_ENGINE_COMMIT=<engine commit it was built from> \
+  build-tools/visionos/build.sh simulator debug
+```
+
+The override is staged into the path `export_presets.cfg` hardcodes and the
+pinned template is restored afterwards, including on failure. Set
+`GODOT_VISIONOS_ENGINE_COMMIT` as well: without it the build asserts the pinned
+identity against a deliberately different engine and fails.
 
 ### Signing
 
