@@ -43,6 +43,7 @@ var gamestate: GameState = gamestate_bootup
 @onready var points_label_driver := $Points_label_driver as PointsLabelDriver
 @onready var event_driver := $event_driver as EventDriver
 const DEFAULT_ENVIRONMENT_SCENE := "res://game/event_driver.tscn"
+const ENCLOSURE_NODE_PREFIX := "BackColumns"
 var _environment_scene_path := DEFAULT_ENVIRONMENT_SCENE
 @onready var world_environment := $WorldEnvironment as WorldEnvironment
 
@@ -145,6 +146,7 @@ func _ensure_environment(scene_path: String) -> void:
 	@warning_ignore("return_value_discarded")
 	event_driver.environment_palette_changed.connect(_on_environment_palette_changed)
 	event_driver.disabled = was_disabled
+	_set_enclosure_visible(_hud_visible_for(gamestate))
 
 ## synced_start_ms: multiplayer start time on this machine's Time.get_ticks_msec() clock (-1 = start now)
 func start_map(info: MapInfo, map_difficulty: DifficultyInfo, synced_start_ms: int = -1) -> void:
@@ -325,7 +327,7 @@ func _exit_tree() -> void:
 # the provided 'next_state'.
 func _transition_game_state(next_state: GameState) -> void:
 	gamestate = next_state
-	var hud_visible := next_state == gamestate_playing or next_state == gamestate_paused
+	var hud_visible := _hud_visible_for(next_state)
 	var decor := get_node_or_null("MenuDecor") as Node3D
 	if decor != null:
 		decor.visible = next_state == gamestate_mapselection
@@ -334,7 +336,27 @@ func _transition_game_state(next_state: GameState) -> void:
 		var hud_node := get_node_or_null(hud_path) as Node3D
 		if hud_node != null:
 			hud_node.visible = hud_visible
+	_set_enclosure_visible(hud_visible)
 	gamestate._ready(self)
+
+## True while a song is on screen: the HUD and the environment enclosure both belong to
+## gameplay, and both are out of place over a menu.
+func _hud_visible_for(state: GameState) -> bool:
+	return state == gamestate_playing or state == gamestate_paused
+
+## Beat Saber's back-column enclosure walls sit 0.86 m either side of the centre line,
+## which is narrower than every UI canvas and even than the player's own podium, so they
+## slice the menus off mid-tile. Keep them while a song is up and drop them for UI states.
+## Each environment names them differently (BackColumns, BackColumns_0, ...), so match on
+## the prefix rather than one path, and re-apply after _ensure_environment() swaps scenes.
+func _set_enclosure_visible(is_visible: bool) -> void:
+	var level := event_driver.get_node_or_null("Level") as Node3D
+	if level == null:
+		return
+	for child in level.get_children():
+		var mesh := child as MeshInstance3D
+		if mesh != null and mesh.name.begins_with(ENCLOSURE_NODE_PREFIX):
+			mesh.visible = is_visible
 
 static func _format_time(seconds: float) -> String:
 	var total := maxi(int(seconds), 0)
