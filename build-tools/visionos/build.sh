@@ -166,8 +166,24 @@ verify_linked_engine() {
 			exit 1
 		fi
 		echo "ok: engine marker present ($ENGINE_MARKER)"
+		echo "ok: linked engine $expected (label and content verified in shipped binary)"
+		return 0
 	fi
-	echo "ok: linked engine $expected (verified in shipped binary)"
+
+	# A check that did not run reads exactly like a check that passed, so say so
+	# rather than printing an unqualified success. Only announce it where it
+	# matters: with no override the pinned engine is the expected content.
+	if [[ "$expected" != "$ENGINE_COMMIT" ]]; then
+		echo "note: GODOT_VISIONOS_ENGINE_MARKER is unset -- content NOT verified"
+		echo "  The commit label records when core/version_hash.gen.cpp was compiled, not"
+		echo "  which source is in the binary. An incremental build can ship the new label"
+		echo "  over stale code and pass this check."
+		echo "  Set GODOT_VISIONOS_ENGINE_MARKER to a string only the override's source"
+		echo "  contains. If the change adds no string, compare the compiled object against"
+		echo "  the baseline instead (differing hash proves recompilation; a symbol delta"
+		echo "  proves it recompiled into the intended shape)."
+	fi
+	echo "ok: linked engine $expected (label verified in shipped binary)"
 }
 
 echo "== verifying pinned engine (commit $ENGINE_COMMIT) =="
