@@ -96,11 +96,11 @@ original key.
 
 ## Verified
 
-* Headless test suite: 53 passed, 4 failed. The 4 failures are `test_level_hash`
-  tests that need the copyrighted shipped maps, which are gitignored and absent
-  from any clean clone; they fail identically on the unmodified base commit.
-  `build.sh` allowlists exactly those four by name, so any other failure stops
-  the build.
+* Headless test suite: 65 passed, 1 failed. The failure is
+  `test_level_hash.test_v4_level_hash_uses_beatmap_and_lightshow_files`, which
+  needs the copyrighted shipped maps — gitignored and absent from any clean
+  clone — and fails identically on the unmodified base commit. `build.sh`
+  allowlists exactly that test by name, so any other failure stops the build.
 * `--import` completes with no script, parse or compile errors.
 * Export and `xcodebuild -sdk xros -destination 'generic/platform=visionOS'`
   succeed; the result is an arm64 device slice.
@@ -110,18 +110,60 @@ original key.
   `UISceneInitialImmersionStyle = UIImmersionStyleFull`,
   `NSHandsTrackingUsageDescription` and `NSAccessoryTrackingUsageDescription`.
 * The WebRTC GDExtension's visionOS slices are embedded and signed in the bundle.
+* `build.sh` verifies the engine commit embedded in the **shipped binary**, not
+  just the template hash, and asserts the pinned commit is absent whenever an
+  override is in play. The check has been exercised against known-bad inputs and
+  confirmed to reject them.
+
+### Ran on Vision Pro hardware
+
+The app installs, launches and renders on a real headset. Open defects observed
+there: saber blade orientation, a horizontally cropped menu panel, and ~29
+pipeline errors at startup.
+
+**This was an engine without the compositor-layout and view-count changes below.**
+Those changes have not been re-verified on hardware.
+
+### Ran on the visionOS simulator
+
+The app boots, stays alive, and transfers rendered scene frames
+(`scene≈2800` per 3000 encoded). This required engine work, because the
+simulator drawable is **monoscopic** (one view, one non-array texture) and Godot
+assumed stereo:
+
+* Accept the `.dedicated` compositor layout, with foveation disabled.
+* Report the real view count instead of a hardcoded `2`; claiming stereo on a
+  one-view layer drives the renderer into multiview render passes that the
+  simulator GPU (Apple2) cannot create at all.
+* Allocate scene targets with a matching layer count.
+* Disable MSAA on the simulator GPU, applied before `use_xr` is enabled.
+
+Together these took the error flood from 1,250,912 errors and a 160 MB log to
+124 errors and 24 KB.
+
+`simctl io screenshot` returns a blank frame for immersive content, so it cannot
+visually confirm rendering. The scene-transfer counter is the evidence.
 
 ## Not verified
 
-Everything below needs a headset and a wearer; none of it has been done.
-
-* The app has never been installed or launched on Vision Pro hardware or the
-  simulator. Nothing here is evidence that the game renders, tracks or plays.
+* **The `.layered` hardware path after the engine changes.** Under `.layered`
+  the view count is 2, so every changed expression evaluates to the constant it
+  replaced — but that is an argument from construction and code review, not a
+  hardware run. It has not been tested on a headset.
+* Whether the ~29 startup pipeline errors are a real defect. They are a bounded
+  startup burst, not per-frame, and the same count appears on both device and
+  simulator, which suggests a pre-existing engine issue rather than one
+  introduced by this port. Not proven either way.
+* Saber blade orientation and the cropped menu panel. Both need a headset to
+  diagnose; the geometry diagnostic that would resolve them has not been run on
+  hardware.
 * Optical-hand saber play, the grasp-to-pause mapping, and accessory/optical
   handover have not been exercised against a real runtime.
 * Whether glow composites acceptably against passthrough in Mixed immersion.
-* Comfort. No one has worn this.
-* No release build has been produced; only a signed debug device build.
+* Comfort. No one has played this.
+* No release build has been produced; only signed debug builds. The release
+  slices of the patched templates embed neither engine commit and are
+  uncharacterised — do not use them for a release build.
 
 Spatial anchors, world anchors and room persistence are not used by this game, so
 none of that surface is exercised by the port.
