@@ -597,9 +597,10 @@ func _ready() -> void:
 		await get_tree().process_frame
 	($pre_renderer as Node3D).queue_free()
 	
-	await _await_tracked_head_pose()
+	var head_tracked := await _await_tracked_head_pose()
 	recenter()
 	if vr.is_native_visionos:
+		_lift_rig_to_usable_eye_height(head_tracked)
 		var menu_canvas := $MainMenu_OQ_UI2DCanvas as Node3D
 		vr.log_info("visionOS rig after recenter: head=%v origin=%v menu=%v distance=%.2fm" % [
 			xr_camera.global_position,
@@ -607,36 +608,33 @@ func _ready() -> void:
 			menu_canvas.global_position,
 			xr_camera.global_position.distance_to(menu_canvas.global_position),
 		])
-		_log_visionos_geometry(menu_canvas)
+
+
+## Raises the rig when the reported head height cannot be used for placement.
+##
+## The rig is placed in a floor-referenced (roomscale) space, so a head at floor
+## level is physically impossible and means the runtime is not reporting a
+## usable height. Measured on the visionOS simulator: it publishes a *tracked*
+## head pose that is identity at y=0 from the very first frame, so
+## `has_tracking_data` is true and cannot distinguish it from a real pose —
+## only the height can. Left alone the camera sits on the floor looking up at a
+## menu placed at standing height, which reads as a cropped or narrow panel
+## rather than as a tracking problem.
+func _lift_rig_to_usable_eye_height(head_tracked: bool) -> void:
+	var head_y := xr_camera.global_position.y
+	if VisionOSPlatform.is_head_pose_valid(head_y):
+		return
+	var lift := VisionOSPlatform.eye_height_lift(head_y)
+	if lift <= 0.0:
+		return
+	xr_origin.position.y += lift
+	vr.log_info("visionOS head y=%.2f (tracked=%s) is not a usable floor-referenced height; raised rig %.2fm to y=%.2f." % [
+		head_y, head_tracked, lift, xr_camera.global_position.y])
 
 
 ## One-shot on-device measurement of the two things that cannot be reasoned about
 ## from the desktop: the real quad size of the menu, and which axis of the hand
 ## aim pose actually points along the fingers.
-func _log_visionos_geometry(menu_canvas: Node3D) -> void:
-	for _frame in 240:
-		await get_tree().process_frame
-	var quad := menu_canvas.get_node("UIArea/UIMeshInstance") as MeshInstance3D
-	vr.log_info("visionOS quad: global_scale=%v aabb=%v world_aabb=%v" % [
-		quad.global_transform.basis.get_scale(),
-		quad.mesh.get_aabb().size,
-		quad.global_transform.basis * quad.mesh.get_aabb().size,
-	])
-	for tracker_name in [&"left_hand", &"right_hand"]:
-		var hand := XRServer.get_tracker(tracker_name) as XRHandTracker
-		var controller := left_controller if tracker_name == &"left_hand" else right_controller
-		var basis := controller.global_transform.basis
-		var line := "visionOS %s: x=%v y=%v z=%v" % [
-			tracker_name, basis.x, basis.y, basis.z]
-		if hand != null and hand.get_has_tracking_data():
-			var palm := hand.get_hand_joint_transform(XRHandTracker.HAND_JOINT_PALM).origin
-			var tip := hand.get_hand_joint_transform(
-				XRHandTracker.HAND_JOINT_MIDDLE_FINGER_TIP).origin
-			var fingers := (tip - palm).normalized()
-			line += " fingers=%v dot(-z)=%.2f dot(y)=%.2f dot(x)=%.2f" % [
-				fingers, fingers.dot(-basis.z), fingers.dot(basis.y), fingers.dot(basis.x)]
-		vr.log_info(line)
-
 func _connect_xr_session_signals() -> void:
 	if not vr.inVR or not is_instance_valid(vr.xr_interface):
 		return
@@ -958,18 +956,40 @@ func recenter() -> void:
 
 ## Waits for the headset's first real head pose before the rig is recentered.
 ##
-## visionOS reports an identity pose for the first frames after startup. The
-## three pre-render frames the loader already waits are enough for OpenXR but not
-## here, and recentering against an identity pose shifts the origin about a metre,
-## which leaves the menu too close to read or reach.
-func _await_tracked_head_pose() -> void:
+## visionOS reports no head pose for the first frames after startup, where
+## OpenXR already has a real one. Recentering against that untracked pose leaves
+## the rig about a metre out of place, which makes world-anchored menus
+## unreachable or clipped.
+##
+## The authoritative signal that a pose exists is the head tracker's own pose:
+## the interface invalidates it when ARKit returns no device anchor. Measured
+## caveat: on the simulator this reports tracked at frame 0 with an identity
+## pose, so it answers "is a pose being published", not "is the pose usable".
+## Whether the pose can be placed against is a separate question, decided by
+## height in `_lift_rig_to_usable_eye_height()`.
+##
+## Returns true when a tracked head pose was acquired.
+func _await_tracked_head_pose() -> bool:
 	if not vr.is_native_visionos:
-		return
+		return true
 	var waited := 0
 	while waited < VisionOSPlatform.MAX_POSE_WAIT_FRAMES:
-		if xr_camera != null and VisionOSPlatform.is_head_pose_valid(xr_camera.position.y):
-			vr.log_info("visionOS head pose acquired after %d frames at y=%.3f" % [waited, xr_camera.position.y])
-			return
+		if _is_head_pose_tracked():
+			var height := xr_camera.position.y if xr_camera != null else 0.0
+			vr.log_info("visionOS head pose acquired after %d frames at y=%.3f" % [waited, height])
+			if not VisionOSPlatform.is_head_pose_valid(height):
+				vr.log_info("visionOS head pose is tracked but unusually low (y=%.3f)." % height)
+			return true
 		await get_tree().process_frame
 		waited += 1
-	vr.log_error("visionOS head pose never became valid; recentering against an untracked pose.")
+	vr.log_error("visionOS head pose never became tracked after %d frames; ARKit returned no device anchor." % waited)
+	return false
+
+
+## True when the runtime is publishing a tracked head pose right now.
+func _is_head_pose_tracked() -> bool:
+	var head := XRServer.get_tracker(&"head") as XRPositionalTracker
+	if head == null:
+		return false
+	var pose := head.get_pose(&"default")
+	return pose != null and pose.has_tracking_data

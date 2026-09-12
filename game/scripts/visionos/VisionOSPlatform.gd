@@ -30,10 +30,26 @@ const MIN_PHYSICAL_NEAR_PLANE_M := 0.11
 ## pose for the first frames after startup, where OpenXR already has a real one.
 ## Recentering against that identity pose leaves the rig about a metre out of
 ## place, which makes world-anchored menus unreachable or clipped.
+##
+## This height is only a secondary sanity check. Head height merely *correlates*
+## with tracking having started, and only in a floor-referenced space; the field
+## that actually means it is `XRPose.has_tracking_data`, which the visionOS
+## interface invalidates whenever ARKit fails to return a device anchor.
 const MIN_VALID_HEAD_HEIGHT_M := 0.5
 
 ## Upper bound on the wait so a genuinely untracked session still starts.
 const MAX_POSE_WAIT_FRAMES := 120
+
+## Standing eye height assumed when the runtime reports no usable head height.
+##
+## The visionOS simulator publishes a *tracked* head pose that is identity at
+## y=0, so `has_tracking_data` is true from the first frame and cannot
+## distinguish it from a real pose — only the height can. The rig is placed in a
+## floor-referenced (roomscale) space, where a head at floor level is physically
+## impossible, so that height is the signal that the pose is unusable. Left
+## alone the camera sits on the floor looking up at a menu placed at standing
+## height, which reads as a cropped or narrow panel.
+const FALLBACK_EYE_HEIGHT_M := 1.6
 
 ## Smallest render target dimension treated as a real compositor target.
 const MIN_RENDER_TARGET_PX := 1.0
@@ -115,6 +131,16 @@ static func is_native_platform() -> bool:
 ## True once the headset reports a head pose that can be recentered against.
 static func is_head_pose_valid(head_height_m: float) -> bool:
 	return head_height_m > MIN_VALID_HEAD_HEIGHT_M
+
+
+## Vertical lift to apply to the XR origin when the reported head height is not
+## usable for floor-referenced placement, so the rig sits at eye height instead
+## of on the floor.
+##
+## Returns 0.0 when the reported head is already at a plausible height, so a
+## genuinely tracked pose is never pushed upward.
+static func eye_height_lift(head_height_m: float) -> float:
+	return maxf(0.0, FALLBACK_EYE_HEIGHT_M - head_height_m)
 
 
 ## The compositor only publishes the XR render target size after its first frame,

@@ -186,6 +186,29 @@ func test_head_pose_validity_rejects_the_identity_pose() -> void:
 	assert_true(VisionOSPlatform.is_head_pose_valid(0.9), "A seated head pose is still tracked")
 
 
+## Regression test for the cropped menu on the simulator. Measured there: the
+## runtime publishes a *tracked* head pose that is identity at y=0, so tracking
+## state cannot detect it and only the height can. Left alone the rig sits on
+## the floor and the menu placed at standing height ends up overhead, clipped.
+func test_rig_is_lifted_when_head_height_is_unusable() -> void:
+	assert_eq(
+		VisionOSPlatform.eye_height_lift(0.0),
+		VisionOSPlatform.FALLBACK_EYE_HEIGHT_M,
+		"A floor-level untracked head is lifted the whole way")
+	assert_true(
+		absf(VisionOSPlatform.eye_height_lift(1.0)
+			- (VisionOSPlatform.FALLBACK_EYE_HEIGHT_M - 1.0)) < 0.0001,
+		"A partially raised head is lifted the remainder")
+	assert_eq(
+		VisionOSPlatform.eye_height_lift(VisionOSPlatform.FALLBACK_EYE_HEIGHT_M),
+		0.0,
+		"A head already at eye height is not moved")
+	assert_eq(
+		VisionOSPlatform.eye_height_lift(2.1),
+		0.0,
+		"A tall head is never pushed down")
+
+
 func test_upper_limb_visibility_follows_the_active_input_source() -> void:
 	# These integers are passed straight to VisionOSXRInterface.upper_limb_visibility.
 	assert_eq(int(VisionOSPlatform.Visibility.AUTOMATIC), 0, "Automatic is 0")
