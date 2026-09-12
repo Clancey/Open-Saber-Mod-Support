@@ -137,3 +137,146 @@ func test_settings_scopes_saber_offsets_per_platform() -> void:
 	# Everything else stays on the shared key so existing configs keep working.
 	for key: String in ["visionos_passthrough", "glare", "cube_cuts_falloff"]:
 		assert_eq(VisionOSPlatform.config_key(key), key, "Unscoped settings keep their key")
+
+
+## Regression test for a black-screen bug: `render_target_size_multiplier` is an
+## OpenXR-only property, so assigning it to the visionOS interface raised a
+## GDScript error that aborted XR bootstrap before `use_xr` was ever set. The
+## viewport then rendered with no XR target and the headset showed nothing.
+func test_render_quality_skipped_unless_dynamic_quality_enabled() -> void:
+	assert_eq(
+		VisionOSPlatform.resolve_render_quality(1.5, false, 2.0),
+		VisionOSPlatform.SKIP_RENDER_QUALITY,
+		"The native setter hard-fails when dynamic render quality is disabled"
+	)
+	assert_eq(
+		VisionOSPlatform.resolve_render_quality(1.5, true, 2.0),
+		1.5,
+		"An opted-in project applies the requested scale"
+	)
+
+
+func test_render_quality_never_exceeds_configured_maximum() -> void:
+	# The native setter hard-fails above the project's maximum, so clamp instead.
+	assert_eq(
+		VisionOSPlatform.resolve_render_quality(2.5, true, 1.5),
+		1.5,
+		"Requests above the maximum are clamped to it"
+	)
+	for bad_scale: float in [0.0, -1.0, NAN, INF]:
+		assert_eq(
+			VisionOSPlatform.resolve_render_quality(bad_scale, true, 1.5),
+			VisionOSPlatform.SKIP_RENDER_QUALITY,
+			"A nonsensical render scale is ignored rather than pushed at the compositor"
+		)
+	assert_eq(
+		VisionOSPlatform.resolve_render_quality(1.5, true, 0.0),
+		VisionOSPlatform.SKIP_RENDER_QUALITY,
+		"A missing maximum leaves the compositor default alone"
+	)
+
+
+## Regression test for an unreachable menu: visionOS reports an identity head
+## pose for its first frames, and recentering against it shifted the rig about a
+## metre, leaving world-anchored UI too close to read.
+func test_head_pose_validity_rejects_the_identity_pose() -> void:
+	assert_false(VisionOSPlatform.is_head_pose_valid(0.0), "An identity pose is not tracked")
+	assert_false(VisionOSPlatform.is_head_pose_valid(0.5), "The threshold itself is not tracked")
+	assert_true(VisionOSPlatform.is_head_pose_valid(1.7), "A standing head pose is tracked")
+	assert_true(VisionOSPlatform.is_head_pose_valid(0.9), "A seated head pose is still tracked")
+
+
+func test_upper_limb_visibility_follows_the_active_input_source() -> void:
+	# These integers are passed straight to VisionOSXRInterface.upper_limb_visibility.
+	assert_eq(int(VisionOSPlatform.Visibility.AUTOMATIC), 0, "Automatic is 0")
+	assert_eq(int(VisionOSPlatform.Visibility.VISIBLE), 1, "Visible is 1")
+	assert_eq(int(VisionOSPlatform.Visibility.HIDDEN), 2, "Hidden is 2")
+	var optical := VisionOSPlatform.InputSource.OPTICAL_HAND
+	var accessory := VisionOSPlatform.InputSource.SPATIAL_CONTROLLER
+	var none := VisionOSPlatform.InputSource.NONE
+	assert_eq(
+		int(VisionOSPlatform.resolve_upper_limb_visibility(optical, optical)),
+		int(VisionOSPlatform.Visibility.VISIBLE),
+		"Optical hands stay visible because the hand is the input device"
+	)
+	assert_eq(
+		int(VisionOSPlatform.resolve_upper_limb_visibility(accessory, accessory)),
+		int(VisionOSPlatform.Visibility.HIDDEN),
+		"Held controllers hide the composited hands"
+	)
+	assert_eq(
+		int(VisionOSPlatform.resolve_upper_limb_visibility(optical, accessory)),
+		int(VisionOSPlatform.Visibility.HIDDEN),
+		"One controller is enough to hide the overlay"
+	)
+	assert_eq(
+		int(VisionOSPlatform.resolve_upper_limb_visibility(none, none)),
+		int(VisionOSPlatform.Visibility.VISIBLE),
+		"Untracked hands fall back to visible rather than hiding the wearer's hands"
+	)
+
+
+func test_render_target_readiness_rejects_unpublished_target() -> void:
+	assert_false(
+		VisionOSPlatform.is_render_target_ready(Vector2.ZERO),
+		"A zero target means the compositor has not published a size yet"
+	)
+	assert_false(
+		VisionOSPlatform.is_render_target_ready(Vector2(1920.0, 0.0)),
+		"A target is only usable once both dimensions are real"
+	)
+	assert_true(
+		VisionOSPlatform.is_render_target_ready(Vector2(1920.0, 1824.0)),
+		"A fully published target is ready for pipeline creation"
+	)
+
+
+func test_warmup_frames_are_longer_on_visionos() -> void:
+	assert_eq(
+		VisionOSPlatform.warmup_frames(false),
+		VisionOSPlatform.DEFAULT_WARMUP_FRAMES,
+		"Other platforms keep their original warm-up length"
+	)
+	assert_true(
+		VisionOSPlatform.warmup_frames(true) > VisionOSPlatform.warmup_frames(false),
+		"visionOS needs longer to compile its Metal pipelines"
+	)
+
+
+func test_saber_offset_default_corrects_only_visionos() -> void:
+	var expected := VisionOSPlatform.SABER_ROT_CORRECTION_DEG \
+		if VisionOSPlatform.is_native_platform() else Vector3.ZERO
+	assert_eq(
+		VisionOSPlatform.default_saber_offset_rot(),
+		expected,
+		"Only visionOS ships a non-zero saber alignment correction"
+	)
+	assert_eq(
+		VisionOSPlatform.SABER_ROT_CORRECTION_DEG,
+		Vector3(180.0, 0.0, 0.0),
+		"The correction flips the blade back out of the fist"
+	)
+
+
+func test_simulator_adapter_detected_by_name() -> void:
+	assert_true(
+		VisionOSPlatform.is_simulator_adapter("Apple xrOS simulator GPU (Apple2)"),
+		"The visionOS simulator names itself in the Metal adapter string"
+	)
+	assert_false(
+		VisionOSPlatform.is_simulator_adapter("Apple M2 GPU (Apple8)"),
+		"Real silicon must not be mistaken for the simulator"
+	)
+
+
+func test_msaa_disabled_only_on_simulator() -> void:
+	assert_eq(
+		VisionOSPlatform.resolve_msaa_3d(2, "Apple xrOS simulator GPU (Apple2)"),
+		VisionOSPlatform.MSAA_DISABLED,
+		"The simulator GPU cannot allocate multisampled array textures"
+	)
+	assert_eq(
+		VisionOSPlatform.resolve_msaa_3d(2, "Apple Vision Pro GPU (Apple9)"),
+		2,
+		"Hardware keeps the configured MSAA level"
+	)

@@ -26,6 +26,49 @@ const OPTICAL_PROFILE := "visionos_hand_tracking"
 ## matches what the reference ports shipped.
 const MIN_PHYSICAL_NEAR_PLANE_M := 0.11
 
+## A tracked head sits well above the floor. visionOS reports an identity head
+## pose for the first frames after startup, where OpenXR already has a real one.
+## Recentering against that identity pose leaves the rig about a metre out of
+## place, which makes world-anchored menus unreachable or clipped.
+const MIN_VALID_HEAD_HEIGHT_M := 0.5
+
+## Upper bound on the wait so a genuinely untracked session still starts.
+const MAX_POSE_WAIT_FRAMES := 120
+
+## Smallest render target dimension treated as a real compositor target.
+const MIN_RENDER_TARGET_PX := 1.0
+
+## Frames to hold the shader warm-up scene on screen.
+const DEFAULT_WARMUP_FRAMES := 3
+const VISIONOS_WARMUP_FRAMES := 12
+
+## The visionOS simulator runs on a paravirtual GPU that reports itself as
+## Apple2 and cannot allocate `MTLTextureType2DMultisampleArray` outside
+## memoryless storage. Stereo XR rendering with MSAA needs exactly that texture
+## type, so Metal rejects the framebuffer and the app dies mid-render. Hardware
+## has no such limit, so MSAA is only dropped where it cannot work.
+const MSAA_DISABLED := 0
+
+## visionOS publishes its hand aim pose with the blade axis flipped relative to
+## the OpenXR aim pose the saber model is authored against, so the blade extends
+## backwards down the forearm instead of forwards out of the fist. Correct the
+## model alignment rather than the aim, and do it through the existing
+## per-platform saber offset so the wearer can still tune it in Settings.
+const SABER_ROT_CORRECTION_DEG := Vector3(180.0, 0.0, 0.0)
+
+
+## Default rotation offset for a saber on the current platform.
+static func default_saber_offset_rot() -> Vector3:
+	return SABER_ROT_CORRECTION_DEG if is_native_platform() else Vector3.ZERO
+
+## Returned by `resolve_render_quality()` to mean "leave the compositor's own
+## render quality alone".
+const SKIP_RENDER_QUALITY := -1.0
+
+## Project settings the native compositor reads for dynamic render quality.
+const DYNAMIC_RENDER_QUALITY_ENABLED_SETTING := "xr/visionos/dynamic_render_quality/enable"
+const DYNAMIC_RENDER_QUALITY_MAX_SETTING := "xr/visionos/dynamic_render_quality/maximum_quality"
+
 ## Prefix applied to settings that must not be shared with the Quest/desktop build.
 const SCOPED_KEY_PREFIX := "visionos_"
 
@@ -49,6 +92,15 @@ enum ImmersionStyle {
 	PROGRESSIVE = 2,
 }
 
+## Mirrors VisionOSXRInterface.Visibility. The compositor draws the wearer's real
+## hands over the scene by default, which reads as a glitch next to a held saber,
+## so the port hides them and lets the saber represent the hand.
+enum Visibility {
+	AUTOMATIC = 0,
+	VISIBLE = 1,
+	HIDDEN = 2,
+}
+
 enum InputSource {
 	NONE, ## No usable tracking for this hand.
 	OPTICAL_HAND, ## ARKit hand skeleton mirrored onto the controller tracker.
@@ -58,6 +110,59 @@ enum InputSource {
 
 static func is_native_platform() -> bool:
 	return OS.get_name() == PLATFORM_NAME
+
+
+## True once the headset reports a head pose that can be recentered against.
+static func is_head_pose_valid(head_height_m: float) -> bool:
+	return head_height_m > MIN_VALID_HEAD_HEIGHT_M
+
+
+## The compositor only publishes the XR render target size after its first frame,
+## so `get_render_target_size()` reads back zero until then. Building the shader
+## warm-up pipelines against that zero-sized target makes every framebuffer and
+## pipeline creation fail, which silently wastes the warm-up and pushes shader
+## compilation into gameplay as hitching.
+static func is_render_target_ready(render_target_size: Vector2) -> bool:
+	return render_target_size.x >= MIN_RENDER_TARGET_PX \
+		and render_target_size.y >= MIN_RENDER_TARGET_PX
+
+
+## How many frames to keep the warm-up scene visible. visionOS compiles Metal
+## pipelines lazily, so it needs more than the handful the other backends use.
+static func warmup_frames(native_visionos: bool) -> int:
+	return VISIONOS_WARMUP_FRAMES if native_visionos else DEFAULT_WARMUP_FRAMES
+
+
+## Detects the visionOS simulator from the Metal adapter name, which reads
+## `Apple xrOS simulator GPU (Apple2)` there and names real silicon on device.
+static func is_simulator_adapter(adapter_name: String) -> bool:
+	return adapter_name.to_lower().contains("simulator")
+
+
+## Resolves the 3D MSAA level to use, dropping it only on the simulator's
+## paravirtual GPU, which cannot allocate multisampled array textures.
+static func resolve_msaa_3d(configured_msaa: int, adapter_name: String) -> int:
+	if is_simulator_adapter(adapter_name):
+		return MSAA_DISABLED
+	return configured_msaa
+
+
+## Resolves the render quality to hand to the native interface, or
+## `SKIP_RENDER_QUALITY` when it must be left untouched.
+##
+## visionOS has no `render_target_size_multiplier`; that property is OpenXR-only,
+## and assigning it to a `VisionOSXRInterface` raises a GDScript error that aborts
+## initialisation. The native equivalent is `current_render_quality`, whose setter
+## additionally hard-fails unless dynamic render quality is enabled in project
+## settings, so the scale is only applied when the project opted in.
+static func resolve_render_quality(render_scale: float, dynamic_enabled: bool, max_quality: float) -> float:
+	if not dynamic_enabled:
+		return SKIP_RENDER_QUALITY
+	if not is_finite(render_scale) or render_scale <= 0.0:
+		return SKIP_RENDER_QUALITY
+	if not is_finite(max_quality) or max_quality <= 0.0:
+		return SKIP_RENDER_QUALITY
+	return minf(render_scale, max_quality)
 
 
 ## Maps a settings key to the key it is persisted under on the current platform.
@@ -109,6 +214,18 @@ static func _is_pose_valid(tracker: XRPositionalTracker, pose_name: StringName) 
 		return false
 	var pose := tracker.get_pose(pose_name)
 	return pose != null and pose.has_tracking_data
+
+
+## Whether the compositor should keep drawing the wearer's real hands.
+##
+## Under optical tracking the hand *is* the input device, so hiding it would
+## leave a saber floating off an invisible hand. A real accessory already fills
+## the hand, and the composited hand around it reads as a glitch, so it is hidden
+## as soon as either hand picks up a controller.
+static func resolve_upper_limb_visibility(left: InputSource, right: InputSource) -> Visibility:
+	if left == InputSource.SPATIAL_CONTROLLER or right == InputSource.SPATIAL_CONTROLLER:
+		return Visibility.HIDDEN
+	return Visibility.VISIBLE
 
 
 ## Near plane that keeps the physical distance at or above the platform minimum.

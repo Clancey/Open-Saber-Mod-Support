@@ -241,18 +241,112 @@ func _initialize_native_visionos(render_scale: float) -> void:
 		return
 	
 	xr_interface = interface
-	interface.render_target_size_multiplier = render_scale
+	_apply_visionos_render_quality(interface, render_scale)
 	is_native_visionos = true
 	active_arvr_interface_name = VisionOSPlatform.INTERFACE_NAME
 	
 	var viewport := get_viewport()
+	_apply_visionos_msaa(viewport)
 	viewport.use_xr = true
 	viewport.vrs_mode = Viewport.VRS_XR
 	viewport.use_hdr_2d = true
 	inVR = true
 	
 	apply_camera_near_plane()
+	apply_upper_limb_visibility()
 	log_info("visionOS XR interface initialised successfully")
+
+
+## Drops MSAA where the GPU cannot support multisampled array textures, which is
+## the shape stereo XR rendering requires. Hardware keeps the configured level.
+##
+## Must run before `use_xr` is enabled: setting MSAA on a viewport that is
+## already driving the compositor leaves the live render target multisampled,
+## so the gate would appear not to work at all. Logs the adapter and the
+## resulting level unconditionally, so the outcome can be read back rather than
+## assumed.
+func _apply_visionos_msaa(viewport: Viewport) -> void:
+	var adapter := RenderingServer.get_video_adapter_name()
+	var resolved := VisionOSPlatform.resolve_msaa_3d(int(viewport.msaa_3d), adapter)
+	if resolved != int(viewport.msaa_3d):
+		viewport.msaa_3d = resolved as Viewport.MSAA
+	log_info("visionOS GPU '%s': 3D MSAA resolved to %d." % [adapter, int(viewport.msaa_3d)])
+
+
+## Keeps the compositor's real-hand overlay consistent with whatever is currently
+## driving the sabers. Safe to call on any platform and at any time.
+func apply_upper_limb_visibility() -> void:
+	if not is_native_visionos or xr_interface == null:
+		return
+	var left_source := VisionOSPlatform.InputSource.NONE
+	if leftController != null:
+		left_source = leftController.input_source
+	var right_source := VisionOSPlatform.InputSource.NONE
+	if rightController != null:
+		right_source = rightController.input_source
+	xr_interface.set(
+		&"upper_limb_visibility",
+		int(VisionOSPlatform.resolve_upper_limb_visibility(left_source, right_source))
+	)
+
+
+## Display refresh rate in Hz, or 0.0 when the platform cannot report one.
+##
+## `get_display_refresh_rate()` is an OpenXR-only method. Calling it on
+## `VisionOSXRInterface` raises a GDScript error that aborts the caller, so this
+## probes for the method and falls back to the native display server, which
+## reports the headset's true 90 Hz instead of leaving physics at the 60 Hz default.
+func get_display_refresh_rate() -> float:
+	var interface := XRServer.primary_interface
+	if interface != null and interface.has_method(&"get_display_refresh_rate"):
+		return float(interface.get_display_refresh_rate())
+	if is_native_visionos:
+		return maxf(DisplayServer.screen_get_refresh_rate(), 0.0)
+	return 0.0
+
+
+## Size of the XR compositor's render target, or zero when it is not published
+## yet. visionOS only fills this in during its first `pre_render()`, so callers
+## that need a real framebuffer must wait for it.
+func get_xr_render_target_size() -> Vector2:
+	if not is_instance_valid(xr_interface):
+		return Vector2.ZERO
+	return xr_interface.get_render_target_size()
+
+
+## Waits until the compositor publishes a usable render target.
+##
+## Creating pipelines before this point builds them against a zero-sized
+## framebuffer: every `framebuffer_create` and pipeline creation fails, so a
+## shader warm-up run that early is silently thrown away and the shaders end up
+## compiling mid-song instead.
+func await_xr_render_target(tree: SceneTree) -> bool:
+	if not is_native_visionos:
+		return true
+	for frame in VisionOSPlatform.MAX_POSE_WAIT_FRAMES:
+		if VisionOSPlatform.is_render_target_ready(get_xr_render_target_size()):
+			log_info("visionOS render target ready after %d frames at %v" % [
+				frame, get_xr_render_target_size()])
+			return true
+		await tree.process_frame
+	log_warning("visionOS render target never became valid; shader warm-up may be ineffective")
+	return false
+
+
+## Applies the requested render scale using the native interface's own property.
+##
+## `render_target_size_multiplier` does not exist on `VisionOSXRInterface`, and
+## assigning it aborts this whole function, which silently leaves the root
+## viewport without an XR target and renders a black scene.
+func _apply_visionos_render_quality(interface: XRInterface, render_scale: float) -> void:
+	var quality := VisionOSPlatform.resolve_render_quality(
+		render_scale,
+		bool(ProjectSettings.get_setting(VisionOSPlatform.DYNAMIC_RENDER_QUALITY_ENABLED_SETTING, false)),
+		float(ProjectSettings.get_setting(VisionOSPlatform.DYNAMIC_RENDER_QUALITY_MAX_SETTING, 1.0))
+	)
+	if quality == VisionOSPlatform.SKIP_RENDER_QUALITY:
+		return
+	interface.set(&"current_render_quality", quality)
 
 
 ## Keeps the tracked camera's near plane at or above the platform's physical

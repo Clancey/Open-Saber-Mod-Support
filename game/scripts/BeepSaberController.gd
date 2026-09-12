@@ -104,6 +104,7 @@ func _update_input_source() -> void:
 	input_source = resolved
 	_clear_button_state()
 	first_time = true
+	vr.apply_upper_limb_visibility()
 
 func _update_movement_aabb() -> void:
 	movement_aabb = movement_aabb.expand(global_transform.origin)

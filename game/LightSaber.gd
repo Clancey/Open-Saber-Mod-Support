@@ -85,6 +85,14 @@ func _ready() -> void:
 	@warning_ignore("return_value_discarded")
 	Settings.changed.connect(on_settings_changed)
 	
+	# Apply the stored offsets up front; `on_settings_changed` only fires on edits.
+	if type == 0:
+		extra_offset_pos = Settings.left_saber_offset_pos
+		extra_offset_rot = Settings.left_saber_offset_rot
+	else:
+		extra_offset_pos = Settings.right_saber_offset_pos
+		extra_offset_rot = Settings.right_saber_offset_rot
+	
 	if type == 0:
 		_swing_cast._set_collision_mask_value(CollisionLayerConstants.LeftNote_bit, true)
 	else:

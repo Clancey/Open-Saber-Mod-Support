@@ -564,9 +564,8 @@ func _ready() -> void:
 		right_controller
 	)
 	_connect_xr_session_signals()
-	var primary_interface := XRServer.primary_interface
-	if vr.inVR and primary_interface != null:
-		var display_refresh_rate: float = primary_interface.get_display_refresh_rate()
+	if vr.inVR:
+		var display_refresh_rate := vr.get_display_refresh_rate()
 		if display_refresh_rate > 0.0:
 			Engine.physics_ticks_per_second = int(round(display_refresh_rate))
 	
@@ -591,13 +590,52 @@ func _ready() -> void:
 	Scoreboard.level_failed.connect(_on_level_failed)
 	
 	#render common assets for a couple of frames to prevent performance issues when loading them mid game
+	@warning_ignore("return_value_discarded")
+	await vr.await_xr_render_target(get_tree())
 	($pre_renderer as Node3D).visible = true
-	await get_tree().process_frame
-	await get_tree().process_frame
-	await get_tree().process_frame
+	for _frame in VisionOSPlatform.warmup_frames(vr.is_native_visionos):
+		await get_tree().process_frame
 	($pre_renderer as Node3D).queue_free()
 	
+	await _await_tracked_head_pose()
 	recenter()
+	if vr.is_native_visionos:
+		var menu_canvas := $MainMenu_OQ_UI2DCanvas as Node3D
+		vr.log_info("visionOS rig after recenter: head=%v origin=%v menu=%v distance=%.2fm" % [
+			xr_camera.global_position,
+			xr_origin.global_position,
+			menu_canvas.global_position,
+			xr_camera.global_position.distance_to(menu_canvas.global_position),
+		])
+		_log_visionos_geometry(menu_canvas)
+
+
+## One-shot on-device measurement of the two things that cannot be reasoned about
+## from the desktop: the real quad size of the menu, and which axis of the hand
+## aim pose actually points along the fingers.
+func _log_visionos_geometry(menu_canvas: Node3D) -> void:
+	for _frame in 240:
+		await get_tree().process_frame
+	var quad := menu_canvas.get_node("UIArea/UIMeshInstance") as MeshInstance3D
+	vr.log_info("visionOS quad: global_scale=%v aabb=%v world_aabb=%v" % [
+		quad.global_transform.basis.get_scale(),
+		quad.mesh.get_aabb().size,
+		quad.global_transform.basis * quad.mesh.get_aabb().size,
+	])
+	for tracker_name in [&"left_hand", &"right_hand"]:
+		var hand := XRServer.get_tracker(tracker_name) as XRHandTracker
+		var controller := left_controller if tracker_name == &"left_hand" else right_controller
+		var basis := controller.global_transform.basis
+		var line := "visionOS %s: x=%v y=%v z=%v" % [
+			tracker_name, basis.x, basis.y, basis.z]
+		if hand != null and hand.get_has_tracking_data():
+			var palm := hand.get_hand_joint_transform(XRHandTracker.HAND_JOINT_PALM).origin
+			var tip := hand.get_hand_joint_transform(
+				XRHandTracker.HAND_JOINT_MIDDLE_FINGER_TIP).origin
+			var fingers := (tip - palm).normalized()
+			line += " fingers=%v dot(-z)=%.2f dot(y)=%.2f dot(x)=%.2f" % [
+				fingers, fingers.dot(-basis.z), fingers.dot(basis.y), fingers.dot(basis.x)]
+		vr.log_info(line)
 
 func _connect_xr_session_signals() -> void:
 	if not vr.inVR or not is_instance_valid(vr.xr_interface):
@@ -916,3 +954,22 @@ func recenter() -> void:
 	var xr_camera := $XROrigin3D/XRCamera3D as XRCamera3D
 	xr_origin.rotation.y -= xr_camera.global_rotation.y
 	xr_origin.position -= (xr_camera.global_position * Vector3(1,0,1)) - Vector3(0,0,1)
+
+
+## Waits for the headset's first real head pose before the rig is recentered.
+##
+## visionOS reports an identity pose for the first frames after startup. The
+## three pre-render frames the loader already waits are enough for OpenXR but not
+## here, and recentering against an identity pose shifts the origin about a metre,
+## which leaves the menu too close to read or reach.
+func _await_tracked_head_pose() -> void:
+	if not vr.is_native_visionos:
+		return
+	var waited := 0
+	while waited < VisionOSPlatform.MAX_POSE_WAIT_FRAMES:
+		if xr_camera != null and VisionOSPlatform.is_head_pose_valid(xr_camera.position.y):
+			vr.log_info("visionOS head pose acquired after %d frames at y=%.3f" % [waited, xr_camera.position.y])
+			return
+		await get_tree().process_frame
+		waited += 1
+	vr.log_error("visionOS head pose never became valid; recentering against an untracked pose.")
