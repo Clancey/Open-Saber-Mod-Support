@@ -80,6 +80,7 @@ TEMPLATE="${GODOT_VISIONOS_TEMPLATE:-$REPO_TEMPLATE}"
 # without also declaring its commit would make the post-build gate assert the
 # pinned identity against a deliberately different engine.
 EXPECTED_ENGINE_COMMIT="${GODOT_VISIONOS_ENGINE_COMMIT:-$ENGINE_COMMIT}"
+ENGINE_MARKER="${GODOT_VISIONOS_ENGINE_MARKER:-}"
 TEMPLATE_BACKUP=""
 EXPORT_LOG=""
 
@@ -119,6 +120,19 @@ verify_hash() {
 # engine the linker actually consumed -- export_presets.cfg hardcodes the
 # template path, so those can diverge silently. Godot embeds its build commit in
 # the binary, so this reads engine identity out of the shipped artifact itself.
+#
+# Two limits of the embedded commit, both measured rather than assumed:
+#   1. It is not the only 40-char hex string in the binary. harfbuzz, embree and
+#      brotli all carry hex-looking tables, so identity must be tested by
+#      membership of a specific commit -- never by printing "the hash".
+#   2. It records the commit that core/version_hash.gen.cpp was *compiled* at,
+#      not the commit whose source is in the binary. On an incremental build
+#      those diverge: we have observed a slice containing new code while
+#      reporting the pre-fix commit, and the same mechanism can report the new
+#      commit while the fix itself failed to recompile.
+# GODOT_VISIONOS_ENGINE_MARKER closes (2) by asserting a string that exists only
+# in the overridden engine's source, which observes the code rather than the
+# build's self-report.
 verify_linked_engine() {
 	local binary="$1" expected="$2" hashes
 	hashes="$(strings "$binary" 2>/dev/null | grep -oE '\b[0-9a-f]{40}\b' | sort -u)"
@@ -137,6 +151,21 @@ verify_linked_engine() {
 		echo "error: shipped binary embeds pinned engine $ENGINE_COMMIT despite an override" >&2
 		echo "  the export did not consume $TEMPLATE" >&2
 		exit 1
+	fi
+	if [[ -n "$ENGINE_MARKER" ]]; then
+		# grep -q exits on first match, which kills the producer with SIGPIPE;
+		# under `set -o pipefail` that reports 141 and the check fails on a
+		# binary that actually contains the marker. Count instead, so the
+		# producer always runs to completion.
+		local marker_hits
+		marker_hits="$(strings "$binary" 2>/dev/null | grep -cF "$ENGINE_MARKER" || true)"
+		if [[ "${marker_hits:-0}" -eq 0 ]]; then
+			echo "error: shipped binary embeds $expected but not the code that commit introduced" >&2
+			echo "  missing marker: $ENGINE_MARKER" >&2
+			echo "  the version hash recompiled while the changed source did not." >&2
+			exit 1
+		fi
+		echo "ok: engine marker present ($ENGINE_MARKER)"
 	fi
 	echo "ok: linked engine $expected (verified in shipped binary)"
 }
