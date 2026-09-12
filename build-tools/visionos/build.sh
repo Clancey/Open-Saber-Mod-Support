@@ -279,20 +279,37 @@ xcodebuild \
 	PROVISIONING_PROFILE_SPECIFIER= \
 	build
 
-APP="$(find "$EXPORT_DIR/DerivedData/Build/Products" -maxdepth 2 -name "*.app" -print -quit || true)"
-if [[ -z "$APP" ]]; then
+APP_MATCHES="$(find "$EXPORT_DIR/DerivedData/Build/Products" -maxdepth 2 -name "*.app" || true)"
+APP_COUNT="$(printf '%s' "$APP_MATCHES" | grep -c . || true)"
+if [[ "${APP_COUNT:-0}" -eq 0 ]]; then
 	echo "error: no .app produced under $EXPORT_DIR/DerivedData/Build/Products" >&2
 	exit 1
 fi
+# Taking the first match would pick silently between them, which is how a check
+# ends up describing an artifact nobody shipped.
+if [[ "$APP_COUNT" -ne 1 ]]; then
+	echo "error: $APP_COUNT .app bundles under $EXPORT_DIR/DerivedData/Build/Products" >&2
+	printf '  %s\n' $APP_MATCHES >&2
+	echo "Refusing to guess which one the checks below should describe." >&2
+	exit 1
+fi
+APP="$APP_MATCHES"
 
 echo
-echo "== artifact identity =="
+echo "== artifact identity: checked =="
 echo "app: $APP"
 echo "target: $TARGET ($XCODE_SDK)"
 /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist"
 /usr/libexec/PlistBuddy -c "Print :UIApplicationSceneManifest" "$APP/Info.plist" 2>/dev/null | grep -i immersion || true
 EXECUTABLE="$APP/$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP/Info.plist")"
 verify_linked_engine "$EXECUTABLE" "$EXPECTED_ENGINE_COMMIT"
+
+# Recorded, not checked. These are compared against nothing here; they exist so
+# a later run or another operator can diff them. Printing them under the same
+# heading as the assertions above would make transcription look like
+# verification, which is the harder of the two to catch.
+echo
+echo "== artifact identity: recorded only (compared against nothing) =="
 shasum -a 256 "$EXECUTABLE" "$APP/Info.plist"
 find "$APP" -name "*.pck" -exec shasum -a 256 {} \;
 dwarfdump --uuid "$EXECUTABLE"
