@@ -572,7 +572,6 @@ func _ready() -> void:
 	debug_info_label.visible = Settings.show_debug_info
 	set_colors_from_settings()
 	world_environment.environment.glow_enabled = Settings.glare
-	_apply_visionos_immersion()
 	
 	if not vr.inVR:
 		xr_origin.add_child(preload("res://OQ_Toolkit/OQ_ARVROrigin/Feature_VRSimulator.tscn").instantiate())
@@ -690,30 +689,7 @@ func on_settings_changed(key: StringName) -> void:
 			world_environment.environment.glow_enabled = Settings.glare
 		&"player_height_offset":
 			xr_origin.transform.origin.y = Settings.player_height_offset
-		&"visionos_passthrough":
-			_apply_visionos_immersion()
 
-## visionOS only. Passthrough needs the whole chain: the native immersion style,
-## a transparent background and no opaque virtual floor drawn over the real one.
-## The environment is only stripped once the interface confirms the style change,
-## so a failed switch leaves a fully immersive scene rather than an empty one.
-func _apply_visionos_immersion() -> void:
-	if not vr.is_native_visionos:
-		return
-	var style := VisionOSPlatform.style_for_passthrough(Settings.visionos_passthrough)
-	var applied := vr.set_visionos_immersion_style(style)
-	if not applied and Settings.visionos_passthrough:
-		vr.log_warning("visionOS passthrough was requested but the interface kept full immersion.")
-	var show_passthrough := applied and VisionOSPlatform.style_shows_passthrough(style)
-	
-	var environment := world_environment.environment
-	environment.background_color = Color(
-		environment.background_color.r,
-		environment.background_color.g,
-		environment.background_color.b,
-		0.0 if show_passthrough else 1.0
-	)
-	standing_ground.visible = not show_passthrough
 
 func set_colors_from_settings() -> void:
 	update_left_color(Settings.color_left)

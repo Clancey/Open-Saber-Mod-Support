@@ -49,7 +49,6 @@ const SWATCH_BORDER_WIDTH := 5
 @onready var audio_sfx_control := $ScrollContainer/VBox/audio/sfx/sfx_slider as HSlider
 @onready var spectator_view_control := $ScrollContainer/VBox/spectator_view as CheckButton
 @onready var spectator_hud_control := $ScrollContainer/VBox/spectator_hud as CheckButton
-@onready var visionos_passthrough_control := $ScrollContainer/VBox/visionos_passthrough as CheckButton
 
 var _play_ui_sound_demo := false
 
@@ -65,9 +64,6 @@ func _ready() -> void:
 	if OS.get_name() == &"Web":
 		# way too heavy for webxr
 		$ScrollContainer/VBox/glare.hide()
-	
-	# Immersion style only exists on the native visionOS backend.
-	visionos_passthrough_control.visible = VisionOSPlatform.is_native_platform()
 
 func set_controls_from_settings() -> void:
 	saber_control.clear()
@@ -110,7 +106,6 @@ func set_controls_from_settings() -> void:
 	audio_sfx_control.value = Settings.audio_sfx
 	spectator_view_control.button_pressed = Settings.spectator_view
 	spectator_hud_control.button_pressed = Settings.spectator_hud
-	visionos_passthrough_control.button_pressed = Settings.visionos_passthrough
 
 func _restore_defaults() -> void:
 	Settings.restore_defaults()
@@ -304,10 +299,6 @@ func _on_spectator_view_toggled(value: bool) -> void:
 
 func _on_spectator_hud_toggled(value: bool) -> void:
 	Settings.spectator_hud = value
-
-
-func _on_visionos_passthrough_toggled(value: bool) -> void:
-	Settings.visionos_passthrough = value
 
 
 func _on_recenter_button_up() -> void:

@@ -115,12 +115,6 @@ var spectator_hud: bool:
 	set(value):
 		spectator_hud = value
 		set_and_emit(&"spectator_hud", value)
-## visionOS only: render the real room behind the game instead of the full
-## immersive environment. Ignored on every other platform.
-var visionos_passthrough: bool:
-	set(value):
-		visionos_passthrough = value
-		set_and_emit(&"visionos_passthrough", value)
 
 
 
@@ -173,7 +167,6 @@ var default_values = {
 	audio_sfx = 0.8,
 	spectator_view = false,
 	spectator_hud = true,
-	visionos_passthrough = false,
 	obstacle_color = Color(1.0, 0.1882353, 0.1882353)
 }
 
@@ -306,7 +299,6 @@ func load_old_config() -> void:
 	events = Utils.get_bool(settings_dict, "events", true, {"Web": false})
 	disable_map_color = Utils.get_bool(settings_dict, "disable_map_color", false)
 	player_height_offset = Utils.get_float(settings_dict, "player_height_offset", 0.0)
-	visionos_passthrough = Utils.get_bool(settings_dict, "visionos_passthrough", false)
 	if corrected_saber_color:
 		save()
 

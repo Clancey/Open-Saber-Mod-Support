@@ -78,6 +78,32 @@ Signing is split in two, deliberately:
   only profile covering this bundle id is Xcode-managed and manual signing rejects
   a managed profile.
 
+### Scene manifest
+
+The exporter writes two halves of the scene manifest that do not agree. It names
+`CPSceneSessionRoleImmersiveSpaceApplication` (CompositorServices) as
+`UIApplicationPreferredDefaultSceneSessionRole`, but files the immersion style
+under `UISceneSessionRoleImmersiveSpaceApplication` (UIKit) — the same name one
+prefix apart. The runtime creates a `CPImmersiveScene`, finds no configuration
+for that role, falls back to the mixed style, and SwiftUI reports it as a Fault
+that the headset surfaces as an immersion prompt.
+
+`build.sh` adds the missing configuration to the exported project between export
+and `xcodebuild`. The configuration carries `UISceneConfigurationName` as well as
+`UISceneInitialImmersionStyle`: without the name UIKit logs `Info.plist contained
+no configuration named "Default Configuration"` and falls back to the first entry
+defined, which is right by accident rather than by lookup.
+
+Both values are read back out of the exported plist *and* asserted again on the
+shipped bundle, because the patch edits the build's input and the bundle is what
+ships. An unexpected preferred role fails the build rather than skipping, so a
+future template that changes the role cannot leave a green log beside an
+unpatched plist.
+
+The fix is confirmed by behaviour, not by the plist: the compositor logs
+`initialImmersionStyle: FullImmersionStyle()`, which is the style it applied
+rather than the style that was requested.
+
 ## What the port does
 
 **Bootstrap** (`OQ_Toolkit/vr_autoload.gd`). `initialize()` branches to
@@ -90,11 +116,12 @@ visible error and leaves `inVR` false rather than rendering to no presenter.
 the platform minimum (0.11 m of physical distance), scaled by `XRServer.world_scale`
 and never pulled closer than the project already had it.
 
-**Immersion.** Full immersive by default. `Settings.visionos_passthrough` (a toggle
-in the settings panel, hidden on other platforms) switches the native immersion
-style to Mixed. The transparent background and hidden virtual floor are only
-applied once the interface *confirms* the style change, so a refused switch leaves
-a normal immersive scene instead of an empty one.
+**Immersion.** Fully immersive only, and never switched at runtime. The export
+preset requests `application/immersion_style=0` (Full), and the build files that
+style under `CPSceneSessionRoleImmersiveSpaceApplication` — the role the app
+actually requests — because the exporter files it under the UIKit role instead,
+one prefix apart, which makes the runtime fall back to the mixed style and raise
+a SwiftUI Fault. See "Scene manifest" below.
 
 **Input.** Optical hands and real spatial controllers both publish onto the
 reserved `left_hand` / `right_hand` trackers, and the engine already gives a

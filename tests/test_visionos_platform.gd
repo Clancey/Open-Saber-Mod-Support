@@ -95,33 +95,9 @@ func test_near_plane_never_pulls_an_existing_near_closer() -> void:
 	)
 
 
-func test_immersion_style_round_trips_with_the_passthrough_setting() -> void:
-	assert_eq(
-		VisionOSPlatform.style_for_passthrough(false),
-		VisionOSPlatform.ImmersionStyle.FULL,
-		"Passthrough off means fully immersive"
-	)
-	assert_eq(
-		VisionOSPlatform.style_for_passthrough(true),
-		VisionOSPlatform.ImmersionStyle.MIXED,
-		"Passthrough on means mixed immersion"
-	)
-	assert_false(
-		VisionOSPlatform.style_shows_passthrough(VisionOSPlatform.ImmersionStyle.FULL),
-		"Full immersion hides the room"
-	)
-	assert_true(
-		VisionOSPlatform.style_shows_passthrough(VisionOSPlatform.ImmersionStyle.MIXED),
-		"Mixed immersion shows the room"
-	)
-	assert_true(
-		VisionOSPlatform.style_shows_passthrough(VisionOSPlatform.ImmersionStyle.PROGRESSIVE),
-		"Progressive immersion shows the room"
-	)
-
-
 func test_immersion_style_values_match_the_native_enum() -> void:
-	# The exporter and VisionOSXRInterface both use these integers directly.
+	# export_presets.cfg writes application/immersion_style as a bare integer, so
+	# these are what pins 0 to Full. Nothing else in the tree records the mapping.
 	assert_eq(int(VisionOSPlatform.ImmersionStyle.FULL), 0, "Full is 0")
 	assert_eq(int(VisionOSPlatform.ImmersionStyle.MIXED), 1, "Mixed is 1")
 	assert_eq(int(VisionOSPlatform.ImmersionStyle.PROGRESSIVE), 2, "Progressive is 2")
@@ -135,7 +111,7 @@ func test_settings_scopes_saber_offsets_per_platform() -> void:
 		# Settings must not diverge from the policy it delegates to.
 		assert_eq(Settings.config_key(key), expected, "Settings delegates to the platform policy")
 	# Everything else stays on the shared key so existing configs keep working.
-	for key: String in ["visionos_passthrough", "glare", "cube_cuts_falloff"]:
+	for key: String in ["glare", "cube_cuts_falloff"]:
 		assert_eq(VisionOSPlatform.config_key(key), key, "Unscoped settings keep their key")
 
 

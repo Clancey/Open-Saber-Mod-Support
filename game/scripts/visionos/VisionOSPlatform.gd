@@ -100,8 +100,10 @@ const PLATFORM_SCOPED_KEYS := [
 	"right_saber_offset_rot",
 ]
 
-## Mirrors VisionOSXRInterface.ImmersionStyle so callers do not depend on the
-## native enum being registered on other platforms.
+## Mirrors VisionOSXRInterface.ImmersionStyle. The game is fully immersive only
+## and never switches at runtime; this exists to pin the integers, because
+## export_presets.cfg writes application/immersion_style as a bare number and
+## nothing else in the tree says which style that number means.
 enum ImmersionStyle {
 	FULL = 0,
 	MIXED = 1,
@@ -261,12 +263,3 @@ static func resolve_upper_limb_visibility(left: InputSource, right: InputSource)
 static func near_plane_for_world_scale(world_scale: float, current_near: float) -> float:
 	var minimum := MIN_PHYSICAL_NEAR_PLANE_M * maxf(world_scale, 0.0001)
 	return maxf(current_near, minimum)
-
-
-## True when the style composites the passthrough view of the real room.
-static func style_shows_passthrough(style: ImmersionStyle) -> bool:
-	return style != ImmersionStyle.FULL
-
-
-static func style_for_passthrough(passthrough_enabled: bool) -> ImmersionStyle:
-	return ImmersionStyle.MIXED if passthrough_enabled else ImmersionStyle.FULL

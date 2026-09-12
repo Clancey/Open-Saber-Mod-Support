@@ -355,16 +355,3 @@ func apply_camera_near_plane() -> void:
 	if not is_native_visionos or vrCamera == null:
 		return
 	vrCamera.near = VisionOSPlatform.near_plane_for_world_scale(XRServer.world_scale, vrCamera.near)
-
-
-## Selects the native immersion style. Returns true when the interface accepted
-## it, so callers can avoid stripping the environment on a build that is still
-## fully immersive. No-op (false) on every non-native platform.
-func set_visionos_immersion_style(style: VisionOSPlatform.ImmersionStyle) -> bool:
-	if not is_native_visionos or not is_instance_valid(xr_interface):
-		return false
-	if not xr_interface.has_method(&"set_immersion_style"):
-		log_warning("visionOS interface has no immersion style control; staying fully immersive.")
-		return false
-	xr_interface.set_immersion_style(int(style))
-	return int(xr_interface.get_immersion_style()) == int(style)
